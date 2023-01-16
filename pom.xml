@@ -117,12 +117,12 @@
                     <docker>
                         <publishRegistry>
                             <url>https://ghcr.io</url>
-                            <username>lucapiccinelli</username>
+                            <username>luca-piccinelli</username>
                             <password>${env.CR_PAT}</password>
                         </publishRegistry>
                     </docker>
                     <image>
-                        <name>ghcr.io/lucapiccinelli/infolab:${project.version}</name>
+                        <name>ghcr.io/studiofarma/infolab:${project.version}</name>
                         <publish>${image.publish}</publish>
                         <builder>paketobuildpacks/builder:tiny</builder>
                         <buildpacks>
