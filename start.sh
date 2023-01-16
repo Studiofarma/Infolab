@@ -45,7 +45,7 @@ function max_port_of {
 entry_point_service=infolab
 entry_point_service_internal_port=8080
 project_name=infolab
-image_name=ghcr.io/lucapiccinelli/infolab
+image_name=ghcr.io/studiofarma/infolab
 image_tag=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
 echo local version is $image_tag
 
