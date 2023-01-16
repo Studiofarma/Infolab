@@ -1,0 +1,24 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  json.keys_under_root: true
+  json.add_error_key: true
+  paths:
+    - /workspace/logs/*.log
+
+output.elasticsearch.index: "infolab-%{+yyyy.MM.dd}"
+output.elasticsearch.hosts: ["http://elastic:9200"]
+output.elasticsearch.username: ${FILEBEAT_USERNAME}
+output.elasticsearch.password: ${FILEBEAT_PASSWORD}
+
+setup.template.name: 'infolab'
+setup.template.pattern: 'infolab-*'
+setup.template.enabled: false
+
+setup.kibana.host: "kibana:5601"
+
+setup.ilm.enabled: true
+setup.ilm.rollover_alias: "infolab-%{+yyyy.MM.dd}"
+setup.ilm.policy_name: infolab
+setup.ilm.check_exists: false
+setup.ilm.overwrite: true

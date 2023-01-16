@@ -1,0 +1,82 @@
+version: "3.9"
+services:
+  infolab:
+    image: ${ENTRY_POINT_IMAGE_NAME}
+    environment:
+      - ACTIVE_PROFILE=
+      - TOKEN_BASIC_AUTH=${TOKEN_BASIC_AUTH}
+      - TOKEN_USERNAME=${TOKEN_USERNAME}
+      - TOKEN_PASSWORD=${TOKEN_PASSWORD}
+    ports:
+      - ${ENTRY_POINT_PORT}:8080
+    volumes:
+      - infolab:/workspace/logs
+    networks:
+      - infolab
+
+  setup:
+    image: elasticsearch:${ELK_VERSION}
+    user: "0"
+    command: >
+      bash -c '
+        echo "Setting kibana_system password";
+        until curl -s -X POST -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" http://elastic:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+        echo "Good to go kibana!";
+        until curl -s -X POST -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" http://elastic:9200/_security/user/beats_system/_password -d "{\"password\":\"${FILEBEAT_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+        echo "Good to go filebeat!";
+      '
+    networks:
+      - infolab
+
+  elastic:
+    image: elasticsearch:${ELK_VERSION}
+    environment:
+      - cluster.name=infolab-cluster
+      - http.port=9200
+      - transport.port=9300
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - bootstrap.memory_lock=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    volumes:
+      - infolab-elastic:/usr/share/elasticsearch/data
+    networks:
+      - infolab
+
+  filebeat:
+    image: elastic/filebeat:${ELK_VERSION}
+    command: filebeat -e -strict.perms=false
+    volumes:
+      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - infolab:/workspace/logs
+    environment:
+      - FILEBEAT_USERNAME=elastic
+      - FILEBEAT_PASSWORD=${ELASTIC_PASSWORD}
+    networks:
+      - infolab
+
+  kibana:
+    image: kibana:${ELK_VERSION}
+    ports:
+      - ${KIBANA_PORT}:5601
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elastic:9200
+      - XPACK_SECURITY_ENABLED=true
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+    depends_on:
+      setup:
+        condition: service_completed_successfully
+      elastic:
+        condition: service_started
+    networks:
+      - infolab
+
+networks:
+  infolab: {}
+
+volumes:
+  infolab: {}
+  infolab-elastic: {}

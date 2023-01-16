@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="60">
+    <Properties>
+        <Property name="path">logs</Property>
+        <Property name="pattern">[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</Property>
+        <Property name="backupPattern">$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz</Property>
+        <Property name="logFileName">app_log.log</Property>
+        <Property name="appenderToUse">${env:logType:-plain}</Property>
+    </Properties>
+    <Appenders>
+        <Console name="stdout_plain" target="SYSTEM_OUT">
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
+        </Console>
+        <Console name="stdout_json" target="SYSTEM_OUT">
+            <JsonLayout complete="false" compact="true" eventEol="true" properties="true">
+            </JsonLayout>
+        </Console>
+        <RollingFile name="Json-Appender" fileName="${path}/${logFileName}" filePattern="${path}/${backupPattern}">
+            <JsonLayout complete="false" compact="true" eventEol="true" properties="true"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="Text-Appender" fileName="${path}/text/${logFileName}" filePattern="${path}/text/${backupPattern}">
+            <PatternLayout>
+                <pattern>${pattern}</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="250 MB"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="Json-Appender"/>
+            <AppenderRef ref="Text-Appender"/>
+            <AppenderRef ref="stdout_${appenderToUse}"/>
+        </Root>
+    </Loggers>
+</Configuration>
