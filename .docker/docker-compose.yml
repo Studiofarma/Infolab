@@ -2,11 +2,6 @@ version: "3.9"
 services:
   infolab:
     image: ${ENTRY_POINT_IMAGE_NAME}
-    environment:
-      - ACTIVE_PROFILE=
-      - TOKEN_BASIC_AUTH=${TOKEN_BASIC_AUTH}
-      - TOKEN_USERNAME=${TOKEN_USERNAME}
-      - TOKEN_PASSWORD=${TOKEN_PASSWORD}
     ports:
       - ${ENTRY_POINT_PORT}:8080
     volumes:
