@@ -12,4 +12,4 @@ Accedere alla chat usando username `user1` e password `password1`.
 
 Richiede l'installazione di [Docker](https://docs.docker.com/desktop/install/windows-install/)
 
-L'infrastruttura del progetto e' lanciabile da bash (va bene una git bash se si e' su Windows), utilizzando il comando ./start.sh.
+L'infrastruttura del progetto e' lanciabile da bash (va bene una git bash se si e' su Windows), utilizzando il comando `./start.sh`.
