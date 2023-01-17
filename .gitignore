@@ -39,3 +39,4 @@ env-file
 ### Frontend ###
 node_modules
 src/main/resources/static
+src/frontend/node
