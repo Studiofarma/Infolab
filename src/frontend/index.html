@@ -1,60 +1,9 @@
 <!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <title>Chat Example | Spring Boot + WebSocket | Built 2 times! </title>
-    <link rel="stylesheet" href="/css/main.css" />
-</head>
-<body style="background-position: center; background-repeat: no-repeat; background-size: cover;">
-<noscript>
-    <h2>Javascript non supportato</h2>
-</noscript>
-
-<div id="username-page">
-    <div class="username-page-container">
-        <h1 class="title">Come ti chiami?</h1>
-        <form id="usernameForm" name="usernameForm">
-            <div class="form-group">
-                <input type="text" id="name" placeholder="Nome"
-                       autocomplete="off" class="form-control" />
-                <input type="password" id="password" placeholder="password"
-                       autocomplete="off" class="form-control" />
-            </div>
-            <div class="form-group">
-                <button type="submit" class="accent username-submit">Connetti</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div id="chat-page" class="hidden">
-    <div class="chat-container">
-        <div class="chat-header">
-            <h2>ChatBox <span id="username-title">username</span></h2>
-        </div>
-        <div class="connecting">Mi sto connettendo alla chat...</div>
-        <ul id="messageArea">
-
-        </ul>
-        <form id="messageForm" name="messageForm" nameForm="messageForm">
-            <div class="form-group">
-                <div class="input-group clearfix">
-                    <input type="text" id="message" placeholder="Scrivi un messaggio..."
-                           autocomplete="off" class="form-control" />
-                    <button type="submit" class="primary">Invia</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script
-        src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.js"></script>
-<script
-        src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.js"></script>
-<script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.js" ></script>
-<script src="/js/main.js"></script>
-</body>
+<html>
+  <head>
+    <title>Chat</title>
+  </head>
+  <body>
+    <il-app></il-app>
+  </body>
 </html>
