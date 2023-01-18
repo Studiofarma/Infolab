@@ -26,6 +26,20 @@ Il backend è scritto in SpringBoot, e fa uso di Websocket tramite l'implementaz
 
 Il supporto di SpringBoot alle [Websocket](https://docs.spring.io/spring-framework/docs/6.0.3/reference/html/web.html#websocket) implementa il protocollo di messaggistica [STOMP](https://stomp.github.io/)
 
+# Flusso di sviluppo
+
+I progressi e i requisiti del progetto sono tracciati e documentati tramite il progetto [Project Infolab](https://github.com/orgs/Studiofarma/projects/2/views/1) e le [Milestone](https://github.com/Studiofarma/Infolab/milestones).
+
+Le nuove funzionalità verranno integrate nel progetto tramite apertura di pull request.
+
+All'apertura di una pull request ([esempio](https://github.com/Studiofarma/Infolab/pull/9)) viene eseguita un [pipeline](https://github.com/Studiofarma/Infolab/actions/runs/3939529469) che termina con il push sul [registry](https://github.com/Studiofarma/Infolab/pkgs/container/infolab) dell'immagine del container corrispondente alla versione dell'applicazione alla pull request.
+
+La nuova immagine potrà così essere eseguita localmente da chiunque utilizzando i comandi di avvio dell'infrastruttura (comando [`./start.sh -t`](#infrastruttura_parametri))
+
+# Pipeline
+
+La pipeline è sviluppata tramite GitHub Actions e si trova nel file (.github/workflows/build-and-test.yml). Al momento [manca di uno stage di deploy](https://github.com/Studiofarma/Infolab/issues/11) dell'applicazione. Il deploy avverrà su Virtual machine tramite avvio dello script [`./start.sh`](start.sh) sulla VM stessa.
+
 # Eseguire l'infrastruttura in locale
 
 Richiede l'installazione di [Docker](https://docs.docker.com/desktop/install/windows-install/)
@@ -37,7 +51,9 @@ Lo script `start.sh` utilizza **Docker compose** per eseguire la configurazione 
 Come default verranno esposte le seguenti applicazioni:
  - Chat http://localhost:40001
  - Kibana dashboard http://localhost:40002
- 
+
+<a name="infrastruttura_parametri"></a>
+### Parametri principali
 Lo script può essere eseguito con i seguenti parametri:
  - `-b` (no argomenti): prima di eseguire l'infrastruttura, esegue il build dell'immagine Docker della chat, utilizzando il workspace locale
  - `-p porta_di_destinazione (es: ./start.sh -p 40010)`: esegue l'infrastruttura esponendo la chat sulla porta indicata. Se la porta selezionata fosse già occupata, i servizi verranno stoppati per avviare la nuova versione
