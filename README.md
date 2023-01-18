@@ -38,7 +38,7 @@ La nuova immagine potrà così essere eseguita localmente da chiunque utilizzand
 
 # Pipeline
 
-La pipeline è sviluppata tramite GitHub Actions e si trova nel file (.github/workflows/build-and-test.yml). Al momento [manca di uno stage di deploy](https://github.com/Studiofarma/Infolab/issues/11) dell'applicazione. Il deploy avverrà su Virtual machine tramite avvio dello script [`./start.sh`](start.sh) sulla VM stessa.
+La [pipeline](https://github.com/Studiofarma/Infolab/actions) è sviluppata tramite GitHub Actions e si trova nel file [build-and-test.yml](.github/workflows/build-and-test.yml). Al momento [manca uno stage di deploy](https://github.com/Studiofarma/Infolab/issues/11) dell'applicazione. Il deploy avverrà su Virtual machine tramite avvio dello script [`./start.sh`](start.sh) sulla VM stessa.
 
 # Eseguire l'infrastruttura in locale
 
