@@ -6,7 +6,6 @@ export class App extends LitElement {
   static get properties() {
     return {
       login: {
-        ok: false,
         username: "",
         password: "",
         headerName: "",
@@ -18,7 +17,6 @@ export class App extends LitElement {
   constructor() {
     super();
     this.login = {
-      ok: false,
       username: "",
       password: "",
       headerName: "",
@@ -28,7 +26,7 @@ export class App extends LitElement {
 
   render() {
     return html`
-      ${this.login.username == ""
+      ${this.login.username === ""
         ? html` <il-login @login-confirm="${this.loginConfirm}"></il-login> `
         : html` <il-chat .login=${this.login}></il-chat> `}
     `;

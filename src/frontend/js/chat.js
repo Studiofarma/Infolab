@@ -12,7 +12,6 @@ export class Chat extends LitElement {
   static get properties() {
     return {
       login: {
-        ok: false,
         username: "",
         password: "",
         headerName: "",
@@ -99,7 +98,6 @@ export class Chat extends LitElement {
       };
 
       this.stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
-      messageContent = "";
     }
 
     this.message = "";

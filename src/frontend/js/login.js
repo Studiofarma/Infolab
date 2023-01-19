@@ -59,7 +59,6 @@ export class Login extends LitElement {
           new CustomEvent("login-confirm", {
             detail: {
               login: {
-                ok: true,
                 username: this.username,
                 password: this.password,
                 headerName: response.data.headerName,
