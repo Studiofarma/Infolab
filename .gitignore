@@ -35,3 +35,8 @@ build/
 logs/
 env-file
 /src/main/resources/application-local.properties
+
+### Frontend ###
+node_modules
+src/main/resources/static
+src/frontend/node
