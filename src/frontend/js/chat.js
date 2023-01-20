@@ -58,24 +58,30 @@ export class Chat extends LitElement {
     headers[this.login.headerName] = this.login.token;
     this.stompClient.connect(
       headers,
-      () => {
-        this.stompClient.subscribe("/topic/public", (payload) => {
-          var message = JSON.parse(payload.body);
-
-          if (message.content) {
-            this.messages.push(message.content);
-            this.update();
-          }
-        });
-
-        this.stompClient.send(
-          "/app/chat.register",
-          {},
-          JSON.stringify({ sender: this.login.username, type: "JOIN" })
-        );
-      },
-      this.onError
+      () => this.onConnect(),
+      () => this.onError()
     );
+  }
+
+  onConnect() {
+    this.stompClient.subscribe("/topic/public", (payload) =>
+      this.onMessage(payload)
+    );
+
+    this.stompClient.send(
+      "/app/chat.register",
+      {},
+      JSON.stringify({ sender: this.login.username, type: "JOIN" })
+    );
+  }
+
+  onMessage(payload) {
+    var message = JSON.parse(payload.body);
+
+    if (message.content) {
+      this.messages.push(message.content);
+      this.update();
+    }
   }
 
   onError(error) {
