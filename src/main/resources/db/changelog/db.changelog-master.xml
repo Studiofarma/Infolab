@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="setup" author="Luca Piccinelli">
+        <sql>
+            create schema infolab
+        </sql>
+
+        <createTable schemaName="infolab" tableName="users">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="users_pk" />
+            </column>
+            <column name="username" type="varchar(50)" >
+                <constraints unique="true"/>
+            </column>
+        </createTable>
+        <createIndex schemaName="infolab" tableName="users" indexName="users_index">
+            <column name="username" />
+        </createIndex>
+
+        <createTable schemaName="infolab" tableName="rooms">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="rooms_pk" />
+            </column>
+            <column name="roomname" type="varchar(255)">
+                <constraints unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable schemaName="infolab" tableName="chatmessages">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="chatmessages_pk" />
+            </column>
+            <column name="sender_id" type="bigint" >
+                <constraints foreignKeyName="fk_sender_id" references="infolab.users(id)"/>
+            </column>
+            <column name="recipient_user_id" type="bigint">
+                <constraints foreignKeyName="fk_recipient_user_id" references="infolab.users(id)"/>
+            </column>
+            <column name="recipient_room_id" type="bigint">
+                <constraints foreignKeyName="fk_recipient_room_id" references="infolab.rooms(id)"/>
+            </column>
+            <column name="sent_at" type="timestamp" >
+                <constraints nullable="false" />
+            </column>
+            <column name="content" type="varchar(5000)" />
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
