@@ -4,7 +4,9 @@
 
 Progetto esteso a partire dal tutorial a questo link https://codefiction.net/building-a-real-time-chat-application-with-spring-boot-and-websocket/
 
-Far partire il progetto con `.\mvnw spring-boot:run` e aprire un browser al url http://localhost:8080. È necessario avere **Java 17** come versione minima
+Per delle istruzioni dettagliate, fare riferimento alla [documentazione dedicata](https://github.com/Studiofarma/Infolab/issues/2)
+
+Far partire il progetto con `.\mvnw spring-boot:run` e aprire un browser al url http://localhost:8081. È necessario avere **Java 17** come versione minima
 
 Accedere alla chat usando username `user1` e password `password1`.
 
