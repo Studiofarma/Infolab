@@ -30,8 +30,7 @@ export class Chat extends LitElement {
     this.createSocket();
   }
 
-  static styles = css` 
-
+  static styles = css`
     * {
       box-sizing: border-box;
       margin: 0;
@@ -54,7 +53,7 @@ export class Chat extends LitElement {
 
     section {
       display: grid;
-      grid-template-columns: .3fr .7fr;
+      grid-template-columns: 0.3fr 0.7fr;
       height: 100%;
     }
 
@@ -77,14 +76,14 @@ export class Chat extends LitElement {
       gap: 10px;
       padding: 8px 12px;
       cursor: pointer;
-      transition: .5s;
+      transition: 0.5s;
     }
 
     .conversazioni > div:not(#searchChats):hover {
       background-color: #00234f;
     }
 
-    #searchChats{
+    #searchChats {
       display: flex;
       align-items: center;
       justify-content: center;
@@ -92,11 +91,11 @@ export class Chat extends LitElement {
       margin: 0 10px;
     }
 
-    #searchChats > input{
+    #searchChats > input {
       width: 90%;
       height: 40px;
       border-radius: 10px;
-      padding:10px;
+      padding: 10px;
     }
 
     .conversazioni .avatar {
@@ -164,7 +163,9 @@ export class Chat extends LitElement {
       font-size: 15pt;
     }
 
-    #inputControls > * { flex-shrink: 1;}
+    #inputControls > * {
+      flex-shrink: 1;
+    }
 
     #inputControls .submitContainer {
       flex-basis: 10%;
@@ -183,70 +184,78 @@ export class Chat extends LitElement {
       cursor: pointer;
     }
 
+    * {
+      font-family: inherit;
+    }
 
-
-  `
+    .material-icons {
+      font-family: "Material Icons";
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+      cursor: pointer;
+    }
+  `;
 
   render() {
     //aggiungo il main e lo metto in absolute per non andare in display flex che avevo messo per il login
     return html`
-      <main> 
-
-        <header>
-        </header>
+      <main>
+        <header></header>
 
         <section>
-
-            <div class="conversazioni">
-              <div id="searchChats">
-                  <input type="text" placeholder="cerca farmacie" \>
-                  <span> CERCA </span>
-              </div>
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia1</p>
-              </div>       
-              
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia2</p>
-              </div>       
-              
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div> 
+          <div class="conversazioni">
+            <div id="searchChats">
+              <input type="text" placeholder="cerca farmacie" />
+              <span class="material-icons"> search </span>
+            </div>
+            <div>
+              <div class="avatar"></div>
+              <p class="name">farmacia1</p>
             </div>
 
-          <div class="chat">
+            <div>
+              <div class="avatar"></div>
+              <p class="name">farmacia2</p>
+            </div>
 
+            <div>
+              <div class="avatar"></div>
+              <p class="name">farmacia3</p>
+            </div>
+          </div>
+
+          <div class="chat">
             <div class="chatHeader">
               <h2>ChatBox ${this.login.username}</h2>
             </div>
 
-              <ul class="messageBox">
-                ${this.messages.map((item, _) => html` <li>${item}</li> `)}
-              </ul>
+            <ul class="messageBox">
+              ${this.messages.map((item, _) => html` <li>${item}</li> `)}
+            </ul>
 
-              <div id="inputControls">
-                  <input
-                  type="text"
-                  placeholder="Scrivi un messaggio..."
-                  @input=${this.onMessageInput}
-                  .value=${this.message}
-                />
-                <div class="submitContainer">
-                  <button @click=${this.sendMessage}> &gt; </button>
-                </div>
-             </div> 
-
+            <div id="inputControls">
+              <input
+                type="text"
+                placeholder="Scrivi un messaggio..."
+                @input=${this.onMessageInput}
+                .value=${this.message}
+              />
+              <div class="submitContainer">
+                <button @click=${this.sendMessage}>&gt;</button>
+              </div>
+            </div>
           </div>
-             
         </section>
-        
-        
       </main>
-
     `;
   }
 

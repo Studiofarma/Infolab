@@ -1,19 +1,18 @@
-
 * {
-    box-sizing: border-box;
-    margin: 0px;
-    padding: 0px;
-    font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+  font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 body {
-    font-weight: 400;
-    font-size: 1rem;
-    line-height: 1.58;
-    color: #333;
-    background: #013365;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.58;
+  color: #333;
+  background: #013365;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
