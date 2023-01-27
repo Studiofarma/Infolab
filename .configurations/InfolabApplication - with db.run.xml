@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="InfolabApplication - with db" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="Infolab" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="com.cgm.infolab.InfolabApplication" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name=".docker/docker-compose-db.yml: Compose Deployment" run_configuration_type="docker-deploy" />
+    </method>
+  </configuration>
+</component>
