@@ -20,6 +20,8 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: user@user.com
       PGADMIN_DEFAULT_PASSWORD: password
+    volumes:
+      - infolab-pg-administration:/var/lib/pgadmin
     networks:
       - infolab-pg
 
@@ -28,3 +30,4 @@ networks:
 
 volumes:
   infolab-pg: {}
+  infolab-pg-administration: {}
