@@ -28,6 +28,19 @@ Il backend è scritto in SpringBoot, e fa uso di Websocket tramite l'implementaz
 
 Il supporto di SpringBoot alle [Websocket](https://docs.spring.io/spring-framework/docs/6.0.3/reference/html/web.html#websocket) implementa il protocollo di messaggistica [STOMP](https://stomp.github.io/)
 
+- Il controller dei messaggi della Chat e' nel file [ChatController.java](src/main/java/com/cgm/infolab/ChatController.java)
+- Un esempio di controller di [Api](https://www.redhat.com/en/topics/api/what-are-application-programming-interfaces) e' nel file [ChatApiMessagesController.java](src/main/java/com/cgm/infolab/ChatApiMessagesController.java)
+
+### Database
+
+Per avviare il database, prima dell'applicazione, utilizzare la configurazione di avvio  `Infolab Application - with db`.
+
+<img src="doc/img/start-configuration.png" width="500px" alt="Infolab Application - with db"/>
+
+Le configurazioni del database e di PgAdmin sono indicate nel file [docker-compose-db.yml](.docker/docker-compose-db.yml)
+
+Le impostazioni di connessione al database utilizzata dalla nostra Applicazione SpringBoot stanno nel file di configurazione [application.properties](src/main/resources/application.properties)
+
 # Flusso di sviluppo
 
 I progressi e i requisiti del progetto sono tracciati e documentati tramite il progetto [Project Infolab](https://github.com/orgs/Studiofarma/projects/2/views/1) e le [Milestone](https://github.com/Studiofarma/Infolab/milestones).
