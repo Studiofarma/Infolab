@@ -1,4 +1,4 @@
-import { LitElement, html } from "lit";
+import { LitElement, html, css } from "lit";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
@@ -30,19 +30,233 @@ export class Chat extends LitElement {
     this.createSocket();
   }
 
+  static styles = css` 
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    main {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: white;
+    }
+
+    input[type="text"] {
+      border: none;
+      outline: none;
+    }
+
+    header {
+      width: 100%;
+      min-height: 50px;
+      background: rgba(10, 10, 128, 0.829);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 5px 0px 15px black;
+    }
+
+    #searchChats {
+      position: relative;
+    }
+
+    header input {
+      width: 60vw;
+      height: 30px;
+      padding: 5px;
+    }
+
+    header input span {
+      position: absolute;
+      top: 15px;
+      left: 10px;
+      transform: translate(-50%, -50%);
+      color: black;
+      font-weight: bold;
+    }
+
+    section {
+      display: grid;
+      grid-template-columns: .3fr .7fr;
+      height: calc(100% - 50px);
+    }
+
+    .conversazioni {
+      background: rgba(10, 10, 128, 0.829);
+      color: white;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .conversazioni > div {
+      position: relative;
+      width: 100%;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      background: gray;
+    }
+
+    .conversazioni .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: lightgray;
+    }
+
+    .conversazioni .name {
+      font-size: 10pt;
+    }
+
+    .chat {
+      position: relative;
+      padding-top: 60px;
+      padding-left: 5vw;
+      padding-right: 5vw;
+    }
+
+    .chatHeader {
+      position: absolute;
+      background: lightgray;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      padding: 8px 5px;
+      display: flex;
+      align-items: center;
+    }
+
+    .messageBox {
+      list-style-type: none;
+      display: flex;
+      align-items: flex-end;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .messageBox li {
+      position: relative;
+      min-width: 300px;
+      padding: 15px 8px;
+      background: aliceblue;
+    }
+
+    #inputControls {
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      width: 100%;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: lightgray;
+    }
+
+    #inputControls input[type="text"] {
+      height: 50px;
+      flex-basis: 90%;
+      border-radius: 18px;
+      padding: 5px 12px;
+      font-size: 15pt;
+    }
+
+    #inputControls > * { flex-shrink: 1;}
+
+    #inputControls .submitContainer {
+      flex-basis: 10%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .submitContainer button {
+      min-width: 40px;
+      min-height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+
+
+  `
+
   render() {
+    //aggiungo il main e lo metto in absolute per non andare in display flex che avevo messo per il login
     return html`
-      <h2>ChatBox ${this.login.username}</h2>
-      <ul>
-        ${this.messages.map((item, _) => html` <li>${item}</li> `)}
-      </ul>
-      <input
-        type="text"
-        placeholder="Scrivi un messaggio..."
-        @input=${this.onMessageInput}
-        .value=${this.message}
-      />
-      <button @click=${this.sendMessage}>Invia</button>
+      <main> 
+
+        <header>
+          <div id="searchChats">
+              <input type="text" placeholder="cerca farmacie" \>
+              <span> <i class="fa-solid fa-magnifying-glass"></i> </span>
+          </div>
+        </header>
+
+        <section>
+
+            <div class="conversazioni">
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia1</p>
+              </div>       
+              
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia2</p>
+              </div>       
+              
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>       
+              
+            </div>
+
+          <div class="chat">
+
+            <div class="chatHeader">
+              <h2>ChatBox ${this.login.username}</h2>
+            </div>
+
+              <ul class="messageBox">
+                ${this.messages.map((item, _) => html` <li>${item}</li> `)}
+              </ul>
+
+              <div id="inputControls">
+                  <input
+                  type="text"
+                  placeholder="Scrivi un messaggio..."
+                  @input=${this.onMessageInput}
+                  .value=${this.message}
+                />
+                <div class="submitContainer">
+                  <button @click=${this.sendMessage}> &gt; </button>
+                </div>
+             </div> 
+
+          </div>
+             
+        </section>
+        
+        
+      </main>
+
     `;
   }
 
@@ -58,24 +272,30 @@ export class Chat extends LitElement {
     headers[this.login.headerName] = this.login.token;
     this.stompClient.connect(
       headers,
-      () => {
-        this.stompClient.subscribe("/topic/public", (payload) => {
-          var message = JSON.parse(payload.body);
-
-          if (message.content) {
-            this.messages.push(message.content);
-            this.update();
-          }
-        });
-
-        this.stompClient.send(
-          "/app/chat.register",
-          {},
-          JSON.stringify({ sender: this.login.username, type: "JOIN" })
-        );
-      },
-      this.onError
+      () => this.onConnect(),
+      () => this.onError()
     );
+  }
+
+  onConnect() {
+    this.stompClient.subscribe("/topic/public", (payload) =>
+      this.onMessage(payload)
+    );
+
+    this.stompClient.send(
+      "/app/chat.register",
+      {},
+      JSON.stringify({ sender: this.login.username, type: "JOIN" })
+    );
+  }
+
+  onMessage(payload) {
+    var message = JSON.parse(payload.body);
+
+    if (message.content) {
+      this.messages.push(message.content);
+      this.update();
+    }
   }
 
   onError(error) {
