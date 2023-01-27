@@ -122,9 +122,10 @@ export class Login extends LitElement {
           <label>
             Username
             <div class="text-container">
-              <input
+              <input id="username"
                 type="text"
                 @input=${this.onUsernameInput}
+                @keydown=${this.checkLogin}
                 .value=${this.username}
                 placeholder="Inserisci il nome utente"
               />
@@ -136,9 +137,10 @@ export class Login extends LitElement {
           <label>
             Password
             <div class="text-container">
-              <input
+              <input id="password"
                 type=${this.pswVisibility ? "text" : "password"}
                 @input=${this.onPasswordInput}
+                @keydown=${this.checkLogin}
                 .value=${this.password}
                 placeholder="Inserisci la password"
               />
@@ -165,11 +167,35 @@ export class Login extends LitElement {
     this.password = inputEl.value;
   }
 
+  checkLogin(e) {
+    if(e.key == 'Enter')
+      this.loginConfirm()
+  }
+
   setVisibility() {
     this.pswVisibility = !this.pswVisibility;
   }
 
+  getUsername() {
+    return this.renderRoot.querySelector('#username') ?? null
+  }
+
+  getPassword() {
+    return this.renderRoot.querySelector('#password') ?? null
+  }
+
   loginConfirm() {
+
+    if(this.getUsername().value === '') {
+      alert('Inserisci lo username')
+      return
+    } 
+
+    if(this.getPassword().value === '') {
+      alert('Inserisci la password')
+      return
+    }
+
     this.executeLoginCall()
       .then((response) => {
         this.dispatchEvent(
