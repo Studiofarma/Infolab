@@ -23,6 +23,7 @@ export class Login extends LitElement {
     }
 
     #container {
+      position: relative;
       width: 400px;
       max-width: 100%;
       min-height: 300px;
@@ -33,6 +34,22 @@ export class Login extends LitElement {
       gap: 1rem;
       border-radius: 10px;
       background-color: #e4e8ee;
+    }
+
+    .ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: #013365;
+      width: 100px;
+      height: 100px;
+      border-radius: 100%;
+      transform: translate(-50%,-50%);
+      z-index: 1;
+    }
+
+    #conteiner > * {
+      z-index: 2;
     }
 
     .title {
@@ -120,6 +137,7 @@ export class Login extends LitElement {
   render() {
     return html`
       <div id="container">
+        <div class="ring"></div>
         <h1 class="title">Welcome Back</h1>
         <div>
           <label>
