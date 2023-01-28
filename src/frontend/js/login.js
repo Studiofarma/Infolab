@@ -42,8 +42,8 @@ export class Login extends LitElement {
     div[class^="ring"] {
       position: absolute;
       background: #013365;
-      width: 50%;
-      height: 50%;
+      width: 250px;
+      height: 250px;
       border-radius: 100%;
       z-index: 1;
       overflow: hidden;
@@ -61,8 +61,8 @@ export class Login extends LitElement {
       top: 50%;
       left: 50%;
       transform: translate(-50%,-50%);
-      width: 60%;
-      height: 60%;
+      width: 200px;
+      height: 200px;
       background: #e4e8ee;
       border-radius: 100%;
     } 
