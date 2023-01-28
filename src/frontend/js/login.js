@@ -24,31 +24,57 @@ export class Login extends LitElement {
 
     #container {
       position: relative;
-      width: 400px;
+      width: 900px;
       max-width: 100%;
-      min-height: 300px;
+      min-height: 400px;
       background: white;
       padding: 1.5rem;
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: 1rem;
       border-radius: 10px;
       background-color: #e4e8ee;
+      overflow: hidden;
     }
 
-    .ring {
+    div[class^="ring"] {
       position: absolute;
+      background: #013365;
+      width: 30vw;
+      height: 30vw;
+      border-radius: 100%;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .ring1 {
       top: 0;
       left: 0;
-      background: #013365;
-      width: 100px;
-      height: 100px;
-      border-radius: 100%;
       transform: translate(-50%,-50%);
-      z-index: 1;
     }
 
-    #conteiner > * {
+    div[class^="ring"]::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      width: 20vw;
+      height: 20vw;
+      background: #e4e8ee;
+      border-radius: 100%;
+    } 
+
+    .ring2 {
+      bottom: 0;
+      right: 0;
+      transform: translate(50%,50%);
+    }
+
+
+    #container > *:not(.ring) {
+      width: 400px;
       z-index: 2;
     }
 
@@ -137,7 +163,8 @@ export class Login extends LitElement {
   render() {
     return html`
       <div id="container">
-        <div class="ring"></div>
+        <div class="ring1"></div>
+        <div class="ring2"></div>
         <h1 class="title">Welcome Back</h1>
         <div>
           <label>
