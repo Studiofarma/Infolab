@@ -22,7 +22,6 @@ export class Login extends LitElement {
       padding: 0;
     }
 
-
     #container {
       position: relative;
       width: 500px;
@@ -52,27 +51,26 @@ export class Login extends LitElement {
     .ring1 {
       top: 0;
       left: 0;
-      transform: translate(-50%,-50%);
+      transform: translate(-50%, -50%);
     }
 
     div[class^="ring"]::before {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%,-50%);
+      transform: translate(-50%, -50%);
       width: 200px;
       height: 200px;
       background: #e4e8ee;
       border-radius: 100%;
-    } 
+    }
 
     .ring2 {
       bottom: 0;
       right: 0;
-      transform: translate(50%,50%);
+      transform: translate(50%, 50%);
     }
-
 
     #container > *:not(div[class^="ring"]) {
       z-index: 2;
@@ -121,10 +119,9 @@ export class Login extends LitElement {
     label[id$="Error"] {
       display: block;
       color: darkred;
-      padding-top: 5px ;
+      padding-top: 5px;
       font-size: 10pt;
     }
-
 
     #submit_btn {
       text-transform: uppercase;
@@ -170,7 +167,8 @@ export class Login extends LitElement {
           <label>
             Username
             <div class="text-container">
-              <input id="username"
+              <input
+                id="username"
                 type="text"
                 @input=${this.onUsernameInput}
                 @keydown=${this.checkLogin}
@@ -186,7 +184,8 @@ export class Login extends LitElement {
           <label>
             Password
             <div class="text-container">
-              <input id="password"
+              <input
+                id="password"
                 type=${this.pswVisibility ? "text" : "password"}
                 @input=${this.onPasswordInput}
                 @keydown=${this.checkLogin}
@@ -219,8 +218,7 @@ export class Login extends LitElement {
   }
 
   checkLogin(e) {
-    if(e.key == 'Enter')
-      this.loginConfirm()
+    if (e.key == "Enter") this.loginConfirm();
   }
 
   setVisibility() {
@@ -232,21 +230,23 @@ export class Login extends LitElement {
   }
 
   loginConfirm() {
-
-    if(this.getElement('#username').value === '' && this.getElement('#password').value === '') {
-      this.getElement('#usernameError').innerText = "*Inserisci uno username"
-      this.getElement('#passwordError').innerText = "*Inserisci una password"
-      return
+    if (
+      this.getElement("#username").value === "" &&
+      this.getElement("#password").value === ""
+    ) {
+      this.getElement("#usernameError").innerText = "*Inserisci uno username";
+      this.getElement("#passwordError").innerText = "*Inserisci una password";
+      return;
     }
 
-    if(this.getElement('#username').value === '') {
-      this.getElement('#usernameError').innerText = "*Inserisci uno username"
-      return
-    } 
+    if (this.getElement("#username").value === "") {
+      this.getElement("#usernameError").innerText = "*Inserisci uno username";
+      return;
+    }
 
-    if(this.getElement('#password').value === '') {
-      this.getElement('#passwordError').innerText = "*Inserisci una password"
-      return
+    if (this.getElement("#password").value === "") {
+      this.getElement("#passwordError").innerText = "*Inserisci una password";
+      return;
     }
 
     this.executeLoginCall()
@@ -265,7 +265,7 @@ export class Login extends LitElement {
         );
       })
       .catch((e) => {
-        this.getElement('#accessError').innerText = "*CREDENZIALI NON VALIDE"
+        this.getElement("#accessError").innerText = "*CREDENZIALI NON VALIDE";
       });
   }
 

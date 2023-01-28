@@ -43,7 +43,7 @@ export class Chat extends LitElement {
       left: 0;
       width: 100%;
       height: 100%;
-      background: white;
+      background: #d3d3d3;
     }
 
     input[type="text"] {
@@ -58,17 +58,23 @@ export class Chat extends LitElement {
     }
 
     .conversazioni {
-      background: #013365;
+      background: #003366;
       color: white;
-      padding-top: 20px;
+      padding-top: 10px;
+      display: flex;
+      flex-direction: column;
+      /* overflow-y: scroll;  */
+      border-right: 3px solid #0064a6;
+    }
+
+    .elencoFarmacie {
+      overflow-y: auto;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      border-radius: 0 10px 10px 0;
-      overflow-y: scroll;
     }
 
-    .conversazioni > div:not(#searchChats) {
+    .conversazioni > .elencoFarmacie > div {
       width: 100%;
       min-height: 60px;
       display: flex;
@@ -79,23 +85,88 @@ export class Chat extends LitElement {
       transition: 0.5s;
     }
 
-    .conversazioni > div:not(#searchChats):hover {
+    .conversazioni > .elencoFarmacie > div:hover {
       background-color: #00234f;
     }
 
     #searchChats {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 100%;
+      padding: 5px 20px;
+      margin-bottom: 50px;
       column-gap: 10px;
-      margin: 0 10px;
+      position: relative;
     }
 
-    #searchChats > input {
-      width: 90%;
+    #searchChats input {
+      width: 100%;
       height: 40px;
       border-radius: 10px;
       padding: 10px;
+    }
+
+    #searchChats .dropdown {
+      position: absolute;
+      top: 39px;
+      left: 0px;
+      width: 100%;
+      background: white;
+      z-index: 4;
+      color: black;
+      font-weight: 200;
+      height: 0px;
+      overflow-y: hidden;
+      transition: 0.5s;
+      text-align: center;
+    }
+
+    #searchChats input:focus {
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+    }
+
+    #searchChats input:focus ~ .dropdown {
+      height: calc(3 * 60px);
+      margin-top: 3px;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    .dropdown p {
+      min-height: 60px;
+      padding: 8px 0px;
+      text-align: center;
+      font-weight: bold;
+      transition: 0.5s;
+    }
+
+    .conversazioni:has(#searchChats input:focus) .elencoFarmacie {
+      opacity: 0;
+    }
+
+    .elencoFarmacie {
+      transition: 0.5s;
+    }
+
+    .dropdown p:hover {
+      background: lightgray;
+    }
+
+    #searchChats .containerInput {
+      position: relative;
+    }
+
+    .containerInput input:focus ~ span {
+      opacity: 0;
+    }
+
+    .containerInput span {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      top: 50%;
+      right: 0px;
+      z-index: 5;
+      color: #6f6f6f;
+      transition: 0.5s;
     }
 
     .conversazioni .avatar {
@@ -111,20 +182,34 @@ export class Chat extends LitElement {
 
     .chat {
       position: relative;
-      padding-top: 60px;
+      padding-top: 100px;
       padding-left: 5vw;
       padding-right: 5vw;
     }
 
     .chatHeader {
       position: absolute;
-      background: lightgray;
+      background: #0074bc;
       top: 0px;
       left: 0px;
       width: 100%;
-      padding: 8px 5px;
+      min-height: 50px;
+      padding: 8px 10px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
+      color: white;
+    }
+
+    .chatHeader .settings {
+      order: 2;
+      display: flex;
+    }
+
+    .chatHeader .contatto {
+      order: 1;
+      display: flex;
+      gap: 1em;
     }
 
     .messageBox {
@@ -139,7 +224,32 @@ export class Chat extends LitElement {
       position: relative;
       min-width: 300px;
       padding: 15px 8px;
-      background: aliceblue;
+      background: #f2f4f7;
+      border-radius: 10px 10px 0 10px;
+      box-shadow: 0 0 10px #989a9d;
+    }
+
+    .messageBox li::after {
+      content: "";
+      position: absolute;
+      transform: translate(-50%, -50%);
+      bottom: -15px;
+      right: -5px;
+      border-top: 10px solid #f2f4f7;
+      border-left: 10px solid transparent;
+      border-right: 0px solid transparent;
+    }
+
+    .messageBox li::before {
+      content: "";
+      position: absolute;
+      transform: translate(-50%, -50%);
+      bottom: -13px;
+      right: -8px;
+      border-top: 10px solid #989a9d;
+      border-left: 10px solid transparent;
+      border-right: 0px solid transparent;
+      filter: blur(10px);
     }
 
     #inputControls {
@@ -152,7 +262,7 @@ export class Chat extends LitElement {
       align-items: center;
       gap: 8px;
       padding: 8px 10px;
-      background: lightgray;
+      background: #0074bc;
     }
 
     #inputControls input[type="text"] {
@@ -182,6 +292,10 @@ export class Chat extends LitElement {
       background: white;
       font-size: 20px;
       cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: black;
     }
 
     * {
@@ -214,28 +328,45 @@ export class Chat extends LitElement {
         <section>
           <div class="conversazioni">
             <div id="searchChats">
-              <input type="text" placeholder="cerca farmacie" />
-              <span class="material-icons"> search </span>
-            </div>
-            <div>
-              <div class="avatar"></div>
-              <p class="name">farmacia1</p>
+              <div class="containerInput">
+                <input type="text" placeholder="cerca farmacie" />
+                <span class="material-icons"> search </span>
+
+                <div class="dropdown">
+                  <p>farmacia1</p>
+                  <p>farmacia2</p>
+                  <p>farmacia3</p>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <div class="avatar"></div>
-              <p class="name">farmacia2</p>
-            </div>
+            <div class="elencoFarmacie">
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia1</p>
+              </div>
 
-            <div>
-              <div class="avatar"></div>
-              <p class="name">farmacia3</p>
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia2</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
             </div>
           </div>
 
           <div class="chat">
             <div class="chatHeader">
-              <h2>ChatBox ${this.login.username}</h2>
+              <div class="settings">
+                <span class="material-icons">settings</span>
+              </div>
+
+              <div class="contatto">
+                <h2>ChatBox ${this.login.username}</h2>
+              </div>
             </div>
 
             <ul class="messageBox">
@@ -247,10 +378,13 @@ export class Chat extends LitElement {
                 type="text"
                 placeholder="Scrivi un messaggio..."
                 @input=${this.onMessageInput}
+                @keydown=${this.checkEnter}
                 .value=${this.message}
               />
               <div class="submitContainer">
-                <button @click=${this.sendMessage}>&gt;</button>
+                <button @click=${this.sendMessage}>
+                  <span class="material-icons">send</span>
+                </button>
               </div>
             </div>
           </div>
@@ -304,6 +438,10 @@ export class Chat extends LitElement {
   onMessageInput(e) {
     const inputEl = e.target;
     this.message = inputEl.value;
+  }
+
+  checkEnter(event) {
+    if (event.key == "Enter") this.sendMessage();
   }
 
   sendMessage() {
