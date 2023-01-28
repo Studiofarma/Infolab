@@ -75,10 +75,13 @@ export class Login extends LitElement {
       cursor: pointer;
     }
 
-    div:has(#submit_btn) {
-      display: flex;
-      justify-content: flex-end;
+    label[id$="Error"] {
+      display: block;
+      color: darkred;
+      padding-top: 5px ;
+      font-size: 10pt;
     }
+
 
     #submit_btn {
       text-transform: uppercase;
@@ -117,7 +120,7 @@ export class Login extends LitElement {
   render() {
     return html`
       <div id="container">
-        <h1 class="title">Come ti chiami?</h1>
+        <h1 class="title">Welcome Back</h1>
         <div>
           <label>
             Username
@@ -131,6 +134,7 @@ export class Login extends LitElement {
               />
             </div>
           </label>
+          <label id="usernameError"></label>
         </div>
 
         <div>
@@ -149,6 +153,8 @@ export class Login extends LitElement {
               </span>
             </div>
           </label>
+          <label id="passwordError"></label>
+          <label id="accessError" style="text-align: center;"></label>
         </div>
         <div>
           <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
@@ -176,23 +182,25 @@ export class Login extends LitElement {
     this.pswVisibility = !this.pswVisibility;
   }
 
-  getUsername() {
-    return this.renderRoot.querySelector('#username') ?? null
-  }
-
-  getPassword() {
-    return this.renderRoot.querySelector('#password') ?? null
+  getElement(query) {
+    return this.renderRoot.querySelector(query) ?? null;
   }
 
   loginConfirm() {
 
-    if(this.getUsername().value === '') {
-      alert('Inserisci lo username')
+    if(this.getElement('#username').value === '' && this.getElement('#password').value === '') {
+      this.getElement('#usernameError').innerText = "*Inserisci uno username"
+      this.getElement('#passwordError').innerText = "*Inserisci una password"
+      return
+    }
+
+    if(this.getElement('#username').value === '') {
+      this.getElement('#usernameError').innerText = "*Inserisci uno username"
       return
     } 
 
-    if(this.getPassword().value === '') {
-      alert('Inserisci la password')
+    if(this.getElement('#password').value === '') {
+      this.getElement('#passwordError').innerText = "*Inserisci una password"
       return
     }
 
@@ -212,7 +220,7 @@ export class Login extends LitElement {
         );
       })
       .catch((e) => {
-        console.log(e);
+        this.getElement('#accessError').innerText = "*CREDENZIALI NON VALIDE"
       });
   }
 
