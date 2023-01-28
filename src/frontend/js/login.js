@@ -22,13 +22,14 @@ export class Login extends LitElement {
       padding: 0;
     }
 
+
     #container {
       position: relative;
-      width: 900px;
+      width: 500px;
       max-width: 100%;
       min-height: 400px;
       background: white;
-      padding: 1.5rem;
+      padding: 1.5rem 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -41,8 +42,8 @@ export class Login extends LitElement {
     div[class^="ring"] {
       position: absolute;
       background: #013365;
-      width: 30vw;
-      height: 30vw;
+      width: 50%;
+      height: 50%;
       border-radius: 100%;
       z-index: 1;
       overflow: hidden;
@@ -60,8 +61,8 @@ export class Login extends LitElement {
       top: 50%;
       left: 50%;
       transform: translate(-50%,-50%);
-      width: 20vw;
-      height: 20vw;
+      width: 60%;
+      height: 60%;
       background: #e4e8ee;
       border-radius: 100%;
     } 
@@ -73,8 +74,7 @@ export class Login extends LitElement {
     }
 
 
-    #container > *:not(.ring) {
-      width: 400px;
+    #container > *:not(div[class^="ring"]) {
       z-index: 2;
     }
 
