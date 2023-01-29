@@ -145,6 +145,8 @@ export class Chat extends LitElement {
 
     .elencoFarmacie {
       transition: 0.5s;
+      overflow-y: scroll;
+      height: 82vh;
     }
 
     .dropdown p:hover {
@@ -317,6 +319,36 @@ export class Chat extends LitElement {
       -webkit-font-smoothing: antialiased;
       cursor: pointer;
     }
+
+    @keyframes rotationAnim {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #settingsIcon:hover {
+      animation: rotationAnim 2s infinite linear;
+    }
+
+    ::-webkit-scrollbar-track {
+      /* background-color: red; */
+    }
+
+    ::-webkit-scrollbar {
+      background-color: #0074bc;
+      border-radius: 10px;
+      border: 5px solid #003366;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: #0da2ff;
+      border-radius: 10px;
+      width: 5px;
+      border: 3px solid #003366;
+    }
   `;
 
   render() {
@@ -355,13 +387,78 @@ export class Chat extends LitElement {
                 <div class="avatar"></div>
                 <p class="name">farmacia3</p>
               </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
+
+              <div>
+                <div class="avatar"></div>
+                <p class="name">farmacia3</p>
+              </div>
             </div>
           </div>
 
           <div class="chat">
             <div class="chatHeader">
               <div class="settings">
-                <span class="material-icons">settings</span>
+                <span class="material-icons" id="settingsIcon">settings</span>
               </div>
 
               <div class="contatto">
