@@ -333,10 +333,6 @@ export class Chat extends LitElement {
       animation: rotationAnim 2s infinite linear;
     }
 
-    ::-webkit-scrollbar-track {
-      /* background-color: red; */
-    }
-
     ::-webkit-scrollbar {
       background-color: #0074bc;
       border-radius: 10px;
