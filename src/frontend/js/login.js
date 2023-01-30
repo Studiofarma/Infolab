@@ -6,6 +6,9 @@ export class Login extends LitElement {
     username: "",
     password: "",
     pswVisibility: {},
+    usernameErrorMessage: {},
+    passwordErrorMessage: {},
+    accessErrorMessage: {}
   };
 
   constructor() {
@@ -13,6 +16,9 @@ export class Login extends LitElement {
     this.username = "user1";
     this.password = "password1";
     this.pswVisibility = false;
+    this.usernameErrorMessage = "";
+    this.passwordErrorMessage = "";
+    this.accessErrorMessage = "";
   }
 
   static styles = css`
@@ -171,13 +177,13 @@ export class Login extends LitElement {
                 id="username"
                 type="text"
                 @input=${this.onUsernameInput}
-                @keydown=${this.checkLogin}
+                @keydown=${this.controlloTastoInvio}
                 .value=${this.username}
-                placeholder="Inserisci il nome utente"
+                placeholder="Inserisci lo username"
               />
             </div>
           </label>
-          <label id="usernameError"></label>
+          <label id="usernameError"> ${this.usernameErrorMessage} </label>
         </div>
 
         <div>
@@ -188,7 +194,7 @@ export class Login extends LitElement {
                 id="password"
                 type=${this.pswVisibility ? "text" : "password"}
                 @input=${this.onPasswordInput}
-                @keydown=${this.checkLogin}
+                @keydown=${this.controlloTastoInvio}
                 .value=${this.password}
                 placeholder="Inserisci la password"
               />
@@ -197,8 +203,8 @@ export class Login extends LitElement {
               </span>
             </div>
           </label>
-          <label id="passwordError"></label>
-          <label id="accessError" style="text-align: center;"></label>
+          <label id="passwordError"> ${this.passwordErrorMessage} </label>
+          <label id="accessError" style="text-align: center;"> ${ this.accessErrorMessage}</label>
         </div>
         <div>
           <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
@@ -217,35 +223,28 @@ export class Login extends LitElement {
     this.password = inputEl.value;
   }
 
-  checkLogin(e) {
-    if (e.key == "Enter") this.loginConfirm();
+  controlloTastoInvio(e) {
+    if (e.key === "Enter") this.loginConfirm();
   }
 
   setVisibility() {
     this.pswVisibility = !this.pswVisibility;
   }
 
-  getElement(query) {
-    return this.renderRoot.querySelector(query) ?? null;
-  }
-
   loginConfirm() {
-    if (
-      this.getElement("#username").value === "" &&
-      this.getElement("#password").value === ""
-    ) {
-      this.getElement("#usernameError").innerText = "*Inserisci uno username";
-      this.getElement("#passwordError").innerText = "*Inserisci una password";
+    if ( this.username === "" && this.password === "") {
+      this.usernameErrorMessage = "*Inserisci uno username"
+      this.passwordErrorMessage = "*Inserisci una password"
       return;
     }
 
-    if (this.getElement("#username").value === "") {
-      this.getElement("#usernameError").innerText = "*Inserisci uno username";
+    if ( this.username === "") {
+      this.usernameErrorMessage = "*Inserisci uno username"
       return;
     }
 
-    if (this.getElement("#password").value === "") {
-      this.getElement("#passwordError").innerText = "*Inserisci una password";
+    if ( this.password === "") {
+      this.passwordErrorMessage = "*Inserisci una password"
       return;
     }
 
@@ -265,7 +264,7 @@ export class Login extends LitElement {
         );
       })
       .catch((e) => {
-        this.getElement("#accessError").innerText = "*CREDENZIALI NON VALIDE";
+        this.accessErrorMessage = "*CREDENZIALI NON VALIDE"
       });
   }
 

@@ -173,7 +173,7 @@ export class SearchChats extends LitElement {
 
                 <div class="dropdown">
                         ${
-                            this.create()
+                            this.mostraSuggerimenti()
                         }
                 </div>
 
@@ -184,13 +184,13 @@ export class SearchChats extends LitElement {
 
     filtra(event) {
         const text = event.target.value;
-        this.query = text
+        this.query = text.toLowerCase()
 
         const farmacie = this.myfetch()
         let tmp = [] 
         
         farmacie.forEach( farmacia => {
-            if(farmacia.name.indexOf(this.query) > -1)
+            if(farmacia.name.toLowerCase().indexOf(this.query) > -1)
                 tmp.push(farmacia)
         })
 
@@ -217,7 +217,7 @@ export class SearchChats extends LitElement {
     }
 
 
-    create() {
+    mostraSuggerimenti() {
         if(this.elencoFarmacie.length > 0){
             return this.elencoFarmacie.map( farmacia => html`
                 <div>

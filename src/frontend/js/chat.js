@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import './search-chats.js'
+import './conversazioni.js'
 
 export class Chat extends LitElement {
   static properties = {
@@ -64,58 +65,10 @@ export class Chat extends LitElement {
       padding-top: 10px;
       display: flex;
       flex-direction: column;
-      /* overflow-y: scroll;  */
       border-right: 3px solid #0064a6;
     }
 
-    .elencoFarmacie {
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .conversazioni > .elencoFarmacie > div {
-      width: 100%;
-      min-height: 60px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 12px;
-      cursor: pointer;
-      transition: 0.5s;
-    }
-
-    .conversazioni > .elencoFarmacie > div:hover {
-      background-color: #00234f;
-    }
-
-    .conversazioni:has(#searchChats input:focus) .elencoFarmacie {
-      opacity: 0;
-    }
-
-    .elencoFarmacie {
-      transition: 0.5s;
-      overflow-y: scroll;
-      height: 82vh;
-    }
-
-    .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      
-    }
-
-    .conversazioni .elencoFarmacie .avatar {
-      background: lightgray;
-    }
-
-
-    .conversazioni .name {
-      font-size: 10pt;
-    }
-
+ 
     .chat {
       position: relative;
       padding-top: 100px;
@@ -291,89 +244,8 @@ export class Chat extends LitElement {
           <div class="conversazioni">
 
             <il-search></il-search>
-          
-            <!-- elenco farmacie è da sostituire con un web component  -->
-            <div class="elencoFarmacie"> 
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia1</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia2</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-
-              <div>
-                <div class="avatar"></div>
-                <p class="name">farmacia3</p>
-              </div>
-            </div>
+            <il-chats></il-chats>          
+            
           </div>
 
           <div class="chat">
@@ -396,7 +268,7 @@ export class Chat extends LitElement {
                 type="text"
                 placeholder="Scrivi un messaggio..."
                 @input=${this.onMessageInput}
-                @keydown=${this.checkEnter}
+                @keydown=${this.controlloTastoInvio}
                 .value=${this.message}
               />
               <div class="submitContainer">
@@ -458,8 +330,8 @@ export class Chat extends LitElement {
     this.message = inputEl.value;
   }
 
-  checkEnter(event) {
-    if (event.key == "Enter") this.sendMessage();
+  controlloTastoInvio(event) {
+    if (event.key === "Enter") this.sendMessage();
   }
 
   sendMessage() {
