@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+import './search-chats.js'
 
 export class Chat extends LitElement {
   static properties = {
@@ -89,80 +90,6 @@ export class Chat extends LitElement {
       background-color: #00234f;
     }
 
-    #searchChats {
-      width: 100%;
-      padding: 5px 20px;
-      margin-bottom: 50px;
-      column-gap: 10px;
-      position: relative;
-    }
-
-    #searchChats input {
-      width: 100%;
-      height: 40px;
-      border-radius: 10px;
-      padding: 10px;
-      transition: .5s;
-    }
-
-    #searchChats .dropdown {
-      position: absolute;
-      top: 39px;
-      left: 0px;
-      width: 100%;
-      background: white;
-      z-index: 4;
-      color: black;
-      font-weight: 200;
-      max-height: 0px;
-      overflow-y: hidden;
-      transition: 0.5s;
-      text-align: center;
-    }
-
-    #searchChats input:focus {
-      border-bottom-left-radius: 0px;
-      border-bottom-right-radius: 0px;
-    }
-
-    #searchChats input:focus ~ .dropdown {
-      max-height: 325px;
-      margin-top: 3px;
-      border-bottom-left-radius: 10px;
-      border-bottom-right-radius: 10px;
-      overflow-y: auto;
-    }
-
-    .dropdown::-webkit-scrollbar {
-      background: lightgray;
-      border-radius: 10px;
-      width: 5px;
-    }
-
-    .dropdown::-webkit-scrollbar-thumb {
-      background: gray;
-      width: 1px;
-      height: 1px;
-    }
-
-    .dropdown > div {
-      min-height: 60px;
-      padding: 8px 10px;
-      font-weight: bold;
-      transition: 0.5s;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 1em;
-    }
-
-    .dropdown p {
-      overflow-x: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      max-width: calc(100% - 80px);
-    }
-
     .conversazioni:has(#searchChats input:focus) .elencoFarmacie {
       opacity: 0;
     }
@@ -171,29 +98,6 @@ export class Chat extends LitElement {
       transition: 0.5s;
       overflow-y: scroll;
       height: 82vh;
-    }
-
-    .dropdown > div:hover {
-      background: lightgray;
-    }
-
-    #searchChats .containerInput {
-      position: relative;
-    }
-
-    .containerInput input:focus ~ span {
-      opacity: 0;
-      visibility: hidden;
-    }
-
-    .containerInput span {
-      position: absolute;
-      transform: translate(-50%, -50%);
-      top: 50%;
-      right: 0px;
-      z-index: 5;
-      color: #6f6f6f;
-      transition: 0.5s;
     }
 
     .avatar {
@@ -207,9 +111,6 @@ export class Chat extends LitElement {
       background: lightgray;
     }
 
-    .dropdown .avatar {
-      background: gray;
-    }
 
     .conversazioni .name {
       font-size: 10pt;
@@ -388,44 +289,11 @@ export class Chat extends LitElement {
 
         <section>
           <div class="conversazioni">
-            <div id="searchChats">
-              <div class="containerInput">
-                <input type="text" placeholder="cerca farmacie" />
-                <span class="material-icons"> search </span>
 
-                <div class="dropdown">
-                  
-                  <div>
-                    <div class="avatar"></div>
-                    <p>farmacia di Costa Volpino del Dottor Tal dei Tali</p>
-                  </div>
-                  <div>
-                    <div class="avatar"></div>
-                    <p>farmacia2</p>
-                  </div>
-                  <div>
-                    <div class="avatar"></div>
-                    <p>farmacia3</p>
-                  </div>
-                  <div>
-                    <div class="avatar"></div>
-                    <p>farmacia4</p>
-                  </div>
-                  <div>
-                    <div class="avatar"></div>
-                    <p>farmacia5</p>
-                  </div>
-                  <div>
-                    <div class="avatar"></div>
-                    <p>farmacia6</p>
-                  </div>
-
-                </div>
-                <!-- oltre tot farmacie appare la scrollbar -->
-              </div>
-            </div>
-
-            <div class="elencoFarmacie">
+            <il-search></il-search>
+          
+            <!-- elenco farmacie è da sostituire con un web component  -->
+            <div class="elencoFarmacie"> 
               <div>
                 <div class="avatar"></div>
                 <p class="name">farmacia1</p>
