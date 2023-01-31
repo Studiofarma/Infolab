@@ -103,14 +103,14 @@ public class DBSavingManager {
 
         // TODO: sostituire questa parte con qualcosa che prende a run time gli id
         // Ricava l'id del mandante senza utilizzare la chiamata dal database (per il testing)
-        long senderId, recipientId;
-        if (message.getSender().equals("user1")) {
+        long senderId = 1, recipientId = 1;
+        /*if (message.getSender().equals("user1")) {
             senderId = 1;
             recipientId = 9;
         } else {
             senderId = 9;
             recipientId = 1;
-        }
+        }*/
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
