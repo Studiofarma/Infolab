@@ -86,12 +86,16 @@ public class SecurityConfiguration {
     @Bean
     public UserDetailsManager users(){
         UserDetails user1 = User
-            .withUsername("user1")
-            .password(String.format("{noop}%s", "password1"))
-            .roles("user")
-            .build()
-        ;
-        return new InMemoryUserDetailsManager(user1);
+                .withUsername("user1")
+                .password(String.format("{noop}%s", "password1"))
+                .roles("user")
+                .build();
+        UserDetails user2 = User
+                .withUsername("user2")
+                .password(String.format("{noop}%s", "password2"))
+                .roles("user")
+                .build();
+        return new InMemoryUserDetailsManager(user1, user2);
     }
 
     private static void authInHeadersOrQueryString(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
