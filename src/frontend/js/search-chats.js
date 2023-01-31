@@ -1,22 +1,19 @@
 import { LitElement, html, css } from "lit";
 
-
 export class SearchChats extends LitElement {
+  static properties = {
+    pharmaciesList: { state: true },
+    query: {},
+  };
 
-    static properties = {
-        elencoFarmacie: {state: true},
-        query: {},
-    }
-
-    static styles = css`
-
+  static styles = css`
     * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
-     #searchChats {
+    #searchChats {
       width: 100%;
       padding: 5px 20px;
       margin-bottom: 50px;
@@ -29,8 +26,8 @@ export class SearchChats extends LitElement {
       height: 40px;
       border-radius: 10px;
       padding: 10px;
-      transition: .5s;
-      border: none; 
+      transition: 0.5s;
+      border: none;
       outline: none;
     }
 
@@ -45,7 +42,7 @@ export class SearchChats extends LitElement {
       font-weight: 200;
       max-height: 0px;
       overflow-y: hidden;
-      transition: .5s;
+      transition: 0.5s;
       text-align: center;
     }
 
@@ -92,14 +89,12 @@ export class SearchChats extends LitElement {
       max-width: calc(100% - 80px);
     }
 
- 
     .dropdown .nofound {
-        color: gray;
-        font-size: 10pt;
-        align-self: center;
-        font-weight: lighter;
+      color: gray;
+      font-size: 10pt;
+      align-self: center;
+      font-weight: lighter;
     }
-
 
     .material-icons {
       font-family: "Material Icons";
@@ -148,93 +143,77 @@ export class SearchChats extends LitElement {
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      
     }
+  `;
 
-    .conversazioni:has(#searchChats input:focus) .elencoFarmacie {
-      opacity: 0;
-    }
+  constructor() {
+    super();
+    this.pharmaciesList = [];
+    this.query = "";
+  }
 
-    `
+  render() {
+    return html`
+      <div id="searchChats">
+        <div class="containerInput">
+          <input
+            type="text"
+            placeholder="cerca farmacie"
+            @input=${this.setFilter}
+          />
+          <span class="material-icons"> search </span>
 
-    constructor() {
-        super()
-        this.elencoFarmacie = []
-        this.query = ''
-    }
-
-    render() {
-        return html`
-        <div id="searchChats">
-            <div class="containerInput">
-
-                <input type="text" placeholder="cerca farmacie" @input=${this.filtra} />
-                <span class="material-icons"> search </span>
-
-                <div class="dropdown">
-                        ${
-                            this.mostraSuggerimenti()
-                        }
-                </div>
-
-            </div>
+          <div class="dropdown">${this.showTips()}</div>
         </div>
+      </div>
+    `;
+  }
+
+  setFilter(event) {
+    const text = event.target.value;
+    this.query = text.toLowerCase();
+
+    const farmacie = this.myfetch();
+    let tmp = [];
+
+    farmacie.forEach((pharmacy) => {
+      if (pharmacy.name.toLowerCase().indexOf(this.query) > -1)
+        tmp.push(pharmacy);
+    });
+
+    this.pharmaciesList = tmp;
+  }
+
+  myfetch() {
+    // ho provato con require e riesce a prendermelo
+    const json = require("../fakeServer/farmacie.json");
+
+    return json;
+  }
+
+  showTips() {
+    if (this.pharmaciesList.length > 0) {
+      return this.pharmaciesList.map(
+        (pharmacy) => html`
+          <div>
+            <div class="avatar">
+              <img src=${this.loadAvatarImage} />
+            </div>
+            <p>${pharmacy.name}</p>
+          </div>
         `
+      );
+    } else {
+      return html`<div><p class="nofound">Nessun risultato trovato</p></div>`;
     }
+  }
 
-    filtra(event) {
-        const text = event.target.value;
-        this.query = text.toLowerCase()
+  loadAvatarImage() {
+    // DA DEFINIRE
+    require("../fakeServer/immagini/avatar1.png");
+    console.log(imagePath);
 
-        const farmacie = this.myfetch()
-        let tmp = [] 
-        
-        farmacie.forEach( farmacia => {
-            if(farmacia.name.toLowerCase().indexOf(this.query) > -1)
-                tmp.push(farmacia)
-        })
-
-        this.elencoFarmacie = tmp
-
-    }
-
-    myfetch() {
-     
-        /*
-        Dato che non c'è neancora l'API per prendere i dati dal server simulo una funzione che
-        ritorno con una chiamata HTTP un json parserizzato
-        */ 
-
-        const json =  
-        [
-            { name: 'farmacia1', avatar: './fakeServer/avatar1.png'},
-            { name: 'farmacia2', avatar: './fakeServer/avatar1.png'},
-            { name: 'farmacia3', avatar: './fakeServer/avatar1.png'},
-            { name: 'farmacia del Dr. Fantozzi Ugo', avatar: './fakeServer/avatar1.png'},
-        ]        
-
-        return json
-    }
-
-
-    mostraSuggerimenti() {
-        if(this.elencoFarmacie.length > 0){
-            return this.elencoFarmacie.map( farmacia => html`
-                <div>
-                    <div class="avatar">
-                        <img src=${farmacia.avatar} />
-                    </div>
-                    <p> ${farmacia.name} </p>
-                </div>
-            `        
-            )
-        } else {
-            return html`<div><p class="nofound"> Nessun risultato trovato</p></div>`
-        }
-
-    }
-
-
-
+    return;
+  }
 }
-customElements.define('il-search', SearchChats)
+customElements.define("il-search", SearchChats);

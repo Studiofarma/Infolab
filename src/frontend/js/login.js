@@ -5,10 +5,10 @@ export class Login extends LitElement {
   static properties = {
     username: "",
     password: "",
-    pswVisibility: {},
-    usernameErrorMessage: {},
-    passwordErrorMessage: {},
-    accessErrorMessage: {}
+    pswVisibility: false,
+    usernameErrorMessage: "",
+    passwordErrorMessage: "",
+    accessErrorMessage: "",
   };
 
   constructor() {
@@ -177,7 +177,7 @@ export class Login extends LitElement {
                 id="username"
                 type="text"
                 @input=${this.onUsernameInput}
-                @keydown=${this.controlloTastoInvio}
+                @keydown=${this.checkEnterKey}
                 .value=${this.username}
                 placeholder="Inserisci lo username"
               />
@@ -194,7 +194,7 @@ export class Login extends LitElement {
                 id="password"
                 type=${this.pswVisibility ? "text" : "password"}
                 @input=${this.onPasswordInput}
-                @keydown=${this.controlloTastoInvio}
+                @keydown=${this.checkEnterKey}
                 .value=${this.password}
                 placeholder="Inserisci la password"
               />
@@ -204,7 +204,9 @@ export class Login extends LitElement {
             </div>
           </label>
           <label id="passwordError"> ${this.passwordErrorMessage} </label>
-          <label id="accessError" style="text-align: center;"> ${ this.accessErrorMessage}</label>
+          <label id="accessError" style="text-align: center;">
+            ${this.accessErrorMessage}</label
+          >
         </div>
         <div>
           <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
@@ -223,7 +225,7 @@ export class Login extends LitElement {
     this.password = inputEl.value;
   }
 
-  controlloTastoInvio(e) {
+  checkEnterKey(e) {
     if (e.key === "Enter") this.loginConfirm();
   }
 
@@ -232,19 +234,19 @@ export class Login extends LitElement {
   }
 
   loginConfirm() {
-    if ( this.username === "" && this.password === "") {
-      this.usernameErrorMessage = "*Inserisci uno username"
-      this.passwordErrorMessage = "*Inserisci una password"
+    if (this.username === "" && this.password === "") {
+      this.usernameErrorMessage = "*Inserisci uno username";
+      this.passwordErrorMessage = "*Inserisci una password";
       return;
     }
 
-    if ( this.username === "") {
-      this.usernameErrorMessage = "*Inserisci uno username"
+    if (this.username === "") {
+      this.usernameErrorMessage = "*Inserisci uno username";
       return;
     }
 
-    if ( this.password === "") {
-      this.passwordErrorMessage = "*Inserisci una password"
+    if (this.password === "") {
+      this.passwordErrorMessage = "*Inserisci una password";
       return;
     }
 
@@ -264,7 +266,7 @@ export class Login extends LitElement {
         );
       })
       .catch((e) => {
-        this.accessErrorMessage = "*CREDENZIALI NON VALIDE"
+        this.accessErrorMessage = "*CREDENZIALI NON VALIDE";
       });
   }
 

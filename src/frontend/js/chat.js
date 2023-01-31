@@ -1,8 +1,8 @@
 import { LitElement, html, css } from "lit";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-import './search-chats.js'
-import './conversazioni.js'
+import "./search-chats.js";
+import "./chats-list.js";
 
 export class Chat extends LitElement {
   static properties = {
@@ -59,7 +59,7 @@ export class Chat extends LitElement {
       height: 100%;
     }
 
-    .conversazioni {
+    .sidebar {
       background: #003366;
       color: white;
       padding-top: 10px;
@@ -68,7 +68,6 @@ export class Chat extends LitElement {
       border-right: 3px solid #0064a6;
     }
 
- 
     .chat {
       position: relative;
       padding-top: 100px;
@@ -95,7 +94,7 @@ export class Chat extends LitElement {
       display: flex;
     }
 
-    .chatHeader .contatto {
+    .chatHeader .contact {
       order: 1;
       display: flex;
       gap: 1em;
@@ -241,11 +240,9 @@ export class Chat extends LitElement {
         <header></header>
 
         <section>
-          <div class="conversazioni">
-
+          <div class="sidebar">
             <il-search></il-search>
-            <il-chats></il-chats>          
-            
+            <il-chats-list></il-chats-list>
           </div>
 
           <div class="chat">
@@ -254,7 +251,7 @@ export class Chat extends LitElement {
                 <span class="material-icons" id="settingsIcon">settings</span>
               </div>
 
-              <div class="contatto">
+              <div class="contact">
                 <h2>ChatBox ${this.login.username}</h2>
               </div>
             </div>
@@ -268,7 +265,7 @@ export class Chat extends LitElement {
                 type="text"
                 placeholder="Scrivi un messaggio..."
                 @input=${this.onMessageInput}
-                @keydown=${this.controlloTastoInvio}
+                @keydown=${this.checkEnterKey}
                 .value=${this.message}
               />
               <div class="submitContainer">
@@ -330,7 +327,7 @@ export class Chat extends LitElement {
     this.message = inputEl.value;
   }
 
-  controlloTastoInvio(event) {
+  checkEnterKey(event) {
     if (event.key === "Enter") this.sendMessage();
   }
 
