@@ -210,8 +210,8 @@ export class SearchChats extends LitElement {
 
   loadAvatarImage() {
     // DA DEFINIRE
-    require("../fakeServer/immagini/avatar1.png");
-    console.log(imagePath);
+    // require("../fakeServer/immagini/avatar1.png");
+    // console.log(imagePath);
 
     return;
   }
