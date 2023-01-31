@@ -10,6 +10,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -103,13 +104,18 @@ public class ChatController {
         parameters.put("id", null);
         parameters.put("username", principal.getName());
 
-        simpleJdbcInsert.executeAndReturnKey(parameters);
+        try {
+            simpleJdbcInsert.executeAndReturnKey(parameters);
+        } catch (DuplicateKeyException e) {
+            log.info(String.format("User %s already exists in the database.", principal.getName()));
+        } finally {
+            return new ChatMessage("Chat Bot", String.format("welcome %s to topic/public", principal.getName()), MessageType.CHAT);
+        }
 
         /*int rows = addUser(principal.getName());
         if (rows > 0) log.info("Oh my god something has been saved to the database.");
         else log.info("Database saving failed :(");*/
 
-        return new ChatMessage("Chat Bot", String.format("welcome %s to topic/public", principal.getName()), MessageType.CHAT);
     }
 
     @MessageMapping("/chat.register")
