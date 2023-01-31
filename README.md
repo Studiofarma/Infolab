@@ -41,6 +41,22 @@ Le configurazioni del database e di PgAdmin sono indicate nel file [docker-compo
 
 Le impostazioni di connessione al database utilizzata dalla nostra Applicazione SpringBoot stanno nel file di configurazione [application.properties](src/main/resources/application.properties)
 
+### Avvio del db da linea di comando
+
+Se non si volesse utilizzare IntelliJ, o se ci fossero problemi ad avviare il db da IntelliJ, causa ad esempio di plugin mancanti utilizzare il seguente comando da un terminale qualsiasi (cmd, powershell o git bash).
+
+```
+docker compose -f .docker/docker-compose-db.yml up
+```
+
+Se si avesse installata una vecchia versione di Docker il comando potrebbe essere leggermente diverso
+
+```
+docker-compose -f .docker/docker-compose-db.yml up
+```
+
+Il consiglio è comunque di installare la versione più recente di Docker. https://docs.docker.com/desktop/install/windows-install/
+
 # Flusso di sviluppo
 
 I progressi e i requisiti del progetto sono tracciati e documentati tramite il progetto [Project Infolab](https://github.com/orgs/Studiofarma/projects/2/views/1) e le [Milestone](https://github.com/Studiofarma/Infolab/milestones).
