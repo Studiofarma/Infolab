@@ -127,7 +127,7 @@ export class Login extends LitElement {
       color: darkred;
       padding-top: 5px;
       font-size: 10pt;
-    }
+ }
 
     #submit_btn {
       text-transform: uppercase;

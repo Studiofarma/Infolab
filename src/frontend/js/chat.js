@@ -68,6 +68,7 @@ export class Chat extends LitElement {
       border-right: 3px solid #0064a6;
     }
 
+
     .chat {
       position: relative;
       padding-top: 100px;
@@ -244,14 +245,14 @@ export class Chat extends LitElement {
             <il-search></il-search>
             <il-chats-list></il-chats-list>
           </div>
-
+          
           <div class="chat">
             <div class="chatHeader">
               <div class="settings">
                 <span class="material-icons" id="settingsIcon">settings</span>
               </div>
 
-              <div class="contact">
+            <div class="contact">
                 <h2>ChatBox ${this.login.username}</h2>
               </div>
             </div>
