@@ -6,6 +6,7 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -22,7 +23,7 @@ import java.util.Map;
 @Component
 public class DBManager {
 
-    public static final String[] ROOMS = {"general"};
+    public static final String[] ROOMS = {"test"};
     private final DataSource dataSource;
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<ChatMessage> messageRowMapper;
@@ -153,8 +154,14 @@ public class DBManager {
     public long getRoomId(String roomName) {
         String query = "SELECT id FROM infolab.rooms WHERE roomname = ?";
         long roomId;
-        roomId = jdbcTemplate.queryForObject(
+        try {
+            roomId = jdbcTemplate.queryForObject(
                     query, new Object[] {roomName}, Long.class);
+        } catch (EmptyResultDataAccessException e) {
+            log.info(String.format("La room con nome = %s non esiste", roomName));
+            roomId = -1;
+        }
+
         return roomId;
     }
 
@@ -166,8 +173,13 @@ public class DBManager {
     public long getUserId(String username) {
         String query = "SELECT id FROM infolab.users WHERE username = ?";
         long userId;
-        userId = jdbcTemplate.queryForObject(
-                query, new Object[] {username}, Long.class);
+        try {
+            userId = jdbcTemplate.queryForObject(
+                    query, new Object[] {username}, Long.class);
+        } catch (EmptyResultDataAccessException e) {
+            log.info(String.format("L'user con nome = %s non esiste", username));
+            userId = -1;
+        }
         return userId;
     }
     //endregion
