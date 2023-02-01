@@ -1,18 +1,15 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.model.ChatMessage;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Timestamp;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,27 +18,12 @@ import java.util.Map;
 @Component
 public class DBSavingManager {
 
-    @Value("${spring.datasource.driver-class-name}")
-    private String dbDriverClassName;
-    @Value("${spring.datasource.url}")
-    private String dbDatasourceUrl;
-    @Value("${spring.datasource.username}")
-    private String dbUsername;
-
-    @Value("${spring.datasource.password}")
-    private String dbPassword;
+    private final DataSource dataSource;
 
     private final Logger log = LoggerFactory.getLogger(DBSavingManager.class);
 
-    //@Bean
-    private DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(dbDriverClassName);
-        dataSource.setUrl(dbDatasourceUrl);
-        dataSource.setUsername(dbUsername);
-        dataSource.setPassword(dbPassword);
-
-        return dataSource;
+    public DBSavingManager(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     /**
@@ -50,7 +32,7 @@ public class DBSavingManager {
      * @return chiave che è stata auto generata per l'utente creato, oppure -1 se l'utente inserito esisteva già.
      */
     public long addUser(String username) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource())
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("users")
                 .usingGeneratedKeyColumns("id");
@@ -72,7 +54,7 @@ public class DBSavingManager {
      * @return chiave che è stata auto generata per la stanza creata, oppure -1 se la stanza inserita esisteva già.
      */
     public long addRoom() {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource())
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("rooms")
                 .usingGeneratedKeyColumns("id");
@@ -96,7 +78,7 @@ public class DBSavingManager {
      * @return chiave che è stata auto generata per il messaggio creato, oppure -1 se il messaggio inserito esisteva già.
      */
     public long addMessage(ChatMessage message) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource())
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("chatmessages")
                 .usingGeneratedKeyColumns("id");
