@@ -42,6 +42,13 @@ public class DBManager {
         };
     }
 
+    private SimpleJdbcInsert initSimpleJdbcInsert(String tableName) {
+        return new SimpleJdbcInsert(dataSource)
+                .withSchemaName("infolab")
+                .withTableName(tableName)
+                .usingGeneratedKeyColumns("id");
+    }
+
     //region add methods
     /**
      * Metodo che aggiunge un utente al database.
@@ -49,10 +56,7 @@ public class DBManager {
      * @return chiave che è stata auto generata per l'utente creato, oppure -1 se l'utente inserito esisteva già.
      */
     public long addUser(String username) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withSchemaName("infolab")
-                .withTableName("users")
-                .usingGeneratedKeyColumns("id");
+        SimpleJdbcInsert simpleJdbcInsert = initSimpleJdbcInsert("users");
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("username", username);
@@ -72,10 +76,7 @@ public class DBManager {
      * @return chiave che è stata auto generata per il messaggio creato, oppure -1 se il messaggio inserito esisteva già.
      */
     public long addMessage(ChatMessage message) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withSchemaName("infolab")
-                .withTableName("chatmessages")
-                .usingGeneratedKeyColumns("id");
+        SimpleJdbcInsert simpleJdbcInsert = initSimpleJdbcInsert("chatmessages");
 
         long senderId = getUserId(message.getSender());
 
@@ -107,10 +108,7 @@ public class DBManager {
      * @return chiave che è stata auto generata per la stanza creata, oppure -1 se la stanza inserita esisteva già.
      */
     public long addRoom(String roomName) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withSchemaName("infolab")
-                .withTableName("rooms")
-                .usingGeneratedKeyColumns("id");
+        SimpleJdbcInsert simpleJdbcInsert = initSimpleJdbcInsert("rooms");
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("roomname", roomName);
