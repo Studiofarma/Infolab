@@ -1,9 +1,8 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.model.ChatMessage;
-import com.cgm.infolab.model.MessageType;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,7 +11,9 @@ import java.util.List;
 @RestController
 public class ChatApiMessagesController {
 
-    DBManager dbManager;
+    private final DBManager dbManager;
+
+    private final Logger logger = LoggerFactory.getLogger(ChatApiMessagesController.class);
 
     public ChatApiMessagesController(DBManager dbManager) {
         this.dbManager = dbManager;
@@ -26,6 +27,10 @@ public class ChatApiMessagesController {
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/general")
     public List<ChatMessage> getAllMessagesGeneral() {
-        return dbManager.getMessagesByRoom("general");
+        List<ChatMessage> chatMessages = dbManager.getMessagesByRoom("general");
+
+        if (chatMessages.size() == 0) logger.info("Non sono stati trovati messaggi nella stanza specificata");
+
+        return chatMessages;
     }
 }
