@@ -23,7 +23,7 @@ import java.util.Map;
 @Component
 public class DBManager {
 
-    public static final String[] ROOMS = {"test"};
+    public static final String[] ROOMS = {"general"};
     private final DataSource dataSource;
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<ChatMessage> messageRowMapper;
