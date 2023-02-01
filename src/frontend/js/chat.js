@@ -1,6 +1,8 @@
 import { LitElement, html, css } from "lit";
+import "./buttons-icons.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+
 
 export class Chat extends LitElement {
   static properties = {
@@ -174,9 +176,10 @@ export class Chat extends LitElement {
       align-items: center;
     }
 
-    .submitContainer button {
-      min-width: 40px;
-      min-height: 40px;
+    .submitContainer il-button-icon {
+      width: 40px;
+      height: 40px;
+      margin-top:0px;
       border: none;
       border-radius: 50%;
       background: white;
@@ -188,21 +191,6 @@ export class Chat extends LitElement {
       font-family: inherit;
     }
 
-    .material-icons {
-      font-family: "Material Icons";
-      font-weight: normal;
-      font-style: normal;
-      font-size: 24px;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      -webkit-font-smoothing: antialiased;
-      cursor: pointer;
-    }
   `;
 
   render() {
@@ -215,7 +203,7 @@ export class Chat extends LitElement {
           <div class="conversazioni">
             <div id="searchChats">
               <input type="text" placeholder="cerca farmacie" />
-              <span class="material-icons"> search </span>
+              <il-button-icon content="search"></il-button-icon>
             </div>
             <div>
               <div class="avatar"></div>
@@ -250,7 +238,8 @@ export class Chat extends LitElement {
                 .value=${this.message}
               />
               <div class="submitContainer">
-                <button @click=${this.sendMessage}>&gt;</button>
+                
+                <il-button-icon @click=${this.sendMessage} content="send" height="24px"></il-button-icon>
               </div>
             </div>
           </div>
