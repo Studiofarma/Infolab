@@ -12,19 +12,10 @@ import java.util.List;
 @RestController
 public class ChatApiMessagesController {
 
-    private final JdbcTemplate jdbcTemplate;
+    DBManager dbManager;
 
-    private final RowMapper<ChatMessage> messageRowMapper;
-
-    public ChatApiMessagesController(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.messageRowMapper = (rs, rowNum) -> {
-            ChatMessage chatMessage = new ChatMessage();
-            chatMessage.setSender(rs.getString("sender_id"));
-            chatMessage.setContent(rs.getString("content"));
-            chatMessage.setType(MessageType.CHAT);
-            return chatMessage;
-        };
+    public ChatApiMessagesController(DBManager dbManager) {
+        this.dbManager = dbManager;
     }
 
     // Tutorial: https://www.baeldung.com/spring-controller-vs-restcontroller
@@ -35,10 +26,6 @@ public class ChatApiMessagesController {
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/general")
     public List<ChatMessage> getAllMessagesGeneral() {
-        long roomId = 1;
-
-        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
-
-        return jdbcTemplate.query(query, new Object[]{roomId}, messageRowMapper);
+        return dbManager.getMessagesByRoom("general");
     }
 }
