@@ -20,7 +20,7 @@ import java.util.Map;
 @Component
 public class DBSavingManager {
 
-    public static final String[] ROOMS = {"public"};
+    public static final String[] ROOMS = {"general"};
 
     private final DataSource dataSource;
 

@@ -3,6 +3,7 @@ package com.cgm.infolab;
 import com.cgm.infolab.model.ChatMessage;
 import com.cgm.infolab.model.MessageType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ChatApiMessagesController {
@@ -27,11 +30,21 @@ public class ChatApiMessagesController {
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages")
     public List<ChatMessage> getAllMessages() {
-        String query = "SELECT * FROM infolab.chatmessages WHERE id = ?";
+        /*String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
         ChatMessage chatMessage = jdbcTemplate.queryForObject(
-                query, new Object[] {2}, new MessageRowMapper());
+                query, new Object[] {1}, new MessageRowMapper());*/
 
-        return List.of(chatMessage);
+        //return List.of(chatMessage);
+
+        long roomId = 1;
+
+        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
+        List<ChatMessage> chatMessages = jdbcTemplate.query(query, new Object[]{roomId}, new MessageRowMapper());
+
+        return chatMessages;
+
+        /*List<Map<String, Object>> messages = jdbcTemplate
+                .queryForList("SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?", roomId);*/
     }
 
     private class MessageRowMapper implements RowMapper<ChatMessage> {
