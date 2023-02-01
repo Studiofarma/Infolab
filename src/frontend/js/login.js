@@ -5,7 +5,10 @@ export class Login extends LitElement {
   static properties = {
     username: "",
     password: "",
-    pswVisibility: {},
+    pswVisibility: false,
+    usernameErrorMessage: "",
+    passwordErrorMessage: "",
+    accessErrorMessage: "",
   };
 
   constructor() {
@@ -13,6 +16,9 @@ export class Login extends LitElement {
     this.username = "user1";
     this.password = "password1";
     this.pswVisibility = false;
+    this.usernameErrorMessage = "";
+    this.passwordErrorMessage = "";
+    this.accessErrorMessage = "";
   }
 
   static styles = css`
@@ -23,16 +29,57 @@ export class Login extends LitElement {
     }
 
     #container {
-      width: 400px;
+      position: relative;
+      width: 500px;
       max-width: 100%;
-      min-height: 300px;
+      min-height: 400px;
       background: white;
-      padding: 1.5rem;
+      padding: 1.5rem 2rem;
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: 1rem;
       border-radius: 10px;
       background-color: #e4e8ee;
+      overflow: hidden;
+    }
+
+    div[class^="ring"] {
+      position: absolute;
+      background: #013365;
+      width: 250px;
+      height: 250px;
+      border-radius: 100%;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .ring1 {
+      top: 0;
+      left: 0;
+      transform: translate(-50%, -50%);
+    }
+
+    div[class^="ring"]::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      background: #e4e8ee;
+      border-radius: 100%;
+    }
+
+    .ring2 {
+      bottom: 0;
+      right: 0;
+      transform: translate(50%, 50%);
+    }
+
+    #container > *:not(div[class^="ring"]) {
+      z-index: 2;
     }
 
     .title {
@@ -75,10 +122,12 @@ export class Login extends LitElement {
       cursor: pointer;
     }
 
-    div:has(#submit_btn) {
-      display: flex;
-      justify-content: flex-end;
-    }
+    label[id$="Error"] {
+      display: block;
+      color: darkred;
+      padding-top: 5px;
+      font-size: 10pt;
+ }
 
     #submit_btn {
       text-transform: uppercase;
@@ -117,19 +166,24 @@ export class Login extends LitElement {
   render() {
     return html`
       <div id="container">
-        <h1 class="title">Come ti chiami?</h1>
+        <div class="ring1"></div>
+        <div class="ring2"></div>
+        <h1 class="title">Welcome Back</h1>
         <div>
           <label>
             Username
             <div class="text-container">
               <input
+                id="username"
                 type="text"
                 @input=${this.onUsernameInput}
+                @keydown=${this.checkEnterKey}
                 .value=${this.username}
-                placeholder="Inserisci il nome utente"
+                placeholder="Inserisci lo username"
               />
             </div>
           </label>
+          <label id="usernameError"> ${this.usernameErrorMessage} </label>
         </div>
 
         <div>
@@ -137,8 +191,10 @@ export class Login extends LitElement {
             Password
             <div class="text-container">
               <input
+                id="password"
                 type=${this.pswVisibility ? "text" : "password"}
                 @input=${this.onPasswordInput}
+                @keydown=${this.checkEnterKey}
                 .value=${this.password}
                 placeholder="Inserisci la password"
               />
@@ -147,6 +203,10 @@ export class Login extends LitElement {
               </span>
             </div>
           </label>
+          <label id="passwordError"> ${this.passwordErrorMessage} </label>
+          <label id="accessError" style="text-align: center;">
+            ${this.accessErrorMessage}</label
+          >
         </div>
         <div>
           <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
@@ -165,11 +225,31 @@ export class Login extends LitElement {
     this.password = inputEl.value;
   }
 
+  checkEnterKey(e) {
+    if (e.key === "Enter") this.loginConfirm();
+  }
+
   setVisibility() {
     this.pswVisibility = !this.pswVisibility;
   }
 
   loginConfirm() {
+    if (this.username === "" && this.password === "") {
+      this.usernameErrorMessage = "*Inserisci uno username";
+      this.passwordErrorMessage = "*Inserisci una password";
+      return;
+    }
+
+    if (this.username === "") {
+      this.usernameErrorMessage = "*Inserisci uno username";
+      return;
+    }
+
+    if (this.password === "") {
+      this.passwordErrorMessage = "*Inserisci una password";
+      return;
+    }
+
     this.executeLoginCall()
       .then((response) => {
         this.dispatchEvent(
@@ -186,7 +266,7 @@ export class Login extends LitElement {
         );
       })
       .catch((e) => {
-        console.log(e);
+        this.accessErrorMessage = "*CREDENZIALI NON VALIDE";
       });
   }
 
