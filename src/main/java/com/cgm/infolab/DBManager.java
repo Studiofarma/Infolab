@@ -1,16 +1,18 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.model.ChatMessage;
+import com.cgm.infolab.model.MessageType;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,18 +20,28 @@ import java.util.Map;
 // Classe creata soltanto per separare il codice di salvataggio nel database dal luogo dove viene usato.
 // Poi probabilmente dovrebbe diventare una repository che contiene anche le operazioni di scrittura.
 @Component
-public class DBSavingManager {
+public class DBManager {
 
     public static final String[] ROOMS = {"general"};
-
     private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
+    private final RowMapper<ChatMessage> messageRowMapper;
 
-    private final Logger log = LoggerFactory.getLogger(DBSavingManager.class);
+    private final Logger log = LoggerFactory.getLogger(DBManager.class);
 
-    public DBSavingManager(DataSource dataSource) {
+    public DBManager(DataSource dataSource, JdbcTemplate jdbcTemplate) {
         this.dataSource = dataSource;
+        this.jdbcTemplate = jdbcTemplate;
+        this.messageRowMapper = (rs, rowNum) -> {
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setSender(rs.getString("sender_id"));
+            chatMessage.setContent(rs.getString("content"));
+            chatMessage.setType(MessageType.CHAT);
+            return chatMessage;
+        };
     }
 
+    //region add methods
     /**
      * Metodo che aggiunge un utente al database.
      * @param username nome utente da salvare sul database.
@@ -64,23 +76,20 @@ public class DBSavingManager {
                 .withTableName("chatmessages")
                 .usingGeneratedKeyColumns("id");
 
-        // TODO: sostituire questa parte con qualcosa che prende a run time gli id
-        // Ricava l'id del mandante senza utilizzare la chiamata dal database (per il testing)
-        long senderId = 1, recipientId = 1;
-        /*if (message.getSender().equals("user1")) {
-            senderId = 1;
-            recipientId = 9;
-        } else {
-            senderId = 9;
-            recipientId = 1;
-        }*/
+        long senderId = getUserId(message.getSender());
+
+        // TODO: trovare un modo per prendere il nome utente che chiama questo codice.
+        //  Bisogna anche scegliere come gestire questo campo nella chat generale, dove non c'è
+        //  un solo utente che riceve.
+        long recipientId = 1;
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("sender_id", senderId);
         parameters.put("recipient_user_id", recipientId);
-        parameters.put("recipient_room_id", 1); // TODO: ricavare l'id dal database come sopra
+        // TODO: trovare un modo per prendere la room in cui il messaggio arriva.
+        parameters.put("recipient_room_id", getRoomId("general"));
         parameters.put("sent_at", timestamp);
         parameters.put("content", message.getContent());
 
@@ -124,4 +133,42 @@ public class DBSavingManager {
             addRoom(s);
         }
     }
+    //endregion
+
+    //region get methods
+    public List<ChatMessage> getMessagesByRoom(String room) {
+
+        long roomId = getRoomId(room);
+
+        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
+
+        return jdbcTemplate.query(query, new Object[]{roomId}, messageRowMapper);
+    }
+
+    /**
+     * Metodo che risale all'id di una room dal suo nome
+     * @param roomName nome da cui risalire all'id
+     * @return id della room con il nome passato a parametro. -1 in caso la room non esista. TODO da aggiungere.
+     */
+    public long getRoomId(String roomName) {
+        String query = "SELECT id FROM infolab.rooms WHERE roomname = ?";
+        long roomId;
+        roomId = jdbcTemplate.queryForObject(
+                    query, new Object[] {roomName}, Long.class);
+        return roomId;
+    }
+
+    /**
+     * Metodo che risale all'id di un utente dal suo nome
+     * @param username username da cui risalire all'id
+     * @return id dell'utente con il nome passato a parametro. -1 in caso l'utente non esista. TODO da aggiungere.
+     */
+    public long getUserId(String username) {
+        String query = "SELECT id FROM infolab.users WHERE username = ?";
+        long userId;
+        userId = jdbcTemplate.queryForObject(
+                query, new Object[] {username}, Long.class);
+        return userId;
+    }
+    //endregion
 }
