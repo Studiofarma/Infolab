@@ -1,4 +1,4 @@
-package com.cgm.infolab.model;
+package com.cgm.infolab;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
