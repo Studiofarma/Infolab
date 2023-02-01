@@ -68,8 +68,6 @@ public class ChatController {
 
         dbSavingManager.addUser(principal.getName());
 
-        dbSavingManager.addRoom();
-
         return new ChatMessage("Chat Bot", String.format("welcome %s to topic/public", principal.getName()), MessageType.CHAT);
     }
 
