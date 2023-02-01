@@ -10,13 +10,17 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 // Classe creata soltanto per separare il codice di salvataggio nel database dal luogo dove viene usato.
 // Poi probabilmente dovrebbe diventare una repository che contiene anche le operazioni di scrittura.
 @Component
 public class DBSavingManager {
+
+    public static final String[] ROOMS = {"public"};
 
     private final DataSource dataSource;
 
@@ -44,29 +48,6 @@ public class DBSavingManager {
             return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
         } catch (DuplicateKeyException e) {
             log.info(String.format("User %s already exists in the database.", username));
-        }
-        return -1;
-    }
-
-    /**
-     * Metodo che aggiunge una stanza al database.
-     * PER ADESSO AGGIUNGE SOLTANTO LA STANZA PUBLIC (HARDCODED) PER IL TESTING.
-     * @return chiave che è stata auto generata per la stanza creata, oppure -1 se la stanza inserita esisteva già.
-     */
-    public long addRoom() {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
-                .withSchemaName("infolab")
-                .withTableName("rooms")
-                .usingGeneratedKeyColumns("id");
-
-        // TODO: rimuovere nome stanza hardcoded
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("roomname", "public");
-
-        try {
-            return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
-        } catch (DuplicateKeyException e) {
-            log.info(String.format("Room %s already exists in the database.", "public"));
         }
         return -1;
     }
@@ -109,5 +90,38 @@ public class DBSavingManager {
             log.info(String.format("Message %s already exists in the database.", message));
         }
         return -1;
+    }
+
+    /**
+     * Metodo che aggiunge una stanza al database.
+     * @return chiave che è stata auto generata per la stanza creata, oppure -1 se la stanza inserita esisteva già.
+     */
+    public long addRoom(String roomName) {
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
+                .withSchemaName("infolab")
+                .withTableName("rooms")
+                .usingGeneratedKeyColumns("id");
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("roomname", roomName);
+
+        try {
+            return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
+        } catch (DuplicateKeyException e) {
+            log.info(String.format("Room %s already exists in the database.", roomName));
+        }
+        return -1;
+    }
+
+    /**
+     * Metodo che aggiunge tutte le stanze all'avvio dell'app.
+     */
+    @PostConstruct
+    void addAllRooms() {
+        for (String s :
+                ROOMS) {
+            // TODO: eventualmente sostituire con batch operation.
+            addRoom(s);
+        }
     }
 }
