@@ -36,8 +36,6 @@ import java.util.Map;
 @Controller
 public class ChatController {
 
-    public ApplicationContext applicationContext;
-
     //@Autowired
     // Tutorial: https://www.baeldung.com/spring-websockets-send-message-to-user
     public SimpMessagingTemplate messagingTemplate;
@@ -55,10 +53,8 @@ public class ChatController {
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     public ChatController(SimpMessagingTemplate messagingTemplate,
-                          ApplicationContext applicationContext,
                           DBSavingManager dbSavingManager) {
         this.messagingTemplate = messagingTemplate;
-        this.applicationContext = applicationContext;
         this.dbSavingManager = dbSavingManager;
     }
 
