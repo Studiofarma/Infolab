@@ -153,6 +153,7 @@ export class SearchChats extends LitElement {
             type="text"
             placeholder="cerca farmacie"
             @input=${this.setFilter}
+            @click=${this.setFilter}
           />
           <span class="material-icons"> search </span>
 
