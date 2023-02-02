@@ -6,7 +6,7 @@ Progetto esteso a partire dal tutorial a questo link https://codefiction.net/bui
 
 Per delle istruzioni dettagliate, fare riferimento alla [documentazione dedicata](https://github.com/Studiofarma/Infolab/issues/2)
 
-Far partire il progetto con `.\mvnw spring-boot:run` e aprire un browser al url http://localhost:8081. È necessario avere **Java 17** come versione minima
+Far partire il progetto con `.\start-local.sh` e aprire un browser al url http://localhost:8081. È necessario avere **Java 17** come versione minima
 
 Accedere alla chat usando username `user1` e password `password1`.
 
@@ -40,6 +40,22 @@ Per avviare il database, prima dell'applicazione, utilizzare la configurazione d
 Le configurazioni del database e di PgAdmin sono indicate nel file [docker-compose-db.yml](.docker/docker-compose-db.yml)
 
 Le impostazioni di connessione al database utilizzata dalla nostra Applicazione SpringBoot stanno nel file di configurazione [application.properties](src/main/resources/application.properties)
+
+### Avvio del db da linea di comando
+
+Se non si volesse utilizzare IntelliJ, o se ci fossero problemi ad avviare il db da IntelliJ, causa ad esempio di plugin mancanti utilizzare il seguente comando da un terminale qualsiasi (cmd, powershell o git bash).
+
+```
+docker compose -f .docker/docker-compose-db.yml up
+```
+
+Se si avesse installata una vecchia versione di Docker il comando potrebbe essere leggermente diverso
+
+```
+docker-compose -f .docker/docker-compose-db.yml up
+```
+
+Il consiglio è comunque di installare la versione più recente di Docker. https://docs.docker.com/desktop/install/windows-install/
 
 # Flusso di sviluppo
 
