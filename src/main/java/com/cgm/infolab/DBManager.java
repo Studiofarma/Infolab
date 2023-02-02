@@ -22,8 +22,6 @@ import java.util.Map;
 // Poi probabilmente dovrebbe diventare una repository che contiene anche le operazioni di scrittura.
 @Component
 public class DBManager {
-
-    public static final String[] ROOMS = {"general"};
     private final DataSource dataSource;
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<ChatMessage> messageRowMapper;
@@ -119,18 +117,6 @@ public class DBManager {
             log.info(String.format("Room %s already exists in the database.", roomName));
         }
         return -1;
-    }
-
-    /**
-     * Metodo che aggiunge tutte le stanze all'avvio dell'app.
-     */
-    @PostConstruct
-    void addAllRooms() {
-        for (String s :
-                ROOMS) {
-            // TODO: eventualmente sostituire con batch operation.
-            addRoom(s);
-        }
     }
     //endregion
 
