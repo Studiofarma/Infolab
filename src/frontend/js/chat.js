@@ -234,7 +234,10 @@ export class Chat extends LitElement {
           <div class="chat">
             <div class="chatHeader">
               <div class="settings">
-                <span class="material-icons" id="settingsIcon">settings</span>
+                <il-button-icon
+                  content="settings"
+                  id="settingsIcon"
+                ></il-button-icon>
               </div>
 
               <div class="contact">
@@ -258,7 +261,6 @@ export class Chat extends LitElement {
                 <il-button-icon
                   @click=${this.sendMessage}
                   content="send"
-                  height="24px"
                 ></il-button-icon>
               </div>
             </div>

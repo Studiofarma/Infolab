@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
-import "./buttons-icons.js";
+import "./button-icon.js";
 
 export class Login extends LitElement {
   static properties = {
@@ -128,7 +128,7 @@ export class Login extends LitElement {
       color: darkred;
       padding-top: 5px;
       font-size: 10pt;
- }
+    }
 
     #submit_btn {
       text-transform: uppercase;

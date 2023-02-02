@@ -44,4 +44,4 @@ export class ButtonIcon extends LitElement {
   }
 }
 
-customElements.define("il-button-icon", buttons_icons);
+customElements.define("il-button-icon", ButtonIcon);
