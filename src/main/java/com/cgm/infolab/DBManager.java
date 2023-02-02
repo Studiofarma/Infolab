@@ -1,8 +1,6 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.model.ChatMessage;
-import com.cgm.infolab.model.MessageType;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -35,7 +33,6 @@ public class DBManager {
             ChatMessage chatMessage = new ChatMessage();
             chatMessage.setSender(rs.getString("sender_id"));
             chatMessage.setContent(rs.getString("content"));
-            chatMessage.setType(MessageType.CHAT);
             return chatMessage;
         };
     }

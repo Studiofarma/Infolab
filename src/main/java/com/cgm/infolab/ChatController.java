@@ -1,7 +1,6 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.model.ChatMessage;
-import com.cgm.infolab.model.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -46,7 +45,7 @@ public class ChatController {
 
         dbManager.addUser(principal.getName());
 
-        return new ChatMessage("Chat Bot", String.format("welcome %s to topic/public", principal.getName()), MessageType.CHAT);
+        return new ChatMessage("Chat Bot", String.format("welcome %s to topic/public", principal.getName()));
     }
 
     @MessageMapping("/chat.register")
