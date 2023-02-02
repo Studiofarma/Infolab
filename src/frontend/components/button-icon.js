@@ -36,7 +36,7 @@ export class ButtonIcon extends LitElement {
     }
 
     #button:hover{
-      background-color:rgba(0,0,0,0.20);
+      background-color:rgba(0,0,0,0.12);
       border-radius:50%;
     }
 
