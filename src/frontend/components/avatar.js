@@ -4,15 +4,6 @@ import Immagine from '../assets/images/immagine.jpeg'
 
 export class Avatar extends LitElement {
 
-    static properties = {
-        //...
-    }
-
-    constructor() {
-        super()
-        //...
-    }
-
     static styles = css`
     .avatar {
       width: 50px;
