@@ -31,7 +31,15 @@ export class ButtonIcon extends LitElement {
       -webkit-font-smoothing: antialiased;
       cursor: pointer;
       user-select: none;
+      min-height:30px;
+      min-width:30px;
     }
+
+    #button:hover{
+      background-color:rgba(0,0,0,0.20);
+      border-radius:50%;
+    }
+
   `;
 
   constructor() {
@@ -40,7 +48,8 @@ export class ButtonIcon extends LitElement {
   }
 
   render() {
-    return html` <span id="button">${this.content}</span> `;
+    return html` <div id="button">${this.content}</div> `;
+    
   }
 }
 
