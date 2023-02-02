@@ -8,7 +8,7 @@
     "watch": "webpack --watch",
     "build": "webpack",
     "dev": "webpack-dev-server --open --mode development",
-    "json": "json-server --watch db.json"
+    "server": "json-server --watch assets/test/db.json"
   },
   "keywords": [],
   "author": "",
