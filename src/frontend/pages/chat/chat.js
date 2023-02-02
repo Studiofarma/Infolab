@@ -1,7 +1,8 @@
 import { LitElement, html, css } from "lit";
-import "./button-icon.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
+
+import "../../components/button-icon";
 import "./search-chats.js";
 import "./chats-list.js";
 

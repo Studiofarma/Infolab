@@ -186,7 +186,7 @@ export class SearchChats extends LitElement {
 
   myfetch() {
     // ho provato con require e riesce a prendermelo
-    const json = require("../fakeServer/farmacie.json");
+    const json = require("../../assets/test/farmacie.json");
 
     return json;
   }

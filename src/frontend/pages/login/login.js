@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
-import "./button-icon.js";
+import "../../components/button-icon";
 
 export class Login extends LitElement {
   static properties = {

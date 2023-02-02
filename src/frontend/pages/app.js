@@ -1,6 +1,6 @@
 import { LitElement, html } from "lit";
-import "./login.js";
-import "./chat.js";
+import "./login/login.js";
+import "./chat/chat.js";
 
 export class App extends LitElement {
   static get properties() {
