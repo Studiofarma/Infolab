@@ -3,6 +3,16 @@ import { LitElement, html, css } from "lit";
 import "../../components/button-icon";
 
 export class InputControls extends LitElement {
+  static properties = {
+    message: "",
+    messages: [],
+  };
+  constructor() {
+    super();
+    this.message = "";
+    this.messages = [];
+  }
+
   static styles = css`
     #inputControls {
       position: absolute;
