@@ -1,5 +1,7 @@
 import { LitElement, html, css } from "lit";
 
+import '../../components/avatar.js'
+
 class ConversationList extends LitElement {
   static properties = {
     chatsList: { state: true },
@@ -40,16 +42,6 @@ class ConversationList extends LitElement {
       height: 82vh;
     }
 
-    .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: lightgray;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
     .pharmaciesList .name {
       font-size: 15pt;
       max-width: 200px;
@@ -82,9 +74,7 @@ class ConversationList extends LitElement {
         ${this.chatsList.map(
           (chat) => html`
             <div>
-              <div class="avatar">
-                <img src=${chat.avatar} />
-              </div>
+              <il-avatar></il-avatar>
               <p class="name">${chat.name}</p>
             </div>
           `
