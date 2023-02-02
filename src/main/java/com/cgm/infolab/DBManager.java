@@ -78,16 +78,10 @@ public class DBManager {
 
         long senderId = getUserId(message.getSender());
 
-        // TODO: trovare un modo per prendere il nome utente che chiama questo codice.
-        //  Bisogna anche scegliere come gestire questo campo nella chat generale, dove non c'è
-        //  un solo utente che riceve.
-        long recipientId = 1;
-
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("sender_id", senderId);
-        parameters.put("recipient_user_id", recipientId);
         // TODO: trovare un modo per prendere la room in cui il messaggio arriva.
         parameters.put("recipient_room_id", getRoomId("general"));
         parameters.put("sent_at", timestamp);
