@@ -1,8 +1,7 @@
 import { LitElement, html, css } from "lit";
-import "./buttons-icons.js";
+import "./button-icon.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
-
 
 export class Chat extends LitElement {
   static properties = {
@@ -179,7 +178,7 @@ export class Chat extends LitElement {
     .submitContainer il-button-icon {
       width: 40px;
       height: 40px;
-      margin-top:0px;
+      margin-top: 0px;
       border: none;
       border-radius: 50%;
       background: white;
@@ -190,7 +189,6 @@ export class Chat extends LitElement {
     * {
       font-family: inherit;
     }
-
   `;
 
   render() {
@@ -238,8 +236,11 @@ export class Chat extends LitElement {
                 .value=${this.message}
               />
               <div class="submitContainer">
-                
-                <il-button-icon @click=${this.sendMessage} content="send" height="24px"></il-button-icon>
+                <il-button-icon
+                  @click=${this.sendMessage}
+                  content="send"
+                  height="24px"
+                ></il-button-icon>
               </div>
             </div>
           </div>
