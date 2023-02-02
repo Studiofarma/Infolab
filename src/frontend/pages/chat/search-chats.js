@@ -1,5 +1,7 @@
 import { LitElement, html, css } from "lit";
 
+import '../../components/avatar.js'
+
 export class SearchChats extends LitElement {
   static properties = {
     pharmaciesList: { state: true },
@@ -135,15 +137,6 @@ export class SearchChats extends LitElement {
       transition: 0.5s;
     }
 
-    .dropdown .avatar {
-      background: gray;
-    }
-
-    .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-    }
   `;
 
   constructor() {
@@ -196,9 +189,7 @@ export class SearchChats extends LitElement {
       return this.pharmaciesList.map(
         (pharmacy) => html`
           <div>
-            <div class="avatar">
-              <img src=${this.loadAvatarImage} />
-            </div>
+            <il-avatar></il-avatar>
             <p>${pharmacy.name}</p>
           </div>
         `
@@ -208,12 +199,6 @@ export class SearchChats extends LitElement {
     }
   }
 
-  loadAvatarImage() {
-    // DA DEFINIRE
-    // require("../fakeServer/immagini/avatar1.png");
-    // console.log(imagePath);
 
-    return;
-  }
 }
 customElements.define("il-search", SearchChats);
