@@ -5,6 +5,7 @@ import Stomp from "stompjs";
 import "../../components/button-icon";
 import "./search-chats.js";
 import "./chats-list.js";
+import "./input-controls.js";
 
 export class Chat extends LitElement {
   static properties = {
@@ -142,53 +143,6 @@ export class Chat extends LitElement {
       filter: blur(10px);
     }
 
-    #inputControls {
-      position: absolute;
-      bottom: 0px;
-      left: 0px;
-      width: 100%;
-      min-height: 60px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      background: #0074bc;
-    }
-
-    #inputControls input[type="text"] {
-      height: 50px;
-      flex-basis: 90%;
-      border-radius: 18px;
-      padding: 5px 12px;
-      font-size: 15pt;
-    }
-
-    #inputControls > * {
-      flex-shrink: 1;
-    }
-
-    #inputControls .submitContainer {
-      flex-basis: 10%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .submitContainer il-button-icon {
-      width: 40px;
-      height: 40px;
-      margin-top: 0px;
-      border: none;
-      border-radius: 50%;
-      background: white;
-      font-size: 20px;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: black;
-    }
-
     * {
       font-family: inherit;
     }
@@ -250,21 +204,7 @@ export class Chat extends LitElement {
               ${this.messages.map((item, _) => html` <li>${item}</li> `)}
             </ul>
 
-            <div id="inputControls">
-              <input
-                type="text"
-                placeholder="Scrivi un messaggio..."
-                @input=${this.onMessageInput}
-                @keydown=${this.checkEnterKey}
-                .value=${this.message}
-              />
-              <div class="submitContainer">
-                <il-button-icon
-                  @click=${this.sendMessage}
-                  content="send"
-                ></il-button-icon>
-              </div>
-            </div>
+            <il-input-controls></il-input-controls>
           </div>
         </section>
       </main>
@@ -311,31 +251,6 @@ export class Chat extends LitElement {
 
   onError(error) {
     console.log(error);
-  }
-
-  onMessageInput(e) {
-    const inputEl = e.target;
-    this.message = inputEl.value;
-  }
-
-  checkEnterKey(event) {
-    if (event.key === "Enter") this.sendMessage();
-  }
-
-  sendMessage() {
-    let messageContent = this.message.trim();
-
-    if (messageContent && this.stompClient) {
-      const chatMessage = {
-        sender: this.login.username,
-        content: messageContent,
-        type: "CHAT",
-      };
-
-      this.stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
-    }
-
-    this.message = "";
   }
 }
 
