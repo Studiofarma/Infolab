@@ -1,4 +1,4 @@
-package com.cgm.infolab.model;
+package com.cgm.infolab;
 
 import com.cgm.infolab.DBManager;
 import jakarta.annotation.PostConstruct;
