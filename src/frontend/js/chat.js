@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import "./button-icon.js";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import "./search-chats.js";
@@ -67,7 +68,6 @@ export class Chat extends LitElement {
       flex-direction: column;
       border-right: 3px solid #0064a6;
     }
-
 
     .chat {
       position: relative;
@@ -173,9 +173,10 @@ export class Chat extends LitElement {
       align-items: center;
     }
 
-    .submitContainer button {
-      min-width: 40px;
-      min-height: 40px;
+    .submitContainer il-button-icon {
+      width: 40px;
+      height: 40px;
+      margin-top: 0px;
       border: none;
       border-radius: 50%;
       background: white;
@@ -189,22 +190,6 @@ export class Chat extends LitElement {
 
     * {
       font-family: inherit;
-    }
-
-    .material-icons {
-      font-family: "Material Icons";
-      font-weight: normal;
-      font-style: normal;
-      font-size: 24px;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      -webkit-font-smoothing: antialiased;
-      cursor: pointer;
     }
 
     @keyframes rotationAnim {
@@ -245,14 +230,17 @@ export class Chat extends LitElement {
             <il-search></il-search>
             <il-chats-list></il-chats-list>
           </div>
-          
+
           <div class="chat">
             <div class="chatHeader">
               <div class="settings">
-                <span class="material-icons" id="settingsIcon">settings</span>
+                <il-button-icon
+                  content="settings"
+                  id="settingsIcon"
+                ></il-button-icon>
               </div>
 
-            <div class="contact">
+              <div class="contact">
                 <h2>ChatBox ${this.login.username}</h2>
               </div>
             </div>
@@ -270,9 +258,10 @@ export class Chat extends LitElement {
                 .value=${this.message}
               />
               <div class="submitContainer">
-                <button @click=${this.sendMessage}>
-                  <span class="material-icons">send</span>
-                </button>
+                <il-button-icon
+                  @click=${this.sendMessage}
+                  content="send"
+                ></il-button-icon>
               </div>
             </div>
           </div>

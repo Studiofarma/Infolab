@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
+import "./button-icon.js";
 
 export class Login extends LitElement {
   static properties = {
@@ -105,7 +106,7 @@ export class Login extends LitElement {
       position: relative;
     }
 
-    .text-container span {
+    .text-container il-button-icon {
       position: absolute;
       transform: translateY(50%);
       bottom: 20px;
@@ -116,7 +117,7 @@ export class Login extends LitElement {
       transition: 0.5s;
     }
 
-    .text-container:hover span {
+    .text-container:hover il-button-icon {
       opacity: 1;
       visibility: visible;
       cursor: pointer;
@@ -127,7 +128,7 @@ export class Login extends LitElement {
       color: darkred;
       padding-top: 5px;
       font-size: 10pt;
- }
+    }
 
     #submit_btn {
       text-transform: uppercase;
@@ -144,22 +145,6 @@ export class Login extends LitElement {
 
     * {
       font-family: inherit;
-    }
-
-    .material-icons {
-      font-family: "Material Icons";
-      font-weight: normal;
-      font-style: normal;
-      font-size: 24px;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      -webkit-font-smoothing: antialiased;
-      cursor: pointer;
     }
   `;
 
@@ -198,9 +183,13 @@ export class Login extends LitElement {
                 .value=${this.password}
                 placeholder="Inserisci la password"
               />
-              <span @click=${this.setVisibility} class="material-icons">
-                ${!this.pswVisibility ? "visibility" : "visibility_off"}
-              </span>
+
+              <il-button-icon
+                @click=${this.setVisibility}
+                content="${!this.pswVisibility
+                  ? "visibility"
+                  : "visibility_off"}"
+              ></il-button-icon>
             </div>
           </label>
           <label id="passwordError"> ${this.passwordErrorMessage} </label>
