@@ -12,14 +12,11 @@ import java.util.List;
 
 @RestController
 public class ChatApiMessagesController {
-
-    private final DBManager dbManager;
     private final ChatMessageRepository chatMessageRepository;
 
     private final Logger logger = LoggerFactory.getLogger(ChatApiMessagesController.class);
 
-    public ChatApiMessagesController(DBManager dbManager, ChatMessageRepository chatMessageRepository) {
-        this.dbManager = dbManager;
+    public ChatApiMessagesController(ChatMessageRepository chatMessageRepository) {
         this.chatMessageRepository = chatMessageRepository;
     }
 
