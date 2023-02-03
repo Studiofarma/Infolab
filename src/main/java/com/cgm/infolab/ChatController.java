@@ -1,6 +1,9 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.db.ChatMessageRepository;
+import com.cgm.infolab.db.UserRepository;
 import com.cgm.infolab.model.ChatMessage;
+import com.cgm.infolab.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -31,19 +34,28 @@ public class ChatController {
 
     public DBManager dbManager;
 
+    private ChatMessageRepository chatMessageRepository;
+
+    private UserRepository userRepository;
+
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     public ChatController(SimpMessagingTemplate messagingTemplate,
-                          DBManager dbManager) {
+                          DBManager dbManager,
+                          ChatMessageRepository chatMessageRepository,
+                          UserRepository userRepository) {
         this.messagingTemplate = messagingTemplate;
         this.dbManager = dbManager;
+        this.chatMessageRepository = chatMessageRepository;
+        this.userRepository = userRepository;
     }
 
     // Questo metodo in teoria viene chiamato quando un utente entra nella chat.
     @SubscribeMapping("/public")
     public ChatMessage welcome(Authentication principal){
 
-        dbManager.addUser(principal.getName());
+        //dbManager.addUser(principal.getName());
+        userRepository.add(new User(principal.getName()));
 
         return new ChatMessage("Chat Bot", String.format("welcome %s to topic/public", principal.getName()));
     }
@@ -60,7 +72,8 @@ public class ChatController {
     public ChatMessage sendMessage(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
 
-        dbManager.addMessage(message);
+        //dbManager.addMessage(message);
+        chatMessageRepository.add(message);
 
         log.info(String.format("message from %s", username));
         return message;
