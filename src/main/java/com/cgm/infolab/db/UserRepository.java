@@ -8,11 +8,13 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class UserRepository {
 
     private JdbcTemplate jdbcTemplate;
@@ -20,7 +22,6 @@ public class UserRepository {
 
     private final Logger log = LoggerFactory.getLogger(UserRepository.class);
 
-    @Autowired
     public UserRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.dataSource = dataSource;
