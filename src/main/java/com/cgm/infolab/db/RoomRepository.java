@@ -15,8 +15,8 @@ import java.util.Map;
 
 @Component
 public class RoomRepository {
-    private JdbcTemplate jdbcTemplate;
-    private DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
+    private final DataSource dataSource;
 
     private final Logger log = LoggerFactory.getLogger(RoomRepository.class);
 

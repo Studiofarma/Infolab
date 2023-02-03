@@ -18,10 +18,10 @@ import java.util.Map;
 
 @Component
 public class ChatMessageRepository {
-    private JdbcTemplate jdbcTemplate;
-    private DataSource dataSource;
-    private UserRepository userRepository;
-    private RoomRepository roomRepository;
+    private final JdbcTemplate jdbcTemplate;
+    private final DataSource dataSource;
+    private final UserRepository userRepository;
+    private final RoomRepository roomRepository;
 
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 

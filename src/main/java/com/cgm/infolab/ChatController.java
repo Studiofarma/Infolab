@@ -32,20 +32,16 @@ public class ChatController {
     //@Autowired
     //public JdbcTemplate jdbcTemplate;
 
-    public DBManager dbManager;
+    private final ChatMessageRepository chatMessageRepository;
 
-    private ChatMessageRepository chatMessageRepository;
-
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     public ChatController(SimpMessagingTemplate messagingTemplate,
-                          DBManager dbManager,
                           ChatMessageRepository chatMessageRepository,
                           UserRepository userRepository) {
         this.messagingTemplate = messagingTemplate;
-        this.dbManager = dbManager;
         this.chatMessageRepository = chatMessageRepository;
         this.userRepository = userRepository;
     }
@@ -54,7 +50,6 @@ public class ChatController {
     @SubscribeMapping("/public")
     public ChatMessage welcome(Authentication principal){
 
-        //dbManager.addUser(principal.getName());
         userRepository.add(new User(principal.getName()));
 
         return new ChatMessage("Chat Bot", String.format("welcome %s to topic/public", principal.getName()));
@@ -72,7 +67,7 @@ public class ChatController {
     public ChatMessage sendMessage(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
 
-        //dbManager.addMessage(message);
+        message.setUserSender(new User(message.getSender()));
         chatMessageRepository.add(message);
 
         log.info(String.format("message from %s", username));
