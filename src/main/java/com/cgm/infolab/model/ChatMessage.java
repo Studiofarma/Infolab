@@ -6,6 +6,7 @@ import java.util.Objects;
 public class ChatMessage {
 
     private String sender;
+    private User userSender; // TODO: rename
     private String content;
 
     public ChatMessage() {
@@ -20,8 +21,16 @@ public class ChatMessage {
         return sender;
     }
 
+    public User getUserSender() {
+        return userSender;
+    }
+
     public void setSender(String sender) {
         this.sender = sender;
+    }
+
+    public void setUserSender(User userSender) {
+        this.userSender = userSender;
     }
 
     public String getContent() {
