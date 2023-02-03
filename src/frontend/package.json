@@ -1,5 +1,5 @@
 {
-  "name": "frontend-test",
+  "name": "infolab-chat",
   "version": "1.0.0",
   "description": "",
   "private": true,
@@ -7,8 +7,8 @@
     "start": "webpack serve --open",
     "watch": "webpack --watch",
     "build": "webpack",
-    "dev": "webpack-dev-server --open --mode development",
-    "server": "json-server --watch assets/test/db.json"
+    "server": "json-server --watch assets/test/db.json",
+    "dev": "npm-run-all --parallel watch server"
   },
   "keywords": [],
   "author": "",
