@@ -54,14 +54,28 @@ public class UserRepository {
      */
     public long readId(User user) {
         String query = "SELECT id FROM infolab.users WHERE username = ?";
-        long userId;
         try {
-            userId = jdbcTemplate.queryForObject(
+            return jdbcTemplate.queryForObject(
                     query, new Object[] {user.getName()}, Long.class);
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("L'user con nome = %s non esiste", user.getName()));
-            userId = -1;
         }
-        return userId;
+        return -1;
+    }
+
+    /**
+     * Metodo che ritorna un utente dal database, ricavandolo dall'id
+     * @param id da cui risalire all'utente
+     * @return oggetto User con il nome preso dal db. Ritorna null se l'user non esiste.
+     */
+    public User read(long id) {
+        String query = "SELECT username FROM infolab.users WHERE id = ?";
+        try {
+            return new User(jdbcTemplate.queryForObject(
+                    query, new Object[] {id}, String.class));
+        } catch (EmptyResultDataAccessException e) {
+            log.info(String.format("L'user con id = %d non esiste", id));
+        }
+        return null;
     }
 }

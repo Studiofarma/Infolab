@@ -29,7 +29,6 @@ public class ChatApiMessagesController {
     @GetMapping("/api/messages/general")
     public List<ChatMessage> getAllMessagesGeneral() {
         Room room = new Room("general");
-        //List<ChatMessage> chatMessages = dbManager.getMessagesByRoom("general");
         List<ChatMessage> chatMessages = chatMessageRepository.readByRoom(room);
 
         if (chatMessages.size() == 0)
