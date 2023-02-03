@@ -32,10 +32,13 @@ Il supporto di SpringBoot alle [Websocket](https://docs.spring.io/spring-framewo
 - Un esempio di controller di [Api](https://www.redhat.com/en/topics/api/what-are-application-programming-interfaces) e' nel file [ChatApiMessagesController.java](src/main/java/com/cgm/infolab/ChatApiMessagesController.java)
 
 ### Database
-
 Per avviare il database, prima dell'applicazione, utilizzare la configurazione di avvio  `Infolab Application - with db`.
 
 <img src="doc/img/start-configuration.png" width="500px" alt="Infolab Application - with db"/>
+
+Questa configurazione necessita dell'installazione del plugin docker (CTRL+ALT+S per aprire i Settings):
+
+<img src="doc/img/docker-plugin.png" width="500px" alt="Docker plugin"/>
 
 Le configurazioni del database e di PgAdmin sono indicate nel file [docker-compose-db.yml](.docker/docker-compose-db.yml)
 
