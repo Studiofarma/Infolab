@@ -44,15 +44,11 @@ public class ChatMessageRepository {
                 .withTableName("chatmessages")
                 .usingGeneratedKeyColumns("id");
 
-        long senderId = userRepository.readId(message.getUserSender());
-
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("sender_id", senderId);
+        parameters.put("sender_id", userRepository.readId(message.getUserSender()));
         // TODO: trovare un modo per prendere la room in cui il messaggio arriva.
         parameters.put("recipient_room_id", roomRepository.readId(new Room("general")));
-        parameters.put("sent_at", timestamp);
+        parameters.put("sent_at", new Timestamp(System.currentTimeMillis()));
         parameters.put("content", message.getContent());
 
         try {
