@@ -3,7 +3,6 @@ package com.cgm.infolab.db;
 import com.cgm.infolab.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,7 +15,6 @@ import java.util.Map;
 
 @Component
 public class UserRepository {
-
     private JdbcTemplate jdbcTemplate;
     private DataSource dataSource;
 
@@ -32,7 +30,7 @@ public class UserRepository {
      * @param user utente da salvare sul database.
      * @return chiave che è stata auto generata per l'utente creato, oppure -1 se l'utente inserito esisteva già.
      */
-    public long addUser(User user) {
+    public long add(User user) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("users")
@@ -49,7 +47,12 @@ public class UserRepository {
         return -1;
     }
 
-    public long getId(User user) {
+    /**
+     * Metodo che risale all'id di un utente dal suo nome
+     * @param user da cui risalire all'id
+     * @return id dell'utente con il nome passato a parametro. -1 in caso l'utente non esista.
+     */
+    public long readId(User user) {
         String query = "SELECT id FROM infolab.users WHERE username = ?";
         long userId;
         try {
