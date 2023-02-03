@@ -76,7 +76,9 @@ public class ChatMessageRepository {
         try {
             return jdbcTemplate.query(query, new Object[]{roomId}, (rs, rowNum) -> {
                 ChatMessage chatMessage = new ChatMessage();
-                chatMessage.setSender(rs.getString("sender_id"));
+                // Questa linea è commentata perché così se serve si può utilizzare (imposta sender invece di userSender)
+                //chatMessage.setSender(userRepository.read(Long.parseLong(rs.getString("sender_id"))).getName());
+                chatMessage.setUserSender(userRepository.read(Long.parseLong(rs.getString("sender_id"))));
                 chatMessage.setContent(rs.getString("content"));
                 return chatMessage;
             });
