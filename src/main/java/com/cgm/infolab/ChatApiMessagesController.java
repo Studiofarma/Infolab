@@ -29,7 +29,7 @@ public class ChatApiMessagesController {
     @GetMapping("/api/messages/general")
     public List<ChatMessage> getAllMessagesGeneral() {
         Room room = new Room("general");
-        List<ChatMessage> chatMessages = chatMessageRepository.readByRoom(room);
+        List<ChatMessage> chatMessages = chatMessageRepository.getByRoomName(room);
 
         if (chatMessages.size() == 0)
             logger.info(String.format("Non sono stati trovati messaggi nella stanza %s", room.getName()));
