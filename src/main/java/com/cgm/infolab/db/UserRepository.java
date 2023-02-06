@@ -68,7 +68,7 @@ public class UserRepository {
      * @param id da cui risalire all'utente
      * @return oggetto User con il nome preso dal db. Ritorna null se l'user non esiste.
      */
-    public User read(long id) {
+    public User getById(long id) {
         String query = "SELECT username FROM infolab.users WHERE id = ?";
         try {
             return new User(jdbcTemplate.queryForObject(

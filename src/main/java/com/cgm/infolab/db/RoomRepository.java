@@ -67,7 +67,7 @@ public class RoomRepository {
      * @param id da cui risalire alla room
      * @return oggetto Room con il nome preso dal db. Ritorna null se la room non esiste.
      */
-    public Room read(long id) {
+    public Room getById(long id) {
         String query = "SELECT roomname FROM infolab.rooms WHERE id = ?";
         try {
             return new Room(jdbcTemplate.queryForObject(

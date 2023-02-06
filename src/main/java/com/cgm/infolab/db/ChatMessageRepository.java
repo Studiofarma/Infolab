@@ -48,6 +48,7 @@ public class ChatMessageRepository {
         parameters.put("sender_id", userRepository.readId(message.getUserSender()));
         // TODO: trovare un modo per prendere la room in cui il messaggio arriva.
         parameters.put("recipient_room_id", roomRepository.readId(new Room("general")));
+        // TODO: rimuovere il timestamp quando arriverà dal frontend
         parameters.put("sent_at", new Timestamp(System.currentTimeMillis()));
         parameters.put("content", message.getContent());
 
@@ -64,7 +65,7 @@ public class ChatMessageRepository {
      * @param room da cui prendere i messaggi
      * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
      */
-    public List<ChatMessage> readByRoom(Room room) {
+    public List<ChatMessage> getByRoomName(Room room) {
         long roomId = roomRepository.readId(room);
 
         String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
@@ -74,7 +75,7 @@ public class ChatMessageRepository {
                 ChatMessage chatMessage = new ChatMessage();
                 // Questa linea è commentata perché così se serve si può utilizzare (imposta sender invece di userSender)
                 //chatMessage.setSender(userRepository.read(Long.parseLong(rs.getString("sender_id"))).getName());
-                chatMessage.setUserSender(userRepository.read(Long.parseLong(rs.getString("sender_id"))));
+                chatMessage.setUserSender(userRepository.getById(Long.parseLong(rs.getString("sender_id"))));
                 chatMessage.setContent(rs.getString("content"));
                 return chatMessage;
             });

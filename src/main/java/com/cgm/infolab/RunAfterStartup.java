@@ -22,9 +22,7 @@ public class RunAfterStartup {
      */
     @EventListener(ApplicationReadyEvent.class)
     public void addAllRooms() {
-        for (Room r :
-                ROOMS2) {
-            // TODO: eventualmente sostituire con batch operation.
+        for (Room r : ROOMS2) {
             roomRepository.add(r);
         }
     }
