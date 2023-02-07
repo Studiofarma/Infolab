@@ -55,7 +55,7 @@ public class UserRepository {
         String query = "SELECT id FROM infolab.users WHERE username = ?";
         try {
             return jdbcTemplate.queryForObject(
-                    query, new Object[] {user.getName()}, Long.class);
+                    query, Long.class, user.getName());
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("L'user con nome = %s non esiste", user.getName()));
         }
@@ -71,7 +71,7 @@ public class UserRepository {
         String query = "SELECT username FROM infolab.users WHERE id = ?";
         try {
             return new UserEntity(jdbcTemplate.queryForObject(
-                    query, new Object[] {id}, String.class));
+                    query, String.class, id));
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("L'user con id = %d non esiste", id));
         }
