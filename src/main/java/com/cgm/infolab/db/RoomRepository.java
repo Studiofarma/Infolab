@@ -47,18 +47,18 @@ public class RoomRepository {
 
     /**
      * Metodo che risale all'id di una room dal suo nome
-     * @param room da cui risalire all'id
+     * @param roomName da cui risalire all'id
      * @return id della room con il nome passato a parametro. -1 in caso la room non esista.
      */
-    public long readId(RoomEntity room) {
+    public RoomEntity getByRoomName(String roomName) { // TODO: aggiungere optional
         String query = "SELECT id FROM infolab.rooms WHERE roomname = ?";
         try {
             return jdbcTemplate.queryForObject(
-                    query, Long.class, room.getName());
+                    query, RoomEntity.class, roomName);
         } catch (EmptyResultDataAccessException e) {
-            log.info(String.format("La room con nome = %s non esiste", room.getName()));
+            log.info(String.format("La room con nome = %s non esiste", roomName));
         }
-        return -1;
+        return null;
     }
 
     /**
@@ -66,7 +66,7 @@ public class RoomRepository {
      * @param id da cui risalire alla room
      * @return oggetto Room con il nome preso dal db. Ritorna null se la room non esiste.
      */
-    public RoomEntity getById(long id) {
+    public RoomEntity getById(long id) { //TODO: aggiungere Optional
         String query = "SELECT roomname FROM infolab.rooms WHERE id = ?";
         try {
             return new RoomEntity(jdbcTemplate.queryForObject(

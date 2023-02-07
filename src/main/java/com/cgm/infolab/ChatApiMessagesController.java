@@ -1,5 +1,6 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.db.ChatMessageEntity;
 import com.cgm.infolab.db.ChatMessageRepository;
 import com.cgm.infolab.model.ChatMessage;
 import com.cgm.infolab.db.RoomEntity;
@@ -27,13 +28,13 @@ public class ChatApiMessagesController {
     // Potete provare le chiamate all'API aprendo un browser all'indirizzo http://localhost:8081/api/messages/general (vi chiedera' username e password. user1 - password1)
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/general")
-    public List<ChatMessage> getAllMessagesGeneral() {
+    public List<ChatMessageEntity> getAllMessagesGeneral() {
         RoomEntity room = new RoomEntity("general");
-        List<ChatMessage> chatMessages = chatMessageRepository.getByRoomName(room);
+        List<ChatMessageEntity> chatMessageEntities = chatMessageRepository.getByRoomName(room.getName());
 
-        if (chatMessages.size() == 0)
+        if (chatMessageEntities.size() == 0)
             logger.info(String.format("Non sono stati trovati messaggi nella stanza %s", room.getName()));
 
-        return chatMessages;
+        return chatMessageEntities;
     }
 }

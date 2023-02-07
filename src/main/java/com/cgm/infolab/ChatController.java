@@ -1,9 +1,7 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.ChatMessageRepository;
-import com.cgm.infolab.db.UserRepository;
+import com.cgm.infolab.db.*;
 import com.cgm.infolab.model.ChatMessage;
-import com.cgm.infolab.db.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -16,6 +14,8 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+
+import java.sql.Timestamp;
 
 @Controller
 public class ChatController {
@@ -36,21 +36,25 @@ public class ChatController {
 
     private final UserRepository userRepository;
 
+    private final RoomRepository roomRepository;
+
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     public ChatController(SimpMessagingTemplate messagingTemplate,
                           ChatMessageRepository chatMessageRepository,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          RoomRepository roomRepository) {
         this.messagingTemplate = messagingTemplate;
         this.chatMessageRepository = chatMessageRepository;
         this.userRepository = userRepository;
+        this.roomRepository = roomRepository;
     }
 
     // Questo metodo in teoria viene chiamato quando un utente entra nella chat.
     @SubscribeMapping("/public")
     public void welcome(Authentication principal){
 
-        userRepository.add(new UserEntity(principal.getName()));
+        userRepository.add(UserEntity.of(principal.getName()));
     }
 
     @MessageMapping("/chat.register")
@@ -65,8 +69,13 @@ public class ChatController {
     public ChatMessage sendMessage(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
 
-        message.setUserSender(new UserEntity(message.getSender()));
-        chatMessageRepository.add(message);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
+        UserEntity sender = userRepository.getByUsername(message.getSender());
+        RoomEntity room = roomRepository.getByRoomName("general");
+        ChatMessageEntity messageEntity =
+                ChatMessageEntity.of(sender, room, timestamp, message.getContent());
+
+        chatMessageRepository.add(messageEntity);
 
         log.info(String.format("message from %s", username));
         return message;
