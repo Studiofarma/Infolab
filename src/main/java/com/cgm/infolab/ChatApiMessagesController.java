@@ -29,7 +29,7 @@ public class ChatApiMessagesController {
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/general")
     public List<ChatMessageEntity> getAllMessagesGeneral() {
-        RoomEntity room = new RoomEntity("general");
+        RoomEntity room = RoomEntity.of("general");
         List<ChatMessageEntity> chatMessageEntities = chatMessageRepository.getByRoomName(room.getName());
 
         if (chatMessageEntities.size() == 0)

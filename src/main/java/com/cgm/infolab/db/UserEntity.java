@@ -4,9 +4,7 @@ public class UserEntity {
     private long id;
     private String name;
 
-    // TODO: implementare nel codice il factory method e rimuovere questo
-    public UserEntity(String name) {
-        this(ID.None, name);
+    public UserEntity() {
     }
 
     private UserEntity(long id, String name) {

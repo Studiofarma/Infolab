@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class RunAfterStartup {
 
     public static final String[] ROOMS = {"general"};
-    public static final RoomEntity[] ROOMS2 = {new RoomEntity("general")};
+    public static final RoomEntity[] ROOMS2 = {RoomEntity.of("general")};
     private RoomRepository roomRepository;
 
     public RunAfterStartup(RoomRepository roomRepository) {
