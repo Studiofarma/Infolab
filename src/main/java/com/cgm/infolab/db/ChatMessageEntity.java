@@ -10,11 +10,6 @@ public class ChatMessageEntity {
     private Timestamp timestamp;
     private String content;
 
-    // TODO: rimuovere e mettere altro factory method
-    public ChatMessageEntity() {
-        this(ID.None, null, null, null, null);
-    }
-
     private ChatMessageEntity(long id, UserEntity sender, RoomEntity room, Timestamp timestamp, String content) {
         this.id = id;
         this.sender = sender;
@@ -25,6 +20,10 @@ public class ChatMessageEntity {
 
     public static ChatMessageEntity of(UserEntity sender, RoomEntity room, Timestamp timestamp, String content) {
         return new ChatMessageEntity(ID.None, sender, room, timestamp, content);
+    }
+
+    public static ChatMessageEntity emptyMessage() {
+        return new ChatMessageEntity(ID.None, null, null, null, null);
     }
 
     public long getId() {
