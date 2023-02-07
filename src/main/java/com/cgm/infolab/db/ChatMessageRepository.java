@@ -1,7 +1,6 @@
 package com.cgm.infolab.db;
 
 import com.cgm.infolab.model.ChatMessage;
-import com.cgm.infolab.model.Room;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -47,7 +46,7 @@ public class ChatMessageRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("sender_id", userRepository.readId(message.getUserSender()));
         // TODO: trovare un modo per prendere la room in cui il messaggio arriva.
-        parameters.put("recipient_room_id", roomRepository.readId(new Room("general")));
+        parameters.put("recipient_room_id", roomRepository.readId(new RoomEntity("general")));
         // TODO: rimuovere il timestamp quando arriverà dal frontend
         parameters.put("sent_at", new Timestamp(System.currentTimeMillis()));
         parameters.put("content", message.getContent());
@@ -65,7 +64,7 @@ public class ChatMessageRepository {
      * @param room da cui prendere i messaggi
      * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
      */
-    public List<ChatMessage> getByRoomName(Room room) {
+    public List<ChatMessage> getByRoomName(RoomEntity room) {
         long roomId = roomRepository.readId(room);
 
         String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";

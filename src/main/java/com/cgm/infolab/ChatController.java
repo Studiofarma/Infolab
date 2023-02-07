@@ -3,7 +3,7 @@ package com.cgm.infolab;
 import com.cgm.infolab.db.ChatMessageRepository;
 import com.cgm.infolab.db.UserRepository;
 import com.cgm.infolab.model.ChatMessage;
-import com.cgm.infolab.model.User;
+import com.cgm.infolab.db.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -50,7 +50,7 @@ public class ChatController {
     @SubscribeMapping("/public")
     public ChatMessage welcome(Authentication principal){
 
-        userRepository.add(new User(principal.getName()));
+        userRepository.add(new UserEntity(principal.getName()));
 
         return new ChatMessage("Chat Bot", String.format("welcome %s to topic/public", principal.getName()));
     }
@@ -67,7 +67,7 @@ public class ChatController {
     public ChatMessage sendMessage(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
 
-        message.setUserSender(new User(message.getSender()));
+        message.setUserSender(new UserEntity(message.getSender()));
         chatMessageRepository.add(message);
 
         log.info(String.format("message from %s", username));

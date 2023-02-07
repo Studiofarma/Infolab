@@ -2,7 +2,7 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.ChatMessageRepository;
 import com.cgm.infolab.model.ChatMessage;
-import com.cgm.infolab.model.Room;
+import com.cgm.infolab.db.RoomEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +28,7 @@ public class ChatApiMessagesController {
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/general")
     public List<ChatMessage> getAllMessagesGeneral() {
-        Room room = new Room("general");
+        RoomEntity room = new RoomEntity("general");
         List<ChatMessage> chatMessages = chatMessageRepository.getByRoomName(room);
 
         if (chatMessages.size() == 0)
