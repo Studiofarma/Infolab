@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
@@ -46,16 +47,22 @@ public class UserRepository {
         return -1;
     }
 
+    private final RowMapper<UserEntity> rowMapper = (rs, rowNum) -> {
+        UserEntity user = UserEntity.of(rs.getString("username"));
+        user.setId(rs.getLong("id"));
+        return user;
+    };
+
     /**
      * Metodo che risale all'id di un utente dal suo nome
      * @param username da cui risalire all'id
      * @return id dell'utente con il nome passato a parametro. -1 in caso l'utente non esista.
      */
     public UserEntity getByUsername(String username) { // TODO: usare Optional
-        String query = "SELECT id FROM infolab.users WHERE username = ?";
+        String query = "SELECT * FROM infolab.users WHERE username = ?";
         try {
             return jdbcTemplate.queryForObject(
-                    query, UserEntity.class, username);
+                    query, rowMapper, username);
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("L'user con nome = %s non esiste", username));
         }
@@ -68,10 +75,10 @@ public class UserRepository {
      * @return oggetto User con il nome preso dal db. Ritorna null se l'user non esiste.
      */
     public UserEntity getById(long id) { // TODO: aggiungere Optional
-        String query = "SELECT username FROM infolab.users WHERE id = ?";
+        String query = "SELECT * FROM infolab.users WHERE id = ?";
         try {
             return jdbcTemplate.queryForObject(
-                    query, UserEntity.class, id);
+                    query, rowMapper, id);
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("L'user con id = %d non esiste", id));
         }
