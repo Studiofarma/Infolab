@@ -54,7 +54,7 @@ public class RoomRepository {
         String query = "SELECT id FROM infolab.rooms WHERE roomname = ?";
         try {
             return jdbcTemplate.queryForObject(
-                    query, new Object[] {room.getName()}, Long.class);
+                    query, Long.class, room.getName());
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("La room con nome = %s non esiste", room.getName()));
         }
@@ -70,7 +70,7 @@ public class RoomRepository {
         String query = "SELECT roomname FROM infolab.rooms WHERE id = ?";
         try {
             return new RoomEntity(jdbcTemplate.queryForObject(
-                    query, new Object[] {id}, String.class));
+                    query, String.class, id));
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("La room con id = %d non esiste", id));
         }

@@ -70,14 +70,15 @@ public class ChatMessageRepository {
         String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
 
         try {
-            return jdbcTemplate.query(query, new Object[]{roomId}, (rs, rowNum) -> {
+            return jdbcTemplate.query(query, (rs, rowNum) -> {
                 ChatMessage chatMessage = new ChatMessage();
                 // Questa linea è commentata perché così se serve si può utilizzare (imposta sender invece di userSender)
                 //chatMessage.setSender(userRepository.read(Long.parseLong(rs.getString("sender_id"))).getName());
                 chatMessage.setUserSender(userRepository.getById(Long.parseLong(rs.getString("sender_id"))));
                 chatMessage.setContent(rs.getString("content"));
                 return chatMessage;
-            });
+            },
+                    roomId);
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("Non sono stati trovati messaggi nella room %s", room.getName()));
         }

@@ -48,11 +48,9 @@ public class ChatController {
 
     // Questo metodo in teoria viene chiamato quando un utente entra nella chat.
     @SubscribeMapping("/public")
-    public ChatMessage welcome(Authentication principal){
+    public void welcome(Authentication principal){
 
         userRepository.add(new UserEntity(principal.getName()));
-
-        return new ChatMessage("Chat Bot", String.format("welcome %s to topic/public", principal.getName()));
     }
 
     @MessageMapping("/chat.register")
