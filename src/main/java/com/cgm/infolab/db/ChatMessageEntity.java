@@ -1,25 +1,30 @@
 package com.cgm.infolab.db;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class ChatMessageEntity {
     private long id;
-    private UserEntity userSender;
+    private UserEntity sender;
+    private RoomEntity room;
+    private Timestamp timestamp;
     private String content;
 
     // TODO: rimuovere e mettere altro factory method
     public ChatMessageEntity() {
-        this(ID.None, null, null);
+        this(ID.None, null, null, null, null);
     }
 
-    private ChatMessageEntity(long id, UserEntity userSender, String content) {
+    private ChatMessageEntity(long id, UserEntity sender, RoomEntity room, Timestamp timestamp, String content) {
         this.id = id;
-        this.userSender = userSender;
+        this.sender = sender;
+        this.room = room;
+        this.timestamp = timestamp;
         this.content = content;
     }
 
-    public static ChatMessageEntity of(UserEntity userSender, String content) {
-        return new ChatMessageEntity(ID.None, userSender, content);
+    public static ChatMessageEntity of(UserEntity sender, RoomEntity room, Timestamp timestamp, String content) {
+        return new ChatMessageEntity(ID.None, sender, room, timestamp, content);
     }
 
     public long getId() {
@@ -30,12 +35,28 @@ public class ChatMessageEntity {
         this.id = id;
     }
 
-    public UserEntity getUserSender() {
-        return userSender;
+    public UserEntity getSender() {
+        return sender;
     }
 
-    public void setUserSender(UserEntity userSender) {
-        this.userSender = userSender;
+    public void setSender(UserEntity sender) {
+        this.sender = sender;
+    }
+
+    public RoomEntity getRoom() {
+        return room;
+    }
+
+    public void setRoom(RoomEntity room) {
+        this.room = room;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getContent() {
@@ -48,8 +69,11 @@ public class ChatMessageEntity {
 
     @Override
     public String toString() {
-        return "ChatMessage{" +
-                "userSender='" + userSender + '\'' +
+        return "ChatMessageEntity{" +
+                "id=" + id +
+                ", sender=" + sender +
+                ", room=" + room +
+                ", timestamp=" + timestamp +
                 ", content='" + content + '\'' +
                 '}';
     }
@@ -59,11 +83,11 @@ public class ChatMessageEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChatMessageEntity message = (ChatMessageEntity) o;
-        return id == message.id && Objects.equals(userSender, message.userSender) && Objects.equals(content, message.content);
+        return id == message.id && Objects.equals(sender, message.sender) && Objects.equals(content, message.content);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userSender, content);
+        return Objects.hash(sender, content);
     }
 }
