@@ -7,10 +7,12 @@ public class ChatMessageEntity {
     private UserEntity userSender;
     private String content;
 
+    // TODO: rimuovere e mettere altro factory method
     public ChatMessageEntity() {
         this(ID.None, null, null);
     }
 
+    // TODO: rendere private
     public ChatMessageEntity(long id, UserEntity userSender, String content) {
         this.id = id;
         this.userSender = userSender;
