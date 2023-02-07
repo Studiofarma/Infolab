@@ -9,8 +9,7 @@ public class UserEntity {
         this(ID.None, name);
     }
 
-    // TODO: rendere private
-    public UserEntity(long id, String name) {
+    private UserEntity(long id, String name) {
         this.id = id;
         this.name = name;
     }
