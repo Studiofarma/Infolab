@@ -1,6 +1,5 @@
 package com.cgm.infolab.db;
 
-import com.cgm.infolab.model.Room;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -29,7 +28,7 @@ public class RoomRepository {
      * Metodo che aggiunge una stanza al database.
      * @return chiave che è stata auto generata per la stanza creata, oppure -1 se la stanza inserita esisteva già.
      */
-    public long add(Room room) {
+    public long add(RoomEntity room) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("rooms")
@@ -51,7 +50,7 @@ public class RoomRepository {
      * @param room da cui risalire all'id
      * @return id della room con il nome passato a parametro. -1 in caso la room non esista.
      */
-    public long readId(Room room) {
+    public long readId(RoomEntity room) {
         String query = "SELECT id FROM infolab.rooms WHERE roomname = ?";
         try {
             return jdbcTemplate.queryForObject(
@@ -67,10 +66,10 @@ public class RoomRepository {
      * @param id da cui risalire alla room
      * @return oggetto Room con il nome preso dal db. Ritorna null se la room non esiste.
      */
-    public Room getById(long id) {
+    public RoomEntity getById(long id) {
         String query = "SELECT roomname FROM infolab.rooms WHERE id = ?";
         try {
-            return new Room(jdbcTemplate.queryForObject(
+            return new RoomEntity(jdbcTemplate.queryForObject(
                     query, new Object[] {id}, String.class));
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("La room con id = %d non esiste", id));

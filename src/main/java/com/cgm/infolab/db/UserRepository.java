@@ -1,6 +1,5 @@
 package com.cgm.infolab.db;
 
-import com.cgm.infolab.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -30,7 +29,7 @@ public class UserRepository {
      * @param user utente da salvare sul database.
      * @return chiave che è stata auto generata per l'utente creato, oppure -1 se l'utente inserito esisteva già.
      */
-    public long add(User user) {
+    public long add(UserEntity user) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("users")
@@ -52,7 +51,7 @@ public class UserRepository {
      * @param user da cui risalire all'id
      * @return id dell'utente con il nome passato a parametro. -1 in caso l'utente non esista.
      */
-    public long readId(User user) {
+    public long readId(UserEntity user) {
         String query = "SELECT id FROM infolab.users WHERE username = ?";
         try {
             return jdbcTemplate.queryForObject(
@@ -68,10 +67,10 @@ public class UserRepository {
      * @param id da cui risalire all'utente
      * @return oggetto User con il nome preso dal db. Ritorna null se l'user non esiste.
      */
-    public User getById(long id) {
+    public UserEntity getById(long id) {
         String query = "SELECT username FROM infolab.users WHERE id = ?";
         try {
-            return new User(jdbcTemplate.queryForObject(
+            return new UserEntity(jdbcTemplate.queryForObject(
                     query, new Object[] {id}, String.class));
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("L'user con id = %d non esiste", id));

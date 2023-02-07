@@ -1,10 +1,10 @@
-package com.cgm.infolab.model;
+package com.cgm.infolab.db;
 
-public class Room {
+public class RoomEntity {
 
     private String name;
 
-    public Room(String name) {
+    public RoomEntity(String name) {
         this.name = name;
     }
 
