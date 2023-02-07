@@ -4,11 +4,6 @@ public class RoomEntity {
     private long id;
     private String name;
 
-    // TODO: rimuovere
-    public RoomEntity(String name) {
-        this(ID.None, name);
-    }
-
     private RoomEntity(long id, String name) {
         this.id = id;
         this.name = name;
