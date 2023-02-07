@@ -12,8 +12,7 @@ public class ChatMessageEntity {
         this(ID.None, null, null);
     }
 
-    // TODO: rendere private
-    public ChatMessageEntity(long id, UserEntity userSender, String content) {
+    private ChatMessageEntity(long id, UserEntity userSender, String content) {
         this.id = id;
         this.userSender = userSender;
         this.content = content;
