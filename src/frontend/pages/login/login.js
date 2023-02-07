@@ -1,11 +1,15 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
+import "../../components/button-icon";
 
 export class Login extends LitElement {
   static properties = {
     username: "",
     password: "",
-    pswVisibility: {},
+    pswVisibility: false,
+    usernameErrorMessage: "",
+    passwordErrorMessage: "",
+    accessErrorMessage: "",
   };
 
   constructor() {
@@ -13,6 +17,9 @@ export class Login extends LitElement {
     this.username = "user1";
     this.password = "password1";
     this.pswVisibility = false;
+    this.usernameErrorMessage = "";
+    this.passwordErrorMessage = "";
+    this.accessErrorMessage = "";
   }
 
   static styles = css`
@@ -23,16 +30,57 @@ export class Login extends LitElement {
     }
 
     #container {
-      width: 400px;
+      position: relative;
+      width: 500px;
       max-width: 100%;
-      min-height: 300px;
+      min-height: 400px;
       background: white;
-      padding: 1.5rem;
+      padding: 1.5rem 2rem;
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: 1rem;
       border-radius: 10px;
       background-color: #e4e8ee;
+      overflow: hidden;
+    }
+
+    div[class^="ring"] {
+      position: absolute;
+      background: #013365;
+      width: 250px;
+      height: 250px;
+      border-radius: 100%;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .ring1 {
+      top: 0;
+      left: 0;
+      transform: translate(-50%, -50%);
+    }
+
+    div[class^="ring"]::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 200px;
+      height: 200px;
+      background: #e4e8ee;
+      border-radius: 100%;
+    }
+
+    .ring2 {
+      bottom: 0;
+      right: 0;
+      transform: translate(50%, 50%);
+    }
+
+    #container > *:not(div[class^="ring"]) {
+      z-index: 2;
     }
 
     .title {
@@ -58,7 +106,7 @@ export class Login extends LitElement {
       position: relative;
     }
 
-    .text-container span {
+    .text-container il-button-icon {
       position: absolute;
       transform: translateY(50%);
       bottom: 20px;
@@ -69,15 +117,17 @@ export class Login extends LitElement {
       transition: 0.5s;
     }
 
-    .text-container:hover span {
+    .text-container:hover il-button-icon {
       opacity: 1;
       visibility: visible;
       cursor: pointer;
     }
 
-    div:has(#submit_btn) {
-      display: flex;
-      justify-content: flex-end;
+    label[id$="Error"] {
+      display: block;
+      color: darkred;
+      padding-top: 5px;
+      font-size: 10pt;
     }
 
     #submit_btn {
@@ -96,40 +146,29 @@ export class Login extends LitElement {
     * {
       font-family: inherit;
     }
-
-    .material-icons {
-      font-family: "Material Icons";
-      font-weight: normal;
-      font-style: normal;
-      font-size: 24px;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      -webkit-font-smoothing: antialiased;
-      cursor: pointer;
-    }
   `;
 
   render() {
     return html`
       <div id="container">
-        <h1 class="title">Come ti chiami?</h1>
+        <div class="ring1"></div>
+        <div class="ring2"></div>
+        <h1 class="title">Welcome Back</h1>
         <div>
           <label>
             Username
             <div class="text-container">
               <input
+                id="username"
                 type="text"
                 @input=${this.onUsernameInput}
+                @keydown=${this.checkEnterKey}
                 .value=${this.username}
-                placeholder="Inserisci il nome utente"
+                placeholder="Inserisci lo username"
               />
             </div>
           </label>
+          <label id="usernameError"> ${this.usernameErrorMessage} </label>
         </div>
 
         <div>
@@ -137,16 +176,26 @@ export class Login extends LitElement {
             Password
             <div class="text-container">
               <input
+                id="password"
                 type=${this.pswVisibility ? "text" : "password"}
                 @input=${this.onPasswordInput}
+                @keydown=${this.checkEnterKey}
                 .value=${this.password}
                 placeholder="Inserisci la password"
               />
-              <span @click=${this.setVisibility} class="material-icons">
-                ${!this.pswVisibility ? "visibility" : "visibility_off"}
-              </span>
+
+              <il-button-icon
+                @click=${this.setVisibility}
+                content="${!this.pswVisibility
+                  ? "visibility"
+                  : "visibility_off"}"
+              ></il-button-icon>
             </div>
           </label>
+          <label id="passwordError"> ${this.passwordErrorMessage} </label>
+          <label id="accessError" style="text-align: center;">
+            ${this.accessErrorMessage}</label
+          >
         </div>
         <div>
           <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
@@ -165,11 +214,31 @@ export class Login extends LitElement {
     this.password = inputEl.value;
   }
 
+  checkEnterKey(e) {
+    if (e.key === "Enter") this.loginConfirm();
+  }
+
   setVisibility() {
     this.pswVisibility = !this.pswVisibility;
   }
 
   loginConfirm() {
+    if (this.username === "" && this.password === "") {
+      this.usernameErrorMessage = "*Inserisci uno username";
+      this.passwordErrorMessage = "*Inserisci una password";
+      return;
+    }
+
+    if (this.username === "") {
+      this.usernameErrorMessage = "*Inserisci uno username";
+      return;
+    }
+
+    if (this.password === "") {
+      this.passwordErrorMessage = "*Inserisci una password";
+      return;
+    }
+
     this.executeLoginCall()
       .then((response) => {
         this.dispatchEvent(
@@ -186,7 +255,7 @@ export class Login extends LitElement {
         );
       })
       .catch((e) => {
-        console.log(e);
+        this.accessErrorMessage = "*CREDENZIALI NON VALIDE";
       });
   }
 
