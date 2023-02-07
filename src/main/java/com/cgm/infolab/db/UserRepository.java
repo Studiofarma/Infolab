@@ -48,18 +48,18 @@ public class UserRepository {
 
     /**
      * Metodo che risale all'id di un utente dal suo nome
-     * @param user da cui risalire all'id
+     * @param username da cui risalire all'id
      * @return id dell'utente con il nome passato a parametro. -1 in caso l'utente non esista.
      */
-    public long readId(UserEntity user) {
+    public UserEntity getByUsername(String username) { // TODO: usare Optional
         String query = "SELECT id FROM infolab.users WHERE username = ?";
         try {
             return jdbcTemplate.queryForObject(
-                    query, Long.class, user.getName());
+                    query, UserEntity.class, username);
         } catch (EmptyResultDataAccessException e) {
-            log.info(String.format("L'user con nome = %s non esiste", user.getName()));
+            log.info(String.format("L'user con nome = %s non esiste", username));
         }
-        return -1;
+        return null;
     }
 
     /**
@@ -67,11 +67,11 @@ public class UserRepository {
      * @param id da cui risalire all'utente
      * @return oggetto User con il nome preso dal db. Ritorna null se l'user non esiste.
      */
-    public UserEntity getById(long id) {
+    public UserEntity getById(long id) { // TODO: aggiungere Optional
         String query = "SELECT username FROM infolab.users WHERE id = ?";
         try {
-            return new UserEntity(jdbcTemplate.queryForObject(
-                    query, String.class, id));
+            return jdbcTemplate.queryForObject(
+                    query, UserEntity.class, id);
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("L'user con id = %d non esiste", id));
         }
