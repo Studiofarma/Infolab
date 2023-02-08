@@ -9,9 +9,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class ChatMessageRepository {
@@ -68,13 +66,15 @@ public class ChatMessageRepository {
 
         try {
             return jdbcTemplate.query(query, (rs, rowNum) -> {
-                ChatMessageEntity message = ChatMessageEntity.emptyMessage();
-                message.setId(rs.getLong("id"));
-                message.setSender(userRepository.getById(Long.parseLong(rs.getString("sender_id"))));
-                message.setRoom(roomRepository.getById(Long.parseLong(rs.getString("recipient_room_id"))));
-                message.setTimestamp(rs.getTimestamp("sent_at"));
-                message.setContent(rs.getString("content"));
-                return message;
+                        ChatMessageEntity message = ChatMessageEntity.emptyMessage();
+                        message.setId(rs.getLong("id"));
+                        message.setSender(userRepository.getById(Long.parseLong(rs.getString("sender_id"))));
+                        message.setRoom(roomRepository.getById(Long.parseLong(rs.getString("recipient_room_id"))));
+
+                        //TODO: sistemare bug per cui la data viene presa come UTC e non con la timezone richiesta
+                        message.setTimestamp(rs.getTimestamp("sent_at"));
+                        message.setContent(rs.getString("content"));
+                        return message;
             },
                     room.getId());
         } catch (EmptyResultDataAccessException e) {
