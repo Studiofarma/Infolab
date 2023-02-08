@@ -4,6 +4,7 @@ import com.cgm.infolab.db.*;
 import com.cgm.infolab.model.ChatMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -54,7 +55,11 @@ public class ChatController {
     @SubscribeMapping("/public")
     public void welcome(Authentication principal){
 
-        userRepository.add(UserEntity.of(principal.getName()));
+        try {
+            userRepository.add(UserEntity.of(principal.getName()));
+        } catch (DuplicateKeyException e) {
+            log.info(String.format("User username=\"%s\" già esistente nel database", principal.getName()));
+        }
     }
 
     @MessageMapping("/chat.register")
@@ -83,7 +88,11 @@ public class ChatController {
         ChatMessageEntity messageEntity =
                 ChatMessageEntity.of(sender, room, timestamp, message.getContent());
 
-        chatMessageRepository.add(messageEntity);
+        try {
+            chatMessageRepository.add(messageEntity);
+        } catch (DuplicateKeyException e) {
+            log.info(String.format("ChatMessageEntity id=\"%s\" già esistente nel database", messageEntity.getContent()));
+        }
 
         log.info(String.format("message from %s", username));
         return message;

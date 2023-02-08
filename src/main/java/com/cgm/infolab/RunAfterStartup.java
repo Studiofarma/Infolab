@@ -2,8 +2,12 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.RoomRepository;
 import com.cgm.infolab.db.RoomEntity;
+import com.cgm.infolab.db.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,7 +15,9 @@ public class RunAfterStartup {
 
     public static final String[] ROOMS = {"general"};
     public static final RoomEntity[] ROOMS2 = {RoomEntity.of("general")};
-    private RoomRepository roomRepository;
+    private final RoomRepository roomRepository;
+
+    private final Logger log = LoggerFactory.getLogger(RunAfterStartup.class);
 
     public RunAfterStartup(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
@@ -23,7 +29,11 @@ public class RunAfterStartup {
     @EventListener(ApplicationReadyEvent.class)
     public void addAllRooms() {
         for (RoomEntity r : ROOMS2) {
-            roomRepository.add(r);
+            try {
+                roomRepository.add(r);
+            } catch (DuplicateKeyException e) {
+                log.info(String.format("Room roomName=\"%s\" già esistente nel database", r.getName()));
+            }
         }
     }
 }

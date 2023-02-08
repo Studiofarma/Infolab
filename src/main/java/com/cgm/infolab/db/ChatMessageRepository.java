@@ -33,7 +33,7 @@ public class ChatMessageRepository {
      * @param message messaggio da salvare.
      * @return chiave che è stata auto generata per il messaggio creato, oppure -1 se il messaggio inserito esisteva già.
      */
-    public long add(ChatMessageEntity message) {
+    public long add(ChatMessageEntity message) throws DuplicateKeyException {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("chatmessages")
@@ -44,13 +44,7 @@ public class ChatMessageRepository {
         parameters.put("recipient_room_id", message.getRoom().getId());
         parameters.put("sent_at", message.getTimestamp());
         parameters.put("content", message.getContent());
-
-        try {
-            return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
-        } catch (DuplicateKeyException e) {
-            log.info(String.format("Message %s already exists in the database.", message));
-        }
-        return -1;
+        return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
     /**

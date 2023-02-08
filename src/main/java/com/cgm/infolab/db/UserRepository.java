@@ -21,8 +21,6 @@ public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
 
-    private final Logger log = LoggerFactory.getLogger(UserRepository.class);
-
     public UserRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.dataSource = dataSource;
@@ -41,13 +39,7 @@ public class UserRepository {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("username", user.getName());
-
-        try {
-            return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
-        } catch (DuplicateKeyException e) {
-            log.info(String.format("User %s already exists in the database.", user.getName()));
-        }
-        return -1;
+        return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
     /**
