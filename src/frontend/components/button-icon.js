@@ -31,8 +31,8 @@ export class ButtonIcon extends LitElement {
       -webkit-font-smoothing: antialiased;
       cursor: pointer;
       user-select: none;
-      min-height:30px;
-      min-width:30px;
+      min-height:40px;
+      min-width:35px;
     }
 
     #button:hover{
