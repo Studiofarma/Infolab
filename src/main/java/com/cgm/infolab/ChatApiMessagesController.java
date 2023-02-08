@@ -16,7 +16,7 @@ import java.util.List;
 public class ChatApiMessagesController {
     private final ChatMessageRepository chatMessageRepository;
 
-    private final Logger logger = LoggerFactory.getLogger(ChatApiMessagesController.class);
+    private final Logger log = LoggerFactory.getLogger(ChatApiMessagesController.class);
 
     public ChatApiMessagesController(ChatMessageRepository chatMessageRepository) {
         this.chatMessageRepository = chatMessageRepository;
@@ -31,17 +31,23 @@ public class ChatApiMessagesController {
     @GetMapping("/api/messages/general")
     public List<ChatMessage> getAllMessagesGeneral() {
         RoomEntity room = RoomEntity.of("general");
-        List<ChatMessageEntity> chatMessageEntities = chatMessageRepository.getByRoomName(room.getName());
-
+        List<ChatMessageEntity> chatMessageEntities;
         List<ChatMessage> messages = new ArrayList<>();
-
-        for (ChatMessageEntity entity : chatMessageEntities) {
-            ChatMessage message = new ChatMessage(entity.getContent(), entity.getTimestamp(), entity.getSender().getName());
-            messages.add(message);
+        try {
+            chatMessageEntities = chatMessageRepository.getByRoomName(room.getName());
+        } catch (IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return messages;
         }
 
-        if (chatMessageEntities.size() == 0)
-            logger.info(String.format("Non sono stati trovati messaggi nella stanza %s", room.getName()));
+        if (chatMessageEntities.size() > 0) {
+            for (ChatMessageEntity entity : chatMessageEntities) {
+                ChatMessage message = new ChatMessage(entity.getContent(), entity.getTimestamp(), entity.getSender().getName());
+                messages.add(message);
+            }
+        } else {
+            log.info("Non sono stati trovati messaggi nella room specificata");
+        }
 
         return messages;
     }
