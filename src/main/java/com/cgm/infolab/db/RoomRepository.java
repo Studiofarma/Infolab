@@ -21,8 +21,6 @@ public class RoomRepository {
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
 
-    private final Logger log = LoggerFactory.getLogger(RoomRepository.class);
-
     public RoomRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.dataSource = dataSource;
@@ -32,7 +30,7 @@ public class RoomRepository {
      * Metodo che aggiunge una stanza al database.
      * @return chiave che è stata auto generata per la stanza creata, oppure -1 se la stanza inserita esisteva già.
      */
-    public long add(RoomEntity room) {
+    public long add(RoomEntity room) throws DuplicateKeyException {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("rooms")
@@ -40,13 +38,7 @@ public class RoomRepository {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("roomname", room.getName());
-
-        try {
-            return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
-        } catch (DuplicateKeyException e) {
-            log.info(String.format("Room %s already exists in the database.", room.getName()));
-        }
-        return -1;
+        return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
     /**
