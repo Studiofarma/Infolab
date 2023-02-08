@@ -1,8 +1,7 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.RoomRepository;
-import com.cgm.infolab.db.RoomEntity;
-import com.cgm.infolab.db.UserRepository;
+import com.cgm.infolab.db.repository.RoomRepository;
+import com.cgm.infolab.db.model.RoomEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

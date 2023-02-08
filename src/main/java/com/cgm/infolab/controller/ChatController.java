@@ -1,6 +1,11 @@
-package com.cgm.infolab;
+package com.cgm.infolab.controller;
 
-import com.cgm.infolab.db.*;
+import com.cgm.infolab.db.model.ChatMessageEntity;
+import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.UserEntity;
+import com.cgm.infolab.db.repository.ChatMessageRepository;
+import com.cgm.infolab.db.repository.RoomRepository;
+import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

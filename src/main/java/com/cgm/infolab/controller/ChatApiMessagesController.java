@@ -1,9 +1,9 @@
-package com.cgm.infolab;
+package com.cgm.infolab.controller;
 
-import com.cgm.infolab.db.ChatMessageEntity;
-import com.cgm.infolab.db.ChatMessageRepository;
+import com.cgm.infolab.db.model.ChatMessageEntity;
+import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.model.ChatMessage;
-import com.cgm.infolab.db.RoomEntity;
+import com.cgm.infolab.db.model.RoomEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
