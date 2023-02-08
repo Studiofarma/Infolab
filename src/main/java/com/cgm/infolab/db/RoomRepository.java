@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,15 +49,6 @@ public class RoomRepository {
     }
 
     /**
-     * Rowmapper utilizzato nei metodi getByRoomName e getById
-     */
-    private final RowMapper<RoomEntity> rowMapper = (rs, rowNum) -> {
-        RoomEntity room = RoomEntity.of(rs.getString("roomname"));
-        room.setId(rs.getLong("id"));
-        return room;
-    };
-
-    /**
      * Metodo che risale all'id di una room dal suo nome
      * @param roomName da cui risalire all'id
      * @return id della room con il nome passato a parametro. -1 in caso la room non esista.
@@ -64,7 +57,7 @@ public class RoomRepository {
         String query = "SELECT * FROM infolab.rooms WHERE roomname = ?";
         try {
             return jdbcTemplate.queryForObject(
-                    query, rowMapper, roomName);
+                    query, RoomRepository::rowMapper, roomName);
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("La room con nome = %s non esiste", roomName));
         }
@@ -80,10 +73,19 @@ public class RoomRepository {
         String query = "SELECT * FROM infolab.rooms WHERE id = ?";
         try {
             return jdbcTemplate.queryForObject(
-                    query, rowMapper, id);
+                    query, RoomRepository::rowMapper, id);
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("La room con id = %d non esiste", id));
         }
         return null;
+    }
+
+    /**
+     * Rowmapper utilizzato nei metodi getByRoomName e getById
+     */
+    private static RoomEntity rowMapper(ResultSet rs, int rowNum) throws SQLException {
+        RoomEntity room = RoomEntity.of(rs.getString("roomname"));
+        room.setId(rs.getLong("id"));
+        return room;
     }
 }
