@@ -74,7 +74,12 @@ public class ChatController {
             log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
             return null;
         });
-        RoomEntity room = roomRepository.getByRoomName("general");
+
+        String roomName = "general";
+        RoomEntity room = roomRepository.getByRoomName(roomName).orElseGet(() -> {
+            log.info(String.format("Room roomName=\"%s\" non trovata.", roomName));
+            return null;
+        });
         ChatMessageEntity messageEntity =
                 ChatMessageEntity.of(sender, room, timestamp, message.getContent());
 

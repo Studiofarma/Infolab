@@ -60,7 +60,10 @@ public class ChatMessageRepository {
      */
     public List<ChatMessageEntity> getByRoomName(String roomName) { // TODO: aggiungere Optional
 
-        RoomEntity room = roomRepository.getByRoomName(roomName);
+        RoomEntity room = roomRepository.getByRoomName(roomName).orElseGet(() -> {
+            log.info(String.format("Room roomName=\"%s\" non trovata.", roomName));
+            return null;
+        });
 
         String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
 
@@ -69,12 +72,17 @@ public class ChatMessageRepository {
                         ChatMessageEntity message = ChatMessageEntity.emptyMessage();
                         message.setId(rs.getLong("id"));
 
-                        long id = Long.parseLong(rs.getString("sender_id"));
-                        message.setSender(userRepository.getById(id).orElseGet(() -> {
-                            log.info(String.format("Utente id=\"%d\" non trovato.", id));
+                        long userId = Long.parseLong(rs.getString("sender_id"));
+                        message.setSender(userRepository.getById(userId).orElseGet(() -> {
+                            log.info(String.format("Utente userId=\"%d\" non trovato.", userId));
                             return null;
                         }));
-                        message.setRoom(roomRepository.getById(Long.parseLong(rs.getString("recipient_room_id"))));
+
+                        long roomId = Long.parseLong(rs.getString("recipient_room_id"));
+                        message.setRoom(roomRepository.getById(roomId).orElseGet(() -> {
+                            log.info(String.format("Room roomId=\"%d\" non trovato.", roomId));
+                            return null;
+                        }));
 
                         //TODO: sistemare bug per cui la data viene presa come UTC e non con la timezone richiesta
                         message.setTimestamp(rs.getTimestamp("sent_at"));

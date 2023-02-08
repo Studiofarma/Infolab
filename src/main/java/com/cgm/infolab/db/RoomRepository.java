@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class RoomRepository {
@@ -53,15 +54,11 @@ public class RoomRepository {
      * @param roomName da cui risalire all'id
      * @return id della room con il nome passato a parametro. -1 in caso la room non esista.
      */
-    public RoomEntity getByRoomName(String roomName) { // TODO: aggiungere optional
+    public Optional<RoomEntity> getByRoomName(String roomName) {
         String query = "SELECT * FROM infolab.rooms WHERE roomname = ?";
-        try {
-            return jdbcTemplate.queryForObject(
-                    query, RoomRepository::rowMapper, roomName);
-        } catch (EmptyResultDataAccessException e) {
-            log.info(String.format("La room con nome = %s non esiste", roomName));
-        }
-        return null;
+
+        return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    query, RoomRepository::rowMapper, roomName));
     }
 
     /**
@@ -69,15 +66,11 @@ public class RoomRepository {
      * @param id da cui risalire alla room
      * @return oggetto Room con il nome preso dal db. Ritorna null se la room non esiste.
      */
-    public RoomEntity getById(long id) { //TODO: aggiungere Optional
+    public Optional<RoomEntity> getById(long id) {
         String query = "SELECT * FROM infolab.rooms WHERE id = ?";
-        try {
-            return jdbcTemplate.queryForObject(
-                    query, RoomRepository::rowMapper, id);
-        } catch (EmptyResultDataAccessException e) {
-            log.info(String.format("La room con id = %d non esiste", id));
-        }
-        return null;
+
+        return Optional.ofNullable(jdbcTemplate.queryForObject(
+                query, RoomRepository::rowMapper, id));
     }
 
     /**
