@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,12 +49,6 @@ public class UserRepository {
         return -1;
     }
 
-    private final RowMapper<UserEntity> rowMapper = (rs, rowNum) -> {
-        UserEntity user = UserEntity.of(rs.getString("username"));
-        user.setId(rs.getLong("id"));
-        return user;
-    };
-
     /**
      * Metodo che risale all'id di un utente dal suo nome
      * @param username da cui risalire all'id
@@ -62,7 +58,7 @@ public class UserRepository {
         String query = "SELECT * FROM infolab.users WHERE username = ?";
         try {
             return jdbcTemplate.queryForObject(
-                    query, rowMapper, username);
+                    query, UserRepository::rowMapper, username);
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("L'user con nome = %s non esiste", username));
         }
@@ -78,10 +74,19 @@ public class UserRepository {
         String query = "SELECT * FROM infolab.users WHERE id = ?";
         try {
             return jdbcTemplate.queryForObject(
-                    query, rowMapper, id);
+                    query, UserRepository::rowMapper, id);
         } catch (EmptyResultDataAccessException e) {
             log.info(String.format("L'user con id = %d non esiste", id));
         }
         return null;
+    }
+
+    /**
+     * Rowmapper utilizzato nei metodi getByUsername e getById
+     */
+    private static UserEntity rowMapper(ResultSet rs, int rowNum) throws SQLException {
+        UserEntity user = UserEntity.of(rs.getString("username"));
+        user.setId(rs.getLong("id"));
+        return user;
     }
 }
