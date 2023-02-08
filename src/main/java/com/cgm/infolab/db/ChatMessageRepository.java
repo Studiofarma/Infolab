@@ -68,7 +68,12 @@ public class ChatMessageRepository {
             return jdbcTemplate.query(query, (rs, rowNum) -> {
                         ChatMessageEntity message = ChatMessageEntity.emptyMessage();
                         message.setId(rs.getLong("id"));
-                        message.setSender(userRepository.getById(Long.parseLong(rs.getString("sender_id"))));
+
+                        long id = Long.parseLong(rs.getString("sender_id"));
+                        message.setSender(userRepository.getById(id).orElseGet(() -> {
+                            log.info(String.format("Utente id=\"%d\" non trovato.", id));
+                            return null;
+                        }));
                         message.setRoom(roomRepository.getById(Long.parseLong(rs.getString("recipient_room_id"))));
 
                         //TODO: sistemare bug per cui la data viene presa come UTC e non con la timezone richiesta

@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class UserRepository {
@@ -54,15 +55,11 @@ public class UserRepository {
      * @param username da cui risalire all'id
      * @return id dell'utente con il nome passato a parametro. -1 in caso l'utente non esista.
      */
-    public UserEntity getByUsername(String username) { // TODO: usare Optional
+    public Optional<UserEntity> getByUsername(String username) {
         String query = "SELECT * FROM infolab.users WHERE username = ?";
-        try {
-            return jdbcTemplate.queryForObject(
-                    query, UserRepository::rowMapper, username);
-        } catch (EmptyResultDataAccessException e) {
-            log.info(String.format("L'user con nome = %s non esiste", username));
-        }
-        return null;
+
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(query, UserRepository::rowMapper, username));
     }
 
     /**
@@ -70,15 +67,11 @@ public class UserRepository {
      * @param id da cui risalire all'utente
      * @return oggetto User con il nome preso dal db. Ritorna null se l'user non esiste.
      */
-    public UserEntity getById(long id) { // TODO: aggiungere Optional
+    public Optional<UserEntity> getById(long id) {
         String query = "SELECT * FROM infolab.users WHERE id = ?";
-        try {
-            return jdbcTemplate.queryForObject(
-                    query, UserRepository::rowMapper, id);
-        } catch (EmptyResultDataAccessException e) {
-            log.info(String.format("L'user con id = %d non esiste", id));
-        }
-        return null;
+
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(query, UserRepository::rowMapper, id));
     }
 
     /**
