@@ -87,7 +87,7 @@ class InfolabApplicationTests {
             }
         });
 
-        ChatMessage sentMessage = new ChatMessage("banana", null);
+        ChatMessage sentMessage = new ChatMessage(null, "banana");
         session.send("/app/chat.register", sentMessage);
 
         await()

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -28,13 +29,20 @@ public class ChatApiMessagesController {
     // Potete provare le chiamate all'API aprendo un browser all'indirizzo http://localhost:8081/api/messages/general (vi chiedera' username e password. user1 - password1)
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/general")
-    public List<ChatMessageEntity> getAllMessagesGeneral() {
+    public List<ChatMessage> getAllMessagesGeneral() {
         RoomEntity room = RoomEntity.of("general");
         List<ChatMessageEntity> chatMessageEntities = chatMessageRepository.getByRoomName(room.getName());
+
+        List<ChatMessage> messages = new ArrayList<>();
+
+        for (ChatMessageEntity entity : chatMessageEntities) {
+            ChatMessage message = new ChatMessage(entity.getContent(), entity.getTimestamp(), entity.getSender().getName());
+            messages.add(message);
+        }
 
         if (chatMessageEntities.size() == 0)
             logger.info(String.format("Non sono stati trovati messaggi nella stanza %s", room.getName()));
 
-        return chatMessageEntities;
+        return messages;
     }
 }

@@ -1,27 +1,25 @@
 package com.cgm.infolab.model;
 
-import com.cgm.infolab.db.UserEntity;
-
+import java.sql.Timestamp;
 import java.util.Objects;
 
 
 public class ChatMessage {
-    private String sender;
     private String content;
+    private Timestamp timestamp;
+    private String sender;
 
     public ChatMessage() {
     }
 
-    public ChatMessage(String sender, String content) {
+    public ChatMessage(String content, String sender) {
         this.sender = sender;
         this.content = content;
     }
 
-    public String getSender() {
-        return sender;
-    }
-
-    public void setSender(String sender) {
+    public ChatMessage(String content, Timestamp timestamp, String sender) {
+        this.content = content;
+        this.timestamp = timestamp;
         this.sender = sender;
     }
 
@@ -31,6 +29,22 @@ public class ChatMessage {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
     @Override
