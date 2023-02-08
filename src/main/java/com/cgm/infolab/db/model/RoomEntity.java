@@ -1,19 +1,18 @@
-package com.cgm.infolab.db;
+package com.cgm.infolab.db.model;
 
-public class UserEntity {
+import com.cgm.infolab.db.ID;
+
+public class RoomEntity {
     private long id;
     private String name;
 
-    public UserEntity() {
-    }
-
-    private UserEntity(long id, String name) {
+    private RoomEntity(long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public static UserEntity of(String name) {
-        return new UserEntity(ID.None, name);
+    public static RoomEntity of(String name) {
+        return new RoomEntity(ID.None, name);
     }
 
     public long getId() {
