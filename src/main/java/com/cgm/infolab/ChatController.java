@@ -70,7 +70,10 @@ public class ChatController {
         String username = (String) headerAccessor.getSessionAttributes().get("username");
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
-        UserEntity sender = userRepository.getByUsername(message.getSender());
+        UserEntity sender = userRepository.getByUsername(message.getSender()).orElseGet(() -> {
+            log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
+            return null;
+        });
         RoomEntity room = roomRepository.getByRoomName("general");
         ChatMessageEntity messageEntity =
                 ChatMessageEntity.of(sender, room, timestamp, message.getContent());
