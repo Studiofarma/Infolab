@@ -22,9 +22,6 @@ export class Chat extends LitElement {
         headerName: "",
         token: "",
       },
-      stompClient: {},
-      messages: [],
-      message: "",
     };
   }
 
