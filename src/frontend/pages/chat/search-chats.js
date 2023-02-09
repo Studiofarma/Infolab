@@ -1,4 +1,9 @@
 import { LitElement, html, css } from "lit";
+const axios = require("axios").default;
+
+import '../../components/avatar.js'
+
+import "../../components/button-icon"
 
 import '../../components/avatar.js'
 
@@ -122,12 +127,12 @@ export class SearchChats extends LitElement {
       position: relative;
     }
 
-    .containerInput input:focus ~ span {
+    .containerInput input:focus ~ il-button-icon {
       opacity: 0;
       visibility: hidden;
     }
 
-    .containerInput span {
+    .containerInput il-button-icon {
       position: absolute;
       transform: translate(-50%, -50%);
       top: 50%;
@@ -155,7 +160,7 @@ export class SearchChats extends LitElement {
             @input=${this.setFilter}
             @click=${this.setFilter}
           />
-          <span class="material-icons"> search </span>
+          <il-button-icon content="search"></il-button-icon>
 
           <div class="dropdown">${this.showTips()}</div>
         </div>
@@ -163,26 +168,34 @@ export class SearchChats extends LitElement {
     `;
   }
 
+  async executePharmaciesCall() {
+    return axios({
+      url: "http://localhost:3000/pharmacies",
+      method: "get",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    });
+  }
+
   setFilter(event) {
     const text = event.target.value;
     this.query = text.toLowerCase();
 
-    const farmacie = this.myfetch();
     let tmp = [];
 
-    farmacie.forEach((pharmacy) => {
-      if (pharmacy.name.toLowerCase().indexOf(this.query) > -1)
-        tmp.push(pharmacy);
-    });
-
-    this.pharmaciesList = tmp;
-  }
-
-  myfetch() {
-    // ho provato con require e riesce a prendermelo
-    const json = require("../../assets/test/farmacie.json");
-
-    return json;
+    this.executePharmaciesCall()
+      .then((element) => {
+        console.log(element["data"]);
+        element["data"].forEach((pharmacy) => {
+          if (pharmacy.name.toLowerCase().indexOf(this.query) > -1)
+            tmp.push(pharmacy);
+        });
+        this.pharmaciesList = tmp;
+      })
+      .catch((e) => {
+        throw e;
+      });
   }
 
   showTips() {

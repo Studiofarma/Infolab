@@ -27,6 +27,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.csrf.DefaultCsrfToken;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
 import java.util.Enumeration;
@@ -61,8 +62,12 @@ public class SecurityConfiguration {
         requestHandler.setCsrfRequestAttributeName(null);
         return http
             .csrf(csrf -> csrf
-                .csrfTokenRequestHandler(requestHandler))
-            .csrf()
+                .csrfTokenRequestHandler(requestHandler)
+                .ignoringRequestMatchers(request -> AntPathRequestMatcher
+                    .antMatcher("/h2-console/**")
+                    .matches(request))
+            )
+            .httpBasic()
             .and()
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/**").authenticated()
@@ -78,20 +83,28 @@ public class SecurityConfiguration {
                 .requestMatchers("/css/**").permitAll()
                 .requestMatchers("/js/**").permitAll()
             )
-            .anonymous()
-            .and()
+            .anonymous().and()
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers("/h2-console/**").permitAll()
+            )
+            .headers().frameOptions().sameOrigin().and()
+            .anonymous().and()
             .build();
     }
 
     @Bean
     public UserDetailsManager users(){
         UserDetails user1 = User
-            .withUsername("user1")
-            .password(String.format("{noop}%s", "password1"))
-            .roles("user")
-            .build()
-        ;
-        return new InMemoryUserDetailsManager(user1);
+                .withUsername("user1")
+                .password(String.format("{noop}%s", "password1"))
+                .roles("user")
+                .build();
+        UserDetails user2 = User
+                .withUsername("user2")
+                .password(String.format("{noop}%s", "password2"))
+                .roles("user")
+                .build();
+        return new InMemoryUserDetailsManager(user1, user2);
     }
 
     private static void authInHeadersOrQueryString(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {

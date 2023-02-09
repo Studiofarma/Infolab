@@ -1,19 +1,13 @@
 package com.cgm.infolab;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cgm.infolab.controller.CsrfController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.RequestEntity;
-import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -66,10 +60,18 @@ public class SecurityTests {
 
     @Test
     @WithMockUser(username = "user1", password = "password1")
-    void postToTheChatEndpointMustBeAuthenticatedWithAKnownUser() throws Exception {
+    void postToTheChatEndpointMustBeAuthenticatedWithAKnownUserAndUseCsrf() throws Exception {
         client
             .perform(post("/chat/test").with(csrf().asHeader()))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "user1", password = "password1")
+    void postToTheChatEndpointWithoutCsrfShouldFail() throws Exception {
+        client
+            .perform(post("/chat/test"))
+            .andExpect(status().isForbidden());
     }
 
 }

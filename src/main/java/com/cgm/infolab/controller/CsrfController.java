@@ -1,4 +1,4 @@
-package com.cgm.infolab;
+package com.cgm.infolab.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

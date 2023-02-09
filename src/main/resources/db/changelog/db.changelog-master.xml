@@ -38,9 +38,6 @@
             <column name="sender_id" type="bigint" >
                 <constraints foreignKeyName="fk_sender_id" references="infolab.users(id)"/>
             </column>
-            <column name="recipient_user_id" type="bigint">
-                <constraints foreignKeyName="fk_recipient_user_id" references="infolab.users(id)"/>
-            </column>
             <column name="recipient_room_id" type="bigint">
                 <constraints foreignKeyName="fk_recipient_room_id" references="infolab.rooms(id)"/>
             </column>

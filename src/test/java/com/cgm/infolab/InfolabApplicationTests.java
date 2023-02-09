@@ -1,7 +1,6 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.model.ChatMessage;
-import com.cgm.infolab.model.MessageType;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -88,7 +87,7 @@ class InfolabApplicationTests {
             }
         });
 
-        ChatMessage sentMessage = new ChatMessage("banana", null, MessageType.JOIN);
+        ChatMessage sentMessage = new ChatMessage(null, "banana");
         session.send("/app/chat.register", sentMessage);
 
         await()
