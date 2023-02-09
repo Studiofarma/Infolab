@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 
-import '../../components/avatar.js'
+import "../../components/avatar.js";
 
 class ConversationList extends LitElement {
   static properties = {

@@ -7,6 +7,7 @@ export class InputControls extends LitElement {
     message: "",
     messages: [],
   };
+
   constructor() {
     super();
     this.message = "";

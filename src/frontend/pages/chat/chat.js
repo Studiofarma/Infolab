@@ -10,6 +10,8 @@ import "./input-controls.js";
 export class Chat extends LitElement {
   static properties = {
     stompClient: {},
+    messages: [],
+    message: "",
   };
 
   static get properties() {
@@ -25,6 +27,8 @@ export class Chat extends LitElement {
 
   constructor() {
     super();
+    this.messages = [];
+    this.message = "";
   }
 
   connectedCallback() {
