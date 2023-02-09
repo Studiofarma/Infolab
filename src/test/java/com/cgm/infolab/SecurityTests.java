@@ -60,10 +60,18 @@ public class SecurityTests {
 
     @Test
     @WithMockUser(username = "user1", password = "password1")
-    void postToTheChatEndpointMustBeAuthenticatedWithAKnownUser() throws Exception {
+    void postToTheChatEndpointMustBeAuthenticatedWithAKnownUserAndUseCsrf() throws Exception {
         client
             .perform(post("/chat/test").with(csrf().asHeader()))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "user1", password = "password1")
+    void postToTheChatEndpointWithoutCsrfShouldFail() throws Exception {
+        client
+            .perform(post("/chat/test"))
+            .andExpect(status().isForbidden());
     }
 
 }
