@@ -5,7 +5,6 @@ import '../../components/avatar.js'
 
 import "../../components/button-icon"
 
-import '../../components/avatar.js'
 
 export class SearchChats extends LitElement {
   static properties = {
