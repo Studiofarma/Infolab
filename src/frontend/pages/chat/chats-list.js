@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+const axios = require("axios").default;
 
 import '../../components/avatar.js'
 import './conversation.js'
@@ -66,6 +67,16 @@ class ConversationList extends LitElement {
       </div>
     `;
   }
+}
+
+async executePharmaciesCall() {
+  return axios({
+    url: "http://localhost:3000/pharmacies",
+    method: "get",
+    headers: {
+      "X-Requested-With": "XMLHttpRequest",
+    },
+  });
 }
 
 customElements.define("il-chats-list", ConversationList);
