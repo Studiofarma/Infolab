@@ -16,3 +16,8 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+@font-face {
+  font-family: 'Inter';
+  src: url(../assets/fonts/Inter.ttf);
+}
