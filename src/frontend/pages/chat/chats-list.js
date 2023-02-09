@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 
 import '../../components/avatar.js'
-import '../../components/conversazione.js'
+import './conversation.js'
 
 class ConversationList extends LitElement {
   static properties = {
