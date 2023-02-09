@@ -67,16 +67,16 @@ class ConversationList extends LitElement {
       </div>
     `;
   }
-}
 
-async executePharmaciesCall() {
-  return axios({
-    url: "http://localhost:3000/pharmacies",
-    method: "get",
-    headers: {
-      "X-Requested-With": "XMLHttpRequest",
-    },
-  });
+  async executePharmaciesCall() {
+    return axios({
+      url: "http://localhost:3000/pharmacies",
+      method: "get",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    });
+  }
 }
 
 customElements.define("il-chats-list", ConversationList);
