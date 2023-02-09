@@ -1,27 +1,25 @@
 package com.cgm.infolab.model;
 
+import java.sql.Timestamp;
 import java.util.Objects;
 
-public class ChatMessage {
 
-    private String sender;
+public class ChatMessage {
     private String content;
-    MessageType type;
+    private Timestamp timestamp;
+    private String sender;
 
     public ChatMessage() {
     }
 
-    public ChatMessage(String sender, String content, MessageType type) {
+    public ChatMessage(String content, String sender) {
         this.sender = sender;
         this.content = content;
-        this.type = type;
     }
 
-    public String getSender() {
-        return sender;
-    }
-
-    public void setSender(String sender) {
+    public ChatMessage(String content, Timestamp timestamp, String sender) {
+        this.content = content;
+        this.timestamp = timestamp;
         this.sender = sender;
     }
 
@@ -33,12 +31,20 @@ public class ChatMessage {
         this.content = content;
     }
 
-    public MessageType getType() {
-        return type;
+    public Timestamp getTimestamp() {
+        return timestamp;
     }
 
-    public void setType(MessageType type) {
-        this.type = type;
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
     @Override
@@ -46,7 +52,6 @@ public class ChatMessage {
         return "ChatMessage{" +
                 "sender='" + sender + '\'' +
                 ", content='" + content + '\'' +
-                ", type=" + type +
                 '}';
     }
 
@@ -55,12 +60,12 @@ public class ChatMessage {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChatMessage message = (ChatMessage) o;
-        return Objects.equals(sender, message.sender) && Objects.equals(content, message.content) && type == message.type;
+        return Objects.equals(sender, message.sender) && Objects.equals(content, message.content);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sender, content, type);
+        return Objects.hash(sender, content);
     }
 }
 
