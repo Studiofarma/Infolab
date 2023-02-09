@@ -143,7 +143,8 @@ export class Login extends LitElement {
       margin-top: 30px;
     }
 
-    * {
+    input,
+    button {
       font-family: inherit;
     }
   `;

@@ -189,10 +189,6 @@ export class Chat extends LitElement {
       color: black;
     }
 
-    * {
-      font-family: inherit;
-    }
-
     @keyframes rotationAnim {
       from {
         transform: rotate(0deg);
@@ -217,6 +213,10 @@ export class Chat extends LitElement {
       border-radius: 10px;
       width: 5px;
       border: 3px solid #003366;
+    }
+
+    input {
+      font-family: inherit;
     }
   `;
 

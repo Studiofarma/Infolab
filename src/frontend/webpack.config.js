@@ -23,10 +23,8 @@ module.exports = {
       },
 
       {
-        test: /\.(ttf)/,
-        use:{
-          loader: 'url-loader',
-        },
+        test: /\.ttf$/,
+        type: 'asset/resource',
       },
     ],
   },
