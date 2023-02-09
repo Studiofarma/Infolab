@@ -1,10 +1,9 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
 
-import '../../components/avatar.js'
+import "../../components/avatar.js";
 
-import "../../components/button-icon"
-
+import "../../components/button-icon";
 
 export class SearchChats extends LitElement {
   static properties = {
@@ -140,7 +139,6 @@ export class SearchChats extends LitElement {
       color: #6f6f6f;
       transition: 0.5s;
     }
-
   `;
 
   constructor() {
@@ -185,7 +183,7 @@ export class SearchChats extends LitElement {
 
     this.executePharmaciesCall()
       .then((element) => {
-        console.log(element["data"]);
+        // console.log(element["data"]);
         element["data"].forEach((pharmacy) => {
           if (pharmacy.name.toLowerCase().indexOf(this.query) > -1)
             tmp.push(pharmacy);
@@ -211,7 +209,5 @@ export class SearchChats extends LitElement {
       return html`<div><p class="nofound">Nessun risultato trovato</p></div>`;
     }
   }
-
-
 }
 customElements.define("il-search", SearchChats);

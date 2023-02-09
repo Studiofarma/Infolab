@@ -2,26 +2,31 @@
   "pharmacies": [
     {
       "name": "farmacia1",
+      "id": 1,
       "avatar": "#"
     },
 
     {
       "name": "farmacia2",
+      "id": 2,
       "avatar": "#"
     },
 
     {
       "name": "farmacia3",
+      "id": 3,
       "avatar": "#"
     },
 
     {
       "name": "farmacia del Dr. Fantozzi Ugo",
+      "id": 4,
       "avatar": "#"
     },
 
     {
       "name": "farmacia della Dr.essa Belladonna Anna",
+      "id": 5,
       "avatar": "#"
     }
   ]

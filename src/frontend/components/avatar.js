@@ -1,10 +1,13 @@
 import { LitElement, html, css } from "lit";
-
-import Immagine from '../assets/images/immagine.jpeg'
+import Immagine from "../assets/images/immagine.jpeg";
+const axios = require("axios").default;
 
 export class Avatar extends LitElement {
+  static properties = {
+    users: [],
+  };
 
-    static styles = css`
+  static styles = css`
     .avatar {
       width: 50px;
       height: 50px;
@@ -21,17 +24,37 @@ export class Avatar extends LitElement {
       object-fit: cover;
       object-position: center;
     }
-    `
+  `;
 
-    
-    render() {
-        return html`
-            <div class="avatar">
-                <img src=${Immagine} />
-            </div>
-        `
-    }
+  async executePharmaciesCall() {
+    return axios({
+      url: "http://localhost:3000/pharmacies",
+      method: "get",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    });
+  }
 
+  constructor() {
+    super();
+    // this.users = this.executePharmaciesCall()
+    //   .then((element) =>
+    //     element.forEach((e) => {
+    //       this.users.push(e);
+    //     })
+    //   )
+    //   .catch((e) => console.log(e));
+  }
+
+  render() {
+    console.log(this.users);
+    return html`
+      <div class="avatar">
+        <img src=${Immagine} />
+      </div>
+    `;
+  }
 }
 
-customElements.define('il-avatar', Avatar)
+customElements.define("il-avatar", Avatar);
