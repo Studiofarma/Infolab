@@ -22,6 +22,9 @@ export class Chat extends LitElement {
         headerName: "",
         token: "",
       },
+      stompClient: {},
+      messages: [],
+      message: "",
     };
   }
 
@@ -205,7 +208,9 @@ export class Chat extends LitElement {
               ${this.messages.map((item, _) => html` <li>${item}</li> `)}
             </ul>
 
-            <il-input-controls></il-input-controls>
+            <il-input-controls
+              @send-message="${this.sendMessage}"
+            ></il-input-controls>
           </div>
         </section>
       </main>
@@ -247,6 +252,21 @@ export class Chat extends LitElement {
     if (message.content) {
       this.messages.push(message.content);
       this.update();
+    }
+  }
+
+  sendMessage(e) {
+    this.message = e.detail.message;
+    let messageContent = this.message.trim();
+
+    if (messageContent && this.stompClient) {
+      const chatMessage = {
+        sender: this.login.username,
+        content: messageContent,
+        type: "CHAT",
+      };
+
+      this.stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
     }
   }
 

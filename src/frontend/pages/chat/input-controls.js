@@ -5,13 +5,11 @@ import "../../components/button-icon";
 export class InputControls extends LitElement {
   static properties = {
     message: "",
-    messages: [],
   };
 
   constructor() {
     super();
     this.message = "";
-    this.messages = [];
   }
 
   static styles = css`
@@ -23,8 +21,8 @@ export class InputControls extends LitElement {
       min-height: 60px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
+      gap: 5px;
+      padding: 8px 0;
       background: #0074bc;
     }
 
@@ -36,6 +34,7 @@ export class InputControls extends LitElement {
       font-size: 15pt;
       border: none;
       outline: none;
+      margin-left: 10px;
     }
 
     #inputControls > * {
@@ -95,17 +94,13 @@ export class InputControls extends LitElement {
   }
 
   sendMessage() {
-    let messageContent = this.message.trim();
-
-    if (messageContent && this.stompClient) {
-      const chatMessage = {
-        sender: this.login.username,
-        content: messageContent,
-        type: "CHAT",
-      };
-
-      this.stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
-    }
+    this.dispatchEvent(
+      new CustomEvent("send-message", {
+        detail: {
+          message: this.message,
+        },
+      })
+    );
 
     this.message = "";
   }
