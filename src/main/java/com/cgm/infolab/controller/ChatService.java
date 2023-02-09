@@ -45,7 +45,7 @@ public class ChatService {
             return null;
         });
         ChatMessageEntity messageEntity =
-                ChatMessageEntity.of(sender, room, timestamp, message.getContent());
+                ChatMessageEntity.of(sender, room, timestamp.toLocalDateTime(), message.getContent());
 
         try {
             chatMessageRepository.add(messageEntity);
