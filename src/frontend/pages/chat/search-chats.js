@@ -3,6 +3,8 @@ const axios = require("axios").default;
 
 import '../../components/avatar.js'
 
+import "../../components/button-icon"
+
 export class SearchChats extends LitElement {
   static properties = {
     pharmaciesList: { state: true },
@@ -123,12 +125,12 @@ export class SearchChats extends LitElement {
       position: relative;
     }
 
-    .containerInput input:focus ~ span {
+    .containerInput input:focus ~ il-button-icon {
       opacity: 0;
       visibility: hidden;
     }
 
-    .containerInput span {
+    .containerInput il-button-icon {
       position: absolute;
       transform: translate(-50%, -50%);
       top: 50%;
@@ -156,7 +158,7 @@ export class SearchChats extends LitElement {
             @input=${this.setFilter}
             @click=${this.setFilter}
           />
-          <span class="material-icons"> search </span>
+          <il-button-icon content="search"></il-button-icon>
 
           <div class="dropdown">${this.showTips()}</div>
         </div>
