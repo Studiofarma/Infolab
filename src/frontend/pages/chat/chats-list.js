@@ -1,5 +1,4 @@
 import { LitElement, html, css } from "lit";
-
 import '../../components/avatar.js'
 import './conversation.js'
 
