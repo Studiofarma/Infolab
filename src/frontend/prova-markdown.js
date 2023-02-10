@@ -1,10 +1,7 @@
-var md = require('markdown-it')( {
+var md = require("markdown-it")({
   highlight: function (str, lang, _) {
-    
-    if( lang && highlightJS.getLanguage(lang)) 
-      return '';
+    return "";
+  },
+});
 
-  }  
-})
-
-export var output = md.render('# WELCOME BACK')
+export var output = md.render("# ciao");
