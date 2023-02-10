@@ -67,6 +67,9 @@ Avviabile da linea di comando (meglio git bash) maven con
 ```
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=inmemory
 ```
+Si può accedere alla dashboard di amministrazione del db al url http://localhost:8081/h2-console/. Username `sa` e password vuota, come si
+può vedere nel file di configurazione del profilo: [`application-inmemory.properties`](src/main/resources/application-inmemory.properties)
+
 Questo profilo utilizza un database **In-Memory** chiamato [H2](https://www.h2database.com/html/main.html).
 
 Un database in-memory mantiene la persistenza dei solo per il tempo di run del backend. Spegnendolo, i dati vengono persi.
