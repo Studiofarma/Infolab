@@ -28,13 +28,6 @@ class ConversationList extends LitElement {
       height: 82vh;
     }
 
-    .pharmaciesList .name {
-      font-size: 15pt;
-      max-width: 200px;
-      overflow-x: hidden;
-      text-overflow: ellipsis;
-    }
-
     ::-webkit-scrollbar {
       background-color: #0074bc;
       border-radius: 10px;

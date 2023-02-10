@@ -4,6 +4,7 @@ const axios = require("axios").default;
 import "../../components/avatar.js";
 import "../../components/button-icon";
 
+
 export class SearchChats extends LitElement {
   static properties = {
     pharmaciesList: { state: true },
