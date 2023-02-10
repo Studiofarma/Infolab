@@ -62,6 +62,10 @@ export class InputControls extends LitElement {
       align-items: center;
       color: black;
     }
+
+    input {
+      font-family: inherit;
+    }
   `;
 
   render() {

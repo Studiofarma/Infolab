@@ -1,10 +1,8 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
 
-import '../../components/avatar.js'
-
-import "../../components/button-icon"
-
+import "../../components/avatar.js";
+import "../../components/button-icon";
 
 export class SearchChats extends LitElement {
   static properties = {
@@ -102,7 +100,7 @@ export class SearchChats extends LitElement {
       font-weight: lighter;
     }
 
-    .material-icons {
+    <<<<<<< HEAD ======= .material-icons {
       font-family: "Material Icons";
       font-weight: normal;
       font-style: normal;
@@ -118,7 +116,7 @@ export class SearchChats extends LitElement {
       cursor: pointer;
     }
 
-    .dropdown > div:hover {
+    >>>>>>>main .dropdown > div:hover {
       background: lightgray;
     }
 
@@ -141,6 +139,9 @@ export class SearchChats extends LitElement {
       transition: 0.5s;
     }
 
+    input {
+      font-family: inherit;
+    }
   `;
 
   constructor() {
@@ -211,7 +212,6 @@ export class SearchChats extends LitElement {
       return html`<div><p class="nofound">Nessun risultato trovato</p></div>`;
     }
   }
-
-
 }
+
 customElements.define("il-search", SearchChats);

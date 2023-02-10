@@ -77,7 +77,7 @@ Un database in-memory mantiene la persistenza dei solo per il tempo di run del b
 Per quanto riguarda le query SQL standard, H2 e Postgres hanno lo stesso comportamento. Tuttavia i 2 DB potrebbero presentare delle differenze.
 Ad esempio utilizzano due sistemi diversi per la generazione degli id.
 
-Per lo sviluppo Backend, è possibile utilizzare H2 per il grosso del lavoro. **Il test finale va sempre però fatto su Postgres!** 
+Per lo sviluppo Backend, è possibile utilizzare H2 per il grosso del lavoro. **Il test finale va sempre però fatto su Postgres!**
 
 # Flusso di sviluppo
 

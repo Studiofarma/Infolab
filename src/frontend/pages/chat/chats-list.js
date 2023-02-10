@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
-import '../../components/avatar.js'
-import './conversation.js'
+
+import "../../components/avatar.js";
+import "./conversation.js";
 
 class ConversationList extends LitElement {
   static properties = {
@@ -21,7 +22,6 @@ class ConversationList extends LitElement {
       gap: 10px;
     }
 
-    
     .pharmaciesList {
       transition: 0.5s;
       overflow-y: scroll;
@@ -51,7 +51,7 @@ class ConversationList extends LitElement {
 
   constructor() {
     super();
-    this.chatsList = [{ name: "chatBox user1", avatar: "#" } ];
+    this.chatsList = [{ name: "chatBox user1", avatar: "#" }];
   }
 
   render() {
@@ -59,7 +59,7 @@ class ConversationList extends LitElement {
       <div class="pharmaciesList">
         ${this.chatsList.map(
           (chat) => html`
-           <il-conversation name=${chat.name}></il-conversation>
+            <il-conversation name=${chat.name}></il-conversation>
           `
         )}
       </div>
