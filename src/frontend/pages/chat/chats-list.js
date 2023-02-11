@@ -1,12 +1,13 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
 
-import '../../components/avatar.js'
-import './conversation.js'
+import "../../components/avatar.js";
+import "./conversation.js";
 
 class ConversationList extends LitElement {
   static properties = {
     chatsList: { state: true },
+    pharmaciesList: { state: true },
   };
 
   static styles = css`
@@ -23,7 +24,6 @@ class ConversationList extends LitElement {
       gap: 10px;
     }
 
-    
     .pharmaciesList {
       transition: 0.5s;
       overflow-y: scroll;
@@ -53,19 +53,11 @@ class ConversationList extends LitElement {
 
   constructor() {
     super();
-    this.chatsList = [{ name: "chatBox user1", avatar: "#" } ];
+    this.pharmaciesList = [];
   }
 
   render() {
-    return html`
-      <div class="pharmaciesList">
-        ${this.chatsList.map(
-          (chat) => html`
-           <il-conversation name=${chat.name}></il-conversation>
-          `
-        )}
-      </div>
-    `;
+    return html` <div class="pharmaciesList">${this.renderList()}</div> `;
   }
 
   async executePharmaciesCall() {
@@ -76,6 +68,24 @@ class ConversationList extends LitElement {
         "X-Requested-With": "XMLHttpRequest",
       },
     });
+  }
+
+  setList() {
+    let tmp = [];
+
+    this.executePharmaciesCall().then((element) => {
+      element["data"].forEach((pharmacy) => {
+        tmp.push(pharmacy);
+      });
+      this.pharmaciesList = tmp;
+    });
+  }
+
+  renderList() {
+    this.setList();
+    return this.pharmaciesList.map((pharmacy) => 
+      html`<il-conversation name=${pharmacy.name}></il-conversation>`
+    );
   }
 }
 
