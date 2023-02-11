@@ -179,7 +179,6 @@ export class Chat extends LitElement {
     //aggiungo il main e lo metto in absolute per non andare in display flex che avevo messo per il login
     return html`
       <main>
-
         <section>
           <div class="sidebar">
             <il-search></il-search>

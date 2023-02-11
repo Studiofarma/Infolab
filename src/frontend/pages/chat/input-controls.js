@@ -1,15 +1,20 @@
 import { LitElement, html, css } from "lit";
 
 import "../../components/button-icon";
+import "../../components/insertion-bar";
+
+import { resolveMarkdown } from "lit-markdown";
 
 export class InputControls extends LitElement {
   static properties = {
     message: "",
+    bEditor: false,
   };
 
   constructor() {
     super();
     this.message = "";
+    this.bEditor = false;
   }
 
   static styles = css`
@@ -20,6 +25,7 @@ export class InputControls extends LitElement {
       width: 100%;
       min-height: 60px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
       gap: 5px;
       padding: 8px 0;
@@ -27,18 +33,23 @@ export class InputControls extends LitElement {
     }
 
     #inputControls input[type="text"] {
-      height: 50px;
-      flex-basis: 90%;
-      border-radius: 18px;
+      height: 30px;
+      border-radius: 10px;
       padding: 5px 12px;
       font-size: 15pt;
       border: none;
       outline: none;
       margin-left: 10px;
+      transition: all 0.5s;
+    }
+
+    #inputControls input[type="text"].editor-mode {
+      height: 60px;
     }
 
     #inputControls > * {
       flex-shrink: 1;
+      width: 100%;
     }
 
     #inputControls #submitContainer {
@@ -46,6 +57,14 @@ export class InputControls extends LitElement {
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+
+    #inputControls .inputContainer {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      height: auto;
     }
 
     #submitContainer il-button-icon {
@@ -71,13 +90,19 @@ export class InputControls extends LitElement {
   render() {
     return html`
       <div id="inputControls">
-        <input
-          type="text"
-          placeholder="Scrivi un messaggio..."
-          @input=${this.onMessageInput}
-          @keydown=${this.checkEnterKey}
-          .value=${this.message}
-        />
+        <div class="inputContainer">
+          <input
+            class=${this.bEditor ? "editor-mode" : ""}
+            type="text"
+            placeholder="Scrivi un messaggio..."
+            @input=${this.onMessageInput}
+            @keydown=${this.checkEnterKey}
+            .value=${this.message}
+          />
+
+          <il-insertion-bar @open-editor=${this.openEditor}> </il-insertion-bar>
+        </div>
+
         <div id="submitContainer">
           <il-button-icon
             @click=${this.sendMessage}
@@ -95,6 +120,12 @@ export class InputControls extends LitElement {
 
   checkEnterKey(event) {
     if (event.key === "Enter") this.sendMessage();
+  }
+
+  openEditor(e) {
+    const option = e.detail.opt;
+    if (option === "edit") this.bEditor = !this.bEditor;
+    else if (option === "mood") alert("emoticon picker");
   }
 
   sendMessage() {
