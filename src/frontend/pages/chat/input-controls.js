@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 
 import "../../components/button-icon";
 import "../../components/insertion-bar";
+import "../../components/editor";
 
 import { resolveMarkdown } from "lit-markdown";
 
@@ -9,12 +10,14 @@ export class InputControls extends LitElement {
   static properties = {
     message: "",
     bEditor: false,
+    bEmoji: false,
   };
 
   constructor() {
     super();
     this.message = "";
     this.bEditor = false;
+    this.bEmoji = false;
   }
 
   static styles = css`
@@ -65,6 +68,7 @@ export class InputControls extends LitElement {
       flex-direction: column;
       gap: 5px;
       height: auto;
+      padding-left: 10px;
     }
 
     #submitContainer il-button-icon {
@@ -92,7 +96,7 @@ export class InputControls extends LitElement {
       <div id="inputControls">
         <div class="inputContainer">
           <input
-            class=${this.bEditor ? "editor-mode" : ""}
+            ?hidden=${this.bEditor}
             type="text"
             placeholder="Scrivi un messaggio..."
             @input=${this.onMessageInput}
@@ -100,7 +104,13 @@ export class InputControls extends LitElement {
             .value=${this.message}
           />
 
-          <il-insertion-bar @open-editor=${this.openEditor}> </il-insertion-bar>
+          <il-editor
+            ?hidden=${!this.bEditor}
+            @typing-text=${this.onInputFromEditor}
+          ></il-editor>
+
+          <il-insertion-bar @open-insertion-mode=${this.openInsertionMode}>
+          </il-insertion-bar>
         </div>
 
         <div id="submitContainer">
@@ -113,6 +123,11 @@ export class InputControls extends LitElement {
     `;
   }
 
+  onInputFromEditor(e) {
+    const htmlOutput = e.detail.content;
+    this.message = htmlOutput;
+  }
+
   onMessageInput(e) {
     const inputEl = e.target;
     this.message = inputEl.value;
@@ -122,10 +137,10 @@ export class InputControls extends LitElement {
     if (event.key === "Enter") this.sendMessage();
   }
 
-  openEditor(e) {
+  openInsertionMode(e) {
     const option = e.detail.opt;
     if (option === "edit") this.bEditor = !this.bEditor;
-    else if (option === "mood") alert("emoticon picker");
+    else if (option === "mood") this.bEmoji = !this.bEmoji;
   }
 
   sendMessage() {
@@ -138,6 +153,9 @@ export class InputControls extends LitElement {
     );
 
     this.message = "";
+    if (this.bEditor) {
+      this.bEditor = false;
+    }
   }
 }
 

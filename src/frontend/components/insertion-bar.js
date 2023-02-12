@@ -28,7 +28,7 @@ export class InsertionBar extends LitElement {
   select_formatting_option(e) {
     const option = e.target.content;
     this.dispatchEvent(
-      new CustomEvent("open-editor", { detail: { opt: option } })
+      new CustomEvent("open-insertion-mode", { detail: { opt: option } })
     );
   }
 }

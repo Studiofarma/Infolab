@@ -59,7 +59,7 @@ export class Chat extends LitElement {
 
     section {
       display: grid;
-      grid-template-columns: 0.3fr 0.7fr;
+      grid-template-columns: 300px auto;
       height: 100%;
     }
 
@@ -69,7 +69,8 @@ export class Chat extends LitElement {
       padding-top: 10px;
       display: flex;
       flex-direction: column;
-      border-right: 3px solid #0064a6;
+      box-shadow: 1px 1px 8px black;
+      z-index: 1000;
     }
 
     .chat {
@@ -86,7 +87,7 @@ export class Chat extends LitElement {
       left: 0px;
       width: 100%;
       min-height: 50px;
-      padding: 8px 10px;
+      padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
