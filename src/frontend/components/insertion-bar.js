@@ -7,12 +7,7 @@ export class InsertionBar extends LitElement {
     div {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding-left: 10px;
-    }
-
-    il-button-icon {
-      color: white;
+      gap: 1px;
     }
   `;
 

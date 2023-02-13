@@ -1,9 +1,6 @@
 import { LitElement, html, css } from "lit";
 
-import "./formatting-bar";
-
-import { resolveMarkdown } from "lit-markdown";
-
+import "./formatting-button.js";
 export class Editor extends LitElement {
   static properties = {
     message: "",
@@ -11,52 +8,72 @@ export class Editor extends LitElement {
   };
 
   static styles = css`
-    .container {
-      position: relative;
-      overflow: hidden;
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
+
+    .formatting-bar {
+      width: 100%;
+      height: 40px;
+      background: #bcc7d9;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0px 10px;
     }
 
     textarea {
       width: 100%;
-      height: 200px;
+      height: 100%;
       border: none;
+      border-radius: 10pt;
       outline: none;
       padding: 5px;
-      margin-left: 15px;
       resize: none;
+      overflow-y: auto;
+      font-family: inherit;
     }
 
-    il-formatting-bar {
-      width: 100%;
-      height: 30px;
+    select {
+      border: none;
+      outline: none;
+      min-width: 80px;
+      padding: 5px;
     }
   `;
 
   render() {
     return html`
-      <div class="container">
-        <il-formatting-bar></il-formatting-bar>
-        <textarea
-          placeholder="Scrivi un messaggio..."
-          @input=${this.parseMarkdown}
-        ></textarea>
+      <!-- diventerà un componente -->
+      <div class="formatting-bar">
+        <il-formatting-button content="B"></il-formatting-button>
+        <il-formatting-button content="I"></il-formatting-button>
+        <il-formatting-button content="S"></il-formatting-button>
+        <il-formatting-button content="list"></il-formatting-button>
+        <il-formatting-button content="link"></il-formatting-button>
+
+        <select>
+          <option><h1>h1</h1></option>
+          <option><h2>h2</h2></option>
+          <option><h3>h3</h3></option>
+        </select>
       </div>
+
+      <textarea
+        placeholder="Scrivi un messaggio..."
+        @input=${this.onMessageInput}
+      ></textarea>
     `;
   }
 
-  parseMarkdown(e) {
+  onMessageInput(e) {
     const inputEl = e.target;
     this.message = inputEl.value;
 
-    const md = require("markdown-it")({
-      html: false,
-      linkify: true,
-    });
-
-    const output = md.renderInline(this.message);
-
     this.dispatchEvent(
-      new CustomEvent("typing-text", { detail: { content: output } })
+      new CustomEvent("typing-text", { detail: { content: this.message } })
     );
   }
 }

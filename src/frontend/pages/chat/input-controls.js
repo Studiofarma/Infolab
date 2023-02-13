@@ -3,9 +3,6 @@ import { LitElement, html, css } from "lit";
 import "../../components/button-icon";
 import "../../components/insertion-bar";
 import "../../components/editor";
-
-import { resolveMarkdown } from "lit-markdown";
-
 export class InputControls extends LitElement {
   static properties = {
     message: "",
@@ -21,6 +18,16 @@ export class InputControls extends LitElement {
   }
 
   static styles = css`
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    input {
+      font-family: inherit;
+    }
+
     #inputControls {
       position: absolute;
       bottom: 0px;
@@ -28,66 +35,59 @@ export class InputControls extends LitElement {
       width: 100%;
       min-height: 60px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
       gap: 5px;
-      padding: 8px 0;
-      background: #0074bc;
+      padding: 20px 10px;
+      background: #083c72;
+      box-shadow: 0px -1px 5px black;
     }
 
-    #inputControls input[type="text"] {
-      height: 30px;
+    .inputContainer {
+      display: flex;
+      flex-grow: 1;
+      background: white;
+      padding: 5px;
       border-radius: 10px;
-      padding: 5px 12px;
-      font-size: 15pt;
+      transition: 0.5s;
+      transition-delay: 1s;
+    }
+
+    .inputContainer input[type="text"] {
+      flex-grow: 1;
       border: none;
       outline: none;
-      margin-left: 10px;
-      transition: all 0.5s;
-    }
-
-    #inputControls input[type="text"].editor-mode {
-      height: 60px;
-    }
-
-    #inputControls > * {
-      flex-shrink: 1;
-      width: 100%;
-    }
-
-    #inputControls #submitContainer {
-      flex-basis: 10%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    #inputControls .inputContainer {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      height: auto;
-      padding-left: 10px;
+      padding-left: 3px;
     }
 
     #submitContainer il-button-icon {
-      width: 40px;
-      height: 40px;
+      width: 50px;
+      height: 50px;
       margin-top: 0px;
       border: none;
-      border-radius: 50%;
-      background: white;
+      color: white !important;
       font-size: 20px;
       cursor: pointer;
       display: flex;
       justify-content: center;
       align-items: center;
-      color: black;
     }
 
-    input {
-      font-family: inherit;
+    il-editor {
+      display: none;
+      transition: 0.5s;
+      height: 0px;
+      overflow-y: hidden;
+    }
+
+    input[type="text"].closed {
+      display: none;
+    }
+
+    input[type="text"].closed ~ il-editor {
+      flex-grow: 1;
+      width: 100%;
+      height: 200px;
+      display: block;
     }
   `;
 
@@ -95,8 +95,14 @@ export class InputControls extends LitElement {
     return html`
       <div id="inputControls">
         <div class="inputContainer">
+          <il-insertion-bar
+            @open-insertion-mode=${this.openInsertionMode}
+            @click=${this.prova}
+          >
+          </il-insertion-bar>
+
           <input
-            ?hidden=${this.bEditor}
+            class=${this.bEditor ? "closed" : "opened"}
             type="text"
             placeholder="Scrivi un messaggio..."
             @input=${this.onMessageInput}
@@ -104,13 +110,7 @@ export class InputControls extends LitElement {
             .value=${this.message}
           />
 
-          <il-editor
-            ?hidden=${!this.bEditor}
-            @typing-text=${this.onInputFromEditor}
-          ></il-editor>
-
-          <il-insertion-bar @open-insertion-mode=${this.openInsertionMode}>
-          </il-insertion-bar>
+          <il-editor @typing-text=${this.onInputFromEditor}></il-editor>
         </div>
 
         <div id="submitContainer">
@@ -124,8 +124,8 @@ export class InputControls extends LitElement {
   }
 
   onInputFromEditor(e) {
-    const htmlOutput = e.detail.content;
-    this.message = htmlOutput;
+    const markdownText = e.detail.content;
+    this.message = markdownText;
   }
 
   onMessageInput(e) {

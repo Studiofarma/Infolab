@@ -44,7 +44,7 @@ class ConversationList extends LitElement {
 
   constructor() {
     super();
-    this.chatsList = [{ name: "chatBox user1", avatar: "#" }];
+    this.chatsList = [{ name: "Chatbox user1", avatar: "#" }];
   }
 
   render() {
