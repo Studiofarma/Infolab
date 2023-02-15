@@ -14,6 +14,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class ChatService {
@@ -33,7 +36,17 @@ public class ChatService {
     }
     public void ChatServiceMetodo(ChatMessage message){
 
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
+        // TODO: rimuovere quando arriverà dal FE.
+        // Tutto questo è per simulare il fatto che arriverà una string dal frontend, che andrà
+        // poi convertita in LocalDateTime.
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+        String timestampString = new Timestamp(System.currentTimeMillis())
+                .toInstant()
+                .atZone(ZoneId.of("Europe/Rome"))
+                .toLocalDateTime().format(formatter);
+
+        LocalDateTime timestamp = LocalDateTime.parse(timestampString, formatter);
+
         UserEntity sender = userRepository.getByUsername(message.getSender()).orElseGet(() -> {
             log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
             return null;
@@ -45,7 +58,7 @@ public class ChatService {
             return null;
         });
         ChatMessageEntity messageEntity =
-                ChatMessageEntity.of(sender, room, timestamp.toLocalDateTime(), message.getContent());
+                ChatMessageEntity.of(sender, room, timestamp, message.getContent());
 
         try {
             chatMessageRepository.add(messageEntity);

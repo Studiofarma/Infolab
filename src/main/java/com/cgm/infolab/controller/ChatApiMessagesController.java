@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,9 +41,14 @@ public class ChatApiMessagesController {
             return messages;
         }
 
+        // HH messi maiuscoli perché altrimenti il formato è a 12 ore.
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         if (chatMessageEntities.size() > 0) {
             for (ChatMessageEntity entity : chatMessageEntities) {
-                ChatMessage message = new ChatMessage(entity.getContent(), entity.getTimestamp(), entity.getSender().getName());
+                ChatMessage message = new ChatMessage(entity.getContent(),
+                        entity.getTimestamp().format(formatter),
+                        entity.getSender().getName());
                 messages.add(message);
             }
         } else {
