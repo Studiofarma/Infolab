@@ -7,6 +7,7 @@ import com.cgm.infolab.db.model.RoomEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.format.DateTimeFormatter;
@@ -30,7 +31,7 @@ public class ChatApiMessagesController {
     // Potete provare le chiamate all'API aprendo un browser all'indirizzo http://localhost:8081/api/messages/general (vi chiedera' username e password. user1 - password1)
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/general")
-    public List<ChatMessage> getAllMessagesGeneral() {
+    public List<ChatMessage> getAllMessagesGeneral(@RequestParam int messageNumber) {
         RoomEntity room = RoomEntity.of("general");
         List<ChatMessageEntity> chatMessageEntities;
         List<ChatMessage> messages = new ArrayList<>();
@@ -45,7 +46,14 @@ public class ChatApiMessagesController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         if (chatMessageEntities.size() > 0) {
-            for (ChatMessageEntity entity : chatMessageEntities) {
+            /*for (ChatMessageEntity entity : chatMessageEntities) {
+                ChatMessage message = new ChatMessage(entity.getContent(),
+                        entity.getTimestamp().format(formatter),
+                        entity.getSender().getName());
+            }*/
+
+            for (int i = 1; i <= messageNumber && i <= chatMessageEntities.size(); i++) {
+                ChatMessageEntity entity = chatMessageEntities.get(chatMessageEntities.size() - i);
                 ChatMessage message = new ChatMessage(entity.getContent(),
                         entity.getTimestamp().format(formatter),
                         entity.getSender().getName());
