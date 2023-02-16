@@ -53,7 +53,7 @@ class ConversationList extends LitElement {
 
   constructor() {
     super();
-    this.pharmaciesList = [];
+    this.pharmaciesList = this.setList();
   }
 
   render() {
@@ -82,7 +82,6 @@ class ConversationList extends LitElement {
   }
 
   renderList() {
-    this.setList();
     return this.pharmaciesList.map((pharmacy) => 
       html`<il-conversation name=${pharmacy.name}></il-conversation>`
     );
