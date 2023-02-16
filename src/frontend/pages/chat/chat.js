@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { resolveMarkdown } from "lit-markdown";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
@@ -6,8 +7,6 @@ import "../../components/button-icon";
 import "./search-chats.js";
 import "./chats-list.js";
 import "./input-controls.js";
-
-import { resolveMarkdown } from "lit-markdown";
 
 export class Chat extends LitElement {
   static properties = {
