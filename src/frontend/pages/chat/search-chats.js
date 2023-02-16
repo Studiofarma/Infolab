@@ -1,9 +1,7 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
 
-import '../../components/avatar.js'
-
-import "../../components/button-icon"
+import "../../components/button-icon";
 
 export class SearchChats extends LitElement {
   static properties = {
@@ -20,7 +18,7 @@ export class SearchChats extends LitElement {
 
     #searchChats {
       width: 100%;
-      padding: 5px 20px;
+      padding: 5px 10px;
       margin-bottom: 50px;
       column-gap: 10px;
       position: relative;
@@ -79,7 +77,7 @@ export class SearchChats extends LitElement {
     .dropdown > div {
       min-height: 60px;
       padding: 8px 10px;
-      font-weight: bold;
+      font-weight: 400;
       transition: 0.5s;
       cursor: pointer;
       display: flex;
@@ -99,22 +97,6 @@ export class SearchChats extends LitElement {
       font-size: 10pt;
       align-self: center;
       font-weight: lighter;
-    }
-
-    .material-icons {
-      font-family: "Material Icons";
-      font-weight: normal;
-      font-style: normal;
-      font-size: 24px;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: inline-block;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
-      -webkit-font-smoothing: antialiased;
-      cursor: pointer;
     }
 
     .dropdown > div:hover {
@@ -140,6 +122,9 @@ export class SearchChats extends LitElement {
       transition: 0.5s;
     }
 
+    input {
+      font-family: inherit;
+    }
   `;
 
   constructor() {
@@ -201,7 +186,6 @@ export class SearchChats extends LitElement {
       return this.pharmaciesList.map(
         (pharmacy) => html`
           <div>
-            <il-avatar></il-avatar>
             <p>${pharmacy.name}</p>
           </div>
         `
@@ -210,7 +194,6 @@ export class SearchChats extends LitElement {
       return html`<div><p class="nofound">Nessun risultato trovato</p></div>`;
     }
   }
-
-
 }
+
 customElements.define("il-search", SearchChats);

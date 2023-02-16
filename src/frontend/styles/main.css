@@ -10,9 +10,14 @@ body {
   font-size: 1rem;
   line-height: 1.58;
   color: #333;
-  background: #013365;
+  background: #083c72;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url(../assets/fonts/Inter.ttf);
 }

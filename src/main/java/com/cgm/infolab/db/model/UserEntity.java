@@ -6,8 +6,8 @@ public class UserEntity {
     private long id;
     private String name;
 
-    public UserEntity() {
-    }
+//    public UserEntity() {
+//    }
 
     private UserEntity(long id, String name) {
         this.id = id;
