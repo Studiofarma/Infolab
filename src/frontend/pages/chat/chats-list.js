@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 
-import "../../components/avatar.js";
-import "./conversation.js";
+import '../../components/avatar.js'
+import './conversation.js'
 
 class ConversationList extends LitElement {
   static properties = {
@@ -22,10 +22,18 @@ class ConversationList extends LitElement {
       gap: 10px;
     }
 
+    
     .pharmaciesList {
       transition: 0.5s;
       overflow-y: scroll;
       height: 82vh;
+    }
+
+    .pharmaciesList .name {
+      font-size: 15pt;
+      max-width: 200px;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
     }
 
     ::-webkit-scrollbar {
@@ -44,7 +52,7 @@ class ConversationList extends LitElement {
 
   constructor() {
     super();
-    this.chatsList = [{ name: "Chatbox user1", avatar: "#" }];
+    this.chatsList = [{ name: "chatBox user1", avatar: "#" } ];
   }
 
   render() {
@@ -52,7 +60,7 @@ class ConversationList extends LitElement {
       <div class="pharmaciesList">
         ${this.chatsList.map(
           (chat) => html`
-            <il-conversation name=${chat.name}></il-conversation>
+           <il-conversation name=${chat.name}></il-conversation>
           `
         )}
       </div>

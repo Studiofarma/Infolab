@@ -1,18 +1,16 @@
 import { LitElement, html, css } from "lit";
-import { resolveMarkdown } from "lit-markdown";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
 import "../../components/button-icon";
 import "./search-chats.js";
 import "./chats-list.js";
-import "./input-controls.js";
 
 export class Chat extends LitElement {
   static properties = {
-    stompClient: {},
-    messages: [],
     message: "",
+    messages: [],
+    stompClient: {},
   };
 
   static get properties() {
@@ -28,10 +26,9 @@ export class Chat extends LitElement {
 
   constructor() {
     super();
-    this.messages = [];
     this.message = "";
+    this.messages = [];
   }
-
   connectedCallback() {
     super.connectedCallback();
     this.createSocket();
@@ -60,34 +57,34 @@ export class Chat extends LitElement {
 
     section {
       display: grid;
-      grid-template-columns: 350px auto;
+      grid-template-columns: 0.3fr 0.7fr;
       height: 100%;
     }
 
     .sidebar {
-      background: #083c72;
+      background: #003366;
       color: white;
       padding-top: 10px;
       display: flex;
       flex-direction: column;
-      box-shadow: 1px 1px 8px black;
-      z-index: 1000;
+      border-right: 3px solid #0064a6;
     }
 
     .chat {
       position: relative;
-      padding: 100px 20px 70px 20px;
+      padding-top: 100px;
+      padding-left: 5vw;
+      padding-right: 5vw;
     }
 
     .chatHeader {
       position: absolute;
-      background: #083c72;
-      box-shadow: 0px 1px 5px black;
+      background: #0074bc;
       top: 0px;
       left: 0px;
       width: 100%;
       min-height: 50px;
-      padding: 15px 30px;
+      padding: 8px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -113,11 +110,7 @@ export class Chat extends LitElement {
       gap: 30px;
     }
 
-    li {
-      list-style-position: inside;
-    }
-
-    .messageBox > li {
+    .messageBox li {
       position: relative;
       min-width: 300px;
       padding: 15px 8px;
@@ -126,7 +119,7 @@ export class Chat extends LitElement {
       box-shadow: 0 0 10px #989a9d;
     }
 
-    .messageBox > li::after {
+    .messageBox li::after {
       content: "";
       position: absolute;
       transform: translate(-50%, -50%);
@@ -137,7 +130,7 @@ export class Chat extends LitElement {
       border-right: 0px solid transparent;
     }
 
-    .messageBox > li::before {
+    .messageBox li::before {
       content: "";
       position: absolute;
       transform: translate(-50%, -50%);
@@ -147,6 +140,57 @@ export class Chat extends LitElement {
       border-left: 10px solid transparent;
       border-right: 0px solid transparent;
       filter: blur(10px);
+    }
+
+    #inputControls {
+      position: absolute;
+      bottom: 0px;
+      left: 0px;
+      width: 100%;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: #0074bc;
+    }
+
+    #inputControls input[type="text"] {
+      height: 50px;
+      flex-basis: 90%;
+      border-radius: 18px;
+      padding: 5px 12px;
+      font-size: 15pt;
+    }
+
+    #inputControls > * {
+      flex-shrink: 1;
+    }
+
+    #inputControls .submitContainer {
+      flex-basis: 10%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .submitContainer il-button-icon {
+      width: 40px;
+      height: 40px;
+      margin-top: 0px;
+      border: none;
+      border-radius: 50%;
+      background: white;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: black;
+    }
+
+    * {
+      font-family: inherit;
     }
 
     @keyframes rotationAnim {
@@ -165,18 +209,14 @@ export class Chat extends LitElement {
     :not(.dropdown)::-webkit-scrollbar {
       background-color: #0074bc;
       border-radius: 10px;
-      border: 5px solid #083c72;
+      border: 5px solid #003366;
     }
 
     :not(.dropdown)::-webkit-scrollbar-thumb {
       background-color: #0da2ff;
       border-radius: 10px;
       width: 5px;
-      border: 3px solid #083c72;
-    }
-
-    input {
-      font-family: inherit;
+      border: 3px solid #003366;
     }
   `;
 
@@ -184,6 +224,8 @@ export class Chat extends LitElement {
     //aggiungo il main e lo metto in absolute per non andare in display flex che avevo messo per il login
     return html`
       <main>
+        <header></header>
+
         <section>
           <div class="sidebar">
             <il-search></il-search>
@@ -205,29 +247,28 @@ export class Chat extends LitElement {
             </div>
 
             <ul class="messageBox">
-              ${this.messages.map(
-                (item, _) =>
-                  html` <li>${resolveMarkdown(this.parseMarkdown(item))}</li> `
-              )}
+              ${this.messages.map((item, _) => html` <li>${item}</li> `)}
             </ul>
 
-            <il-input-controls
-              @send-message="${this.sendMessage}"
-            ></il-input-controls>
+            <div id="inputControls">
+              <input
+                type="text"
+                placeholder="Scrivi un messaggio..."
+                @input=${this.onMessageInput}
+                @keydown=${this.checkEnterKey}
+                .value=${this.message}
+              />
+              <div class="submitContainer">
+                <il-button-icon
+                  @click=${this.sendMessage}
+                  content="send"
+                ></il-button-icon>
+              </div>
+            </div>
           </div>
         </section>
       </main>
     `;
-  }
-
-  parseMarkdown(text) {
-    const md = require("markdown-it")({
-      html: false,
-      linkify: true,
-    });
-
-    const output = md.render(text);
-    return output;
   }
 
   createSocket() {
@@ -268,8 +309,20 @@ export class Chat extends LitElement {
     }
   }
 
-  sendMessage(e) {
-    this.message = e.detail.message;
+  onError(error) {
+    console.log(error);
+  }
+
+  onMessageInput(e) {
+    const inputEl = e.target;
+    this.message = inputEl.value;
+  }
+
+  checkEnterKey(event) {
+    if (event.key === "Enter") this.sendMessage();
+  }
+
+  sendMessage() {
     let messageContent = this.message.trim();
 
     if (messageContent && this.stompClient) {
@@ -281,10 +334,8 @@ export class Chat extends LitElement {
 
       this.stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
     }
-  }
 
-  onError(error) {
-    console.log(error);
+    this.message = "";
   }
 }
 

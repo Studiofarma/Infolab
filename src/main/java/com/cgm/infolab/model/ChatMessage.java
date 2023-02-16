@@ -1,13 +1,12 @@
 package com.cgm.infolab.model;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
 
 public class ChatMessage {
     private String content;
-    private LocalDateTime timestamp;
+    private Timestamp timestamp;
     private String sender;
 
     public ChatMessage() {
@@ -18,14 +17,9 @@ public class ChatMessage {
         this.content = content;
     }
 
-    public ChatMessage(String content, LocalDateTime timestamp, String sender) {
-        this.content = content;
-        this.timestamp = timestamp;
-        this.sender = sender;
-    }
     public ChatMessage(String content, Timestamp timestamp, String sender) {
         this.content = content;
-        this.timestamp = timestamp.toLocalDateTime();
+        this.timestamp = timestamp;
         this.sender = sender;
     }
 
@@ -37,11 +31,11 @@ public class ChatMessage {
         this.content = content;
     }
 
-    public LocalDateTime getTimestamp() {
+    public Timestamp getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
     }
 

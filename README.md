@@ -67,9 +67,6 @@ Avviabile da linea di comando (meglio git bash) maven con
 ```
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=inmemory
 ```
-Si può accedere alla dashboard di amministrazione del db al url http://localhost:8081/h2-console/. Username `sa` e password vuota, come si
-può vedere nel file di configurazione del profilo: [`application-inmemory.properties`](src/main/resources/application-inmemory.properties)
-
 Questo profilo utilizza un database **In-Memory** chiamato [H2](https://www.h2database.com/html/main.html).
 
 Un database in-memory mantiene la persistenza dei solo per il tempo di run del backend. Spegnendolo, i dati vengono persi.
@@ -77,7 +74,7 @@ Un database in-memory mantiene la persistenza dei solo per il tempo di run del b
 Per quanto riguarda le query SQL standard, H2 e Postgres hanno lo stesso comportamento. Tuttavia i 2 DB potrebbero presentare delle differenze.
 Ad esempio utilizzano due sistemi diversi per la generazione degli id.
 
-Per lo sviluppo Backend, è possibile utilizzare H2 per il grosso del lavoro. **Il test finale va sempre però fatto su Postgres!**
+Per lo sviluppo Backend, è possibile utilizzare H2 per il grosso del lavoro. **Il test finale va sempre però fatto su Postgres!** 
 
 # Flusso di sviluppo
 

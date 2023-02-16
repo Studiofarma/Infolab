@@ -20,7 +20,7 @@ export class SearchChats extends LitElement {
 
     #searchChats {
       width: 100%;
-      padding: 5px 10px;
+      padding: 5px 20px;
       margin-bottom: 50px;
       column-gap: 10px;
       position: relative;
@@ -79,7 +79,7 @@ export class SearchChats extends LitElement {
     .dropdown > div {
       min-height: 60px;
       padding: 8px 10px;
-      font-weight: 400;
+      font-weight: bold;
       transition: 0.5s;
       cursor: pointer;
       display: flex;
@@ -99,6 +99,22 @@ export class SearchChats extends LitElement {
       font-size: 10pt;
       align-self: center;
       font-weight: lighter;
+    }
+
+    .material-icons {
+      font-family: "Material Icons";
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-smoothing: antialiased;
+      cursor: pointer;
     }
 
     .dropdown > div:hover {
@@ -122,10 +138,6 @@ export class SearchChats extends LitElement {
       z-index: 5;
       color: #6f6f6f;
       transition: 0.5s;
-    }
-
-    input {
-      font-family: inherit;
     }
   `;
 
@@ -188,6 +200,7 @@ export class SearchChats extends LitElement {
       return this.pharmaciesList.map(
         (pharmacy) => html`
           <div>
+            <il-avatar></il-avatar>
             <p>${pharmacy.name}</p>
           </div>
         `
@@ -197,5 +210,4 @@ export class SearchChats extends LitElement {
     }
   }
 }
-
 customElements.define("il-search", SearchChats);

@@ -9,7 +9,6 @@ import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -45,21 +44,16 @@ public class ChatController {
 
     private final RoomRepository roomRepository;
 
-    private ChatService chatService;
-
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
-    @Autowired
     public ChatController(SimpMessagingTemplate messagingTemplate,
                           ChatMessageRepository chatMessageRepository,
                           UserRepository userRepository,
-                          RoomRepository roomRepository,
-                          ChatService chatService) {
+                          RoomRepository roomRepository) {
         this.messagingTemplate = messagingTemplate;
         this.chatMessageRepository = chatMessageRepository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
-        this.chatService = chatService;
     }
 
     // Questo metodo in teoria viene chiamato quando un utente entra nella chat.
@@ -82,9 +76,30 @@ public class ChatController {
 
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
-
     public ChatMessage sendMessage(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor){
-        chatService.ChatServiceMetodo(message);
+        String username = (String) headerAccessor.getSessionAttributes().get("username");
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
+        UserEntity sender = userRepository.getByUsername(message.getSender()).orElseGet(() -> {
+            log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
+            return null;
+        });
+
+        String roomName = "general";
+        RoomEntity room = roomRepository.getByRoomName(roomName).orElseGet(() -> {
+            log.info(String.format("Room roomName=\"%s\" non trovata.", roomName));
+            return null;
+        });
+        ChatMessageEntity messageEntity =
+                ChatMessageEntity.of(sender, room, timestamp, message.getContent());
+
+        try {
+            chatMessageRepository.add(messageEntity);
+        } catch (DuplicateKeyException e) {
+            log.info(String.format("ChatMessageEntity id=\"%s\" già esistente nel database", messageEntity.getContent()));
+        }
+
+        log.info(String.format("message from %s", username));
         return message;
     }
 

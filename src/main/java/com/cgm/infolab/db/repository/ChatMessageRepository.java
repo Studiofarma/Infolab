@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.time.ZoneId;
 import java.util.*;
 
 @Component
@@ -81,7 +80,7 @@ public class ChatMessageRepository {
                         }));
 
                         //TODO: sistemare bug per cui la data viene presa come UTC e non con la timezone richiesta
-                        message.setTimestamp(rs.getTimestamp("sent_at").toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime());
+                        message.setTimestamp(rs.getTimestamp("sent_at"));
                         message.setContent(rs.getString("content"));
                         return message;
             },
