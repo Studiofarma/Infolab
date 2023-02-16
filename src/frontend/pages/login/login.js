@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
+
 import "../../components/button-icon";
 
 export class Login extends LitElement {
@@ -7,9 +8,9 @@ export class Login extends LitElement {
     username: "",
     password: "",
     pswVisibility: false,
-    usernameErrorMessage: "",
-    passwordErrorMessage: "",
-    accessErrorMessage: "",
+    emptyUsernameField: false,
+    emptyPasswordField: false,
+    accessErrorMessage: false,
   };
 
   constructor() {
@@ -17,8 +18,8 @@ export class Login extends LitElement {
     this.username = "user1";
     this.password = "password1";
     this.pswVisibility = false;
-    this.usernameErrorMessage = "";
-    this.passwordErrorMessage = "";
+    this.emptyUsernameField = false;
+    this.emptyPasswordField = false;
     this.accessErrorMessage = "";
   }
 
@@ -47,7 +48,7 @@ export class Login extends LitElement {
 
     div[class^="ring"] {
       position: absolute;
-      background: #013365;
+      background: #083c72;
       width: 250px;
       height: 250px;
       border-radius: 100%;
@@ -147,6 +148,79 @@ export class Login extends LitElement {
     button {
       font-family: inherit;
     }
+
+    .text-container::before {
+      content: "";
+      position: absolute;
+      top: 5px;
+      left: -2.5px;
+      border-radius: 10px;
+      width: calc(100% + 6px);
+      height: 100%;
+      background: #c1002e;
+      z-index: -1;
+      transition: 0.5s;
+      scale: 0;
+    }
+
+    .text-container:has(input.error)::before {
+      scale: 1;
+    }
+
+    .text-container::after {
+      content: "!";
+      position: absolute;
+      transform: translateY(50%);
+      bottom: 20px;
+      right: 10px;
+      z-index: 2;
+      width: 20px;
+      height: 20px;
+      padding: 5px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      background: #c1002e;
+      transition: 0.5s;
+      transition-delay: 0.5s;
+      opacity: 0;
+    }
+
+    .text-container:has(input.error)::after {
+      opacity: 1;
+    }
+
+    .text-container:hover::after {
+      display: none;
+    }
+
+    #snackbar {
+      position: fixed;
+      transform: translate(-50%, -50%);
+      left: 50%;
+      bottom: 10px;
+      min-width: 500px;
+      min-height: 40px;
+      padding: 5px;
+      color: black;
+      background: white;
+      box-shadow: 0 0 20px black;
+      display: flex;
+      align-items: center;
+      transition: all 0.5s;
+    }
+
+    #snackbar.closed {
+      opacity: 0;
+      transform: translate(-50%, 100%);
+    }
+
+    #snackbar p {
+      flex-grow: 1;
+      text-align: center;
+    }
   `;
 
   render() {
@@ -154,12 +228,15 @@ export class Login extends LitElement {
       <div id="container">
         <div class="ring1"></div>
         <div class="ring2"></div>
-        <h1 class="title">Welcome Back</h1>
+
+        <h1 class="title">WELCOME BACK</h1>
+
         <div>
           <label>
             Username
             <div class="text-container">
               <input
+                class=${this.emptyUsernameField ? "error" : ""}
                 id="username"
                 type="text"
                 @input=${this.onUsernameInput}
@@ -169,7 +246,6 @@ export class Login extends LitElement {
               />
             </div>
           </label>
-          <label id="usernameError"> ${this.usernameErrorMessage} </label>
         </div>
 
         <div>
@@ -177,6 +253,7 @@ export class Login extends LitElement {
             Password
             <div class="text-container">
               <input
+                class=${this.emptyPasswordField ? "error" : ""}
                 id="password"
                 type=${this.pswVisibility ? "text" : "password"}
                 @input=${this.onPasswordInput}
@@ -193,14 +270,21 @@ export class Login extends LitElement {
               ></il-button-icon>
             </div>
           </label>
-          <label id="passwordError"> ${this.passwordErrorMessage} </label>
-          <label id="accessError" style="text-align: center;">
-            ${this.accessErrorMessage}</label
-          >
         </div>
         <div>
           <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
         </div>
+      </div>
+
+      <!-- componente snackbar -->
+      <div id="snackbar" class=${this.accessErrorMessage ? "" : "closed"}>
+        <p>CREDENZIALI NON VALIDE</p>
+        <il-button-icon
+          content="close"
+          @click=${() => {
+            this.accessErrorMessage = false;
+          }}
+        ></il-button-icon>
       </div>
     `;
   }
@@ -225,18 +309,18 @@ export class Login extends LitElement {
 
   loginConfirm() {
     if (this.username === "" && this.password === "") {
-      this.usernameErrorMessage = "*Inserisci uno username";
-      this.passwordErrorMessage = "*Inserisci una password";
+      this.emptyUsernameField = true;
+      this.emptyPasswordField = true;
       return;
     }
 
     if (this.username === "") {
-      this.usernameErrorMessage = "*Inserisci uno username";
+      this.emptyUsernameField = true;
       return;
     }
 
     if (this.password === "") {
-      this.passwordErrorMessage = "*Inserisci una password";
+      this.emptyPasswordField = true;
       return;
     }
 
@@ -256,7 +340,9 @@ export class Login extends LitElement {
         );
       })
       .catch((e) => {
-        this.accessErrorMessage = "*CREDENZIALI NON VALIDE";
+        this.emptyUsernameField = false;
+        this.emptyPasswordField = false;
+        this.accessErrorMessage = true;
       });
   }
 

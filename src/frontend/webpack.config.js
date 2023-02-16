@@ -7,7 +7,7 @@ module.exports = {
   },
 
   output: {
-    path: path.resolve(__dirname, "../main/resources/static")
+    path: path.resolve(__dirname, "../main/resources/static"),
   },
 
   module: {
@@ -16,7 +16,6 @@ module.exports = {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
       },
-
       {
         test: /\.(jpeg|png|jpg|svg)/,
         type: 'asset/resource',
@@ -24,7 +23,7 @@ module.exports = {
 
       {
         test: /\.ttf$/,
-        type: 'asset/resource',
+        type: "asset/resource",
       },
     ],
   },

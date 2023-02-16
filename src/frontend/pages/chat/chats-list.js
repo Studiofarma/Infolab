@@ -3,6 +3,8 @@ const axios = require("axios").default;
 
 import "../../components/avatar.js";
 import "./conversation.js";
+import "../../components/avatar.js";
+import "./conversation.js";
 
 class ConversationList extends LitElement {
   static properties = {
@@ -24,17 +26,11 @@ class ConversationList extends LitElement {
       gap: 10px;
     }
 
+
     .pharmaciesList {
       transition: 0.5s;
       overflow-y: scroll;
       height: 82vh;
-    }
-
-    .pharmaciesList .name {
-      font-size: 15pt;
-      max-width: 200px;
-      overflow-x: hidden;
-      text-overflow: ellipsis;
     }
 
     ::-webkit-scrollbar {

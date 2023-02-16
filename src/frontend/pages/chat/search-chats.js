@@ -21,7 +21,7 @@ export class SearchChats extends LitElement {
 
     #searchChats {
       width: 100%;
-      padding: 5px 20px;
+      padding: 5px 10px;
       margin-bottom: 50px;
       column-gap: 10px;
       position: relative;
@@ -80,7 +80,7 @@ export class SearchChats extends LitElement {
     .dropdown > div {
       min-height: 60px;
       padding: 8px 10px;
-      font-weight: bold;
+      font-weight: 400;
       transition: 0.5s;
       cursor: pointer;
       display: flex;
@@ -125,6 +125,9 @@ export class SearchChats extends LitElement {
       transition: 0.5s;
     }
 
+    input {
+      font-family: inherit;
+    }
     input {
       font-family: inherit;
     }
@@ -188,7 +191,6 @@ export class SearchChats extends LitElement {
       return this.pharmaciesList.map(
         (pharmacy) => html`
           <div>
-            <il-avatar></il-avatar>
             <p>${pharmacy.name}</p>
           </div>
         `
@@ -198,4 +200,5 @@ export class SearchChats extends LitElement {
     }
   }
 }
+
 customElements.define("il-search", SearchChats);
