@@ -85,7 +85,7 @@ export class InputControls extends LitElement {
 
     input[type="text"].closed ~ il-editor {
       flex-grow: 1;
-      width: 100%;
+      width: calc(100% + 60px);
       height: 200px;
       display: block;
     }

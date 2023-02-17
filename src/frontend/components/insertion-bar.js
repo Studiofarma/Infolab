@@ -6,6 +6,7 @@ export class InsertionBar extends LitElement {
   static styles = css`
     div {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 1px;
     }
