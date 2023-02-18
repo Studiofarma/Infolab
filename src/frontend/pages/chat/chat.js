@@ -3,6 +3,8 @@ import { resolveMarkdown } from "lit-markdown";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
+import { parseMarkdown } from "../../components/editor";
+
 import "../../components/button-icon";
 import "./search-chats.js";
 import "./chats-list.js";
@@ -207,7 +209,7 @@ export class Chat extends LitElement {
             <ul class="messageBox">
               ${this.messages.map(
                 (item, _) =>
-                  html` <li>${resolveMarkdown(this.parseMarkdown(item))}</li> `
+                  html` <li>${resolveMarkdown(parseMarkdown(item))}</li> `
               )}
             </ul>
 
@@ -218,16 +220,6 @@ export class Chat extends LitElement {
         </section>
       </main>
     `;
-  }
-
-  parseMarkdown(text) {
-    const md = require("markdown-it")({
-      html: false,
-      linkify: true,
-    });
-
-    const output = md.render(text);
-    return output;
   }
 
   createSocket() {

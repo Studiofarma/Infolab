@@ -7,11 +7,11 @@ import "./formatting-button.js";
 export function parseMarkdown(text) {
   const md = require("markdown-it")({
     html: false,
-    breaks: true,
     linkify: true,
   });
 
-  const output = md.render(text.trim());
+  const output =
+    text === "" ? "Niente da visualizzare" : md.render(text.trim());
   return output;
 }
 
@@ -19,7 +19,15 @@ export class Editor extends LitElement {
   static properties = {
     message: "",
     openPreview: false,
+    selectedText: "",
   };
+
+  constructor() {
+    super();
+    this.message = "";
+    this.openPreview = false;
+    this.selectedText = "";
+  }
 
   static styles = css`
     * {
@@ -31,10 +39,6 @@ export class Editor extends LitElement {
     ul,
     ol {
       list-style-position: inside;
-    }
-
-    ::marker {
-      color: darkblue;
     }
 
     .formatting-bar {
@@ -95,13 +99,17 @@ export class Editor extends LitElement {
       transition: 0.5s;
       padding: 2px;
       display: flex;
-      justify-content: center;
       align-items: center;
       white-space: nowrap;
     }
 
     .dropdown .option:hover {
       background: #9faec5;
+    }
+
+    .dropdown input[type="radio"] {
+      display: block;
+      margin-left: 25px;
     }
 
     #preview_btn {
@@ -137,19 +145,25 @@ export class Editor extends LitElement {
           <il-formatting-button content="list_alt"></il-formatting-button>
           <div class="dropdown">
             <div class="option">
-              <ul>
-                <li>example</li>
-                <li>example</li>
-                <li>example</li>
-              </ul>
+              <label for="disc">
+                <ul>
+                  <li>example</li>
+                  <li>example</li>
+                  <li>example</li>
+                </ul>
+              </label>
+              <input type="radio" name="forList" id="disc" checked />
             </div>
 
             <div class="option">
-              <ol>
-                <li>example</li>
-                <li>example</li>
-                <li>example</li>
-              </ol>
+              <label for="number">
+                <ol>
+                  <li>example</li>
+                  <li>example</li>
+                  <li>example</li>
+                </ol>
+              </label>
+              <input type="radio" name="forList" id="number" />
             </div>
           </div>
         </div>
@@ -157,9 +171,24 @@ export class Editor extends LitElement {
         <div class="select-heading">
           <il-formatting-button content="title"></il-formatting-button>
           <div class="dropdown">
-            <div class="option"><h1>Titolo 1</h1></div>
-            <div class="option"><h2>Titolo 2</h2></div>
-            <div class="option"><h3>Titolo 3</h3></div>
+            <div class="option">
+              <label for="h1">
+                <h1>Titolo 1</h1>
+              </label>
+              <input type="radio" name="forHeading" id="h1" checked />
+            </div>
+            <div class="option">
+              <label for="h2">
+                <h1>Titolo 2</h1>
+              </label>
+              <input type="radio" name="forHeading" id="h2" />
+            </div>
+            <div class="option">
+              <label for="h3">
+                <h1>Titolo 3</h1>
+              </label>
+              <input type="radio" name="forHeading" id="h3" />
+            </div>
           </div>
         </div>
 
@@ -170,9 +199,10 @@ export class Editor extends LitElement {
         ? html`<textarea
             placeholder="Scrivi un messaggio..."
             @input=${this.onMessageInput}
+            @mouseup=${this.setSelectedText}
+            .value=${this.message}
           >
- ${this.message} </textarea
-          >`
+          </textarea>`
         : html`<div class="previewer">
             ${resolveMarkdown(parseMarkdown(this.message))}
           </div>`}
@@ -192,44 +222,77 @@ export class Editor extends LitElement {
     this.openPreview = !this.openPreview;
   }
 
-  insertMarkdown(event) {
-    if (this.message === undefined) this.message = "";
+  setSelectedText() {
+    this.selectedText = window.getSelection().toString();
+  }
 
-    console.log(event.target);
-    if (!this.openPreview) {
-      if (event.target.content === "B") {
-        this.message += " **grassetto**";
-        return;
-      }
-
-      if (event.target.content === "I") {
-        this.message += " *corsivo*";
-        return;
-      }
-
-      if (event.target.content === "S") {
-        this.message += " ~~barrato~~";
-        return;
-      }
-
-      if (event.target.content === "link") {
-        this.message += " [testo](link)";
-        return;
-      }
-
-      // DA SISTEMARE
-      // if (event.target.classList.contains("option")) {
-      //   const option = event.target.textContent;
-
-      //   if (option === "point") this.message += "\n * punto ";
-      //   else if (option === "number") this.message += "\n 1. ";
-      //   else if (option === "h1") this.message += "# titolo1";
-      //   else if (option === "h2") this.message += "## titolo2";
-      //   else if (option === "h3") this.message += "### titolo3";
-
-      //   return;
-      // }
+  insertInTextArea(str, symbol) {
+    if (this.selectedText !== "") {
+      this.message = this.message.replace(this.selectedText, str);
+    } else {
+      this.message = this.message + str;
     }
+    this.selectedText = "";
+  }
+
+  insertMarkdown(event) {
+    console.log(event.target);
+
+    if (event.target.content === "format_bold") {
+      this.insertInTextArea("**grassetto**");
+      return;
+    }
+
+    if (event.target.content === "format_italic") {
+      this.insertInTextArea("*italic*");
+      return;
+    }
+
+    if (event.target.content === "strikethrough_s") {
+      this.insertInTextArea("~~barrato~~");
+      return;
+    }
+
+    if (event.target.content === "link") {
+      this.insertInTextArea("[testo](link)");
+      return;
+    }
+
+    if (event.target.content === "list_alt") {
+      this.insertInTextArea(this.getTypeOfList());
+      return;
+    }
+
+    if (event.target.content === "title") {
+      this.insertInTextArea(this.getTypeOfHeading());
+      return;
+    }
+  }
+
+  getTypeOfList() {
+    const checkedList =
+      this.renderRoot.querySelector(`input[name="forList"]:checked`) ?? null;
+
+    if (checkedList.id === "disc") return "* punto";
+
+    if (checkedList.id === "number") return "1. punto";
+  }
+
+  getTypeOfHeading() {
+    const checkedHeading =
+      this.renderRoot.querySelector(`input[name="forHeading"]:checked`) ?? null;
+
+    if (checkedHeading.id === "h1") return "# Titolo1";
+    if (checkedHeading.id === "h2") return "## Titolo2";
+    if (checkedHeading.id === "h3") return "### Titolo3";
+  }
+
+  getTextarea() {
+    return this.renderRoot.querySelector("textarea") ?? null;
+  }
+
+  updated(changed) {
+    if (changed.has("message")) this.getTextarea().focus();
   }
 }
 customElements.define("il-editor", Editor);
