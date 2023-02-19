@@ -4,11 +4,14 @@ import "../../components/button-icon";
 import "../../components/insertion-bar";
 import "../../components/editor";
 import "emoji-picker-element";
+import { Picker } from "emoji-picker-element";
+import it from "emoji-picker-element/i18n/it";
 export class InputControls extends LitElement {
   static properties = {
     message: "",
     bEditor: false,
     bEmoji: false,
+    picker: {},
   };
 
   constructor() {
@@ -16,6 +19,14 @@ export class InputControls extends LitElement {
     this.message = "";
     this.bEditor = false;
     this.bEmoji = false;
+    this.picker = new Picker({
+      emojiVersion: "14.0",
+      dataSource:
+        "https://cdn.jsdelivr.net/npm/emoji-picker-element-data@^1/en/emojibase/data.json",
+      locale: "it",
+      skinToneEmoji: 	"🖐️",
+      i18n: it,
+    });
   }
 
   static styles = css`
@@ -39,6 +50,7 @@ export class InputControls extends LitElement {
     emoji-picker {
       width: 100%;
       height: 300px;
+      --emoji-size: 15pt;
     }
 
     #inputControls {
@@ -129,7 +141,8 @@ export class InputControls extends LitElement {
             <il-editor @typing-text=${this.onInputFromEditor}></il-editor>
           </div>
           <emoji-picker
-            emoji-version="14.0"
+            @emoji-click=${(event) => console.log(event.detail)}
+            @skin-tone-change=${(event) => console.log(event.detail)}
             ?hidden=${!this.bEmoji}
           ></emoji-picker>
         </div>
