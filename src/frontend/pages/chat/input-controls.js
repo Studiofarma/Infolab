@@ -3,6 +3,7 @@ import { LitElement, html, css } from "lit";
 import "../../components/button-icon";
 import "../../components/insertion-bar";
 import "../../components/editor";
+import "emoji-picker-element";
 export class InputControls extends LitElement {
   static properties = {
     message: "",
@@ -26,6 +27,18 @@ export class InputControls extends LitElement {
 
     input {
       font-family: inherit;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      gap: 10px;
+    }
+
+    emoji-picker {
+      width: 100%;
+      height: 300px;
     }
 
     #inputControls {
@@ -88,29 +101,37 @@ export class InputControls extends LitElement {
       width: calc(100% + 60px);
       height: 200px;
       display: block;
+      overflow-x: hidden;
     }
   `;
 
   render() {
     return html`
       <div id="inputControls">
-        <div class="inputContainer">
-          <il-insertion-bar
-            @open-insertion-mode=${this.openInsertionMode}
-            @click=${this.prova}
-          >
-          </il-insertion-bar>
+        <!-- .container is for emoji picker -->
+        <div class="container">
+          <div class="inputContainer">
+            <il-insertion-bar
+              @open-insertion-mode=${this.openInsertionMode}
+              @click=${this.prova}
+            >
+            </il-insertion-bar>
 
-          <input
-            class=${this.bEditor ? "closed" : "opened"}
-            type="text"
-            placeholder="Scrivi un messaggio..."
-            @input=${this.onMessageInput}
-            @keydown=${this.checkEnterKey}
-            .value=${this.message}
-          />
+            <input
+              class=${this.bEditor ? "closed" : "opened"}
+              type="text"
+              placeholder="Scrivi un messaggio..."
+              @input=${this.onMessageInput}
+              @keydown=${this.checkEnterKey}
+              .value=${this.message}
+            />
 
-          <il-editor @typing-text=${this.onInputFromEditor}></il-editor>
+            <il-editor @typing-text=${this.onInputFromEditor}></il-editor>
+          </div>
+          <emoji-picker
+            emoji-version="14.0"
+            ?hidden=${!this.bEmoji}
+          ></emoji-picker>
         </div>
 
         <div id="submitContainer">

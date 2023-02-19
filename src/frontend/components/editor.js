@@ -19,14 +19,16 @@ export class Editor extends LitElement {
   static properties = {
     message: "",
     openPreview: false,
-    selectedText: "",
+    selectedText: { startingPoint: NaN, endingPoint: NaN },
+    indexOfList: 1,
   };
 
   constructor() {
     super();
     this.message = "";
     this.openPreview = false;
-    this.selectedText = "";
+    this.selectedText = null;
+    this.indexOfList = 1;
   }
 
   static styles = css`
@@ -53,7 +55,7 @@ export class Editor extends LitElement {
 
     textarea {
       width: 100%;
-      height: 100%;
+      height: 150px;
       border: none;
       outline: none;
       padding: 5px;
@@ -140,6 +142,7 @@ export class Editor extends LitElement {
         <il-formatting-button content="format_italic"></il-formatting-button>
         <il-formatting-button content="strikethrough_s"></il-formatting-button>
         <il-formatting-button content="link"></il-formatting-button>
+        <il-formatting-button content="minimize"></il-formatting-button>
 
         <div class="select-list">
           <il-formatting-button content="list_alt"></il-formatting-button>
@@ -200,6 +203,7 @@ export class Editor extends LitElement {
             placeholder="Scrivi un messaggio..."
             @input=${this.onMessageInput}
             @mouseup=${this.setSelectedText}
+            @keydown=${this.checkList}
             .value=${this.message}
           >
           </textarea>`
@@ -212,10 +216,6 @@ export class Editor extends LitElement {
   onMessageInput(e) {
     const inputEl = e.target;
     this.message = inputEl.value;
-
-    this.dispatchEvent(
-      new CustomEvent("typing-text", { detail: { content: this.message } })
-    );
   }
 
   togglePreviewer() {
@@ -223,20 +223,47 @@ export class Editor extends LitElement {
   }
 
   setSelectedText() {
-    this.selectedText = window.getSelection().toString();
+    const textarea = this.getTextarea();
+
+    this.selectedText = {
+      startingPoint: textarea.selectionStart,
+      endingPoint: textarea.selectionEnd,
+    };
   }
 
-  insertInTextArea(str, symbol) {
-    if (this.selectedText !== "") {
-      this.message = this.message.replace(this.selectedText, str);
+  checkList(event) {
+    if (event.key === "Enter") {
+      const rows = this.message.split("\n");
+      let last_row = rows[rows.length - 1];
+
+      if (last_row.startsWith("* ")) {
+        this.message += "\n* ";
+        event.preventDefault();
+        return;
+      }
+
+      if (!isNaN(parseInt(last_row[0])) && last_row.startsWith(". ", 1)) {
+        this.message += "\n" + (parseInt(last_row[0]) + 1).toString() + ". ";
+        event.preventDefault();
+        return;
+      }
+    }
+  }
+
+  insertInTextArea(str) {
+    if (this.selectedText !== null) {
+      this.message =
+        this.message.slice(0, this.selectedText.startingPoint) +
+        str +
+        this.message.slice(this.selectedText.endingPoint);
     } else {
       this.message = this.message + str;
     }
-    this.selectedText = "";
+    this.selectedText = null;
   }
 
   insertMarkdown(event) {
-    console.log(event.target);
+    if (this.message === undefined) this.message = "";
 
     if (event.target.content === "format_bold") {
       this.insertInTextArea("**grassetto**");
@@ -255,6 +282,11 @@ export class Editor extends LitElement {
 
     if (event.target.content === "link") {
       this.insertInTextArea("[testo](link)");
+      return;
+    }
+
+    if (event.target.content === "minimize") {
+      this.insertInTextArea("\n - - - \n");
       return;
     }
 
@@ -292,7 +324,12 @@ export class Editor extends LitElement {
   }
 
   updated(changed) {
-    if (changed.has("message")) this.getTextarea().focus();
+    if (changed.has("message")) {
+      this.dispatchEvent(
+        new CustomEvent("typing-text", { detail: { content: this.message } })
+      );
+      this.getTextarea().focus();
+    }
   }
 }
 customElements.define("il-editor", Editor);
