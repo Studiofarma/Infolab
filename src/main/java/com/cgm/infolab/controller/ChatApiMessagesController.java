@@ -31,7 +31,7 @@ public class ChatApiMessagesController {
     // Potete provare le chiamate all'API aprendo un browser all'indirizzo http://localhost:8081/api/messages/general (vi chiedera' username e password. user1 - password1)
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/general")
-    public List<ChatMessage> getAllMessagesGeneral(@RequestParam int messageNumber) {
+    public List<ChatMessage> getAllMessagesGeneral(@RequestParam(required = false) int messageNumber) {
         RoomEntity room = RoomEntity.of("general");
         List<ChatMessageEntity> chatMessageEntities;
         List<ChatMessage> messages = new ArrayList<>();
