@@ -42,15 +42,9 @@ public class ChatApiMessagesController {
             return messages;
         }
 
-        // HH messi maiuscoli perché altrimenti il formato è a 12 ore.
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
         if (chatMessageEntities.size() > 0) {
-            for (int i = 1; i <= messageNumber && i <= chatMessageEntities.size(); i++) {
-                ChatMessageEntity entity = chatMessageEntities.get(chatMessageEntities.size() - i);
-                ChatMessage message = new ChatMessage(entity.getContent(),
-                        entity.getTimestamp().format(formatter),
-                        entity.getSender().getName());
+            for (ChatMessageEntity entity : chatMessageEntities) {
+                ChatMessage message = new ChatMessage(entity.getContent(), entity.getTimestamp(), entity.getSender().getName());
                 messages.add(message);
             }
         } else {
