@@ -90,4 +90,44 @@ public class ChatMessageRepository {
             return new ArrayList<>();
         }
     }
+
+    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages) {
+        RoomEntity room = roomRepository.getByRoomName(roomName).orElseThrow(() -> {
+            throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
+        });
+
+        // In caso il parametro non sia valido vengono ritornati tutti i messaggi disponibili.
+        if (numberOfMessages < 0) {
+            return getByRoomName(roomName);
+        }
+
+        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? LIMIT ?";
+
+        try {
+            return jdbcTemplate.query(query, (rs, rowNum) -> {
+                        ChatMessageEntity message = ChatMessageEntity.emptyMessage();
+                        message.setId(rs.getLong("id"));
+
+                        long userId = Long.parseLong(rs.getString("sender_id"));
+                        message.setSender(userRepository.getById(userId).orElseGet(() -> {
+                            log.info(String.format("Utente userId=\"%d\" non trovato.", userId));
+                            return null;
+                        }));
+
+                        long roomId = Long.parseLong(rs.getString("recipient_room_id"));
+                        message.setRoom(roomRepository.getById(roomId).orElseGet(() -> {
+                            log.info(String.format("Room roomId=\"%d\" non trovato.", roomId));
+                            return null;
+                        }));
+
+                        //TODO: sistemare bug per cui la data viene presa come UTC e non con la timezone richiesta
+                        message.setTimestamp(rs.getTimestamp("sent_at").toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime());
+                        message.setContent(rs.getString("content"));
+                        return message;
+                    },
+                    room.getId(), numberOfMessages);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
 }
