@@ -63,15 +63,17 @@ public class ChatMessageRepository {
             throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
         });
 
-        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? ORDER BY sent_at DESC";
+        String query = "WHERE recipient_room_id = ?";
 
-        try {
-            return jdbcTemplate.query(query, this::chatMessageRowMapper, room.getId());
-        } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
-        }
+        return get(query, room.getId());
     }
 
+    /**
+     * Metodo che ritorna numberOfMessages messaggi in una stanza specificata.
+     * @param roomName nome della stanza da cui prendere i messaggi.
+     * @param numberOfMessages numero di messaggi massimo da prendere. Se < 0 verranno presi tutti comunque.
+     * @return Lista di messaggi.
+     */
     public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages) {
         RoomEntity room = roomRepository.getByRoomName(roomName).orElseThrow(() -> {
             throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
@@ -82,10 +84,40 @@ public class ChatMessageRepository {
             return getByRoomName(roomName);
         }
 
-        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? ORDER BY sent_at DESC LIMIT ?";
+        String query = "WHERE recipient_room_id = ? LIMIT ?";
+
+        return get(query, room.getId(), numberOfMessages);
+    }
+
+    /**
+     * Metodo generale per prendere messaggi dal database.
+     * @param condition condizioni aggiuntive con cui prendere i messaggi dal database.
+     * @param objects parametri ordinati che servono per le condizioni.
+     * @return lista di messaggi che rispetta le condizioni specificate.
+     */
+    private List<ChatMessageEntity> get(String condition, Object... objects) {
+        StringBuilder query = new StringBuilder("SELECT * FROM infolab.chatmessages ");
+
+        String cond1;
+        String condLimit = null;
+
+        if (condition.contains("LIMIT")) {
+            cond1 = condition.substring(0, condition.indexOf("LIMIT"));
+            condLimit = condition.substring(condition.indexOf("LIMIT"));
+        } else {
+            cond1 = condition;
+        }
+
+        query.append(cond1);
+
+        query.append(" ORDER BY sent_at DESC ");
+
+        if (condLimit != null) {
+            query.append(condLimit);
+        }
 
         try {
-            return jdbcTemplate.query(query, this::chatMessageRowMapper, room.getId(), numberOfMessages);
+            return jdbcTemplate.query(query.toString(), this::chatMessageRowMapper, objects);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
