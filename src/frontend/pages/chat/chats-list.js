@@ -4,10 +4,6 @@ import "../../components/avatar.js";
 import "./conversation.js";
 
 class ConversationList extends LitElement {
-  static properties = {
-    chatsList: { state: true },
-  };
-
   static styles = css`
     * {
       box-sizing: border-box;
@@ -15,14 +11,10 @@ class ConversationList extends LitElement {
       margin: 0;
     }
 
-    .pharmaciesList {
+    :host {
       overflow-y: auto !important;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-    }
-
-    .pharmaciesList {
       transition: 0.5s;
       overflow-y: scroll;
       height: 82vh;
@@ -42,21 +34,8 @@ class ConversationList extends LitElement {
     }
   `;
 
-  constructor() {
-    super();
-    this.chatsList = [{ name: "Chatbox user1", avatar: "#" }];
-  }
-
   render() {
-    return html`
-      <div class="pharmaciesList">
-        ${this.chatsList.map(
-          (chat) => html`
-            <il-conversation name=${chat.name}></il-conversation>
-          `
-        )}
-      </div>
-    `;
+    return html``;
   }
 }
 

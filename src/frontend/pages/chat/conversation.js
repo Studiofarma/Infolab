@@ -1,5 +1,7 @@
 import { LitElement, html, css } from "lit";
 
+import "../../components/button-icon";
+
 class Conversation extends LitElement {
   static properties = {
     name: "",
@@ -17,8 +19,18 @@ class Conversation extends LitElement {
       transition: 0.5s;
     }
 
+    il-button-icon {
+      margin-left: auto;
+      opacity: 0;
+      transition: 0.5s;
+    }
+
     div:hover {
       background-color: #00234f;
+    }
+
+    div:hover il-button-icon {
+      opacity: 1;
     }
   `;
 
@@ -27,8 +39,22 @@ class Conversation extends LitElement {
       <div>
         <il-avatar></il-avatar>
         <p class="name">${this.name}</p>
+        <il-button-icon
+          content="delete"
+          @click=${() => this.deleteConversation(this.name)}
+        ></il-button-icon>
       </div>
     `;
+  }
+
+  deleteConversation(name) {
+    this.dispatchEvent(
+      new CustomEvent("deleting-conversation", {
+        detail: {
+          name: name,
+        },
+      })
+    );
   }
 
   willUpdate(changedProperties) {

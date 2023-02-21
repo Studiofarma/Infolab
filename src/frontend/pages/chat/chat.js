@@ -15,6 +15,7 @@ export class Chat extends LitElement {
     stompClient: {},
     messages: [],
     message: "",
+    chatsList: [],
   };
 
   static get properties() {
@@ -32,6 +33,7 @@ export class Chat extends LitElement {
     super();
     this.messages = [];
     this.message = "";
+    this.chatsList = [{ name: "chat box 1", avatar: "#" }];
   }
 
   connectedCallback() {
@@ -197,8 +199,10 @@ export class Chat extends LitElement {
       <main>
         <section>
           <div class="sidebar">
-            <il-search></il-search>
-            <il-chats-list></il-chats-list>
+            <il-search @adding-new=${this.addNewConversation}></il-search>
+            <il-chats-list
+              @deleting-conversation=${this.deleteConversation}
+            ></il-chats-list>
           </div>
 
           <div class="chat">
@@ -286,6 +290,25 @@ export class Chat extends LitElement {
 
   onError(error) {
     console.log(error);
+  }
+
+  addNewConversation(event) {
+    //aggiungo nell'array
+    const object = { name: event.detail.name, avatar: "#" };
+
+    let names = this.chatsList.map((elem) => elem.name);
+
+    if (names.join(" ").indexOf(object.name) === -1) {
+      let newConversation = [object];
+      this.chatsList = [...this.chatsList, ...newConversation];
+
+      // aggiungo nell'html
+      let element = document.createElement("il-conversation");
+      element.setAttribute("name", event.detail.name);
+      this.renderRoot
+        .querySelector("il-chats-list")
+        .shadowRoot.appendChild(element);
+    }
   }
 }
 

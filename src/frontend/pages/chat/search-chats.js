@@ -169,7 +169,6 @@ export class SearchChats extends LitElement {
 
     this.executePharmaciesCall()
       .then((element) => {
-        console.log(element["data"]);
         element["data"].forEach((pharmacy) => {
           if (pharmacy.name.toLowerCase().indexOf(this.query) > -1)
             tmp.push(pharmacy);
@@ -185,7 +184,7 @@ export class SearchChats extends LitElement {
     if (this.pharmaciesList.length > 0) {
       return this.pharmaciesList.map(
         (pharmacy) => html`
-          <div>
+          <div @click=${() => this.addNew(pharmacy.name)}>
             <p>${pharmacy.name}</p>
           </div>
         `
@@ -193,6 +192,16 @@ export class SearchChats extends LitElement {
     } else {
       return html`<div><p class="nofound">Nessun risultato trovato</p></div>`;
     }
+  }
+
+  addNew(name) {
+    this.dispatchEvent(
+      new CustomEvent("adding-new", {
+        detail: {
+          name: name,
+        },
+      })
+    );
   }
 }
 
