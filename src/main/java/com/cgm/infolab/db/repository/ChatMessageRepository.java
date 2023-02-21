@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.*;
 
@@ -64,28 +66,7 @@ public class ChatMessageRepository {
         String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? ORDER BY sent_at DESC";
 
         try {
-            return jdbcTemplate.query(query, (rs, rowNum) -> {
-                        ChatMessageEntity message = ChatMessageEntity.emptyMessage();
-                        message.setId(rs.getLong("id"));
-
-                        long userId = Long.parseLong(rs.getString("sender_id"));
-                        message.setSender(userRepository.getById(userId).orElseGet(() -> {
-                            log.info(String.format("Utente userId=\"%d\" non trovato.", userId));
-                            return null;
-                        }));
-
-                        long roomId = Long.parseLong(rs.getString("recipient_room_id"));
-                        message.setRoom(roomRepository.getById(roomId).orElseGet(() -> {
-                            log.info(String.format("Room roomId=\"%d\" non trovato.", roomId));
-                            return null;
-                        }));
-
-                        //TODO: sistemare bug per cui la data viene presa come UTC e non con la timezone richiesta
-                        message.setTimestamp(rs.getTimestamp("sent_at").toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime());
-                        message.setContent(rs.getString("content"));
-                        return message;
-            },
-                    room.getId());
+            return jdbcTemplate.query(query, this::chatMessageRowMapper, room.getId());
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
@@ -104,30 +85,31 @@ public class ChatMessageRepository {
         String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? ORDER BY sent_at DESC LIMIT ?";
 
         try {
-            return jdbcTemplate.query(query, (rs, rowNum) -> {
-                        ChatMessageEntity message = ChatMessageEntity.emptyMessage();
-                        message.setId(rs.getLong("id"));
-
-                        long userId = Long.parseLong(rs.getString("sender_id"));
-                        message.setSender(userRepository.getById(userId).orElseGet(() -> {
-                            log.info(String.format("Utente userId=\"%d\" non trovato.", userId));
-                            return null;
-                        }));
-
-                        long roomId = Long.parseLong(rs.getString("recipient_room_id"));
-                        message.setRoom(roomRepository.getById(roomId).orElseGet(() -> {
-                            log.info(String.format("Room roomId=\"%d\" non trovato.", roomId));
-                            return null;
-                        }));
-
-                        //TODO: sistemare bug per cui la data viene presa come UTC e non con la timezone richiesta
-                        message.setTimestamp(rs.getTimestamp("sent_at").toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime());
-                        message.setContent(rs.getString("content"));
-                        return message;
-                    },
-                    room.getId(), numberOfMessages);
+            return jdbcTemplate.query(query, this::chatMessageRowMapper, room.getId(), numberOfMessages);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
+    }
+
+    private ChatMessageEntity chatMessageRowMapper(ResultSet rs, int rowNum) throws SQLException {
+        ChatMessageEntity message = ChatMessageEntity.emptyMessage();
+        message.setId(rs.getLong("id"));
+
+        long userId = Long.parseLong(rs.getString("sender_id"));
+        message.setSender(userRepository.getById(userId).orElseGet(() -> {
+            log.info(String.format("Utente userId=\"%d\" non trovato.", userId));
+            return null;
+        }));
+
+        long roomId = Long.parseLong(rs.getString("recipient_room_id"));
+        message.setRoom(roomRepository.getById(roomId).orElseGet(() -> {
+            log.info(String.format("Room roomId=\"%d\" non trovato.", roomId));
+            return null;
+        }));
+
+        //TODO: sistemare bug per cui la data viene presa come UTC e non con la timezone richiesta
+        message.setTimestamp(rs.getTimestamp("sent_at").toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime());
+        message.setContent(rs.getString("content"));
+        return message;
     }
 }
