@@ -61,7 +61,7 @@ public class ChatMessageRepository {
             throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
         });
 
-        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
+        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? ORDER BY sent_at DESC";
 
         try {
             return jdbcTemplate.query(query, (rs, rowNum) -> {
@@ -101,7 +101,7 @@ public class ChatMessageRepository {
             return getByRoomName(roomName);
         }
 
-        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? LIMIT ?";
+        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? ORDER BY sent_at DESC LIMIT ?";
 
         try {
             return jdbcTemplate.query(query, (rs, rowNum) -> {
