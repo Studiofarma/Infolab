@@ -1,8 +1,8 @@
 import { LitElement, html, css } from "lit";
 
 import "../../components/button-icon";
-import "../../components/insertion-bar";
-import "../../components/editor";
+import "./insertion-bar";
+import "./editor";
 import "emoji-picker-element";
 import { Picker } from "emoji-picker-element";
 import it from "emoji-picker-element/i18n/it";
@@ -12,6 +12,7 @@ export class InputControls extends LitElement {
     bEditor: false,
     bEmoji: false,
     picker: {},
+    selectedText: { startingPoint: NaN, endingPoint: NaN },
   };
 
   constructor() {
@@ -24,9 +25,10 @@ export class InputControls extends LitElement {
       dataSource:
         "https://cdn.jsdelivr.net/npm/emoji-picker-element-data@^1/en/emojibase/data.json",
       locale: "it",
-      skinToneEmoji: 	"🖐️",
+      skinToneEmoji: "🖐️",
       i18n: it,
     });
+    this.selectedText = null;
   }
 
   static styles = css`
@@ -135,14 +137,17 @@ export class InputControls extends LitElement {
               placeholder="Scrivi un messaggio..."
               @input=${this.onMessageInput}
               @keydown=${this.checkEnterKey}
+              @mouseup=${this.setSelectedText}
               .value=${this.message}
             />
 
-            <il-editor @typing-text=${this.onInputFromEditor}></il-editor>
+            <il-editor
+              @typing-text=${this.onInputFromEditor}
+              @is-selecting=${this.onSelectionFromTextarea}
+            ></il-editor>
           </div>
           <emoji-picker
-            @emoji-click=${(event) => console.log(event.detail)}
-            @skin-tone-change=${(event) => console.log(event.detail)}
+            @emoji-click=${this.insertEmoji}
             ?hidden=${!this.bEmoji}
           ></emoji-picker>
         </div>
@@ -171,10 +176,24 @@ export class InputControls extends LitElement {
     if (event.key === "Enter") this.sendMessage();
   }
 
+  getTextarea() {
+    return (
+      this.renderRoot
+        .querySelector("il-editor")
+        .shadowRoot.querySelector("textarea") ?? null
+    );
+  }
+
+  getInputText() {
+    return this.renderRoot.querySelector("input") ?? null;
+  }
+
   openInsertionMode(e) {
     const option = e.detail.opt;
-    if (option === "edit") this.bEditor = !this.bEditor;
-    else if (option === "mood") this.bEmoji = !this.bEmoji;
+    if (option === "edit") {
+      this.bEditor = !this.bEditor;
+      this.getTextarea().value = this.message;
+    } else if (option === "mood") this.bEmoji = !this.bEmoji;
   }
 
   sendMessage() {
@@ -188,7 +207,48 @@ export class InputControls extends LitElement {
 
     this.message = "";
     if (this.bEditor) {
+      this.getTextarea().value = "";
       this.bEditor = false;
+    }
+  }
+
+  //per Emoji
+  setSelectedText() {
+    this.selectedText = {
+      startingPoint: selection.selectionStart,
+      endingPoint: selection.selectionEnd,
+    };
+  }
+
+  onSelectionFromTextarea(event) {
+    this.selectedText = {
+      startingPoint: event.detail.start,
+      endingPoint: event.detail.end,
+    };
+  }
+
+  insertEmoji(event) {
+    const symbol = event.detail.unicode;
+
+    if (this.selectedText !== null) {
+      this.message =
+        this.message.slice(0, this.selectedText.startingPoint) +
+        symbol +
+        this.message.slice(this.selectedText.endingPoint);
+    } else {
+      this.message = this.message + symbol;
+    }
+
+    if (this.bEditor) {
+      this.renderRoot.querySelector("il-editor").message = this.message;
+    }
+
+    this.selectedText = null;
+  }
+
+  updated(changed) {
+    if (changed.has("message")) {
+      this.getInputText().focus();
     }
   }
 }

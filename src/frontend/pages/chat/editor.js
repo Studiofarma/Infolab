@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
 
-import "./formatting-button.js";
+import "../../components/formatting-button";
 
 //da markdown a html
 export function parseMarkdown(text) {
@@ -20,7 +20,6 @@ export class Editor extends LitElement {
     message: "",
     openPreview: false,
     selectedText: { startingPoint: NaN, endingPoint: NaN },
-    indexOfList: 1,
   };
 
   constructor() {
@@ -28,7 +27,6 @@ export class Editor extends LitElement {
     this.message = "";
     this.openPreview = false;
     this.selectedText = null;
-    this.indexOfList = 1;
   }
 
   static styles = css`
@@ -60,7 +58,7 @@ export class Editor extends LitElement {
       outline: none;
       padding: 5px;
       resize: none;
-      overflow-y: auto;
+      overflow: auto;
       font-family: inherit;
     }
 
@@ -129,7 +127,7 @@ export class Editor extends LitElement {
     .previewer {
       padding: 10px;
       width: 100%;
-      min-height: calc(100% - 40px);
+      height: calc(100% - 40px);
       overflow-y: auto;
     }
   `;
@@ -204,6 +202,7 @@ export class Editor extends LitElement {
             @input=${this.onMessageInput}
             @mouseup=${this.setSelectedText}
             @keydown=${this.checkList}
+            @is-selecting=${() => alert("ciao")}
             .value=${this.message}
           >
           </textarea>`
@@ -229,12 +228,22 @@ export class Editor extends LitElement {
       startingPoint: textarea.selectionStart,
       endingPoint: textarea.selectionEnd,
     };
+
+    this.dispatchEvent(
+      new CustomEvent("is-selecting", {
+        detail: {
+          start: this.selectedText.startingPoint,
+          end: this.selectedText.endingPoint,
+        },
+      })
+    );
   }
 
   checkList(event) {
     if (event.key === "Enter") {
       const rows = this.message.split("\n");
       let last_row = rows[rows.length - 1];
+      const indexOfPoint = last_row.indexOf(".");
 
       if (last_row.startsWith("* ")) {
         this.message += "\n* ";
@@ -242,8 +251,15 @@ export class Editor extends LitElement {
         return;
       }
 
-      if (!isNaN(parseInt(last_row[0])) && last_row.startsWith(". ", 1)) {
-        this.message += "\n" + (parseInt(last_row[0]) + 1).toString() + ". ";
+      if (
+        indexOfPoint != -1 &&
+        !isNaN(parseInt(last_row.slice(0, indexOfPoint))) &&
+        last_row.startsWith(". ", indexOfPoint)
+      ) {
+        this.message +=
+          "\n" +
+          (parseInt(last_row.slice(0, indexOfPoint)) + 1).toString() +
+          ". ";
         event.preventDefault();
         return;
       }
