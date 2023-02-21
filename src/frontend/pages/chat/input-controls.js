@@ -214,9 +214,10 @@ export class InputControls extends LitElement {
 
   //per Emoji
   setSelectedText() {
+    const input = this.getInputText();
     this.selectedText = {
-      startingPoint: selection.selectionStart,
-      endingPoint: selection.selectionEnd,
+      startingPoint: input.selectionStart,
+      endingPoint: input.selectionEnd,
     };
   }
 
