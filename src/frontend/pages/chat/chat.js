@@ -3,19 +3,19 @@ import { resolveMarkdown } from "lit-markdown";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
+const axios = require("axios").default;
+
 import { parseMarkdown } from "./editor";
 
 import "../../components/button-icon";
 import "./search-chats.js";
 import "./chats-list.js";
 import "./input-controls.js";
-
 export class Chat extends LitElement {
   static properties = {
     stompClient: {},
     messages: [],
     message: "",
-    chatsList: [],
   };
 
   static get properties() {
@@ -33,7 +33,6 @@ export class Chat extends LitElement {
     super();
     this.messages = [];
     this.message = "";
-    this.chatsList = [{ name: "chat box 1", avatar: "#" }];
   }
 
   connectedCallback() {
@@ -292,23 +291,36 @@ export class Chat extends LitElement {
     console.log(error);
   }
 
-  addNewConversation(event) {
+  //per aggiungere conversazioni:
+
+  getChatsList() {
+    return this.renderRoot.querySelector("il-chats-list") ?? null;
+  }
+
+  async addNewConversation(event) {
     //aggiungo nell'array
     const object = { name: event.detail.name, avatar: "#" };
 
-    let names = this.chatsList.map((elem) => elem.name);
+    let names = this.getChatsList().chatsList.map((elem) => elem.name);
 
     if (names.join(" ").indexOf(object.name) === -1) {
-      let newConversation = [object];
-      this.chatsList = [...this.chatsList, ...newConversation];
-
-      // aggiungo nell'html
-      let element = document.createElement("il-conversation");
-      element.setAttribute("name", event.detail.name);
-      this.renderRoot
-        .querySelector("il-chats-list")
-        .shadowRoot.appendChild(element);
+      this.getChatsList().chatsList = [
+        ...this.getChatsList().chatsList,
+        object,
+      ];
     }
+
+    // aggiungo nel DB:
+    // DA SISTEMARE DA' ERRORE 500
+    // try {
+    //   await axios.post("http://localhost:3000/pharmacies", {
+    //     name: "prova",
+    //     avatar: "#",
+    //     is_opened: true,
+    //   });
+    // } catch (error) {
+    //   console.log(error.response);
+    // }
   }
 }
 

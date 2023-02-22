@@ -1,28 +1,39 @@
 {
   "pharmacies": [
     {
+      "name": "Chat box 1",
+      "avatar": "#",
+      "is_opened": true
+    },
+
+    {
       "name": "Farmacia1",
-      "avatar": "#"
+      "avatar": "#",
+      "is_opened": true
     },
 
     {
       "name": "Farmacia2",
-      "avatar": "#"
+      "avatar": "#",
+      "is_opened": false
     },
 
     {
       "name": "Farmacia3",
-      "avatar": "#"
+      "avatar": "#",
+      "is_opened": false
     },
 
     {
       "name": "Farmacia del Dr. Fantozzi Ugo",
-      "avatar": "#"
+      "avatar": "#",
+      "is_opened": false
     },
 
     {
       "name": "Farmacia della Dr.essa Belladonna Anna",
-      "avatar": "#"
+      "avatar": "#",
+      "is_opened": false
     }
   ]
 }
