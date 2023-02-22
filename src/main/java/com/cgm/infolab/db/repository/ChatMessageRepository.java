@@ -15,6 +15,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Component
 public class ChatMessageRepository {
@@ -61,7 +63,8 @@ public class ChatMessageRepository {
         return queryMessages(
             "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?",
             roomName,
-            null);
+            (room) -> new Object[]{room.getId()}
+        );
     }
 
     public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages) {
@@ -73,24 +76,17 @@ public class ChatMessageRepository {
         return queryMessages(
             "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? LIMIT ?",
             roomName,
-            numberOfMessages);
+            (room) -> new Object[]{room.getId(), numberOfMessages});
     }
 
-    private List<ChatMessageEntity> queryMessages(String query, String roomName, Integer numberOfMessages) {
+    private List<ChatMessageEntity> queryMessages(String query, String roomName, Function<RoomEntity, Object[]> queryParamsBuilder) {
         RoomEntity room = getRoomByNameOrThrow(roomName);
         try {
-            Object[] queryParams = evaluateQueryParams(numberOfMessages, room);
+            Object[] queryParams = queryParamsBuilder.apply(room);
             return jdbcTemplate.query(query, this::mapToEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
-    }
-
-    private static Object[] evaluateQueryParams(Integer numberOfMessages, RoomEntity room) {
-        long roomId = room.getId();
-        return numberOfMessages == null
-            ? new Object[] {roomId}
-            : new Object[] {roomId, numberOfMessages};
     }
 
     private ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
