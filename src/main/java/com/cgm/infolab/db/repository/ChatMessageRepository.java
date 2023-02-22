@@ -58,10 +58,8 @@ public class ChatMessageRepository {
      * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
      */
     public List<ChatMessageEntity> getByRoomName(String roomName) {
-        RoomEntity room = getRoomByNameOrThrow(roomName);
-
         String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
-
+        RoomEntity room = getRoomByNameOrThrow(roomName);
         try {
             return jdbcTemplate.query(query, this::mapToEntity, room.getId());
         } catch (EmptyResultDataAccessException e) {
@@ -70,7 +68,6 @@ public class ChatMessageRepository {
     }
 
     public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages) {
-        RoomEntity room = getRoomByNameOrThrow(roomName);
 
         // In caso il parametro non sia valido vengono ritornati tutti i messaggi disponibili.
         if (numberOfMessages < 0) {
@@ -78,7 +75,7 @@ public class ChatMessageRepository {
         }
 
         String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? LIMIT ?";
-
+        RoomEntity room = getRoomByNameOrThrow(roomName);
         try {
             return jdbcTemplate.query(query, this::mapToEntity, room.getId(), numberOfMessages);
         } catch (EmptyResultDataAccessException e) {
