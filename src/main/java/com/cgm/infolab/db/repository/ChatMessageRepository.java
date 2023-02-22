@@ -25,6 +25,8 @@ public class ChatMessageRepository {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
 
+    private final String MESSAGES_BY_ROOM_QUERY = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
+
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
     public ChatMessageRepository(JdbcTemplate jdbcTemplate, DataSource dataSource,
@@ -61,7 +63,7 @@ public class ChatMessageRepository {
      */
     public List<ChatMessageEntity> getByRoomName(String roomName) {
         return queryMessages(
-            "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?",
+            MESSAGES_BY_ROOM_QUERY,
             roomName,
             (room) -> new Object[]{room.getId()}
         );
@@ -74,7 +76,7 @@ public class ChatMessageRepository {
         }
 
         return queryMessages(
-            "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? LIMIT ?",
+            String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
             roomName,
             (room) -> new Object[]{room.getId(), numberOfMessages});
     }
