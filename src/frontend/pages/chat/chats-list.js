@@ -82,6 +82,10 @@ class ConversationList extends LitElement {
         pharmacy.lastMessage = pharmacy.lastMessage.substring(0, 30);
         pharmacy.lastMessage += " ...";
       }
+
+      if (pharmacy.unread > 9) {
+        pharmacy.unread = "9+";
+      }
     });
 
     return this.pharmaciesList.map(
@@ -89,6 +93,7 @@ class ConversationList extends LitElement {
         html`<il-conversation
           name=${pharmacy.name}
           lastMessage=${pharmacy.lastMessage}
+          unread=${pharmacy.unread}
         ></il-conversation>`
     );
   }
