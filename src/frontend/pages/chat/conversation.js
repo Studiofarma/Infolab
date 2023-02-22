@@ -4,6 +4,7 @@ class Conversation extends LitElement {
   static properties = {
     name: "",
     nameStr: { type: String, attribute: "name" },
+    lastMessage: "",
   };
 
   static styles = css`
@@ -20,6 +21,15 @@ class Conversation extends LitElement {
     div:hover {
       background-color: #00234f;
     }
+
+    p {
+      margin: 0px;
+      line-height: 100%;
+    }
+
+    .name {
+      vertical-align: top;
+    }
   `;
 
   render() {
@@ -27,6 +37,7 @@ class Conversation extends LitElement {
       <div>
         <il-avatar></il-avatar>
         <p class="name">${this.name}</p>
+        <p>${this.lastMessage}</p>
       </div>
     `;
   }
