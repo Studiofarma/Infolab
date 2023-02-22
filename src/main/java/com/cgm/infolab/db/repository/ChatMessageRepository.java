@@ -56,10 +56,7 @@ public class ChatMessageRepository {
      * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
      */
     public List<ChatMessageEntity> getByRoomName(String roomName) {
-
-        RoomEntity room = roomRepository.getByRoomName(roomName).orElseThrow(() -> {
-            throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
-        });
+        RoomEntity room = getRoomByNameOrThrow(roomName);
 
         String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
 
@@ -92,9 +89,7 @@ public class ChatMessageRepository {
     }
 
     public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages) {
-        RoomEntity room = roomRepository.getByRoomName(roomName).orElseThrow(() -> {
-            throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
-        });
+        RoomEntity room = getRoomByNameOrThrow(roomName);
 
         // In caso il parametro non sia valido vengono ritornati tutti i messaggi disponibili.
         if (numberOfMessages < 0) {
@@ -129,5 +124,11 @@ public class ChatMessageRepository {
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
+    }
+
+    private RoomEntity getRoomByNameOrThrow(String roomName) {
+        return roomRepository.getByRoomName(roomName).orElseThrow(() -> {
+            throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
+        });
     }
 }
