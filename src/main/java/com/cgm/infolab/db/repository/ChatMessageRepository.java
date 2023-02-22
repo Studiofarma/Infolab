@@ -58,26 +58,33 @@ public class ChatMessageRepository {
      * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
      */
     public List<ChatMessageEntity> getByRoomName(String roomName) {
-        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
-        RoomEntity room = getRoomByNameOrThrow(roomName);
-        try {
-            return jdbcTemplate.query(query, this::mapToEntity, room.getId());
-        } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
-        }
+        return queryMessages(
+            "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?",
+            roomName,
+            null);
     }
 
     public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages) {
-
         // In caso il parametro non sia valido vengono ritornati tutti i messaggi disponibili.
         if (numberOfMessages < 0) {
             return getByRoomName(roomName);
         }
 
-        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? LIMIT ?";
+        return queryMessages(
+            "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? LIMIT ?",
+            roomName,
+            numberOfMessages);
+    }
+
+    private List<ChatMessageEntity> queryMessages(String query, String roomName, Integer numberOfMessages) {
         RoomEntity room = getRoomByNameOrThrow(roomName);
         try {
-            return jdbcTemplate.query(query, this::mapToEntity, room.getId(), numberOfMessages);
+            long roomId = room.getId();
+            Object[] queryParams = numberOfMessages == null
+                ? new Object[] {roomId}
+                : new Object[] {roomId, numberOfMessages };
+
+            return jdbcTemplate.query(query, this::mapToEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
