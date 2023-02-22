@@ -79,15 +79,18 @@ public class ChatMessageRepository {
     private List<ChatMessageEntity> queryMessages(String query, String roomName, Integer numberOfMessages) {
         RoomEntity room = getRoomByNameOrThrow(roomName);
         try {
-            long roomId = room.getId();
-            Object[] queryParams = numberOfMessages == null
-                ? new Object[] {roomId}
-                : new Object[] {roomId, numberOfMessages };
-
+            Object[] queryParams = evaluateQueryParams(numberOfMessages, room);
             return jdbcTemplate.query(query, this::mapToEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
+    }
+
+    private static Object[] evaluateQueryParams(Integer numberOfMessages, RoomEntity room) {
+        long roomId = room.getId();
+        return numberOfMessages == null
+            ? new Object[] {roomId}
+            : new Object[] {roomId, numberOfMessages};
     }
 
     private ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
