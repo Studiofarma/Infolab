@@ -26,7 +26,6 @@ class ConversationList extends LitElement {
       gap: 10px;
     }
 
-
     .pharmaciesList {
       transition: 0.5s;
       overflow-y: scroll;
@@ -78,8 +77,19 @@ class ConversationList extends LitElement {
   }
 
   renderList() {
-    return this.pharmaciesList.map((pharmacy) => 
-      html`<il-conversation name=${pharmacy.name}></il-conversation>`
+    this.pharmaciesList.forEach((pharmacy) => {
+      if (pharmacy.lastMessage.length > 35) {
+        pharmacy.lastMessage = pharmacy.lastMessage.substring(0, 30);
+        pharmacy.lastMessage += " ...";
+      }
+    });
+
+    return this.pharmaciesList.map(
+      (pharmacy) =>
+        html`<il-conversation
+          name=${pharmacy.name}
+          lastMessage=${pharmacy.lastMessage}
+        ></il-conversation>`
     );
   }
 }

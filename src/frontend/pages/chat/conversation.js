@@ -10,12 +10,19 @@ class Conversation extends LitElement {
   static styles = css`
     div {
       min-height: 60px;
-      display: flex;
+      display: grid;
       align-items: center;
       gap: 10px;
       padding: 8px 12px;
       cursor: pointer;
       transition: 0.5s;
+      grid-template-areas: "avatar nome nome nome" "avatar messaggio messaggio notifiche";
+      grid-template-columns: 50px;
+      grid-template-rows: 2fr 1fr;
+    }
+
+    div > p {
+      text-align: left;
     }
 
     div:hover {
@@ -24,11 +31,19 @@ class Conversation extends LitElement {
 
     p {
       margin: 0px;
-      line-height: 100%;
     }
 
     .name {
-      vertical-align: top;
+      grid-area: nome;
+    }
+
+    .lastMessage {
+      grid-area: messaggio;
+      font-size: 0.7em;
+    }
+
+    il-avatar {
+      grid-area: avatar;
     }
   `;
 
@@ -37,7 +52,7 @@ class Conversation extends LitElement {
       <div>
         <il-avatar></il-avatar>
         <p class="name">${this.name}</p>
-        <p>${this.lastMessage}</p>
+        <p class="lastMessage">${this.lastMessage}</p>
       </div>
     `;
   }
