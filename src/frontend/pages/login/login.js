@@ -2,14 +2,13 @@ import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
 
 import "../../components/button-icon";
+import "../../components/input-password";
 
 export class Login extends LitElement {
   static properties = {
     username: "",
     password: "",
-    pswVisibility: false,
     emptyUsernameField: false,
-    emptyPasswordField: false,
     accessErrorMessage: false,
   };
 
@@ -17,8 +16,6 @@ export class Login extends LitElement {
     super();
     this.username = "user1";
     this.password = "password1";
-    this.pswVisibility = false;
-    this.emptyUsernameField = false;
     this.emptyPasswordField = false;
     this.accessErrorMessage = "";
   }
@@ -29,7 +26,6 @@ export class Login extends LitElement {
       margin: 0;
       padding: 0;
     }
-
     #container {
       position: relative;
       width: 500px;
@@ -45,7 +41,6 @@ export class Login extends LitElement {
       background-color: #e4e8ee;
       overflow: hidden;
     }
-
     div[class^="ring"] {
       position: absolute;
       background: #083c72;
@@ -55,13 +50,11 @@ export class Login extends LitElement {
       z-index: 1;
       overflow: hidden;
     }
-
     .ring1 {
       top: 0;
       left: 0;
       transform: translate(-50%, -50%);
     }
-
     div[class^="ring"]::before {
       content: "";
       position: absolute;
@@ -73,21 +66,17 @@ export class Login extends LitElement {
       background: #e4e8ee;
       border-radius: 100%;
     }
-
     .ring2 {
       bottom: 0;
       right: 0;
       transform: translate(50%, 50%);
     }
-
     #container > *:not(div[class^="ring"]) {
       z-index: 2;
     }
-
     .title {
       align-self: center;
     }
-
     input[type="text"],
     input[type="password"] {
       position: relative;
@@ -102,11 +91,9 @@ export class Login extends LitElement {
       border-radius: 10px;
       box-shadow: 0 0 10px #333333;
     }
-
     .text-container {
       position: relative;
     }
-
     .text-container il-button-icon {
       position: absolute;
       transform: translateY(50%);
@@ -117,20 +104,17 @@ export class Login extends LitElement {
       opacity: 0;
       transition: 0.5s;
     }
-
     .text-container:hover il-button-icon {
       opacity: 1;
       visibility: visible;
       cursor: pointer;
     }
-
     label[id$="Error"] {
       display: block;
       color: darkred;
       padding-top: 5px;
       font-size: 10pt;
     }
-
     #submit_btn {
       text-transform: uppercase;
       padding: 15px 20px;
@@ -143,12 +127,10 @@ export class Login extends LitElement {
       width: 100%;
       margin-top: 30px;
     }
-
     input,
     button {
       font-family: inherit;
     }
-
     .text-container::before {
       content: "";
       position: absolute;
@@ -162,11 +144,9 @@ export class Login extends LitElement {
       transition: 0.5s;
       scale: 0;
     }
-
     .text-container:has(input.error)::before {
       scale: 1;
     }
-
     .text-container::after {
       content: "!";
       position: absolute;
@@ -187,15 +167,12 @@ export class Login extends LitElement {
       transition-delay: 0.5s;
       opacity: 0;
     }
-
     .text-container:has(input.error)::after {
       opacity: 1;
     }
-
     .text-container:hover::after {
       display: none;
     }
-
     #snackbar {
       position: fixed;
       transform: translate(-50%, -50%);
@@ -211,12 +188,10 @@ export class Login extends LitElement {
       align-items: center;
       transition: all 0.5s;
     }
-
     #snackbar.closed {
       opacity: 0;
       transform: translate(-50%, 100%);
     }
-
     #snackbar p {
       flex-grow: 1;
       text-align: center;
@@ -228,9 +203,7 @@ export class Login extends LitElement {
       <div id="container">
         <div class="ring1"></div>
         <div class="ring2"></div>
-
         <h1 class="title">WELCOME BACK</h1>
-
         <div>
           <label>
             Username
@@ -248,34 +221,17 @@ export class Login extends LitElement {
           </label>
         </div>
 
-        <div>
-          <label>
-            Password
-            <div class="text-container">
-              <input
-                class=${this.emptyPasswordField ? "error" : ""}
-                id="password"
-                type=${this.pswVisibility ? "text" : "password"}
-                @input=${this.onPasswordInput}
-                @keydown=${this.checkEnterKey}
-                .value=${this.password}
-                placeholder="Inserisci la password"
-              />
+        <il-password
+          .value="${this.password}"
+          @input="${this.onPasswordInput}"
+          @keydown=${this.checkEnterKey}
+          class="${this.emptyPasswordField ? "error" : ""}"
+        ></il-password>
 
-              <il-button-icon
-                @click=${this.setVisibility}
-                content="${!this.pswVisibility
-                  ? "visibility"
-                  : "visibility_off"}"
-              ></il-button-icon>
-            </div>
-          </label>
-        </div>
         <div>
           <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
         </div>
       </div>
-
       <!-- componente snackbar -->
       <div id="snackbar" class=${this.accessErrorMessage ? "" : "closed"}>
         <p>CREDENZIALI NON VALIDE</p>
@@ -296,21 +252,16 @@ export class Login extends LitElement {
 
   onPasswordInput(e) {
     const inputEl = e.target;
-    this.password = inputEl.value;
+    this.passowrdValue = inputEl.value;
   }
 
   checkEnterKey(e) {
     if (e.key === "Enter") this.loginConfirm();
   }
 
-  setVisibility() {
-    this.pswVisibility = !this.pswVisibility;
-  }
-
   loginConfirm() {
-    if (this.username === "" && this.password === "") {
+    if (this.username === "") {
       this.emptyUsernameField = true;
-      this.emptyPasswordField = true;
       return;
     }
 
@@ -319,7 +270,7 @@ export class Login extends LitElement {
       return;
     }
 
-    if (this.password === "") {
+    if (this.passowrdValue === "") {
       this.emptyPasswordField = true;
       return;
     }
@@ -331,7 +282,7 @@ export class Login extends LitElement {
             detail: {
               login: {
                 username: this.username,
-                password: this.password,
+                passowrd: this.password,
                 headerName: response.data.headerName,
                 token: response.data.token,
               },
