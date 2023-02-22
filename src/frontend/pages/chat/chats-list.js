@@ -5,7 +5,7 @@ import "./conversation.js";
 
 class ConversationList extends LitElement {
   static properties = {
-    chatsList: { state: true },
+    pharmaciesList: { state: true },
   };
 
   static styles = css`
@@ -44,19 +44,54 @@ class ConversationList extends LitElement {
 
   constructor() {
     super();
-    this.chatsList = [{ name: "Chatbox user1", avatar: "#" }];
+    this.pharmaciesList = this.setList();
   }
 
   render() {
-    return html`
-      <div class="pharmaciesList">
-        ${this.chatsList.map(
-          (chat) => html`
-            <il-conversation name=${chat.name}></il-conversation>
-          `
-        )}
-      </div>
-    `;
+    return html` <div class="pharmaciesList">${this.renderList()}</div> `;
+  }
+
+  async executePharmaciesCall() {
+    return axios({
+      url: "http://localhost:3000/pharmacies",
+      method: "get",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    });
+  }
+
+  setList() {
+    let tmp = [];
+
+    this.executePharmaciesCall().then((element) => {
+      element["data"].forEach((pharmacy) => {
+        tmp.push(pharmacy);
+      });
+      this.pharmaciesList = tmp;
+    });
+  }
+
+  renderList() {
+    this.pharmaciesList.forEach((pharmacy) => {
+      if (pharmacy.lastMessage.length > 35) {
+        pharmacy.lastMessage = pharmacy.lastMessage.substring(0, 30);
+        pharmacy.lastMessage += " ...";
+      }
+
+      if (pharmacy.unread > 9) {
+        pharmacy.unread = "9+";
+      }
+    });
+
+    return this.pharmaciesList.map(
+      (pharmacy) =>
+        html`<il-conversation
+          name=${pharmacy.name}
+          lastMessage=${pharmacy.lastMessage}
+          unread=${pharmacy.unread}
+        ></il-conversation>`
+    );
   }
 }
 

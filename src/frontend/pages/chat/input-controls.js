@@ -3,6 +3,7 @@ import { LitElement, html, css } from "lit";
 import "../../components/button-icon";
 import "../../components/insertion-bar";
 import "../../components/editor";
+
 export class InputControls extends LitElement {
   static properties = {
     message: "",

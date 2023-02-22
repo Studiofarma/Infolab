@@ -1,28 +1,38 @@
 {
   "pharmacies": [
     {
-      "name": "Farmacia1",
-      "avatar": "#"
+      "name": "farmacia1",
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "2"
     },
 
     {
-      "name": "Farmacia2",
-      "avatar": "#"
+      "name": "farmacia2",
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "0"
     },
 
     {
-      "name": "Farmacia3",
-      "avatar": "#"
+      "name": "farmacia3",
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "22"
     },
 
     {
-      "name": "Farmacia del Dr. Fantozzi Ugo",
-      "avatar": "#"
+      "name": "farmacia del Dr. Fantozzi Ugo",
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "2"
     },
 
     {
-      "name": "Farmacia della Dr.essa Belladonna Anna",
-      "avatar": "#"
+      "name": "farmacia della Dr.essa Belladonna Anna",
+      "avatar": "#",
+      "lastMessage": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+      "unread": "2"
     }
   ]
 }

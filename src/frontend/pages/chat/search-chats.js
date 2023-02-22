@@ -169,7 +169,6 @@ export class SearchChats extends LitElement {
 
     this.executePharmaciesCall()
       .then((element) => {
-        console.log(element["data"]);
         element["data"].forEach((pharmacy) => {
           if (pharmacy.name.toLowerCase().indexOf(this.query) > -1)
             tmp.push(pharmacy);

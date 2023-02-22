@@ -14,7 +14,6 @@ export class ButtonIcon extends LitElement {
       display: inline;
       align-items: center;
     }
-
     #button {
       height: 100%;
       width: 100%;
