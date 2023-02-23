@@ -128,9 +128,6 @@ export class SearchChats extends LitElement {
     input {
       font-family: inherit;
     }
-    input {
-      font-family: inherit;
-    }
   `;
 
   constructor() {
