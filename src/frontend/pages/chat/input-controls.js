@@ -1,11 +1,11 @@
 import { LitElement, html, css } from "lit";
+import { Picker } from "emoji-picker-element";
+import { it } from "emoji-picker-element/i18n/it";
 
-import "../../components/button-icon";
 import "./insertion-bar";
 import "./editor";
-import "emoji-picker-element";
-import { Picker } from "emoji-picker-element";
-import it from "emoji-picker-element/i18n/it";
+import "../../components/button-icon";
+
 export class InputControls extends LitElement {
   static properties = {
     message: "",

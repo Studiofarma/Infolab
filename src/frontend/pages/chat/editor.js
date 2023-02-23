@@ -3,18 +3,7 @@ import { resolveMarkdown } from "lit-markdown";
 
 import "../../components/formatting-button";
 
-//da markdown a html
-export function parseMarkdown(text) {
-  const md = require("markdown-it")({
-    html: false,
-    linkify: true,
-  });
-
-  const output =
-    text === "" ? "Niente da visualizzare" : md.render(text.trim());
-  return output;
-}
-
+import { MarkdownService } from "../../services/services";
 export class Editor extends LitElement {
   static properties = {
     message: "",
@@ -135,15 +124,33 @@ export class Editor extends LitElement {
   render() {
     return html`
       <!-- diventerà un componente -->
-      <div class="formatting-bar" @click=${this.insertMarkdown}>
-        <il-formatting-button content="format_bold"></il-formatting-button>
-        <il-formatting-button content="format_italic"></il-formatting-button>
-        <il-formatting-button content="strikethrough_s"></il-formatting-button>
-        <il-formatting-button content="link"></il-formatting-button>
-        <il-formatting-button content="minimize"></il-formatting-button>
+      <div class="formatting-bar">
+        <il-formatting-button
+          content="format_bold"
+          @click=${this.insertBold}
+        ></il-formatting-button>
+        <il-formatting-button
+          content="format_italic"
+          @click=${this.insertItalic}
+        ></il-formatting-button>
+        <il-formatting-button
+          content="strikethrough_s"
+          @click=${this.insertStrike}
+        ></il-formatting-button>
+        <il-formatting-button
+          content="link"
+          @click=${this.insertLink}
+        ></il-formatting-button>
+        <il-formatting-button
+          content="minimize"
+          @click=${this.insertLine}
+        ></il-formatting-button>
 
         <div class="select-list">
-          <il-formatting-button content="list_alt"></il-formatting-button>
+          <il-formatting-button
+            content="list_alt"
+            @click=${this.insertList}
+          ></il-formatting-button>
           <div class="dropdown">
             <div class="option">
               <label for="disc">
@@ -170,7 +177,10 @@ export class Editor extends LitElement {
         </div>
 
         <div class="select-heading">
-          <il-formatting-button content="title"></il-formatting-button>
+          <il-formatting-button
+            content="title"
+            @click=${this.insertHeading}
+          ></il-formatting-button>
           <div class="dropdown">
             <div class="option">
               <label for="h1">
@@ -202,12 +212,11 @@ export class Editor extends LitElement {
             @input=${this.onMessageInput}
             @mouseup=${this.setSelectedText}
             @keydown=${this.checkList}
-            @is-selecting=${() => alert("ciao")}
             .value=${this.message}
           >
           </textarea>`
         : html`<div class="previewer">
-            ${resolveMarkdown(parseMarkdown(this.message))}
+            ${resolveMarkdown(MarkdownService.parseMarkdown(this.message))}
           </div>`}
     `;
   }
@@ -278,61 +287,60 @@ export class Editor extends LitElement {
     this.selectedText = null;
   }
 
-  insertMarkdown(event) {
-    if (this.message === undefined) this.message = "";
+  //funzioni per formatting-buttons
 
-    if (event.target.content === "format_bold") {
-      this.insertInTextArea("**grassetto**");
-      return;
-    }
+  insertBold() {
+    this.insertInTextArea("**grassetto**");
+  }
 
-    if (event.target.content === "format_italic") {
-      this.insertInTextArea("*italic*");
-      return;
-    }
+  insertItalic() {
+    this.insertInTextArea("*italic*");
+  }
 
-    if (event.target.content === "strikethrough_s") {
-      this.insertInTextArea("~~barrato~~");
-      return;
-    }
+  insertStrike() {
+    this.insertInTextArea("~~barrato~~");
+  }
 
-    if (event.target.content === "link") {
-      this.insertInTextArea("[testo](link)");
-      return;
-    }
+  insertLink() {
+    this.insertInTextArea("[testo](link)");
+  }
 
-    if (event.target.content === "minimize") {
-      this.insertInTextArea("\n - - - \n");
-      return;
-    }
+  insertLine() {
+    this.insertInTextArea("\n - - - \n");
+  }
 
-    if (event.target.content === "list_alt") {
-      this.insertInTextArea(this.getTypeOfList());
-      return;
-    }
+  insertList() {
+    this.insertInTextArea(this.getTypeOfList());
+  }
 
-    if (event.target.content === "title") {
-      this.insertInTextArea(this.getTypeOfHeading());
-      return;
-    }
+  insertHeading() {
+    this.insertInTextArea(this.getTypeOfHeading());
   }
 
   getTypeOfList() {
     const checkedList =
       this.renderRoot.querySelector(`input[name="forList"]:checked`) ?? null;
 
-    if (checkedList.id === "disc") return "* punto";
-
-    if (checkedList.id === "number") return "1. punto";
+    switch (checkedList.id) {
+      case "disc":
+        return "* punto";
+      case "number":
+        return "1. punto";
+    }
   }
 
   getTypeOfHeading() {
     const checkedHeading =
       this.renderRoot.querySelector(`input[name="forHeading"]:checked`) ?? null;
 
-    if (checkedHeading.id === "h1") return "# Titolo1";
-    if (checkedHeading.id === "h2") return "## Titolo2";
-    if (checkedHeading.id === "h3") return "### Titolo3";
+    switch (checkedHeading.id) {
+      case "h1":
+        return "# Titolo1";
+      case "h2":
+        return "## Titolo2";
+      case "h3":
+        return "### Titolo3";
+    }
   }
 
   getTextarea() {
