@@ -24,5 +24,19 @@
       "name": "Farmacia della Dr.essa Belladonna Anna",
       "avatar": "#"
     }
+  ],
+  "messages": [
+    {
+      "sender": "2",
+      "receiver": "1",
+      "content": "ciao",
+      "date": ""
+    },
+    {
+      "sender": "2",
+      "receiver": "1",
+      "content": "lorem ipsum",
+      "date": ""
+    }
   ]
 }
