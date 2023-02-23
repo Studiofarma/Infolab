@@ -15,6 +15,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @Component
 public class ChatMessageRepository {
@@ -22,6 +24,8 @@ public class ChatMessageRepository {
     private final DataSource dataSource;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
+
+    private final String MESSAGES_BY_ROOM_QUERY = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
 
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
@@ -58,72 +62,36 @@ public class ChatMessageRepository {
      * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
      */
     public List<ChatMessageEntity> getByRoomName(String roomName) {
-
-        RoomEntity room = roomRepository.getByRoomName(roomName).orElseThrow(() -> {
-            throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
-        });
-
-        String query = "WHERE recipient_room_id = ?";
-
-        return get(query, room.getId());
+        return queryMessages(
+            MESSAGES_BY_ROOM_QUERY,
+            roomName,
+            (room) -> new Object[]{room.getId()}
+        );
     }
 
-    /**
-     * Metodo che ritorna numberOfMessages messaggi in una stanza specificata.
-     * @param roomName nome della stanza da cui prendere i messaggi.
-     * @param numberOfMessages numero di messaggi massimo da prendere. Se < 0 verranno presi tutti comunque.
-     * @return Lista di messaggi.
-     */
     public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages) {
-        RoomEntity room = roomRepository.getByRoomName(roomName).orElseThrow(() -> {
-            throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
-        });
-
         // In caso il parametro non sia valido vengono ritornati tutti i messaggi disponibili.
         if (numberOfMessages < 0) {
             return getByRoomName(roomName);
         }
 
-        String query = "WHERE recipient_room_id = ? LIMIT ?";
-
-        return get(query, room.getId(), numberOfMessages);
+        return queryMessages(
+            String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
+            roomName,
+            (room) -> new Object[]{room.getId(), numberOfMessages});
     }
 
-    /**
-     * Metodo generale per prendere messaggi dal database.
-     * @param condition condizioni aggiuntive con cui prendere i messaggi dal database.
-     * @param objects parametri ordinati che servono per le condizioni.
-     * @return lista di messaggi che rispetta le condizioni specificate.
-     */
-    private List<ChatMessageEntity> get(String condition, Object... objects) {
-        StringBuilder query = new StringBuilder("SELECT * FROM infolab.chatmessages ");
-
-        String cond1;
-        String condLimit = null;
-
-        if (condition.contains("LIMIT")) {
-            cond1 = condition.substring(0, condition.indexOf("LIMIT"));
-            condLimit = condition.substring(condition.indexOf("LIMIT"));
-        } else {
-            cond1 = condition;
-        }
-
-        query.append(cond1);
-
-        query.append(" ORDER BY sent_at DESC ");
-
-        if (condLimit != null) {
-            query.append(condLimit);
-        }
-
+    private List<ChatMessageEntity> queryMessages(String query, String roomName, Function<RoomEntity, Object[]> queryParamsBuilder) {
+        RoomEntity room = getRoomByNameOrThrow(roomName);
         try {
-            return jdbcTemplate.query(query.toString(), this::chatMessageRowMapper, objects);
+            Object[] queryParams = queryParamsBuilder.apply(room);
+            return jdbcTemplate.query(query, this::mapToEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
     }
 
-    private ChatMessageEntity chatMessageRowMapper(ResultSet rs, int rowNum) throws SQLException {
+    private ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
         ChatMessageEntity message = ChatMessageEntity.emptyMessage();
         message.setId(rs.getLong("id"));
 
@@ -143,5 +111,11 @@ public class ChatMessageRepository {
         message.setTimestamp(rs.getTimestamp("sent_at").toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime());
         message.setContent(rs.getString("content"));
         return message;
+    }
+
+    private RoomEntity getRoomByNameOrThrow(String roomName) {
+        return roomRepository.getByRoomName(roomName).orElseThrow(() -> {
+            throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
+        });
     }
 }
