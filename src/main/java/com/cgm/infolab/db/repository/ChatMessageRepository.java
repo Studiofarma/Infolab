@@ -25,7 +25,7 @@ public class ChatMessageRepository {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
 
-    private final String MESSAGES_BY_ROOM_QUERY = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ?";
+    private final String MESSAGES_BY_ROOM_QUERY = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? ORDER BY sent_at DESC";
 
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
