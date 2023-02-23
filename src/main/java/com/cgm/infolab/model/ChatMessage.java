@@ -1,5 +1,7 @@
 package com.cgm.infolab.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -36,7 +38,7 @@ public class ChatMessage {
     public void setContent(String content) {
         this.content = content;
     }
-
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
