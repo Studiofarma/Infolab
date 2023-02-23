@@ -73,16 +73,7 @@ class ConversationList extends LitElement {
   }
 
   renderList() {
-    this.pharmaciesList.forEach((pharmacy) => {
-      if (pharmacy.lastMessage.length > 35) {
-        pharmacy.lastMessage = pharmacy.lastMessage.substring(0, 30);
-        pharmacy.lastMessage += " ...";
-      }
-
-      if (pharmacy.unread > 9) {
-        pharmacy.unread = "9+";
-      }
-    });
+    this.checkMessageLength();
 
     return this.pharmaciesList.map(
       (pharmacy) =>
@@ -92,6 +83,26 @@ class ConversationList extends LitElement {
           unread=${pharmacy.unread}
         ></il-conversation>`
     );
+  }
+
+  checkMessageLength() {
+    this.pharmaciesList.forEach((pharmacy) => {
+      pharmacy.lastMessage = this.normalizeLastMessage(pharmacy.lastMessage);
+      pharmacy.unread = this.normalizeUnread(pharmacy.unread);
+    });
+  }
+
+  normalizeLastMessage(message) {
+    if (message.length > 35) {
+      message = message.substring(0, 30);
+      message += " ...";
+    }
+
+    return message;
+  }
+
+  normalizeUnread(unread) {
+    return unread;
   }
 }
 
