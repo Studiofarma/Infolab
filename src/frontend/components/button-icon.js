@@ -39,7 +39,7 @@ export class ButtonIcon extends LitElement {
     }
 
     #button:hover {
-      background-color: rgb(0, 0, 255);
+      background-color: rgba(152, 154, 157, 0.3);
       border-radius: 50%;
     }
   `;
@@ -47,7 +47,9 @@ export class ButtonIcon extends LitElement {
   render() {
     console.log(this.content);
     return html`
-      <div><svg-icon type="mdi" path="${mdi[this.content]}"></svg-icon></div>
+      <div id="button">
+        <svg-icon type="mdi" path="${mdi[this.content]}"></svg-icon>
+      </div>
     `;
   }
 }
