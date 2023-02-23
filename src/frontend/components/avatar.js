@@ -24,16 +24,6 @@ export class Avatar extends LitElement {
     }
   `;
 
-  async executePharmaciesCall() {
-    return axios({
-      url: "http://localhost:3000/users",
-      method: "get",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-      },
-    });
-  }
-
   constructor() {
     super();
     this.initials = "";
