@@ -1,10 +1,11 @@
 import { LitElement, html, css } from "lit";
-import { mdiEye } from '@mdi/js';
+import * as mdi from "@mdi/js";
+import "@jamescoyle/svg-icon";
 
 export class ButtonIcon extends LitElement {
   static get properties() {
     return {
-      mdiEye,
+      content: "",
     };
   }
 
@@ -13,7 +14,7 @@ export class ButtonIcon extends LitElement {
       display: inline;
       align-items: center;
     }
-    
+
     #button {
       height: 100%;
       width: 100%;
@@ -35,12 +36,7 @@ export class ButtonIcon extends LitElement {
       user-select: none;
       min-height: 35px;
       min-width: 35px;
-      
     }
-
-    
-
-   
 
     #button:hover {
       background-color: rgb(0, 0, 255);
@@ -48,15 +44,11 @@ export class ButtonIcon extends LitElement {
     }
   `;
 
-  constructor() {
-    super();
-    this.content = "";
-    console.log(mdiEye);
-  }
-
   render() {
-    
-    return html` <div >${mdiEye}</div> `;
+    console.log(this.content);
+    return html`
+      <div><svg-icon type="mdi" path="${mdi[this.content]}"></svg-icon></div>
+    `;
   }
 }
 
