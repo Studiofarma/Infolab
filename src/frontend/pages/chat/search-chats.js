@@ -167,7 +167,7 @@ export class SearchChats extends LitElement {
 
   async executePharmaciesCall() {
     return axios({
-      url: "http://localhost:3000/pharmacies",
+      url: "http://localhost:3000/users",
       method: "get",
       headers: {
         "X-Requested-With": "XMLHttpRequest",
@@ -200,7 +200,11 @@ export class SearchChats extends LitElement {
       return this.pharmaciesList.map(
         (pharmacy) => html`
           <div>
-            <il-avatar></il-avatar>
+            <il-avatar
+              avatar=${pharmacy.avatar}
+              name=${pharmacy.name}
+              id_user=${pharmacy.id}
+            ></il-avatar>
             <p>${pharmacy.name}</p>
           </div>
         `

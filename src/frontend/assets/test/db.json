@@ -1,9 +1,9 @@
 {
-  "pharmacies": [
+  "users": [
     {
       "name": "farmacia1",
       "id": 1,
-      "avatar": "#"
+      "avatar": "prova"
     },
 
     {

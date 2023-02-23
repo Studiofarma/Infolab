@@ -3,12 +3,17 @@ import Immagine from "../assets/images/immagine.jpeg";
 const axios = require("axios").default;
 
 export class Avatar extends LitElement {
-  static properties = {
-    users: [],
-  };
+  static get properties() {
+    return {
+      avatar: "",
+      name: "",
+      id_user: "",
+    };
+  }
 
   static styles = css`
-    .avatar {
+    img,
+    #avatar-default {
       width: 50px;
       height: 50px;
       border-radius: 50%;
@@ -17,18 +22,11 @@ export class Avatar extends LitElement {
       align-items: center;
       overflow: hidden;
     }
-
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-    }
   `;
 
   async executePharmaciesCall() {
     return axios({
-      url: "http://localhost:3000/pharmacies",
+      url: "http://localhost:3000/users",
       method: "get",
       headers: {
         "X-Requested-With": "XMLHttpRequest",
@@ -38,20 +36,57 @@ export class Avatar extends LitElement {
 
   constructor() {
     super();
-    // this.users = this.executePharmaciesCall()
-    //   .then((element) =>
-    //     element.forEach((e) => {
-    //       this.users.push(e);
-    //     })
-    //   )
-    //   .catch((e) => console.log(e));
+    this.initials = "";
+    this.avatar = "";
+    this.name = "";
+    this.color = "";
+    this.id_user = "";
+    this.bAvatar = true;
   }
 
   render() {
-    console.log(this.users);
+    if (this.avatar == "#") {
+      this.bAvatar = false;
+      this.name.split(" ").forEach((s) => {
+        this.initials += s[0];
+      });
+      switch (this.id_user % 8) {
+        case 0:
+          this.color = "#083C72";
+          break;
+        case 1:
+          this.color = "#00234F";
+          break;
+        case 2:
+          this.color = "#008A33";
+          break;
+        case 3:
+          this.color = "#005B13";
+          break;
+        case 4:
+          this.color = "#DC2042";
+          break;
+        case 5:
+          this.color = "#C1002E";
+          break;
+        case 6:
+          this.color = "#E48B0E";
+          break;
+        case 7:
+          this.color = "#A66100";
+      }
+    }
+
     return html`
       <div class="avatar">
-        <img src=${Immagine} />
+        ${this.bAvatar
+          ? html`<img src=${Immagine} />`
+          : html`<div
+              id="avatar-default"
+              style="background-color: ${this.color}"
+            >
+              ${this.initials}
+            </div>`}
       </div>
     `;
   }
