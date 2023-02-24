@@ -14,8 +14,8 @@ export class InsertionBar extends LitElement {
   render() {
     return html`
       <div @click=${this.select_formatting_option}>
-        <il-button-icon content="edit"></il-button-icon>
-        <il-button-icon content="mood"></il-button-icon>
+        <il-button-icon content="mdiPencil"></il-button-icon>
+        <il-button-icon content="mdiEmoticon"></il-button-icon>
       </div>
     `;
   }
