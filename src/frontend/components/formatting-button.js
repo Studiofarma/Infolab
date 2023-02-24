@@ -1,8 +1,8 @@
 import { LitElement, html, css } from "lit";
-import * as mdi from "@mdi/js";
-import "@jamescoyle/svg-icon";
 
-export class ButtonIcon extends LitElement {
+import { ButtonIcon } from "./button-icon";
+
+export class FormattingButton extends ButtonIcon {
   static get properties() {
     return {
       content: "",
@@ -14,15 +14,10 @@ export class ButtonIcon extends LitElement {
       display: inline;
       align-items: center;
     }
-
     #button {
-      height: 100%;
-      width: 100%;
-      justify-content: center;
-      align-items: center;
+      font-family: "Material Icons";
       font-weight: normal;
       font-style: normal;
-      font-family: "Material Icons";
       font-size: 24px;
       line-height: 1;
       letter-spacing: normal;
@@ -34,24 +29,25 @@ export class ButtonIcon extends LitElement {
       -webkit-font-smoothing: antialiased;
       cursor: pointer;
       user-select: none;
-      min-height: 35px;
-      min-width: 35px;
+      min-width: 25px;
+      min-height: 25px;
+      border-radius: 2px;
+      padding: 5px;
+      text-align: center;
+      flex-direction: column;
     }
 
     #button:hover {
-      background-color: rgba(152, 154, 157, 0.3);
-      border-radius: 50%;
+      background: #b7b9bd;
     }
   `;
 
+  constructor() {
+    super();
+  }
+
   render() {
-    console.log(this.content);
-    return html`
-      <div id="button">
-        <svg-icon type="mdi" path="${mdi[this.content]}"></svg-icon>
-      </div>
-    `;
+    return super.render();
   }
 }
-
-customElements.define("il-button-icon", ButtonIcon);
+customElements.define("il-formatting-button", FormattingButton);

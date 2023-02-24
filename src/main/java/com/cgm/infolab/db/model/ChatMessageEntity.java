@@ -4,16 +4,17 @@ import com.cgm.infolab.db.ID;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class ChatMessageEntity {
     private long id;
     private UserEntity sender;
     private RoomEntity room;
-    private Timestamp timestamp;
+    private LocalDateTime timestamp;
     private String content;
 
-    private ChatMessageEntity(long id, UserEntity sender, RoomEntity room, Timestamp timestamp, String content) {
+    private ChatMessageEntity(long id, UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content) {
         this.id = id;
         this.sender = sender;
         this.room = room;
@@ -21,7 +22,7 @@ public class ChatMessageEntity {
         this.content = content;
     }
 
-    public static ChatMessageEntity of(UserEntity sender, RoomEntity room, Timestamp timestamp, String content) {
+    public static ChatMessageEntity of(UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content) {
         return new ChatMessageEntity(ID.None, sender, room, timestamp, content);
     }
 
@@ -53,11 +54,11 @@ public class ChatMessageEntity {
         this.room = room;
     }
 
-    public Timestamp getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 
