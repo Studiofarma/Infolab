@@ -155,7 +155,7 @@ export class InputControls extends LitElement {
         <div id="submitContainer">
           <il-button-icon
             @click=${this.sendMessage}
-            content="send"
+            content="mdiSend"
           ></il-button-icon>
         </div>
       </div>
