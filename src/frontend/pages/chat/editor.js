@@ -126,29 +126,29 @@ export class Editor extends LitElement {
       <!-- diventerà un componente -->
       <div class="formatting-bar">
         <il-formatting-button
-          content="format_bold"
+          content="mdiFormatBold"
           @click=${this.insertBold}
         ></il-formatting-button>
         <il-formatting-button
-          content="format_italic"
+          content="mdiFormatItalic"
           @click=${this.insertItalic}
         ></il-formatting-button>
         <il-formatting-button
-          content="strikethrough_s"
+          content="mdiFormatStrikethroughVariant"
           @click=${this.insertStrike}
         ></il-formatting-button>
         <il-formatting-button
-          content="link"
+          content="mdiLink"
           @click=${this.insertLink}
         ></il-formatting-button>
         <il-formatting-button
-          content="minimize"
+          content="mdiMinus"
           @click=${this.insertLine}
         ></il-formatting-button>
 
         <div class="select-list">
           <il-formatting-button
-            content="list_alt"
+            content="mdiFormatListBulleted"
             @click=${this.insertList}
           ></il-formatting-button>
           <div class="dropdown">
@@ -178,7 +178,7 @@ export class Editor extends LitElement {
 
         <div class="select-heading">
           <il-formatting-button
-            content="title"
+            content="mdiFormatTitle"
             @click=${this.insertHeading}
           ></il-formatting-button>
           <div class="dropdown">

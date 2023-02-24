@@ -190,10 +190,10 @@ export class InputControls extends LitElement {
 
   openInsertionMode(e) {
     const option = e.detail.opt;
-    if (option === "edit") {
+    if (option === "mdiPencil") {
       this.bEditor = !this.bEditor;
       this.getTextarea().value = this.message;
-    } else if (option === "mood") this.bEmoji = !this.bEmoji;
+    } else if (option === "mdiEmoticon") this.bEmoji = !this.bEmoji;
   }
 
   sendMessage() {
