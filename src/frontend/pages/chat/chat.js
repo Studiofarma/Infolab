@@ -108,9 +108,12 @@ export class Chat extends LitElement {
     .messageBox {
       list-style-type: none;
       display: flex;
-      align-items: flex-end;
       flex-direction: column;
       gap: 30px;
+      height: 75vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0 20px;
     }
 
     li {
@@ -122,31 +125,7 @@ export class Chat extends LitElement {
       min-width: 300px;
       padding: 15px 8px;
       background: #f2f4f7;
-      border-radius: 10px 10px 0 10px;
       box-shadow: 0 0 10px #989a9d;
-    }
-
-    .messageBox > li::after {
-      content: "";
-      position: absolute;
-      transform: translate(-50%, -50%);
-      bottom: -15px;
-      right: -5px;
-      border-top: 10px solid #f2f4f7;
-      border-left: 10px solid transparent;
-      border-right: 0px solid transparent;
-    }
-
-    .messageBox > li::before {
-      content: "";
-      position: absolute;
-      transform: translate(-50%, -50%);
-      bottom: -13px;
-      right: -8px;
-      border-top: 10px solid #989a9d;
-      border-left: 10px solid transparent;
-      border-right: 0px solid transparent;
-      filter: blur(10px);
     }
 
     @keyframes rotationAnim {
@@ -178,6 +157,57 @@ export class Chat extends LitElement {
     input {
       font-family: inherit;
     }
+
+    .sender {
+      align-self: flex-end !important;
+      border-radius: 10px 0 10px 10px;
+    }
+    .sender::after {
+      content: "";
+      position: absolute;
+      transform: translate(50%, -600%);
+      bottom: -15px;
+      right: -5px;
+      border-top: 10px solid #f2f4f7;
+      border-left: 0px solid transparent;
+      border-right: 10px solid transparent;
+    }
+    .sender::before {
+      content: "";
+      position: absolute;
+      transform: translate(-50%, -50%);
+      bottom: -13px;
+      right: -8px;
+      border-top: 10px solid #989a9d;
+      border-left: 10px solid transparent;
+      border-right: 0px solid transparent;
+      filter: blur(10px);
+    }
+    .receiver {
+      align-self: flex-start !important;
+      border-radius: 0 10px 10px 10px;
+    }
+    .receiver::after {
+      content: "";
+      position: absolute;
+      transform: translate(50%, -600%);
+      bottom: -15px;
+      left: -15px;
+      border-top: 10px solid #f2f4f7;
+      border-left: 10px solid transparent;
+      border-right: 0px solid transparent;
+    }
+    .receiver::before {
+      content: "";
+      position: absolute;
+      transform: translate(-50%, -50%);
+      bottom: -13px;
+      right: -8px;
+      border-top: 10px solid #989a9d;
+      border-left: 10px solid transparent;
+      border-right: 0px solid transparent;
+      filter: blur(10px);
+    }
   `;
 
   render() {
@@ -207,7 +237,15 @@ export class Chat extends LitElement {
             <ul class="messageBox">
               ${this.messages.map(
                 (item, _) =>
-                  html` <li>${resolveMarkdown(this.parseMarkdown(item))}</li> `
+                  html`
+                    <li
+                      class=${item.sender == this.login.username
+                        ? "sender"
+                        : "receiver"}
+                    >
+                      ${resolveMarkdown(this.parseMarkdown(item.content))}
+                    </li>
+                  `
               )}
             </ul>
 
@@ -263,7 +301,7 @@ export class Chat extends LitElement {
     var message = JSON.parse(payload.body);
 
     if (message.content) {
-      this.messages.push(message.content);
+      this.messages.push(message);
       this.update();
     }
   }
