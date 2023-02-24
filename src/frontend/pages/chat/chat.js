@@ -194,7 +194,7 @@ export class Chat extends LitElement {
             <div class="chatHeader">
               <div class="settings">
                 <il-button-icon
-                  content="settings"
+                  content="mdiCog"
                   id="settingsIcon"
                 ></il-button-icon>
               </div>

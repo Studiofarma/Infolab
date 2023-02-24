@@ -143,7 +143,7 @@ export class SearchChats extends LitElement {
             @input=${this.setFilter}
             @click=${this.setFilter}
           />
-          <il-button-icon content="search"></il-button-icon>
+          <il-button-icon content="mdiMagnify"></il-button-icon>
 
           <div class="dropdown">${this.showTips()}</div>
         </div>
