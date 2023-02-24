@@ -25,6 +25,7 @@ class Conversation extends LitElement {
   render() {
     return html`
       <div>
+        <il-avatar></il-avatar>
         <p class="name">${this.name}</p>
       </div>
     `;
