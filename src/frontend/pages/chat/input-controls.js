@@ -1,13 +1,18 @@
 import { LitElement, html, css } from "lit";
+import { Picker } from "emoji-picker-element";
+import { it } from "emoji-picker-element/i18n/it";
 
+import "./insertion-bar";
+import "./editor";
 import "../../components/button-icon";
-import "../../components/insertion-bar";
-import "../../components/editor";
+
 export class InputControls extends LitElement {
   static properties = {
     message: "",
     bEditor: false,
     bEmoji: false,
+    picker: {},
+    selectedText: { startingPoint: NaN, endingPoint: NaN },
   };
 
   constructor() {
@@ -15,6 +20,15 @@ export class InputControls extends LitElement {
     this.message = "";
     this.bEditor = false;
     this.bEmoji = false;
+    this.picker = new Picker({
+      emojiVersion: "14.0",
+      dataSource:
+        "https://cdn.jsdelivr.net/npm/emoji-picker-element-data@^1/en/emojibase/data.json",
+      locale: "it",
+      skinToneEmoji: "🖐️",
+      i18n: it,
+    });
+    this.selectedText = null;
   }
 
   static styles = css`
@@ -26,6 +40,19 @@ export class InputControls extends LitElement {
 
     input {
       font-family: inherit;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      gap: 10px;
+    }
+
+    emoji-picker {
+      width: 100%;
+      height: 300px;
+      --emoji-size: 15pt;
     }
 
     #inputControls {
@@ -85,32 +112,44 @@ export class InputControls extends LitElement {
 
     input[type="text"].closed ~ il-editor {
       flex-grow: 1;
-      width: 100%;
+      width: calc(100% + 60px);
       height: 200px;
       display: block;
+      overflow-x: hidden;
     }
   `;
 
   render() {
     return html`
       <div id="inputControls">
-        <div class="inputContainer">
-          <il-insertion-bar
-            @open-insertion-mode=${this.openInsertionMode}
-            @click=${this.prova}
-          >
-          </il-insertion-bar>
+        <!-- .container is for emoji picker -->
+        <div class="container">
+          <div class="inputContainer">
+            <il-insertion-bar
+              @open-insertion-mode=${this.openInsertionMode}
+              @click=${this.prova}
+            >
+            </il-insertion-bar>
 
-          <input
-            class=${this.bEditor ? "closed" : "opened"}
-            type="text"
-            placeholder="Scrivi un messaggio..."
-            @input=${this.onMessageInput}
-            @keydown=${this.checkEnterKey}
-            .value=${this.message}
-          />
+            <input
+              class=${this.bEditor ? "closed" : "opened"}
+              type="text"
+              placeholder="Scrivi un messaggio..."
+              @input=${this.onMessageInput}
+              @keydown=${this.checkEnterKey}
+              @mouseup=${this.setSelectedText}
+              .value=${this.message}
+            />
 
-          <il-editor @typing-text=${this.onInputFromEditor}></il-editor>
+            <il-editor
+              @typing-text=${this.onInputFromEditor}
+              @is-selecting=${this.onSelectionFromTextarea}
+            ></il-editor>
+          </div>
+          <emoji-picker
+            @emoji-click=${this.insertEmoji}
+            ?hidden=${!this.bEmoji}
+          ></emoji-picker>
         </div>
 
         <div id="submitContainer">
@@ -137,10 +176,24 @@ export class InputControls extends LitElement {
     if (event.key === "Enter") this.sendMessage();
   }
 
+  getTextarea() {
+    return (
+      this.renderRoot
+        .querySelector("il-editor")
+        .shadowRoot.querySelector("textarea") ?? null
+    );
+  }
+
+  getInputText() {
+    return this.renderRoot.querySelector("input") ?? null;
+  }
+
   openInsertionMode(e) {
     const option = e.detail.opt;
-    if (option === "edit") this.bEditor = !this.bEditor;
-    else if (option === "mood") this.bEmoji = !this.bEmoji;
+    if (option === "mdiPencil") {
+      this.bEditor = !this.bEditor;
+      this.getTextarea().value = this.message;
+    } else if (option === "mdiEmoticon") this.bEmoji = !this.bEmoji;
   }
 
   sendMessage() {
@@ -154,7 +207,49 @@ export class InputControls extends LitElement {
 
     this.message = "";
     if (this.bEditor) {
+      this.getTextarea().value = "";
       this.bEditor = false;
+    }
+  }
+
+  //per Emoji
+  setSelectedText() {
+    const input = this.getInputText();
+    this.selectedText = {
+      startingPoint: input.selectionStart,
+      endingPoint: input.selectionEnd,
+    };
+  }
+
+  onSelectionFromTextarea(event) {
+    this.selectedText = {
+      startingPoint: event.detail.start,
+      endingPoint: event.detail.end,
+    };
+  }
+
+  insertEmoji(event) {
+    const symbol = event.detail.unicode;
+
+    if (this.selectedText !== null) {
+      this.message =
+        this.message.slice(0, this.selectedText.startingPoint) +
+        symbol +
+        this.message.slice(this.selectedText.endingPoint);
+    } else {
+      this.message = this.message + symbol;
+    }
+
+    if (this.bEditor) {
+      this.renderRoot.querySelector("il-editor").message = this.message;
+    }
+
+    this.selectedText = null;
+  }
+
+  updated(changed) {
+    if (changed.has("message")) {
+      this.getInputText().focus();
     }
   }
 }

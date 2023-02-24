@@ -3,6 +3,8 @@ import { resolveMarkdown } from "lit-markdown";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
+import { MarkdownService } from "../../services/services";
+
 import "../../components/button-icon";
 import "./search-chats.js";
 import "./chats-list.js";
@@ -76,15 +78,11 @@ export class Chat extends LitElement {
 
     .chat {
       position: relative;
-      padding: 100px 20px 70px 20px;
     }
 
     .chatHeader {
-      position: absolute;
       background: #083c72;
       box-shadow: 0px 1px 5px black;
-      top: 0px;
-      left: 0px;
       width: 100%;
       min-height: 50px;
       padding: 15px 30px;
@@ -105,12 +103,24 @@ export class Chat extends LitElement {
       gap: 1em;
     }
 
+    il-input-controls {
+      margin-top: auto;
+    }
+
     .messageBox {
       list-style-type: none;
       display: flex;
       align-items: flex-end;
       flex-direction: column;
       gap: 30px;
+      width: 100%;
+      height: 480px;
+      overflow-y: auto;
+      padding: 30px 10px;
+    }
+
+    .messageBox::-webkit-scrollbar {
+      width: 0px;
     }
 
     li {
@@ -120,6 +130,7 @@ export class Chat extends LitElement {
     .messageBox > li {
       position: relative;
       min-width: 300px;
+      max-width: 500px;
       padding: 15px 8px;
       background: #f2f4f7;
       border-radius: 10px 10px 0 10px;
@@ -207,7 +218,11 @@ export class Chat extends LitElement {
             <ul class="messageBox">
               ${this.messages.map(
                 (item, _) =>
-                  html` <li>${resolveMarkdown(this.parseMarkdown(item))}</li> `
+                  html`
+                    <li>
+                      ${resolveMarkdown(MarkdownService.parseMarkdown(item))}
+                    </li>
+                  `
               )}
             </ul>
 
@@ -218,16 +233,6 @@ export class Chat extends LitElement {
         </section>
       </main>
     `;
-  }
-
-  parseMarkdown(text) {
-    const md = require("markdown-it")({
-      html: false,
-      linkify: true,
-    });
-
-    const output = md.render(text);
-    return output;
   }
 
   createSocket() {
