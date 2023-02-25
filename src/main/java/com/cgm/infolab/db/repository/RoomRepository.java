@@ -1,6 +1,8 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.RoomEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,6 +21,8 @@ public class RoomRepository {
     private final DataSource dataSource;
 
     private final String ROOMS_QUERY = "SELECT r.id, r.roomname FROM infolab.rooms r";
+
+    private final Logger log = LoggerFactory.getLogger(RoomRepository.class);
 
     public RoomRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -59,9 +63,14 @@ public class RoomRepository {
     }
 
     private Optional<RoomEntity> queryRoom(String query, Object... queryParams) {
-        return Optional.ofNullable(
-                jdbcTemplate.queryForObject(query, this::mapToEntity, queryParams)
-        );
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(query, this::mapToEntity, queryParams)
+            );
+        } catch (EmptyResultDataAccessException e) {
+            log.info(String.format("La query \"%s\" non ha prodotto risultati.", query));
+            return Optional.empty();
+        }
     }
 
     public List<RoomEntity> getAll() {

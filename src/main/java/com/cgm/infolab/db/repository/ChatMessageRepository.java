@@ -16,7 +16,6 @@ import java.sql.SQLException;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @Component
 public class ChatMessageRepository {
@@ -92,9 +91,16 @@ public class ChatMessageRepository {
     }
 
     public Optional<ChatMessageEntity> getLastMessageByRoomId(long roomId) {
-        return Optional.ofNullable(
-                jdbcTemplate.queryForObject(String.format("%s LIMIT 1", MESSAGES_BY_ROOM_QUERY), this::mapToEntity, roomId)
-        );
+        // Necessario catchare l'eccezione perché se non viene trovato il messaggio non viene ritornato null
+        // ma viene ritornata una EmptyResultDataAccessException.
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(String.format("%s LIMIT 1", MESSAGES_BY_ROOM_QUERY), this::mapToEntity, roomId)
+            );
+        } catch (EmptyResultDataAccessException e) {
+            log.info("Nessun messaggio in room roomId=\"%d\" trovato");
+            return Optional.empty();
+        }
     }
 
     private ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
