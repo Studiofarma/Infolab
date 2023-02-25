@@ -31,21 +31,20 @@ public class RoomApiController {
         this.chatMessageRepository = messageRepository;
     }
 
+    // TODO: magari è necessario far si che le room prese siano soltanto quelle assegnate ad uno user,
+    //  in modo che uno user non possa vedere le room di qualcun altro.
+    //  Per farlo o si stabilisce una convenzione per capire se uno user è in una stanza,
+    //  o va aggiunta una relazione al db.
     @GetMapping("/api/rooms")
     public List<RoomDto> getAllRooms(@RequestParam(required = false) String dateLimit) {
         List<RoomDto> roomDtos = new ArrayList<>();
 
         List<RoomEntity> roomEntities = roomRepository.getAfterDate(convertString(dateLimit));
 
-        for (RoomEntity r : roomEntities) {
-            RoomDto dto = RoomDto.of(r.getName());
-
-            ChatMessageEntity message = chatMessageRepository.getLastMessageByRoomId(r.getId());
-
-            dto.setLastMessagePreview(message.getContent());
-            dto.setLastMessageTimestamp(message.getTimestamp());
-
-            roomDtos.add(dto);
+        if (roomEntities.size() > 0) {
+            roomEntities.forEach(e -> roomEntityToDto(e, roomDtos));
+        } else {
+            log.info("Non sono state trovate room");
         }
 
         return roomDtos;
@@ -58,5 +57,16 @@ public class RoomApiController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             return LocalDate.parse(date, formatter);
         }
+    }
+
+    private void roomEntityToDto(RoomEntity roomEntity, List<RoomDto> destination) {
+        RoomDto roomDto = RoomDto.of(roomEntity.getName());
+
+        ChatMessageEntity message = chatMessageRepository.getLastMessageByRoomId(roomEntity.getId());
+
+        roomDto.setLastMessagePreview(message.getContent());
+        roomDto.setLastMessageTimestamp(message.getTimestamp());
+
+        destination.add(roomDto);
     }
 }

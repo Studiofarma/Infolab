@@ -37,23 +37,28 @@ public class ChatApiMessagesController {
 
         RoomEntity room = RoomEntity.of("general");
         List<ChatMessageEntity> chatMessageEntities;
-        List<ChatMessageDto> messages = new ArrayList<>();
+        List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
         try {
             chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(room.getName(), numberOfMessages);
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());
-            return messages;
+            return chatMessageDtos;
         }
 
         if (chatMessageEntities.size() > 0) {
-            for (ChatMessageEntity entity : chatMessageEntities) {
-                ChatMessageDto message = new ChatMessageDto(entity.getContent(), entity.getTimestamp(), entity.getSender().getName());
-                messages.add(message);
-            }
+            chatMessageEntities.forEach(messageEntity -> messageEntityToDto(messageEntity, chatMessageDtos));
         } else {
             log.info("Non sono stati trovati messaggi nella room specificata");
         }
 
-        return messages;
+        return chatMessageDtos;
+    }
+
+    private void messageEntityToDto(ChatMessageEntity messageEntity, List<ChatMessageDto> destination) {
+        ChatMessageDto message = new ChatMessageDto(messageEntity.getContent(),
+                messageEntity.getTimestamp(),
+                messageEntity.getSender().getName());
+
+        destination.add(message);
     }
 }
