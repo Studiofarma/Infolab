@@ -92,7 +92,7 @@ public class ChatMessageRepository {
 
     public Optional<ChatMessageEntity> getLastMessageByRoomId(long roomId) {
         // Necessario catchare l'eccezione perché se non viene trovato il messaggio non viene ritornato null
-        // ma viene ritornata una EmptyResultDataAccessException.
+        // ma viene lanciata una EmptyResultDataAccessException.
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(String.format("%s LIMIT 1", MESSAGES_BY_ROOM_QUERY), this::mapToEntity, roomId)

@@ -1,6 +1,7 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.UserEntity;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,7 @@ import java.util.Optional;
 public class UserRepository {
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
+    private final String USERS_QUERY = "SELECT * FROM infolab.users";
 
     public UserRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -44,10 +46,7 @@ public class UserRepository {
      * @return id dell'utente con il nome passato a parametro. -1 in caso l'utente non esista.
      */
     public Optional<UserEntity> getByUsername(String username) {
-        String query = "SELECT * FROM infolab.users WHERE username = ?";
-
-        return Optional.ofNullable(
-                jdbcTemplate.queryForObject(query, UserRepository::rowMapper, username));
+        return queryUser(String.format("%s WHERE username = ?", USERS_QUERY), username);
     }
 
     /**
@@ -56,16 +55,25 @@ public class UserRepository {
      * @return oggetto User con il nome preso dal db. Ritorna null se l'user non esiste.
      */
     public Optional<UserEntity> getById(long id) {
-        String query = "SELECT * FROM infolab.users WHERE id = ?";
+        return queryUser(String.format("%s WHERE id = ?", USERS_QUERY), id);
+    }
 
-        return Optional.ofNullable(
-                jdbcTemplate.queryForObject(query, UserRepository::rowMapper, id));
+    private Optional<UserEntity> queryUser(String query, Object... objects) {
+        // Necessario catchare l'eccezione perché se non viene trovato lo user non viene ritornato null
+        // ma viene lanciata una EmptyResultDataAccessException.
+        try {
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject(query, this::mapToEntity, objects)
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     /**
      * Rowmapper utilizzato nei metodi getByUsername e getById
      */
-    private static UserEntity rowMapper(ResultSet rs, int rowNum) throws SQLException {
+    private UserEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
         UserEntity user = UserEntity.of(rs.getString("username"));
         user.setId(rs.getLong("id"));
         return user;
