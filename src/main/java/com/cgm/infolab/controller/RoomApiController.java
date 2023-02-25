@@ -36,10 +36,10 @@ public class RoomApiController {
     //  Per farlo o si stabilisce una convenzione per capire se uno user è in una stanza,
     //  o va aggiunta una relazione al db.
     @GetMapping("/api/rooms")
-    public List<RoomDto> getAllRooms(@RequestParam(required = false) String dateLimit) {
+    public List<RoomDto> getAllRooms(@RequestParam(required = false) String date) {
         List<RoomDto> roomDtos = new ArrayList<>();
 
-        List<RoomEntity> roomEntities = roomRepository.getAfterDate(convertString(dateLimit));
+        List<RoomEntity> roomEntities = roomRepository.getAfterDate(convertString(date));
 
         if (roomEntities.size() > 0) {
             roomDtos = roomEntities.stream().map(this::roomEntityToDto).toList();
