@@ -91,10 +91,10 @@ public class ChatMessageRepository {
         }
     }
 
-    public ChatMessageEntity getLastMessageByRoomId(long roomId) {
-        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? ORDER BY sent_at DESC LIMIT 1";
-
-        return jdbcTemplate.queryForObject(query, this::mapToEntity, roomId);
+    public Optional<ChatMessageEntity> getLastMessageByRoomId(long roomId) {
+        return Optional.ofNullable(
+                jdbcTemplate.queryForObject(String.format("%s LIMIT 1", MESSAGES_BY_ROOM_QUERY), this::mapToEntity, roomId)
+        );
     }
 
     private ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {

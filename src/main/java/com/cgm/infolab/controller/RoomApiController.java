@@ -42,7 +42,7 @@ public class RoomApiController {
         List<RoomEntity> roomEntities = roomRepository.getAfterDate(convertString(dateLimit));
 
         if (roomEntities.size() > 0) {
-            roomEntities.forEach(e -> roomEntityToDto(e, roomDtos));
+            roomDtos = roomEntities.stream().map(this::roomEntityToDto).toList();
         } else {
             log.info("Non sono state trovate room");
         }
@@ -59,14 +59,18 @@ public class RoomApiController {
         }
     }
 
-    private void roomEntityToDto(RoomEntity roomEntity, List<RoomDto> destination) {
+    private RoomDto roomEntityToDto(RoomEntity roomEntity) {
         RoomDto roomDto = RoomDto.of(roomEntity.getName());
 
-        ChatMessageEntity message = chatMessageRepository.getLastMessageByRoomId(roomEntity.getId());
+        ChatMessageEntity message = chatMessageRepository
+                .getLastMessageByRoomId(roomEntity.getId()).orElseGet(() -> {
+                    log.info(String.format("Nessun messaggio trovato nella room roomId=\"%d\"", roomEntity.getId()));
+                    return ChatMessageEntity.emptyMessage();
+                });
 
         roomDto.setLastMessagePreview(message.getContent());
         roomDto.setLastMessageTimestamp(message.getTimestamp());
 
-        destination.add(roomDto);
+        return roomDto;
     }
 }

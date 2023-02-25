@@ -46,7 +46,7 @@ public class ChatApiMessagesController {
         }
 
         if (chatMessageEntities.size() > 0) {
-            chatMessageEntities.forEach(messageEntity -> messageEntityToDto(messageEntity, chatMessageDtos));
+            chatMessageDtos = chatMessageEntities.stream().map(this::messageEntityToDto).toList();
         } else {
             log.info("Non sono stati trovati messaggi nella room specificata");
         }
@@ -54,11 +54,9 @@ public class ChatApiMessagesController {
         return chatMessageDtos;
     }
 
-    private void messageEntityToDto(ChatMessageEntity messageEntity, List<ChatMessageDto> destination) {
-        ChatMessageDto message = new ChatMessageDto(messageEntity.getContent(),
+    private ChatMessageDto messageEntityToDto(ChatMessageEntity messageEntity) {
+        return new ChatMessageDto(messageEntity.getContent(),
                 messageEntity.getTimestamp(),
                 messageEntity.getSender().getName());
-
-        destination.add(message);
     }
 }
