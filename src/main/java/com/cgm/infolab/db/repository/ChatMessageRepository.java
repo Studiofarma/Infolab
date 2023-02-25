@@ -107,7 +107,6 @@ public class ChatMessageRepository {
             return null;
         }));
 
-        //TODO: sistemare bug per cui la data viene presa come UTC e non con la timezone richiesta
         message.setTimestamp(rs.getTimestamp("sent_at").toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime());
         message.setContent(rs.getString("content"));
         return message;
