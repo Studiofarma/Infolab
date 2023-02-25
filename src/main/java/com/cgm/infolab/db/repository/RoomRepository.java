@@ -18,7 +18,7 @@ public class RoomRepository {
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
 
-    private final String ROOMS_QUERY = "SELECT * FROM infolab.rooms";
+    private final String ROOMS_QUERY = "SELECT r.id, r.roomname FROM infolab.rooms r";
 
     public RoomRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -73,7 +73,16 @@ public class RoomRepository {
             return getAll();
         }
 
-        return queryRooms(String.format("%s, infolab.chatmessages messages WHERE messages.sent_at > ?", ROOMS_QUERY),
+        // TODO: verificare se c'è una soluzione migliore per questo
+        return queryRooms(
+                String.format("%s RIGHT JOIN (" +
+                                    "SELECT recipient_room_id, max(sent_at) sent_at " +
+                                    "FROM infolab.chatmessages " +
+                                    "GROUP BY recipient_room_id " +
+                                    "ORDER BY sent_at DESC" +
+                                ") m " +
+                                "ON (m.recipient_room_id = r.id AND m.sent_at > ?) " +
+                                "WHERE r.id IS NOT NULL AND r.roomname IS NOT NULL", ROOMS_QUERY),
                 dateLimit);
     }
 
