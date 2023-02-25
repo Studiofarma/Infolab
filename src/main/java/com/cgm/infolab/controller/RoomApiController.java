@@ -1,5 +1,6 @@
 package com.cgm.infolab.controller;
 
+import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.model.RoomDto;
 import org.slf4j.Logger;
@@ -9,7 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDateTime;
+import javax.swing.text.DateFormatter;
+import java.text.DateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +30,24 @@ public class RoomApiController {
     }
 
     @GetMapping("/api/rooms")
-    public List<RoomDto> getAllRooms(@RequestParam(required = false)LocalDateTime dateLimit) {
+    public List<RoomDto> getAllRooms(@RequestParam(required = false) String dateLimit) {
         List<RoomDto> roomDtos = new ArrayList<>();
-        roomDtos.add(RoomDto.of("UwU"));
+
+        List<RoomEntity> roomEntities = roomRepository.getAfterDate(convertString(dateLimit));
+
+        for (RoomEntity r : roomEntities) {
+            roomDtos.add(RoomDto.of(r.getName()));
+        }
 
         return roomDtos;
+    }
+
+    private LocalDate convertString(String date) {
+        if (date == null) {
+            return null;
+        } else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return LocalDate.parse(date, formatter);
+        }
     }
 }

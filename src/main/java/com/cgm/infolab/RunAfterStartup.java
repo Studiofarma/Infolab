@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class RunAfterStartup {
 
-    public static final String[] ROOMS = {"general"};
-    public static final RoomEntity[] ROOMS2 = {RoomEntity.of("general")};
+    public static final RoomEntity[] TEST_ROOMS = {RoomEntity.of("testRoom1"), RoomEntity.of("testRoom2")};
+    public static final RoomEntity[] ROOMS = {RoomEntity.of("general")};
     private final RoomRepository roomRepository;
 
     private final Logger log = LoggerFactory.getLogger(RunAfterStartup.class);
@@ -27,7 +27,14 @@ public class RunAfterStartup {
      */
     @EventListener(ApplicationReadyEvent.class)
     public void addAllRooms() {
-        for (RoomEntity r : ROOMS2) {
+        for (RoomEntity r : ROOMS) {
+            try {
+                roomRepository.add(r);
+            } catch (DuplicateKeyException e) {
+                log.info(String.format("Room roomName=\"%s\" già esistente nel database", r.getName()));
+            }
+        }
+        for (RoomEntity r : TEST_ROOMS) {
             try {
                 roomRepository.add(r);
             } catch (DuplicateKeyException e) {
