@@ -1,6 +1,8 @@
 package com.cgm.infolab.controller;
 
+import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.model.RoomDto;
 import org.slf4j.Logger;
@@ -10,8 +12,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.swing.text.DateFormatter;
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -21,12 +21,14 @@ import java.util.List;
 public class RoomApiController {
 
     private final RoomRepository roomRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
     private final Logger log = LoggerFactory.getLogger(RoomApiController.class);
 
     @Autowired
-    public RoomApiController(RoomRepository roomRepository) {
+    public RoomApiController(RoomRepository roomRepository, ChatMessageRepository messageRepository) {
         this.roomRepository = roomRepository;
+        this.chatMessageRepository = messageRepository;
     }
 
     @GetMapping("/api/rooms")
@@ -36,7 +38,14 @@ public class RoomApiController {
         List<RoomEntity> roomEntities = roomRepository.getAfterDate(convertString(dateLimit));
 
         for (RoomEntity r : roomEntities) {
-            roomDtos.add(RoomDto.of(r.getName()));
+            RoomDto dto = RoomDto.of(r.getName());
+
+            ChatMessageEntity message = chatMessageRepository.getLastMessageByRoomId(r.getId());
+
+            dto.setLastMessagePreview(message.getContent());
+            dto.setLastMessageTimestamp(message.getTimestamp());
+
+            roomDtos.add(dto);
         }
 
         return roomDtos;

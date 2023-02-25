@@ -91,6 +91,12 @@ public class ChatMessageRepository {
         }
     }
 
+    public ChatMessageEntity getLastMessageByRoomId(long roomId) {
+        String query = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? ORDER BY sent_at DESC LIMIT 1";
+
+        return jdbcTemplate.queryForObject(query, this::mapToEntity, roomId);
+    }
+
     private ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
         ChatMessageEntity message = ChatMessageEntity.emptyMessage();
         message.setId(rs.getLong("id"));
