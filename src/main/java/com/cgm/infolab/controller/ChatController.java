@@ -1,12 +1,10 @@
 package com.cgm.infolab.controller;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
-import com.cgm.infolab.model.ChatMessage;
+import com.cgm.infolab.model.ChatMessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +19,6 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-
-import java.sql.Timestamp;
 
 @Controller
 public class ChatController {
@@ -75,7 +71,7 @@ public class ChatController {
 
     @MessageMapping("/chat.register")
     @SendTo("/topic/public")
-    public ChatMessage register(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor){
+    public ChatMessageDto register(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor){
         headerAccessor.getSessionAttributes().put("username", message.getSender());
         return message;
     }
@@ -83,7 +79,7 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
 
-    public ChatMessage sendMessage(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor){
+    public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor){
         chatService.ChatServiceMetodo(message);
         return message;
     }
@@ -91,8 +87,8 @@ public class ChatController {
     @MessageMapping("/chat.send.{destinationUser}")
     @SendTo("/queue/{destinationUser}")
     @SendToUser("/topic/me")
-    ChatMessage sendMessageToUser(
-            @Payload ChatMessage message,
+    ChatMessageDto sendMessageToUser(
+            @Payload ChatMessageDto message,
             @DestinationVariable String destinationUser,
             SimpMessageHeaderAccessor headerAccessor){
         String username = (String) headerAccessor.getSessionAttributes().get("username");

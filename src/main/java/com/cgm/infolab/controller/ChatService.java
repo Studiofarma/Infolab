@@ -6,7 +6,7 @@ import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
-import com.cgm.infolab.model.ChatMessage;
+import com.cgm.infolab.model.ChatMessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class ChatService {
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
     }
-    public void ChatServiceMetodo(ChatMessage message){
+    public void ChatServiceMetodo(ChatMessageDto message){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
