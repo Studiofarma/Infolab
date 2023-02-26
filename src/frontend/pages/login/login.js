@@ -264,9 +264,7 @@ export class Login extends LitElement {
 
               <il-button-icon
                 @click=${this.setVisibility}
-                content="${!this.pswVisibility
-                  ? "mdiEye"
-                  : "mdiEyeOff"}"
+                content="${!this.pswVisibility ? "mdiEye" : "mdiEyeOff"}"
               ></il-button-icon>
             </div>
           </label>

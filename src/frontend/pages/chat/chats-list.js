@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
+const axios = require("axios").default;
 
 import "../../components/avatar.js";
 import "./conversation.js";
@@ -48,7 +49,8 @@ class ConversationList extends LitElement {
 
   constructor() {
     super();
-    this.pharmaciesList = this.setList();
+    this.pharmaciesList = [];
+    this.setList();
   }
 
   render() {
@@ -68,12 +70,17 @@ class ConversationList extends LitElement {
   setList() {
     let tmp = [];
 
-    this.executePharmaciesCall().then((element) => {
-      element["data"].forEach((pharmacy) => {
-        tmp.push(pharmacy);
+    this.executePharmaciesCall()
+      .then((element) => {
+        element["data"].forEach((pharmacy) => {
+          tmp.push(pharmacy);
+        });
+
+        this.pharmaciesList = tmp;
+      })
+      .catch((error) => {
+        console.log(error);
       });
-      this.pharmaciesList = tmp;
-    });
   }
 
   renderList() {

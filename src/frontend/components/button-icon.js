@@ -14,7 +14,6 @@ export class ButtonIcon extends LitElement {
       display: inline;
       align-items: center;
     }
-
     #button {
       height: 100%;
       width: 100%;
@@ -45,7 +44,6 @@ export class ButtonIcon extends LitElement {
   `;
 
   render() {
-    console.log(this.content);
     return html`
       <div id="button">
         <svg-icon type="mdi" path="${mdi[this.content]}"></svg-icon>
