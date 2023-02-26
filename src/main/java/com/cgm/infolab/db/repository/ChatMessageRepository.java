@@ -98,7 +98,6 @@ public class ChatMessageRepository {
                     jdbcTemplate.queryForObject(String.format("%s LIMIT 1", MESSAGES_BY_ROOM_QUERY), this::mapToEntity, roomId)
             );
         } catch (EmptyResultDataAccessException e) {
-            log.info("Nessun messaggio in room roomId=\"%d\" trovato");
             return Optional.empty();
         }
     }

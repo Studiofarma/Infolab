@@ -22,8 +22,6 @@ public class RoomRepository {
 
     private final String ROOMS_QUERY = "SELECT r.id, r.roomname FROM infolab.rooms r";
 
-    private final Logger log = LoggerFactory.getLogger(RoomRepository.class);
-
     public RoomRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.dataSource = dataSource;
@@ -70,7 +68,6 @@ public class RoomRepository {
                     jdbcTemplate.queryForObject(query, this::mapToEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
-            log.info(String.format("La query \"%s\" non ha prodotto risultati.", query));
             return Optional.empty();
         }
     }
