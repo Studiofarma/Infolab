@@ -1,11 +1,12 @@
 import { LitElement, html, css } from "lit";
 
-import "../components/button-icon";
+import "../../components/button-icon";
 
 export class InsertionBar extends LitElement {
   static styles = css`
     div {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 1px;
     }
@@ -14,8 +15,8 @@ export class InsertionBar extends LitElement {
   render() {
     return html`
       <div @click=${this.select_formatting_option}>
-        <il-button-icon content="edit"></il-button-icon>
-        <il-button-icon content="mood"></il-button-icon>
+        <il-button-icon content="mdiPencil"></il-button-icon>
+        <il-button-icon content="mdiEmoticon"></il-button-icon>
       </div>
     `;
   }
