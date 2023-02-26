@@ -237,9 +237,7 @@ export class Login extends LitElement {
 
               <il-button-icon
                 @click=${this.setVisibility}
-                content="${!this.pswVisibility
-                  ? "mdiEye"
-                  : "mdiEyeOff"}"
+                content="${!this.pswVisibility ? "mdiEye" : "mdiEyeOff"}"
               ></il-button-icon>
             </div>
           </label>
@@ -249,8 +247,7 @@ export class Login extends LitElement {
         </div>
       </div>
 
-      <!-- componente snackbar -->
-      <il-snackbar></il-snackbar>
+      <il-snackbar content="CREDENZIALI NON VALIDE"></il-snackbar>
     `;
   }
 
@@ -316,7 +313,7 @@ export class Login extends LitElement {
         this.emptyUsernameField = false;
         this.emptyPasswordField = false;
         this.getDivInSnackbar().style.opacity = 1.0;
-        this.getDivInSnackbar().style.bottom = "40px";
+        this.getDivInSnackbar().style.bottom = "20px";
       });
   }
 
