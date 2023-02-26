@@ -1,4 +1,6 @@
 import { LitElement, html, css } from "lit";
+import * as mdi from "@mdi/js";
+import "@jamescoyle/svg-icon";
 
 class Conversation extends LitElement {
   static properties = {
@@ -46,6 +48,18 @@ class Conversation extends LitElement {
       grid-area: avatar;
     }
 
+    svg-icon {
+      border-radius: 50%;
+      background-color: #e7f3ff;
+      height: 25px;
+      width: 25px;
+      grid-area: unread;
+      color: #083c72;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 1.5;
+    }
+
     span {
       border-radius: 50%;
       background-color: #e7f3ff;
@@ -71,15 +85,18 @@ class Conversation extends LitElement {
     } else {
       this.notificationOpacity = "block";
     }
+
     return html`
       <div>
         <il-avatar></il-avatar>
         <p class="name">${this.name}</p>
         <p class="lastMessage">${this.lastMessage}</p>
         <p id="unread">
-          <span style=" display:${this.notificationOpacity};"
-            >${this.unread}</span
-          >
+          <svg-icon
+            style="display:${this.notificationOpacity};"
+            type="mdi"
+            path="${mdi[this.unread]}"
+          ></svg-icon>
         </p>
       </div>
     `;
