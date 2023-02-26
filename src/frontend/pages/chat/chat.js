@@ -4,6 +4,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
 import { MarkdownService } from "../../services/services";
+import { getMessagesServices } from "../../services/services";
 
 import "../../components/button-icon";
 import "./search-chats.js";
@@ -115,7 +116,7 @@ export class Chat extends LitElement {
       width: 100%;
       height: 480px;
       overflow-y: auto;
-      padding: 30px 10px;
+      padding: 20px;
     }
 
     .messageBox::-webkit-scrollbar {
@@ -174,7 +175,7 @@ export class Chat extends LitElement {
       position: absolute;
       transform: translate(50%, -600%);
       bottom: -15px;
-      right: -5px;
+      right: -4px;
       border-top: 10px solid #f2f4f7;
       border-left: 0px solid transparent;
       border-right: 10px solid transparent;
@@ -218,7 +219,6 @@ export class Chat extends LitElement {
   `;
 
   render() {
-    //aggiungo il main e lo metto in absolute per non andare in display flex che avevo messo per il login
     return html`
       <main>
         <section>
@@ -250,7 +250,9 @@ export class Chat extends LitElement {
                         ? "sender"
                         : "receiver"}
                     >
-                      ${resolveMarkdown(this.parseMarkdown(item.content))}
+                      ${resolveMarkdown(
+                        MarkdownService.parseMarkdown(item.content)
+                      )}
                     </li>
                   `
               )}
@@ -263,6 +265,13 @@ export class Chat extends LitElement {
         </section>
       </main>
     `;
+  }
+
+  async firstUpdated() {
+    getMessagesServices.executeMessagesCall().then((messages) => {
+      console.log(messages.data);
+      this.messages = messages.data;
+    });
   }
 
   createSocket() {
