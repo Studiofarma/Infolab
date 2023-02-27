@@ -29,5 +29,47 @@
       "id": 5,
       "avatar": "#"
     }
+  ],
+
+  "openChats": [
+    {
+      "name": "farmacia1",
+      "id": 1,
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "2"
+    },
+
+    {
+      "name": "farmacia2",
+      "id": 2,
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "0"
+    },
+
+    {
+      "name": "farmacia3",
+      "id": 3,
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "22"
+    },
+
+    {
+      "name": "farmacia del Dr. Fantozzi Ugo",
+      "id": 4,
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "2"
+    },
+
+    {
+      "name": "farmacia della Dr.essa Belladonna Anna",
+      "id": 5,
+      "avatar": "#",
+      "lastMessage": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+      "unread": "2"
+    }
   ]
 }
