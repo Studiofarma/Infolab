@@ -1,4 +1,6 @@
 import { LitElement, html, css } from "lit";
+import * as mdi from "@mdi/js";
+import "@jamescoyle/svg-icon";
 
 export class ButtonIcon extends LitElement {
   static get properties() {
@@ -12,14 +14,15 @@ export class ButtonIcon extends LitElement {
       display: inline;
       align-items: center;
     }
+
     #button {
       height: 100%;
       width: 100%;
       justify-content: center;
       align-items: center;
-      font-family: "Material Icons";
       font-weight: normal;
       font-style: normal;
+      font-family: "Material Icons";
       font-size: 24px;
       line-height: 1;
       letter-spacing: normal;
@@ -36,18 +39,17 @@ export class ButtonIcon extends LitElement {
     }
 
     #button:hover {
-      background-color: rgba(0, 0, 0, 0.12);
+      background-color: rgba(152, 154, 157, 0.3);
       border-radius: 50%;
     }
   `;
 
-  constructor() {
-    super();
-    this.content = "";
-  }
-
   render() {
-    return html` <div id="button">${this.content}</div> `;
+    return html`
+      <div id="button">
+        <svg-icon type="mdi" path="${mdi[this.content]}"></svg-icon>
+      </div>
+    `;
   }
 }
 

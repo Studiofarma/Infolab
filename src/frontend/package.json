@@ -24,6 +24,8 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
+    "@jamescoyle/svg-icon": "^0.1.1",
+    "@mdi/js": "^7.1.96",
     "axios": "^1.2.3",
     "emoji-picker-element": "^1.15.1",
     "lit": "^2.6.0",
