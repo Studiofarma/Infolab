@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { resolveMarkdown } from "lit-markdown";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
@@ -59,34 +60,34 @@ export class Chat extends LitElement {
 
     section {
       display: grid;
-      grid-template-columns: 0.3fr 0.7fr;
+      grid-template-columns: 350px auto;
       height: 100%;
     }
 
     .sidebar {
-      background: #003366;
+      background: #083c72;
       color: white;
       padding-top: 10px;
       display: flex;
       flex-direction: column;
-      border-right: 3px solid #0064a6;
+      box-shadow: 1px 1px 8px black;
+      z-index: 1000;
     }
 
     .chat {
       position: relative;
-      padding-top: 100px;
-      padding-left: 5vw;
-      padding-right: 5vw;
+      padding: 100px 20px 70px 20px;
     }
 
     .chatHeader {
       position: absolute;
-      background: #0074bc;
+      background: #083c72;
+      box-shadow: 0px 1px 5px black;
       top: 0px;
       left: 0px;
       width: 100%;
       min-height: 50px;
-      padding: 8px 10px;
+      padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -112,7 +113,11 @@ export class Chat extends LitElement {
       gap: 30px;
     }
 
-    .messageBox li {
+    li {
+      list-style-position: inside;
+    }
+
+    .messageBox > li {
       position: relative;
       min-width: 300px;
       padding: 15px 8px;
@@ -121,7 +126,7 @@ export class Chat extends LitElement {
       box-shadow: 0 0 10px #989a9d;
     }
 
-    .messageBox li::after {
+    .messageBox > li::after {
       content: "";
       position: absolute;
       transform: translate(-50%, -50%);
@@ -132,7 +137,7 @@ export class Chat extends LitElement {
       border-right: 0px solid transparent;
     }
 
-    .messageBox li::before {
+    .messageBox > li::before {
       content: "";
       position: absolute;
       transform: translate(-50%, -50%);
@@ -160,14 +165,14 @@ export class Chat extends LitElement {
     :not(.dropdown)::-webkit-scrollbar {
       background-color: #0074bc;
       border-radius: 10px;
-      border: 5px solid #003366;
+      border: 5px solid #083c72;
     }
 
     :not(.dropdown)::-webkit-scrollbar-thumb {
       background-color: #0da2ff;
       border-radius: 10px;
       width: 5px;
-      border: 3px solid #003366;
+      border: 3px solid #083c72;
     }
 
     input {
@@ -179,8 +184,6 @@ export class Chat extends LitElement {
     //aggiungo il main e lo metto in absolute per non andare in display flex che avevo messo per il login
     return html`
       <main>
-        <header></header>
-
         <section>
           <div class="sidebar">
             <il-search></il-search>
@@ -202,7 +205,10 @@ export class Chat extends LitElement {
             </div>
 
             <ul class="messageBox">
-              ${this.messages.map((item, _) => html` <li>${item}</li> `)}
+              ${this.messages.map(
+                (item, _) =>
+                  html` <li>${resolveMarkdown(this.parseMarkdown(item))}</li> `
+              )}
             </ul>
 
             <il-input-controls
@@ -212,6 +218,16 @@ export class Chat extends LitElement {
         </section>
       </main>
     `;
+  }
+
+  parseMarkdown(text) {
+    const md = require("markdown-it")({
+      html: false,
+      linkify: true,
+    });
+
+    const output = md.render(text);
+    return output;
   }
 
   createSocket() {
