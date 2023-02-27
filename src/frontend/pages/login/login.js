@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
 
 import "../../components/button-icon";
+import "..//..//components/button";
 
 export class Login extends LitElement {
   static properties = {
@@ -269,9 +270,11 @@ export class Login extends LitElement {
             </div>
           </label>
         </div>
-        <div>
+
+        <!-- <div>
           <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
-        </div>
+        </div> -->
+        <il-button @click=${this.loginConfirm}></il-button>
       </div>
 
       <!-- componente snackbar -->
