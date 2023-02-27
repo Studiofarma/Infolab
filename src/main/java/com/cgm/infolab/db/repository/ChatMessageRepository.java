@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.function.Function;
@@ -118,7 +119,7 @@ public class ChatMessageRepository {
             return null;
         }));
 
-        message.setTimestamp(rs.getTimestamp("sent_at").toInstant().atZone(ZoneId.of("Europe/Rome")).toLocalDateTime());
+        message.setTimestamp(resultSetToLocalDateTime(rs));
         message.setContent(rs.getString("content"));
         return message;
     }
@@ -127,5 +128,13 @@ public class ChatMessageRepository {
         return roomRepository.getByRoomName(roomName).orElseThrow(() -> {
             throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
         });
+    }
+
+    private static LocalDateTime resultSetToLocalDateTime(ResultSet rs) throws SQLException {
+        return rs
+            .getTimestamp("sent_at")
+            .toInstant()
+            .atZone(ZoneId.of("Europe/Rome"))
+            .toLocalDateTime();
     }
 }
