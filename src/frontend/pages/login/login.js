@@ -247,7 +247,7 @@ export class Login extends LitElement {
         </div>
       </div>
 
-      <il-snackbar content="CREDENZIALI NON VALIDE"></il-snackbar>
+      <il-snackbar content="CREDENZIALI NON VALIDE" type="error"></il-snackbar>
     `;
   }
 

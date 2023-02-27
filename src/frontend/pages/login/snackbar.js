@@ -4,14 +4,14 @@ import "../../components/button-icon";
 
 export class Snackbar extends LitElement {
   static properties = {
-    closed: { type: Boolean, attribute: "closed" },
     content: "",
+    type: "",
   };
 
   constructor() {
     super();
-    this.closed = false;
     this.content = "";
+    this.type = "";
   }
 
   static styles = css`
@@ -30,7 +30,6 @@ export class Snackbar extends LitElement {
       min-width: 500px;
       min-height: 40px;
       color: black;
-      border-bottom: 5px solid #0052f0;
       border-radius: 10px;
       background: white;
       box-shadow: 0 0 20px black;
@@ -40,6 +39,18 @@ export class Snackbar extends LitElement {
       padding: 5px;
       opacity: 0;
       z-index: 1000;
+    }
+
+    .error {
+      border-bottom: 5px solid #fe354b;
+    }
+
+    .warning {
+      border-bottom: 5px solid #f7a635;
+    }
+
+    .info {
+      border-bottom: 5px solid #206cf7;
     }
 
     p {
@@ -59,7 +70,7 @@ export class Snackbar extends LitElement {
 
   render() {
     return html`
-      <div id="snackbar">
+      <div id="snackbar" class=${this.type}>
         <p>${this.content}</p>
         <il-button-icon
           content="mdiClose"
