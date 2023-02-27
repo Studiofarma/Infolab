@@ -3,8 +3,6 @@ const axios = require("axios").default;
 
 import "../../components/avatar.js";
 import "./conversation.js";
-import "../../components/avatar.js";
-import "./conversation.js";
 
 class ConversationList extends LitElement {
   static properties = {

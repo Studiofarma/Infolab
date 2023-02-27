@@ -160,53 +160,6 @@ export class Chat extends LitElement {
       filter: blur(10px);
     }
 
-    #inputControls {
-      position: absolute;
-      bottom: 0px;
-      left: 0px;
-      width: 100%;
-      min-height: 60px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      background: #0074bc;
-    }
-
-    #inputControls input[type="text"] {
-      height: 50px;
-      flex-basis: 90%;
-      border-radius: 18px;
-      padding: 5px 12px;
-      font-size: 15pt;
-    }
-
-    #inputControls > * {
-      flex-shrink: 1;
-    }
-
-    #inputControls .submitContainer {
-      flex-basis: 10%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .submitContainer il-button-icon {
-      width: 40px;
-      height: 40px;
-      margin-top: 0px;
-      border: none;
-      border-radius: 50%;
-      background: white;
-      font-size: 20px;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: black;
-    }
-
     @keyframes rotationAnim {
       from {
         transform: rotate(0deg);
@@ -232,7 +185,7 @@ export class Chat extends LitElement {
       width: 5px;
       border: 3px solid #083c72;
     }
-    
+
     input {
       font-family: inherit;
     }
