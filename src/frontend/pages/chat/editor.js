@@ -289,48 +289,32 @@ export class Editor extends LitElement {
 
   //funzioni per formatting-buttons
 
-  insertBold() {
+  getText(text) {
     const sel = window.getSelection();
-    const text = sel ? sel.toString() : "";
-    if (text !== "") {
-      sel.deleteFromDocument();
-      this.insertInTextArea("**" + text + "**");
-      return;
-    }
-    this.insertInTextArea("**grassetto**");
+    const t = sel ? sel.toString() : "";
+    if (t !== "") sel.deleteFromDocument();
+    else t = text;
+    return t;
+  }
+
+  insertBold() {
+    const text = this.getText("grassetto");
+    this.insertInTextArea("**" + text + "**");
   }
 
   insertItalic() {
-    const sel = window.getSelection();
-    const text = sel ? sel.toString() : "";
-    if (text !== "") {
-      sel.deleteFromDocument();
-      this.insertInTextArea("*" + text + "*");
-      return;
-    }
-    this.insertInTextArea("*italic*");
+    const text = this.getText("italic");
+    this.insertInTextArea("*" + text + "*");
   }
 
   insertStrike() {
-    const sel = window.getSelection();
-    const text = sel ? sel.toString() : "";
-    if (text !== "") {
-      sel.deleteFromDocument();
-      this.insertInTextArea("~~" + text + "~~");
-      return;
-    }
-    this.insertInTextArea("~~barrato~~");
+    const text = this.getText("barrato");
+    this.insertInTextArea("~~" + text + "~~");
   }
 
   insertLink() {
-    const sel = window.getSelection();
-    const text = sel ? sel.toString() : "";
-    if (text !== "") {
-      sel.deleteFromDocument();
-      this.insertInTextArea("[" + text + "](link)");
-      return;
-    }
-    this.insertInTextArea("[testo](link)");
+    const text = this.getText("testo");
+    this.insertInTextArea("[" + text + "](link)");
   }
 
   insertLine() {
@@ -338,18 +322,12 @@ export class Editor extends LitElement {
   }
 
   insertList() {
-    const sel = window.getSelection();
-    const text = sel ? sel.toString() : "";
-    if (text !== "") sel.deleteFromDocument();
-    else text = "punto";
+    const text = this.getText("punto");
     this.insertInTextArea(this.getTypeOfList(text));
   }
 
   insertHeading() {
-    const sel = window.getSelection();
-    const text = sel ? sel.toString() : "";
-    if (text !== "") sel.deleteFromDocument();
-    else text = "Titolo";
+    const text = this.getText("Titolo");
     this.insertInTextArea(this.getTypeOfHeading(text));
   }
 
