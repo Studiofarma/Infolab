@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
 
+import "./snackbar";
 import "../../components/button-icon";
 
 export class Login extends LitElement {
@@ -10,7 +11,6 @@ export class Login extends LitElement {
     pswVisibility: false,
     emptyUsernameField: false,
     emptyPasswordField: false,
-    accessErrorMessage: false,
   };
 
   constructor() {
@@ -20,7 +20,6 @@ export class Login extends LitElement {
     this.pswVisibility = false;
     this.emptyUsernameField = false;
     this.emptyPasswordField = false;
-    this.accessErrorMessage = "";
   }
 
   static styles = css`
@@ -195,32 +194,6 @@ export class Login extends LitElement {
     .text-container:hover::after {
       display: none;
     }
-
-    #snackbar {
-      position: fixed;
-      transform: translate(-50%, -50%);
-      left: 50%;
-      bottom: 10px;
-      min-width: 500px;
-      min-height: 40px;
-      padding: 5px;
-      color: black;
-      background: white;
-      box-shadow: 0 0 20px black;
-      display: flex;
-      align-items: center;
-      transition: all 0.5s;
-    }
-
-    #snackbar.closed {
-      opacity: 0;
-      transform: translate(-50%, 100%);
-    }
-
-    #snackbar p {
-      flex-grow: 1;
-      text-align: center;
-    }
   `;
 
   render() {
@@ -274,17 +247,16 @@ export class Login extends LitElement {
         </div>
       </div>
 
-      <!-- componente snackbar -->
-      <div id="snackbar" class=${this.accessErrorMessage ? "" : "closed"}>
-        <p>CREDENZIALI NON VALIDE</p>
-        <il-button-icon
-          content="close"
-          @click=${() => {
-            this.accessErrorMessage = false;
-          }}
-        ></il-button-icon>
-      </div>
+      <il-snackbar content="CREDENZIALI NON VALIDE" type="error"></il-snackbar>
     `;
+  }
+
+  getDivInSnackbar() {
+    return (
+      this.renderRoot
+        .querySelector("il-snackbar")
+        .shadowRoot.querySelector("#snackbar") ?? null
+    );
   }
 
   onUsernameInput(e) {
@@ -340,7 +312,8 @@ export class Login extends LitElement {
       .catch((e) => {
         this.emptyUsernameField = false;
         this.emptyPasswordField = false;
-        this.accessErrorMessage = true;
+        this.getDivInSnackbar().style.opacity = 1.0;
+        this.getDivInSnackbar().style.bottom = "20px";
       });
   }
 
