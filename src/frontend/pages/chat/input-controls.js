@@ -1,6 +1,5 @@
 import { LitElement, html, css } from "lit";
 import { Picker } from "emoji-picker-element";
-import { it } from "emoji-picker-element/i18n/it";
 
 import "./insertion-bar";
 import "./editor";
@@ -26,7 +25,6 @@ export class InputControls extends LitElement {
         "https://cdn.jsdelivr.net/npm/emoji-picker-element-data@^1/en/emojibase/data.json",
       locale: "it",
       skinToneEmoji: "🖐️",
-      i18n: it,
     });
     this.selectedText = null;
   }

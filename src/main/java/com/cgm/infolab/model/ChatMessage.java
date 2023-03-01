@@ -12,7 +12,7 @@ public class ChatMessage {
     private LocalDateTime timestamp;
     private String sender;
 
-    public ChatMessage() {
+    private ChatMessage() {
     }
 
     public ChatMessage(String content, String sender) {
@@ -25,11 +25,6 @@ public class ChatMessage {
         this.timestamp = timestamp;
         this.sender = sender;
     }
-    public ChatMessage(String content, Timestamp timestamp, String sender) {
-        this.content = content;
-        this.timestamp = timestamp.toLocalDateTime();
-        this.sender = sender;
-    }
 
     public String getContent() {
         return content;
@@ -38,7 +33,8 @@ public class ChatMessage {
     public void setContent(String content) {
         this.content = content;
     }
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
