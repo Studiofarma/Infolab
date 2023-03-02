@@ -1,9 +1,7 @@
 package com.cgm.infolab.db.model;
 
 import com.cgm.infolab.db.ID;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
