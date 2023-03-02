@@ -29,13 +29,16 @@ export class Avatar extends LitElement {
     this.bAvatar = true;
   }
 
-  render() {
+  createIcon() {
     this.chat = JSON.parse(this.chat);
     if (this.chat.avatar == "#") {
       this.bAvatar = false;
-      this.chat.name.split(" ").forEach((s) => {
-        this.initials += s[0];
-      });
+      this.chat.name
+        .split(" ")
+        .slice(0, 2)
+        .forEach((s) => {
+          this.initials += s[0].toUpperCase();
+        });
       switch (this.chat.id % 8) {
         case 0:
           this.color = "#083C72";
@@ -62,6 +65,10 @@ export class Avatar extends LitElement {
           this.color = "#A66100";
       }
     }
+  }
+
+  render() {
+    this.createIcon();
 
     return html`
       <div class="avatar">
