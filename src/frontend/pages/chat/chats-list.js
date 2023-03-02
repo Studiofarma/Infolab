@@ -44,7 +44,9 @@ class ConversationList extends LitElement {
 
   constructor() {
     super();
-    this.pharmaciesList = [];
+    this.pharmaciesList = [
+      { name: "chatBox user 1", lastMessage: "prova", unread: 1 },
+    ];
     this.setList();
   }
 
