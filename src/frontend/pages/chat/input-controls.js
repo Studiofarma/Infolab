@@ -4,6 +4,7 @@ import { Picker } from "emoji-picker-element";
 import "./insertion-bar";
 import "./editor";
 import "../../components/button-icon";
+import "../../components/input-field";
 
 export class InputControls extends LitElement {
   static properties = {
@@ -36,10 +37,6 @@ export class InputControls extends LitElement {
       padding: 0;
     }
 
-    input {
-      font-family: inherit;
-    }
-
     .container {
       display: flex;
       flex-direction: column;
@@ -70,14 +67,15 @@ export class InputControls extends LitElement {
     .inputContainer {
       display: flex;
       flex-grow: 1;
-      background: white;
       padding: 5px;
       border-radius: 10px;
       transition: 0.5s;
       transition-delay: 1s;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
-    .inputContainer input[type="text"] {
+    .inputContainer il-input-field[type="text"] {
       flex-grow: 1;
       border: none;
       outline: none;
@@ -104,11 +102,11 @@ export class InputControls extends LitElement {
       overflow-y: hidden;
     }
 
-    input[type="text"].closed {
+    il-input-field[type="text"].closed {
       display: none;
     }
 
-    input[type="text"].closed ~ il-editor {
+    il-input-field[type="text"].closed ~ il-editor {
       flex-grow: 1;
       width: calc(100% + 60px);
       height: 200px;
@@ -129,7 +127,7 @@ export class InputControls extends LitElement {
             >
             </il-insertion-bar>
 
-            <input
+            <il-input-field
               class=${this.bEditor ? "closed" : "opened"}
               type="text"
               placeholder="Scrivi un messaggio..."
@@ -137,7 +135,7 @@ export class InputControls extends LitElement {
               @keydown=${this.checkEnterKey}
               @mouseup=${this.setSelectedText}
               .value=${this.message}
-            />
+            ></il-input-field>
 
             <il-editor
               @typing-text=${this.onInputFromEditor}

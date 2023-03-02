@@ -3,6 +3,7 @@ const axios = require("axios").default;
 
 import "./snackbar";
 import "../../components/button-icon";
+import "../../components/input-field";
 
 export class Login extends LitElement {
   static properties = {
@@ -87,23 +88,9 @@ export class Login extends LitElement {
       align-self: center;
     }
 
-    input[type="text"],
-    input[type="password"] {
-      position: relative;
-      width: 100%;
-      height: 40px;
-      padding: 5px 10px;
-      border: none;
-      outline: none;
-      font-size: 15pt;
-      transition: 0.5s;
-      margin-top: 10px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #333333;
-    }
-
     .text-container {
       position: relative;
+      width: 100%;
     }
 
     .text-container il-button-icon {
@@ -194,6 +181,13 @@ export class Login extends LitElement {
     .text-container:hover::after {
       display: none;
     }
+
+    label {
+      text-align: center;
+      width: 100%;
+      display: block;
+      margin-bottom: 10px;
+    }
   `;
 
   render() {
@@ -205,42 +199,38 @@ export class Login extends LitElement {
         <h1 class="title">WELCOME BACK</h1>
 
         <div>
-          <label>
-            Username
-            <div class="text-container">
-              <input
-                class=${this.emptyUsernameField ? "error" : ""}
-                id="username"
-                type="text"
-                @input=${this.onUsernameInput}
-                @keydown=${this.checkEnterKey}
-                .value=${this.username}
-                placeholder="Inserisci lo username"
-              />
-            </div>
-          </label>
+          <label> Username </label>
+          <div class="text-container">
+            <il-input-field
+              class=${this.emptyUsernameField ? "error" : ""}
+              id="username"
+              type="text"
+              @input=${this.onUsernameInput}
+              @keydown=${this.checkEnterKey}
+              .value=${this.username}
+              placeholder="Inserisci lo username"
+            ></il-input-field>
+          </div>
         </div>
 
         <div>
-          <label>
-            Password
-            <div class="text-container">
-              <input
-                class=${this.emptyPasswordField ? "error" : ""}
-                id="password"
-                type=${this.pswVisibility ? "text" : "password"}
-                @input=${this.onPasswordInput}
-                @keydown=${this.checkEnterKey}
-                .value=${this.password}
-                placeholder="Inserisci la password"
-              />
+          <label> Password </label>
+          <div class="text-container">
+            <il-input-field
+              class=${this.emptyPasswordField ? "error" : ""}
+              id="password"
+              type=${this.pswVisibility ? "text" : "password"}
+              @input=${this.onPasswordInput}
+              @keydown=${this.checkEnterKey}
+              .value=${this.password}
+              placeholder="Inserisci la password"
+            ></il-input-field>
 
-              <il-button-icon
-                @click=${this.setVisibility}
-                content="${!this.pswVisibility ? "mdiEye" : "mdiEyeOff"}"
-              ></il-button-icon>
-            </div>
-          </label>
+            <il-button-icon
+              @click=${this.setVisibility}
+              content="${!this.pswVisibility ? "mdiEye" : "mdiEyeOff"}"
+            ></il-button-icon>
+          </div>
         </div>
         <div>
           <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
