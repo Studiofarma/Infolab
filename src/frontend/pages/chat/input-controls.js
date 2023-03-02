@@ -242,12 +242,6 @@ export class InputControls extends LitElement {
 
     this.selectedText = null;
   }
-
-  updated(changed) {
-    if (changed.has("message")) {
-      this.getInputText().focus();
-    }
-  }
 }
 
 customElements.define("il-input-controls", InputControls);
