@@ -5,9 +5,7 @@ const axios = require("axios").default;
 export class Avatar extends LitElement {
   static get properties() {
     return {
-      avatar: "",
-      name: "",
-      id_user: "",
+      chat: {},
     };
   }
 
@@ -27,20 +25,18 @@ export class Avatar extends LitElement {
   constructor() {
     super();
     this.initials = "";
-    this.avatar = "";
-    this.name = "";
     this.color = "";
-    this.id_user = "";
     this.bAvatar = true;
   }
 
   render() {
-    if (this.avatar == "#") {
+    this.chat = JSON.parse(this.chat);
+    if (this.chat.avatar == "#") {
       this.bAvatar = false;
-      this.name.split(" ").forEach((s) => {
+      this.chat.name.split(" ").forEach((s) => {
         this.initials += s[0];
       });
-      switch (this.id_user % 8) {
+      switch (this.chat.id % 8) {
         case 0:
           this.color = "#083C72";
           break;
