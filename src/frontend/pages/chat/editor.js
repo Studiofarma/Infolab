@@ -3,7 +3,7 @@ import { resolveMarkdown } from "lit-markdown";
 
 import "../../components/formatting-button";
 
-import { MarkdownService } from "../../services/services";
+import { MarkdownService } from "../../services/markdown-services";
 export class Editor extends LitElement {
   static properties = {
     message: "",
@@ -289,20 +289,32 @@ export class Editor extends LitElement {
 
   //funzioni per formatting-buttons
 
+  getText(text) {
+    const sel = window.getSelection();
+    const t = sel ? sel.toString() : "";
+    if (t !== "") sel.deleteFromDocument();
+    else t = text;
+    return t;
+  }
+
   insertBold() {
-    this.insertInTextArea("**grassetto**");
+    const text = this.getText("grassetto");
+    this.insertInTextArea("**" + text + "**");
   }
 
   insertItalic() {
-    this.insertInTextArea("*italic*");
+    const text = this.getText("italic");
+    this.insertInTextArea("*" + text + "*");
   }
 
   insertStrike() {
-    this.insertInTextArea("~~barrato~~");
+    const text = this.getText("barrato");
+    this.insertInTextArea("~~" + text + "~~");
   }
 
   insertLink() {
-    this.insertInTextArea("[testo](link)");
+    const text = this.getText("testo");
+    this.insertInTextArea("[" + text + "](link)");
   }
 
   insertLine() {
@@ -310,36 +322,38 @@ export class Editor extends LitElement {
   }
 
   insertList() {
-    this.insertInTextArea(this.getTypeOfList());
+    const text = this.getText("punto");
+    this.insertInTextArea(this.getTypeOfList(text));
   }
 
   insertHeading() {
-    this.insertInTextArea(this.getTypeOfHeading());
+    const text = this.getText("Titolo");
+    this.insertInTextArea(this.getTypeOfHeading(text));
   }
 
-  getTypeOfList() {
+  getTypeOfList(text) {
     const checkedList =
       this.renderRoot.querySelector(`input[name="forList"]:checked`) ?? null;
 
     switch (checkedList.id) {
       case "disc":
-        return "* punto";
+        return "* " + text;
       case "number":
-        return "1. punto";
+        return "1. " + text;
     }
   }
 
-  getTypeOfHeading() {
+  getTypeOfHeading(text) {
     const checkedHeading =
       this.renderRoot.querySelector(`input[name="forHeading"]:checked`) ?? null;
 
     switch (checkedHeading.id) {
       case "h1":
-        return "# Titolo1";
+        return "# " + text;
       case "h2":
-        return "## Titolo2";
+        return "## " + text;
       case "h3":
-        return "### Titolo3";
+        return "### " + text;
     }
   }
 

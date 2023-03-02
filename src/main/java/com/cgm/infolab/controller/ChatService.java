@@ -34,6 +34,7 @@ public class ChatService {
     public void ChatServiceMetodo(ChatMessage message){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
+
         UserEntity sender = userRepository.getByUsername(message.getSender()).orElseGet(() -> {
             log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
             return null;
