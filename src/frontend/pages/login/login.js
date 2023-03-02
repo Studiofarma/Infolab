@@ -231,46 +231,41 @@ export class Login extends LitElement {
 
         <h1 class="title">WELCOME BACK</h1>
 
-        <div>
-          <label>
-            Username
-            <div class="text-container">
-              <input
-                class=${this.emptyUsernameField ? "error" : ""}
-                id="username"
-                type="text"
-                @input=${this.onUsernameInput}
-                @keydown=${this.checkEnterKey}
-                .value=${this.username}
-                placeholder="Inserisci lo username"
-              />
-            </div>
-          </label>
-        </div>
+        <label>
+          Username
+          <div class="text-container">
+            <input
+              class=${this.emptyUsernameField ? "error" : ""}
+              id="username"
+              type="text"
+              @input=${this.onUsernameInput}
+              @keydown=${this.checkEnterKey}
+              .value=${this.username}
+              placeholder="Inserisci lo username"
+            />
+          </div>
+        </label>
 
-        <div>
-          <label>
-            Password
-            <div class="text-container">
-              <input
-                class=${this.emptyPasswordField ? "error" : ""}
-                id="password"
-                type=${this.pswVisibility ? "text" : "password"}
-                @input=${this.onPasswordInput}
-                @keydown=${this.checkEnterKey}
-                .value=${this.password}
-                placeholder="Inserisci la password"
-              />
+        <label>
+          Password
+          <div class="text-container">
+            <input
+              class=${this.emptyPasswordField ? "error" : ""}
+              id="password"
+              type=${this.pswVisibility ? "text" : "password"}
+              @input=${this.onPasswordInput}
+              @keydown=${this.checkEnterKey}
+              .value=${this.password}
+              placeholder="Inserisci la password"
+            />
 
-              <il-button-icon
-                @click=${this.setVisibility}
-                content="${!this.pswVisibility
-                  ? "mdiEye"
-                  : "mdiEyeOff"}"
-              ></il-button-icon>
-            </div>
-          </label>
-        </div>
+            <il-button-icon
+              @click=${this.setVisibility}
+              content="${!this.pswVisibility ? "mdiEye" : "mdiEyeOff"}"
+            ></il-button-icon>
+          </div>
+        </label>
+
         <div>
           <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
         </div>

@@ -27,9 +27,9 @@
   ],
   "messages": [
     {
-      "sender": "2",
+      "sender": "chatBox user1",
       "receiver": "1",
-      "content": "ciao",
+      "content": "😃 ciao",
       "date": ""
     },
     {

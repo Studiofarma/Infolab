@@ -269,7 +269,6 @@ export class Chat extends LitElement {
 
   async firstUpdated() {
     getMessagesServices.executeMessagesCall().then((messages) => {
-      console.log(messages.data);
       this.messages = messages.data;
     });
   }
