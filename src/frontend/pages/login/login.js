@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
 
-import "./snackbar";
+import "../../components/snackbar";
 import "../../components/button-icon";
 
 export class Login extends LitElement {
