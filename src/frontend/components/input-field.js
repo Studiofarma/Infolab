@@ -8,7 +8,12 @@ export class InputField extends LitElement {
       placeholder: "",
       type: "text",
       value: "",
+      title: "",
     };
+  }
+  constructor() {
+    super();
+    this.value = "";
   }
 
   static styles = css`
@@ -26,26 +31,31 @@ export class InputField extends LitElement {
       width: 100%;
       height: 40px;
       padding: 5px 10px;
-      border: none;
+      border: solid 1px;
       outline: none;
       font-size: 15pt;
       transition: 0.5s;
       border-radius: 10px;
-      box-shadow: 0 0 10px #333333;
     }
   `;
 
   render() {
     return html`
       <div id="container">
+        <label>${this.title}</label>
         <input
           placeholder="${this.placeholder}"
           type="${this.type}"
           id="input"
           value="${this.value}"
+          @input=${this.setValue}
         />
       </div>
     `;
+  }
+
+  setValue(e) {
+    this.value = e.target.value;
   }
 }
 
