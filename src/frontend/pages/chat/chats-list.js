@@ -85,9 +85,7 @@ class ConversationList extends LitElement {
     return this.pharmaciesList.map(
       (pharmacy) =>
         html`<il-conversation
-          name=${pharmacy.name}
-          lastMessage=${pharmacy.lastMessage}
-          unread=${pharmacy.unread}
+          chat=${JSON.stringify(pharmacy)}
         ></il-conversation>`
     );
   }

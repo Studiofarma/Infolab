@@ -4,11 +4,7 @@ import "@jamescoyle/svg-icon";
 
 class Conversation extends LitElement {
   static properties = {
-    name: "",
-    nameStr: { type: String, attribute: "name" },
-    lastMessage: "",
-    unread: 0,
-    notificationopacity: 0,
+    chat: {},
   };
 
   static styles = css`
@@ -80,7 +76,9 @@ class Conversation extends LitElement {
   `;
 
   render() {
-    if (this.unread == 0) {
+    this.chat = JSON.parse(this.chat);
+
+    if (this.chat.unread == 0) {
       this.notificationOpacity = "none";
     } else {
       this.notificationOpacity = "block";
@@ -88,14 +86,14 @@ class Conversation extends LitElement {
 
     return html`
       <div>
-        <il-avatar></il-avatar>
-        <p class="name">${this.name}</p>
-        <p class="lastMessage">${this.lastMessage}</p>
+        <il-avatar chat=${JSON.stringify(this.chat)}></il-avatar>
+        <p class="name">${this.chat.name}</p>
+        <p class="lastMessage">${this.chat.lastMessage}</p>
         <p id="unread">
           <svg-icon
             style="display:${this.notificationOpacity};"
             type="mdi"
-            path="${mdi[this.unread]}"
+            path="${mdi[this.chat.unread]}"
           ></svg-icon>
         </p>
       </div>
