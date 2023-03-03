@@ -3,6 +3,7 @@ const axios = require("axios").default;
 
 import "../../components/avatar.js";
 import "./conversation.js";
+import { ConversationDto } from "../../models/conversation-dto.js";
 
 class ConversationList extends LitElement {
   static properties = {
@@ -82,18 +83,15 @@ class ConversationList extends LitElement {
   renderList() {
     this.checkMessageLength();
 
-    return this.pharmaciesList.map(
-      (pharmacy) =>
-        html`<il-conversation
-          chat=${JSON.stringify(pharmacy)}
-        ></il-conversation>`
-    );
+    return this.pharmaciesList.map((pharmacy) => {
+      let conversation = new ConversationDto(pharmacy);
+      return html`<il-conversation .chat=${conversation}></il-conversation>`;
+    });
   }
 
   checkMessageLength() {
     this.pharmaciesList.forEach((pharmacy) => {
       pharmacy.lastMessage = this.normalizeLastMessage(pharmacy.lastMessage);
-      pharmacy.unread = this.normalizeUnread(pharmacy.unread);
     });
   }
 
@@ -105,45 +103,6 @@ class ConversationList extends LitElement {
 
     return message;
   }
-
-  normalizeUnread(unread) {
-    switch (unread) {
-      case "0":
-        unread = 0;
-        break;
-      case "1":
-        unread = "mdiNumeric1Circle";
-        break;
-      case "2":
-        unread = "mdiNumeric2Circle";
-        break;
-      case "3":
-        unread = "mdiNumeric3Circle";
-        break;
-      case "4":
-        unread = "mdiNumeric4Circle";
-        break;
-      case "5":
-        unread = "mdiNumeric5Circle";
-        break;
-      case "6":
-        unread = "mdiNumeric6Circle";
-        break;
-      case "7":
-        unread = "mdiNumeric7Circle";
-        break;
-      case "8":
-        unread = "mdiNumeric8Circle";
-        break;
-      case "9":
-        unread = "mdiNumeric9Circle";
-        break;
-      default:
-        unread = "mdiNumeric9PlusCircle";
-        break;
-    }
-    return unread;
-  }
 }
 
-customElements.define("il-chats-list", ConversationList);
+customElements.define("il-conversation-list", ConversationList);

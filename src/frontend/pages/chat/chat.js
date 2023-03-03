@@ -7,7 +7,7 @@ import { MarkdownService } from "../../services/markdown-services";
 
 import "../../components/button-icon";
 import "./search-chats.js";
-import "./chats-list.js";
+import "./conversation-list.js";
 import "./input-controls.js";
 
 export class Chat extends LitElement {
@@ -198,7 +198,7 @@ export class Chat extends LitElement {
         <section>
           <div class="sidebar">
             <il-search></il-search>
-            <il-chats-list></il-chats-list>
+            <il-conversation-list></il-conversation-list>
           </div>
 
           <div class="chat">

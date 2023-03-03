@@ -76,9 +76,7 @@ class Conversation extends LitElement {
   `;
 
   render() {
-    this.chat = JSON.parse(this.chat);
-
-    if (this.chat.unread == 0) {
+    if (this.chat.unread === 0) {
       this.notificationOpacity = "none";
     } else {
       this.notificationOpacity = "block";
@@ -86,22 +84,56 @@ class Conversation extends LitElement {
 
     return html`
       <div>
-        <il-avatar chat=${JSON.stringify(this.chat)}></il-avatar>
+        <il-avatar .chat=${this.chat}></il-avatar>
         <p class="name">${this.chat.name}</p>
         <p class="lastMessage">${this.chat.lastMessage}</p>
         <p id="unread">
-          <svg-icon
-            style="display:${this.notificationOpacity};"
-            type="mdi"
-            path="${mdi[this.chat.unread]}"
-          ></svg-icon>
+          ${this.chat.unread > 0
+            ? html`
+                <svg-icon
+                  style="display:${this.notificationOpacity};"
+                  type="mdi"
+                  path="${mdi[this.getUnreadIconName(this.chat.unread)]}"
+                ></svg-icon>
+              `
+            : html``}
         </p>
       </div>
     `;
   }
 
-  willUpdate(changedProperties) {
-    if (changedProperties.has("nameStr")) this.name = this.nameStr;
+  getUnreadIconName(unread) {
+    switch (unread) {
+      case 1:
+        return "mdiNumeric1Circle";
+
+      case 2:
+        return "mdiNumeric2Circle";
+
+      case 3:
+        return "mdiNumeric3Circle";
+
+      case 4:
+        return "mdiNumeric4Circle";
+
+      case 5:
+        return "mdiNumeric5Circle";
+
+      case 6:
+        return "mdiNumeric6Circle";
+
+      case 7:
+        return "mdiNumeric7Circle";
+
+      case 8:
+        return "mdiNumeric8Circle";
+
+      case 9:
+        return "mdiNumeric9Circle";
+
+      default:
+        return "mdiNumeric9PlusCircle";
+    }
   }
 }
 

@@ -1,6 +1,5 @@
 import { LitElement, html, css } from "lit";
 import Immagine from "../assets/images/immagine.jpeg";
-const axios = require("axios").default;
 
 export class Avatar extends LitElement {
   static get properties() {
@@ -30,7 +29,6 @@ export class Avatar extends LitElement {
   }
 
   createIcon() {
-    this.chat = JSON.parse(this.chat);
     if (this.chat.avatar == "#") {
       this.bAvatar = false;
       this.chat.name
