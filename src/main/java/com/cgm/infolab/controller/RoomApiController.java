@@ -1,10 +1,7 @@
 package com.cgm.infolab.controller;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
-import com.cgm.infolab.model.LastMessageDto;
 import com.cgm.infolab.model.RoomDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +19,14 @@ import java.util.List;
 public class RoomApiController {
 
     private final RoomRepository roomRepository;
-    private final ChatMessageRepository chatMessageRepository;
+    private final RoomService roomService;
 
     private final Logger log = LoggerFactory.getLogger(RoomApiController.class);
 
     @Autowired
-    public RoomApiController(RoomRepository roomRepository, ChatMessageRepository messageRepository) {
+    public RoomApiController(RoomRepository roomRepository, RoomService roomService) {
         this.roomRepository = roomRepository;
-        this.chatMessageRepository = messageRepository;
+        this.roomService = roomService;
     }
 
     // TODO: magari è necessario far si che le room prese siano soltanto quelle assegnate ad uno user,
@@ -40,10 +37,10 @@ public class RoomApiController {
     public List<RoomDto> getAllRooms(@RequestParam(required = false) String date) {
         List<RoomDto> roomDtos = new ArrayList<>();
 
-        List<RoomEntity> roomEntities = roomRepository.getAfterDate(convertString(date));
+        List<RoomEntity> roomEntities = roomRepository.getAfterDate(fromStringToDate(date));
 
         if (roomEntities.size() > 0) {
-            roomDtos = roomEntities.stream().map(this::roomEntityToDto).toList();
+            roomDtos = roomEntities.stream().map(roomService::fromEntityToDto).toList();
         } else {
             log.info("Non sono state trovate room");
         }
@@ -51,26 +48,12 @@ public class RoomApiController {
         return roomDtos;
     }
 
-    private LocalDate convertString(String date) {
+    private LocalDate fromStringToDate(String date) {
         if (date == null) {
             return null;
         } else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             return LocalDate.parse(date, formatter);
         }
-    }
-
-    private RoomDto roomEntityToDto(RoomEntity roomEntity) {
-        RoomDto roomDto = RoomDto.of(roomEntity.getName());
-
-        ChatMessageEntity message = chatMessageRepository
-                .getLastMessageByRoomId(roomEntity.getId()).orElseGet(() -> {
-                    log.info(String.format("Nessun messaggio trovato nella room roomId=\"%d\"", roomEntity.getId()));
-                    return ChatMessageEntity.emptyMessage();
-                });
-
-        roomDto.setLastMessage(LastMessageDto.of(message.getContent(), message.getTimestamp()));
-
-        return roomDto;
     }
 }
