@@ -1,16 +1,12 @@
 package com.cgm.infolab.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import java.net.URL;
-import java.time.LocalDateTime;
 
 public class RoomDto {
     private String roomName;
     private URL avatarLink;
     private int unreadMessages;
-    private String lastMessagePreview;
-    private LocalDateTime lastMessageTimestamp;
+    private LastMessageDto lastMessage;
 
     private RoomDto() {
     }
@@ -18,21 +14,19 @@ public class RoomDto {
     private RoomDto(String roomName,
                     URL avatarLink,
                     int unreadMessages,
-                    String lastMessagePreview,
-                    LocalDateTime lastMessageTimestamp) {
+                    LastMessageDto lastMessage) {
         this.roomName = roomName;
         this.avatarLink = avatarLink;
         this.unreadMessages = unreadMessages;
-        this.lastMessagePreview = lastMessagePreview;
-        this.lastMessageTimestamp = lastMessageTimestamp;
+        this.lastMessage = lastMessage;
     }
 
     public static RoomDto emptyRoom() {
-        return new RoomDto(null, null, 0, null, null);
+        return new RoomDto(null, null, 0, null);
     }
 
     public static RoomDto of(String roomName) {
-        return new RoomDto(roomName, null, 0, null, null);
+        return new RoomDto(roomName, null, 0, null);
     }
 
     public String getRoomName() {
@@ -59,20 +53,11 @@ public class RoomDto {
         this.unreadMessages = unreadMessages;
     }
 
-    public String getLastMessagePreview() {
-        return lastMessagePreview;
+    public LastMessageDto getLastMessage() {
+        return lastMessage;
     }
 
-    public void setLastMessagePreview(String lastMessagePreview) {
-        this.lastMessagePreview = lastMessagePreview;
-    }
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    public LocalDateTime getLastMessageTimestamp() {
-        return lastMessageTimestamp;
-    }
-
-    public void setLastMessageTimestamp(LocalDateTime lastMessageTimestamp) {
-        this.lastMessageTimestamp = lastMessageTimestamp;
+    public void setLastMessage(LastMessageDto lastMessage) {
+        this.lastMessage = lastMessage;
     }
 }

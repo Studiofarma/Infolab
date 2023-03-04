@@ -4,6 +4,7 @@ import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
+import com.cgm.infolab.model.LastMessageDto;
 import com.cgm.infolab.model.RoomDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,8 +69,7 @@ public class RoomApiController {
                     return ChatMessageEntity.emptyMessage();
                 });
 
-        roomDto.setLastMessagePreview(message.getContent());
-        roomDto.setLastMessageTimestamp(message.getTimestamp());
+        roomDto.setLastMessage(LastMessageDto.of(message.getContent(), message.getTimestamp()));
 
         return roomDto;
     }
