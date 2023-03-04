@@ -1,4 +1,4 @@
-package com.cgm.infolab.controller;
+package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;

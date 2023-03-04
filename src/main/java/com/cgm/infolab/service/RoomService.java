@@ -1,4 +1,4 @@
-package com.cgm.infolab.controller;
+package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class RoomService {
     private final ChatMessageRepository chatMessageRepository;
 
-    private final Logger log = LoggerFactory.getLogger(ChatService.class);
+    private final Logger log = LoggerFactory.getLogger(RoomService.class);
 
     @Autowired
     public RoomService(ChatMessageRepository chatMessageRepository) {

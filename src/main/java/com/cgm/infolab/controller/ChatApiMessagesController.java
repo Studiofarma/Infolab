@@ -4,6 +4,7 @@ import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
