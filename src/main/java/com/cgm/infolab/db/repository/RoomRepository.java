@@ -61,8 +61,6 @@ public class RoomRepository {
     }
 
     private Optional<RoomEntity> queryRoom(String query, Object... queryParams) {
-        // Necessario catchare l'eccezione perché se non viene trovata la room non viene ritornato null
-        // ma viene lanciata una EmptyResultDataAccessException.
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(query, this::mapToEntity, queryParams)

@@ -59,8 +59,6 @@ public class UserRepository {
     }
 
     private Optional<UserEntity> queryUser(String query, Object... objects) {
-        // Necessario catchare l'eccezione perché se non viene trovato lo user non viene ritornato null
-        // ma viene lanciata una EmptyResultDataAccessException.
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(query, this::mapToEntity, objects)
