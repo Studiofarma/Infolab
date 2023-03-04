@@ -2,11 +2,12 @@ package com.cgm.infolab.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 
 public class RoomDto {
     private String roomName;
-    private String avatarLink;
+    private URL avatarLink;
     private int unreadMessages;
     private String lastMessagePreview;
     private LocalDateTime lastMessageTimestamp;
@@ -15,10 +16,10 @@ public class RoomDto {
     }
 
     private RoomDto(String roomName,
-                   String avatarLink,
-                   int unreadMessages,
-                   String lastMessagePreview,
-                   LocalDateTime lastMessageTimestamp) {
+                    URL avatarLink,
+                    int unreadMessages,
+                    String lastMessagePreview,
+                    LocalDateTime lastMessageTimestamp) {
         this.roomName = roomName;
         this.avatarLink = avatarLink;
         this.unreadMessages = unreadMessages;
@@ -42,11 +43,11 @@ public class RoomDto {
         this.roomName = roomName;
     }
 
-    public String getAvatarLink() {
+    public URL getAvatarLink() {
         return avatarLink;
     }
 
-    public void setAvatarLink(String avatarLink) {
+    public void setAvatarLink(URL avatarLink) {
         this.avatarLink = avatarLink;
     }
 
