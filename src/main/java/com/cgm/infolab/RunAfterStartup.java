@@ -27,14 +27,12 @@ public class RunAfterStartup {
      */
     @EventListener(ApplicationReadyEvent.class)
     public void addAllRooms() {
-        for (RoomEntity r : ROOMS) {
-            try {
-                roomRepository.add(r);
-            } catch (DuplicateKeyException e) {
-                log.info(String.format("Room roomName=\"%s\" già esistente nel database", r.getName()));
-            }
-        }
-        for (RoomEntity r : TEST_ROOMS) {
+        saveRooms(ROOMS);
+        saveRooms(TEST_ROOMS);
+    }
+
+    private void saveRooms(RoomEntity... roomEntities) {
+        for (RoomEntity r : roomEntities) {
             try {
                 roomRepository.add(r);
             } catch (DuplicateKeyException e) {
