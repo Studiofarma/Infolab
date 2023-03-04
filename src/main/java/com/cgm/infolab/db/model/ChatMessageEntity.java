@@ -24,7 +24,7 @@ public class ChatMessageEntity {
         return new ChatMessageEntity(ID.None, sender, room, timestamp, content);
     }
 
-    public static ChatMessageEntity emptyMessage() {
+    public static ChatMessageEntity empty() {
         return new ChatMessageEntity(ID.None, null, null, null, null);
     }
 

@@ -16,11 +16,13 @@ import java.util.List;
 @RestController
 public class ChatApiMessagesController {
     private final ChatMessageRepository chatMessageRepository;
+    private final ChatService chatService;
 
     private final Logger log = LoggerFactory.getLogger(ChatApiMessagesController.class);
 
-    public ChatApiMessagesController(ChatMessageRepository chatMessageRepository) {
+    public ChatApiMessagesController(ChatMessageRepository chatMessageRepository, ChatService chatService) {
         this.chatMessageRepository = chatMessageRepository;
+        this.chatService = chatService;
     }
 
     // Tutorial: https://www.baeldung.com/spring-controller-vs-restcontroller
@@ -46,17 +48,11 @@ public class ChatApiMessagesController {
         }
 
         if (chatMessageEntities.size() > 0) {
-            chatMessageDtos = chatMessageEntities.stream().map(this::messageEntityToDto).toList();
+            chatMessageDtos = chatMessageEntities.stream().map(chatService::fromEntityToDto).toList();
         } else {
             log.info("Non sono stati trovati messaggi nella room specificata");
         }
 
         return chatMessageDtos;
-    }
-
-    private ChatMessageDto messageEntityToDto(ChatMessageEntity messageEntity) {
-        return new ChatMessageDto(messageEntity.getContent(),
-                messageEntity.getTimestamp(),
-                messageEntity.getSender().getName());
     }
 }

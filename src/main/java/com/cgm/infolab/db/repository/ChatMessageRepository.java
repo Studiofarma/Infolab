@@ -102,7 +102,7 @@ public class ChatMessageRepository {
     }
 
     private ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-        ChatMessageEntity message = ChatMessageEntity.emptyMessage();
+        ChatMessageEntity message = ChatMessageEntity.empty();
         message.setId(rs.getLong("id"));
 
         long userId = Long.parseLong(rs.getString("sender_id"));

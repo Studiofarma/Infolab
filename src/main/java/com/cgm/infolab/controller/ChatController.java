@@ -80,7 +80,7 @@ public class ChatController {
     @SendTo("/topic/public")
 
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor){
-        chatService.ChatServiceMetodo(message);
+        chatService.saveMessageInDb(message);
         return message;
     }
 

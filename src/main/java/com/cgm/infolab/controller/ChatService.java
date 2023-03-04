@@ -31,7 +31,7 @@ public class ChatService {
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
     }
-    public void ChatServiceMetodo(ChatMessageDto message){
+    public void saveMessageInDb(ChatMessageDto message){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
@@ -53,6 +53,12 @@ public class ChatService {
         } catch (DuplicateKeyException e) {
             log.info(String.format("ChatMessageEntity id=\"%s\" già esistente nel database", messageEntity.getContent()));
         }
+    }
+
+    public ChatMessageDto fromEntityToDto(ChatMessageEntity messageEntity) {
+        return new ChatMessageDto(messageEntity.getContent(),
+                messageEntity.getTimestamp(),
+                messageEntity.getSender().getName());
     }
 }
 

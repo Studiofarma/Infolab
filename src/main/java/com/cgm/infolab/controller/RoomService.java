@@ -27,7 +27,7 @@ public class RoomService {
         ChatMessageEntity message = chatMessageRepository
                 .getLastMessageByRoomId(roomEntity.getId()).orElseGet(() -> {
                     log.info(String.format("Nessun messaggio trovato nella room roomId=\"%d\"", roomEntity.getId()));
-                    return ChatMessageEntity.emptyMessage();
+                    return ChatMessageEntity.empty();
                 });
 
         roomDto.setLastMessage(LastMessageDto.of(message.getContent(), message.getTimestamp()));
