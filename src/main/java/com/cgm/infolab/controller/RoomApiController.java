@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class RoomApiController {
     //  Per farlo o si stabilisce una convenzione per capire se uno user è in una stanza,
     //  o va aggiunta una relazione al db.
     @GetMapping("/api/rooms")
-    public List<RoomDto> getAllRooms(@RequestParam(required = false) String date) {
+    public List<RoomDto> getAllRooms(@RequestParam(required = false) String date, Principal principal) {
         List<RoomDto> roomDtos = new ArrayList<>();
 
         List<RoomEntity> roomEntities = roomRepository.getAfterDate(fromStringToDate(date));

@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class RunAfterStartup {
 
-    public static final RoomEntity[] TEST_ROOMS = {RoomEntity.of("testRoom1"), RoomEntity.of("testRoom2")};
+    public static final RoomEntity[] TEST_ROOMS =
+            {RoomEntity.of("user1-user2"), RoomEntity.of("user1-user3"), RoomEntity.of("user3-user4")};
     public static final RoomEntity[] ROOMS = {RoomEntity.of("general")};
     private final RoomRepository roomRepository;
 
