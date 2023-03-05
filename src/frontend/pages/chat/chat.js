@@ -6,10 +6,9 @@ import Stomp from "stompjs";
 import { MarkdownService } from "../../services/markdown-services";
 
 import "../../components/button-icon";
-import "./search-chats.js";
-import "./conversation-list.js";
 import "./input-controls.js";
 import "./chat-header.js";
+import "./sidebar.js";
 
 export class Chat extends LitElement {
   static properties = {
@@ -65,16 +64,6 @@ export class Chat extends LitElement {
       display: grid;
       grid-template-columns: 350px auto;
       height: 100%;
-    }
-
-    .sidebar {
-      background: #083c72;
-      color: white;
-      padding-top: 10px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 1px 1px 8px black;
-      z-index: 1000;
     }
 
     .chat {
@@ -161,11 +150,7 @@ export class Chat extends LitElement {
     return html`
       <main>
         <section>
-          <div class="sidebar">
-            <il-search></il-search>
-            <il-conversation-list></il-conversation-list>
-          </div>
-
+          <il-sidebar></il-sidebar>
           <div class="chat">
             <il-chat-header username=${this.login.username}></il-chat-header>
             <ul class="messageBox">
