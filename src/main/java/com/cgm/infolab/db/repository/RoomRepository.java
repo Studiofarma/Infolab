@@ -74,9 +74,20 @@ public class RoomRepository {
         return queryRooms(ROOMS_QUERY);
     }
 
+    public List<RoomEntity> getAllWhereLastMessageNotNull() {
+        return queryRooms(String.format("%s RIGHT JOIN (" +
+                                        "SELECT recipient_room_id, max(sent_at) sent_at " +
+                                        "FROM infolab.chatmessages " +
+                                        "GROUP BY recipient_room_id " +
+                                        "ORDER BY sent_at DESC" +
+                                    ") m " +
+                                    "ON m.recipient_room_id = r.id " +
+                                    "WHERE r.id IS NOT NULL AND r.roomname IS NOT NULL", ROOMS_QUERY));
+    }
+
     public List<RoomEntity> getAfterDate(LocalDate dateLimit) {
         if (dateLimit == null) {
-            return getAll();
+            return getAllWhereLastMessageNotNull();
         }
 
         // TODO: verificare se c'è una soluzione migliore per questo
