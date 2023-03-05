@@ -13,7 +13,7 @@ export class ChatHeader extends LitElement {
     .chatHeader {
       background: #083c72;
       box-shadow: 0px 1px 5px black;
-      min-height: 50px;
+      height: 40px;
       padding: 15px 30px;
       display: flex;
       justify-content: space-between;
