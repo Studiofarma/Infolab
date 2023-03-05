@@ -138,19 +138,6 @@ export class Chat extends LitElement {
       filter: blur(10px);
     }
 
-    @keyframes rotationAnim {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    #settingsIcon:hover {
-      animation: rotationAnim 2s infinite linear;
-    }
-
     :not(.dropdown)::-webkit-scrollbar {
       background-color: #0074bc;
       border-radius: 10px;

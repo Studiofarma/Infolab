@@ -37,7 +37,7 @@ export class ChatHeader extends LitElement {
     return html`
       <div class="chatHeader">
         <div class="settings">
-          <il-button-icon content="mdiCog" id="settingsIcon"></il-button-icon>
+          <il-button-icon content="mdiCog"></il-button-icon>
         </div>
 
         <div class="contact">
