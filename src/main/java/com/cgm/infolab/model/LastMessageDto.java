@@ -5,15 +5,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 public class LastMessageDto {
-    private String lastMessagePreview;
-    private LocalDateTime lastMessageTimestamp;
+    private String preview;
+    private LocalDateTime timestamp;
 
     private LastMessageDto() {
     }
 
-    private LastMessageDto(String lastMessagePreview, LocalDateTime lastMessageTimestamp) {
-        this.lastMessagePreview = lastMessagePreview;
-        this.lastMessageTimestamp = lastMessageTimestamp;
+    private LastMessageDto(String preview, LocalDateTime timestamp) {
+        this.preview = preview;
+        this.timestamp = timestamp;
     }
 
     public static LastMessageDto of(String lastMessagePreview, LocalDateTime lastMessageTimestamp) {
@@ -24,20 +24,20 @@ public class LastMessageDto {
         return new LastMessageDto(null, null);
     }
 
-    public String getLastMessagePreview() {
-        return lastMessagePreview;
+    public String getPreview() {
+        return preview;
     }
 
-    public void setLastMessagePreview(String lastMessagePreview) {
-        this.lastMessagePreview = lastMessagePreview;
+    public void setPreview(String preview) {
+        this.preview = preview;
     }
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    public LocalDateTime getLastMessageTimestamp() {
-        return lastMessageTimestamp;
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setLastMessageTimestamp(LocalDateTime lastMessageTimestamp) {
-        this.lastMessageTimestamp = lastMessageTimestamp;
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 }
