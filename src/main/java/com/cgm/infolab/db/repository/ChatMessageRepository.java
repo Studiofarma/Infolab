@@ -91,17 +91,7 @@ public class ChatMessageRepository {
         }
     }
 
-    public Optional<ChatMessageEntity> getLastMessageByRoomId(long roomId) {
-        try {
-            return Optional.ofNullable(
-                    jdbcTemplate.queryForObject(String.format("%s LIMIT 1", MESSAGES_BY_ROOM_QUERY), this::mapToEntity, roomId)
-            );
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    private ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
+    public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
         ChatMessageEntity message = ChatMessageEntity.empty();
         message.setId(rs.getLong("id"));
 

@@ -7,6 +7,7 @@ import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
+import com.cgm.infolab.model.LastMessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,11 +19,11 @@ import java.util.List;
 
 @Service
 public class ChatService {
-    private  UserRepository userRepository;
-    private RoomRepository roomRepository;
-    private ChatMessageRepository chatMessageRepository;
+    private final UserRepository userRepository;
+    private final RoomRepository roomRepository;
+    private final ChatMessageRepository chatMessageRepository;
 
-    private Logger log = LoggerFactory.getLogger(ChatService.class);
+    private final Logger log = LoggerFactory.getLogger(ChatService.class);
 
     @Autowired
     public ChatService(UserRepository userRepository,
@@ -56,10 +57,14 @@ public class ChatService {
         }
     }
 
-    public ChatMessageDto fromEntityToDto(ChatMessageEntity messageEntity) {
+    public ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
         return new ChatMessageDto(messageEntity.getContent(),
                 messageEntity.getTimestamp(),
                 messageEntity.getSender().getName());
+    }
+
+    public LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
+        return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp());
     }
 
     public List<ChatMessageEntity> getNumberOfMessagesByRoom (RoomEntity room, int numberOfMessages) {

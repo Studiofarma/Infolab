@@ -1,7 +1,6 @@
 package com.cgm.infolab.controller;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.service.ChatService;
@@ -47,7 +46,7 @@ public class ChatApiMessagesController {
         }
 
         if (chatMessageEntities.size() > 0) {
-            chatMessageDtos = chatMessageEntities.stream().map(chatService::fromEntityToDto).toList();
+            chatMessageDtos = chatMessageEntities.stream().map(chatService::fromEntityToChatMessageDto).toList();
         } else {
             log.info("Non sono stati trovati messaggi nella room specificata");
         }
