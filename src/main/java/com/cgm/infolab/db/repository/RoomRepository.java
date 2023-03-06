@@ -75,14 +75,7 @@ public class RoomRepository {
     }
 
     public List<RoomEntity> getAllWhereLastMessageNotNull() {
-        return queryRooms(String.format("%s RIGHT JOIN (" +
-                                        "SELECT recipient_room_id, max(sent_at) sent_at " +
-                                        "FROM infolab.chatmessages " +
-                                        "GROUP BY recipient_room_id " +
-                                        "ORDER BY sent_at DESC" +
-                                    ") m " +
-                                    "ON m.recipient_room_id = r.id " +
-                                    "WHERE r.id IS NOT NULL AND r.roomname IS NOT NULL", ROOMS_QUERY));
+        return queryRooms(String.format("%s %s", ROOMS_QUERY, addConditionToLastMessageNotNullQuery("")));
     }
 
     public List<RoomEntity> getAfterDate(LocalDate dateLimit) {
@@ -92,15 +85,7 @@ public class RoomRepository {
 
         // TODO: verificare se c'è una soluzione migliore per questo
         return queryRooms(
-                String.format("%s RIGHT JOIN (" +
-                                    "SELECT recipient_room_id, max(sent_at) sent_at " +
-                                    "FROM infolab.chatmessages " +
-                                    "GROUP BY recipient_room_id " +
-                                    "ORDER BY sent_at DESC" +
-                                ") m " +
-                                "ON (m.recipient_room_id = r.id AND m.sent_at > ?) " +
-                                "WHERE r.id IS NOT NULL AND r.roomname IS NOT NULL", ROOMS_QUERY),
-                dateLimit);
+                String.format("%s %s", ROOMS_QUERY, addConditionToLastMessageNotNullQuery("AND m.sent_at > ?")), dateLimit);
     }
 
     private List<RoomEntity> queryRooms(String query, Object... queryParams) {
@@ -118,5 +103,16 @@ public class RoomRepository {
         RoomEntity room = RoomEntity.of(rs.getString("roomname"));
         room.setId(rs.getLong("id"));
         return room;
+    }
+
+    private String addConditionToLastMessageNotNullQuery(String condition) {
+        return String.format("RIGHT JOIN (" +
+                                        "SELECT recipient_room_id, max(sent_at) sent_at " +
+                                        "FROM infolab.chatmessages " +
+                                        "GROUP BY recipient_room_id " +
+                                        "ORDER BY sent_at DESC" +
+                                    ") m " +
+                                    "ON m.recipient_room_id = r.id %s" +
+                                    "WHERE r.id IS NOT NULL AND r.roomname IS NOT NULL", condition);
     }
 }
