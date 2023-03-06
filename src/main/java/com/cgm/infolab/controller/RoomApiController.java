@@ -19,15 +19,12 @@ import java.util.List;
 
 @RestController
 public class RoomApiController {
-
-    private final RoomRepository roomRepository;
     private final RoomService roomService;
 
     private final Logger log = LoggerFactory.getLogger(RoomApiController.class);
 
     @Autowired
-    public RoomApiController(RoomRepository roomRepository, RoomService roomService) {
-        this.roomRepository = roomRepository;
+    public RoomApiController(RoomService roomService) {
         this.roomService = roomService;
     }
 
@@ -39,7 +36,7 @@ public class RoomApiController {
     public List<RoomDto> getAllRooms(@RequestParam(required = false) String date, Principal principal) {
         List<RoomDto> roomDtos = new ArrayList<>();
 
-        List<RoomEntity> roomEntities = roomRepository.getAfterDate(fromStringToDate(date));
+        List<RoomEntity> roomEntities = roomService.getRoomsAfterDate(fromStringToDate(date));
 
         if (roomEntities.size() > 0) {
             roomDtos = roomEntities.stream().map(roomService::fromEntityToDto).toList();

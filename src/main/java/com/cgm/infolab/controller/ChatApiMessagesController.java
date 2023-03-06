@@ -16,13 +16,11 @@ import java.util.List;
 
 @RestController
 public class ChatApiMessagesController {
-    private final ChatMessageRepository chatMessageRepository;
     private final ChatService chatService;
 
     private final Logger log = LoggerFactory.getLogger(ChatApiMessagesController.class);
 
-    public ChatApiMessagesController(ChatMessageRepository chatMessageRepository, ChatService chatService) {
-        this.chatMessageRepository = chatMessageRepository;
+    public ChatApiMessagesController(ChatService chatService) {
         this.chatService = chatService;
     }
 
@@ -42,7 +40,7 @@ public class ChatApiMessagesController {
         List<ChatMessageEntity> chatMessageEntities;
         List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
         try {
-            chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(room.getName(), numberOfMessages);
+            chatMessageEntities = chatService.getNumberOfMessagesByRoom(room, numberOfMessages);
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());
             return chatMessageDtos;

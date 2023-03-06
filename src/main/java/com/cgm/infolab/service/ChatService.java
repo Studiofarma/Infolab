@@ -14,6 +14,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Service
 public class ChatService {
@@ -59,6 +60,10 @@ public class ChatService {
         return new ChatMessageDto(messageEntity.getContent(),
                 messageEntity.getTimestamp(),
                 messageEntity.getSender().getName());
+    }
+
+    public List<ChatMessageEntity> getNumberOfMessagesByRoom (RoomEntity room, int numberOfMessages) {
+        return chatMessageRepository.getByRoomNameNumberOfMessages(room.getName(), numberOfMessages);
     }
 }
 
