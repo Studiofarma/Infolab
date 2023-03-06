@@ -1,8 +1,6 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.RoomEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,6 +19,11 @@ public class RoomRepository {
     private final DataSource dataSource;
 
     private final String ROOMS_QUERY = "SELECT r.id, r.roomname FROM infolab.rooms r";
+    private final String ROOMS_DISTINCT_ON_QUERY = "SELECT DISTINCT ON (r.roomname) r.roomname, m.sent_at, m.\"content\"" +
+            "FROM infolab.chatmessages m" +
+            "LEFT JOIN infolab.rooms r" +
+            "ON r.id = m.recipient_room_id %s" +
+            "order by r.roomname, sent_at desc";
 
     public RoomRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
@@ -75,7 +78,7 @@ public class RoomRepository {
     }
 
     public List<RoomEntity> getAllWhereLastMessageNotNull() {
-        return queryRooms(String.format("%s %s", ROOMS_QUERY, addConditionToLastMessageNotNullQuery("")));
+        return queryRooms(String.format("%s %s", ROOMS_QUERY, addConditionToRoomsDistinctOnQuery("")));
     }
 
     public List<RoomEntity> getAfterDate(LocalDate dateLimit) {
@@ -83,9 +86,8 @@ public class RoomRepository {
             return getAllWhereLastMessageNotNull();
         }
 
-        // TODO: verificare se c'è una soluzione migliore per questo
         return queryRooms(
-                String.format("%s %s", ROOMS_QUERY, addConditionToLastMessageNotNullQuery("AND m.sent_at > ?")), dateLimit);
+                String.format("%s %s", ROOMS_QUERY, addConditionToRoomsDistinctOnQuery("AND m.sent_at > ?")), dateLimit);
     }
 
     private List<RoomEntity> queryRooms(String query, Object... queryParams) {
@@ -105,14 +107,7 @@ public class RoomRepository {
         return room;
     }
 
-    private String addConditionToLastMessageNotNullQuery(String condition) {
-        return String.format("RIGHT JOIN (" +
-                                        "SELECT recipient_room_id, max(sent_at) sent_at " +
-                                        "FROM infolab.chatmessages " +
-                                        "GROUP BY recipient_room_id " +
-                                        "ORDER BY sent_at DESC" +
-                                    ") m " +
-                                    "ON m.recipient_room_id = r.id %s" +
-                                    "WHERE r.id IS NOT NULL AND r.roomname IS NOT NULL", condition);
+    private String addConditionToRoomsDistinctOnQuery(String condition) {
+        return String.format(ROOMS_DISTINCT_ON_QUERY, condition);
     }
 }
