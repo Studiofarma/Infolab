@@ -9,6 +9,7 @@ import "../../components/button-icon";
 import "./search-chats.js";
 import "./conversation-list.js";
 import "./input-controls.js";
+import "./chat-header.js";
 
 export class Chat extends LitElement {
   static properties = {
@@ -80,29 +81,6 @@ export class Chat extends LitElement {
       position: relative;
     }
 
-    .chatHeader {
-      background: #083c72;
-      box-shadow: 0px 1px 5px black;
-      width: 100%;
-      min-height: 50px;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: white;
-    }
-
-    .chatHeader .settings {
-      order: 2;
-      display: flex;
-    }
-
-    .chatHeader .contact {
-      order: 1;
-      display: flex;
-      gap: 1em;
-    }
-
     il-input-controls {
       margin-top: auto;
     }
@@ -160,19 +138,6 @@ export class Chat extends LitElement {
       filter: blur(10px);
     }
 
-    @keyframes rotationAnim {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    #settingsIcon:hover {
-      animation: rotationAnim 2s infinite linear;
-    }
-
     :not(.dropdown)::-webkit-scrollbar {
       background-color: #0074bc;
       border-radius: 10px;
@@ -202,19 +167,7 @@ export class Chat extends LitElement {
           </div>
 
           <div class="chat">
-            <div class="chatHeader">
-              <div class="settings">
-                <il-button-icon
-                  content="mdiCog"
-                  id="settingsIcon"
-                ></il-button-icon>
-              </div>
-
-              <div class="contact">
-                <h2>ChatBox ${this.login.username}</h2>
-              </div>
-            </div>
-
+            <il-chat-header username=${this.login.username}></il-chat-header>
             <ul class="messageBox">
               ${this.messages.map(
                 (item, _) =>
