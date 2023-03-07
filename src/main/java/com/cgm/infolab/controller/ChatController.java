@@ -21,6 +21,8 @@ import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
+import java.security.Principal;
+
 @Controller
 public class ChatController {
 
@@ -80,8 +82,8 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
 
-    public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor){
-        chatService.saveMessageInDb(message);
+    public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
+        chatService.saveMessageInDb(message, principal.getName());
         return message;
     }
 

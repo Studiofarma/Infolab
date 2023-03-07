@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class ChatApiMessagesController {
     // Potete provare le chiamate all'API aprendo un browser all'indirizzo http://localhost:8081/api/messages/general (vi chiedera' username e password. user1 - password1)
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/general")
-    public List<ChatMessageDto> getAllMessagesGeneral(@RequestParam(required = false) Integer numberOfMessages) {
+    public List<ChatMessageDto> getAllMessagesGeneral(@RequestParam(required = false) Integer numberOfMessages, Principal principal) {
         if (numberOfMessages == null) {
             numberOfMessages = -1;
         }
@@ -39,7 +40,7 @@ public class ChatApiMessagesController {
         List<ChatMessageEntity> chatMessageEntities;
         List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
         try {
-            chatMessageEntities = chatService.getNumberOfMessagesByRoom(room, numberOfMessages);
+            chatMessageEntities = chatService.getNumberOfMessagesByRoom(room, numberOfMessages, principal.getName());
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());
             return chatMessageDtos;

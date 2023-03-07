@@ -8,6 +8,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -61,28 +62,34 @@ public class ChatMessageRepository {
      * @param roomName da cui prendere i messaggi
      * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
      */
-    public List<ChatMessageEntity> getByRoomName(String roomName) {
+    public List<ChatMessageEntity> getByRoomName(String roomName, String username) {
         return queryMessages(
             MESSAGES_BY_ROOM_QUERY,
             roomName,
-            (room) -> new Object[]{room.getId()}
+            (room) -> new Object[]{room.getId()},
+            username
         );
     }
 
-    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages) {
+    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages, String username) {
         // In caso il parametro non sia valido vengono ritornati tutti i messaggi disponibili.
         if (numberOfMessages < 0) {
-            return getByRoomName(roomName);
+            return getByRoomName(roomName, username);
         }
 
         return queryMessages(
             String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
             roomName,
-            (room) -> new Object[]{room.getId(), numberOfMessages});
+            (room) -> new Object[]{room.getId(), numberOfMessages},
+            username
+        );
     }
 
-    private List<ChatMessageEntity> queryMessages(String query, String roomName, Function<RoomEntity, Object[]> queryParamsBuilder) {
-        RoomEntity room = getRoomByNameOrThrow(roomName);
+    private List<ChatMessageEntity> queryMessages(String query,
+                                                  String roomName,
+                                                  Function<RoomEntity, Object[]> queryParamsBuilder,
+                                                  String username) {
+        RoomEntity room = getRoomByNameOrThrow(roomName, username);
         try {
             Object[] queryParams = queryParamsBuilder.apply(room);
             return jdbcTemplate.query(query, this::mapToEntity, queryParams);
@@ -101,8 +108,11 @@ public class ChatMessageRepository {
             return null;
         }));
 
+        // TODO: considerare di spostarlo in un Bean
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
         long roomId = Long.parseLong(rs.getString("recipient_room_id"));
-        message.setRoom(roomRepository.getById(roomId).orElseGet(() -> {
+        message.setRoom(roomRepository.getById(roomId, username).orElseGet(() -> {
             log.info(String.format("Room roomId=\"%d\" non trovato.", roomId));
             return null;
         }));
@@ -112,8 +122,8 @@ public class ChatMessageRepository {
         return message;
     }
 
-    private RoomEntity getRoomByNameOrThrow(String roomName) {
-        return roomRepository.getByRoomName(roomName).orElseThrow(() -> {
+    private RoomEntity getRoomByNameOrThrow(String roomName, String username) {
+        return roomRepository.getByRoomName(roomName, username).orElseThrow(() -> {
             throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
         });
     }

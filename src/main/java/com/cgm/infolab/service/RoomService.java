@@ -36,7 +36,7 @@ public class RoomService {
         return roomDto;
     }
 
-    public List<RoomEntity> getRoomsAfterDate(LocalDate date) {
-        return roomRepository.getAfterDate(date);
+    public List<RoomEntity> getRoomsAfterDate(LocalDate date, String username) {
+        return roomRepository.getAfterDate(date, username);
     }
 }

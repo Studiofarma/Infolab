@@ -36,7 +36,7 @@ public class RoomApiController {
     public List<RoomDto> getAllRooms(@RequestParam(required = false) String date, Principal principal) {
         List<RoomDto> roomDtos = new ArrayList<>();
 
-        List<RoomEntity> roomEntities = roomService.getRoomsAfterDate(fromStringToDate(date));
+        List<RoomEntity> roomEntities = roomService.getRoomsAfterDate(fromStringToDate(date), principal.getName());
 
         if (roomEntities.size() > 0) {
             roomDtos = roomEntities.stream().map(roomService::fromEntityToDto).toList();
