@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,7 +38,26 @@ public class RoomService {
         return roomDto;
     }
 
-    public List<RoomEntity> getRoomsAfterDate(LocalDate date, String username) {
-        return roomRepository.getAfterDate(date, username);
+    public List<RoomDto> getRooms(String date, String username) {
+        List<RoomDto> roomDtos = new ArrayList<>();
+
+        List<RoomEntity> roomEntities = roomRepository.getAfterDate(fromStringToDate(date), username);
+
+        if (roomEntities.size() > 0) {
+            roomDtos = roomEntities.stream().map(this::fromEntityToDto).toList();
+        } else {
+            log.info("Non sono state trovate room");
+        }
+
+        return roomDtos;
+    }
+
+    private LocalDate fromStringToDate(String date) {
+        if (date == null) {
+            return null;
+        } else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            return LocalDate.parse(date, formatter);
+        }
     }
 }
