@@ -28,14 +28,14 @@ public class RoomRepository {
                                                             "ON u.id = s.user_id " +
                                                             "WHERE u.username = ? %s ";
 
-    private final String NEW_ROOMS_DISTINCT_ON_QUERY =
+    private final String ROOMS_DISTINCT_ON_QUERY =
                     "SELECT DISTINCT ON (r.roomname) * " +
                     "FROM infolab.chatmessages m " +
                     "LEFT JOIN infolab.rooms r ON r.id = m.recipient_room_id %s " + // per aggiungere condizioni nell'ON
                     "RIGHT JOIN infolab.room_subscriptions s ON r.id = s.room_id " +
                     "RIGHT JOIN infolab.users u ON u.id = s.user_id AND u.id = m.sender_id " +
                     "WHERE EXISTS " +
-                    "(SELECT s.room_id FROM infolab.room_subscriptions s" +
+                    "(SELECT s.room_id FROM infolab.room_subscriptions s " +
                         "LEFT JOIN infolab.users u ON u.id = s.user_id WHERE u.username = ?) " +
                     "order by r.roomname, sent_at desc";
 
@@ -86,7 +86,7 @@ public class RoomRepository {
      * @return oggetto Room con il nome preso dal db. Ritorna null se la room non esiste.
      */
     public Optional<RoomEntity> getById(long id, String username) {
-        return queryRoom(addConditionToRoomsQueryJoined("r.id = ?"), username, id);
+        return queryRoom(addConditionToRoomsQueryJoined("AND r.id = ?"), username, id);
     }
 
     private Optional<RoomEntity> queryRoom(String query, Object... queryParams) {
@@ -139,7 +139,8 @@ public class RoomRepository {
     }
 
     private String addConditionToNewRoomsDistinctOnQuery(String condition) {
-        return String.format(NEW_ROOMS_DISTINCT_ON_QUERY, condition);
+        String query = String.format(ROOMS_DISTINCT_ON_QUERY, condition);
+        return query;
     }
 
     private String addConditionToRoomsQueryJoined(String condition) {
