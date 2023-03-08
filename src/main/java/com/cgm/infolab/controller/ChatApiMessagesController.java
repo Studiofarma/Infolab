@@ -18,8 +18,6 @@ import java.util.List;
 public class ChatApiMessagesController {
     private final ChatService chatService;
 
-    private final Logger log = LoggerFactory.getLogger(ChatApiMessagesController.class);
-
     public ChatApiMessagesController(ChatService chatService) {
         this.chatService = chatService;
     }
@@ -36,22 +34,6 @@ public class ChatApiMessagesController {
             numberOfMessages = -1;
         }
 
-        RoomEntity room = RoomEntity.of("general");
-        List<ChatMessageEntity> chatMessageEntities;
-        List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
-        try {
-            chatMessageEntities = chatService.getNumberOfMessagesByRoom(room, numberOfMessages, principal.getName());
-        } catch (IllegalArgumentException e) {
-            log.info(e.getMessage());
-            return chatMessageDtos;
-        }
-
-        if (chatMessageEntities.size() > 0) {
-            chatMessageDtos = chatMessageEntities.stream().map(chatService::fromEntityToChatMessageDto).toList();
-        } else {
-            log.info("Non sono stati trovati messaggi nella room specificata");
-        }
-
-        return chatMessageDtos;
+        return chatService.getAllMessagesGeneral(numberOfMessages, principal.getName());
     }
 }

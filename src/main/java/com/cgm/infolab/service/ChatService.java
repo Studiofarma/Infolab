@@ -15,6 +15,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -67,8 +68,27 @@ public class ChatService {
         return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp());
     }
 
-    public List<ChatMessageEntity> getNumberOfMessagesByRoom (RoomEntity room, int numberOfMessages, String username) {
-        return chatMessageRepository.getByRoomNameNumberOfMessages(room.getName(), numberOfMessages, username);
+    public List<ChatMessageDto> getAllMessagesGeneral (int numberOfMessages, String username) {
+        RoomEntity room = RoomEntity.of("general");
+        List<ChatMessageEntity> chatMessageEntities;
+        List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
+        try {
+            chatMessageEntities = chatMessageRepository
+                    .getByRoomNameNumberOfMessages(room.getName(),
+                            numberOfMessages,
+                            username);
+        } catch (IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return chatMessageDtos;
+        }
+
+        if (chatMessageEntities.size() > 0) {
+            chatMessageDtos = chatMessageEntities.stream().map(this::fromEntityToChatMessageDto).toList();
+        } else {
+            log.info("Non sono stati trovati messaggi nella room specificata");
+        }
+
+        return chatMessageDtos;
     }
 }
 
