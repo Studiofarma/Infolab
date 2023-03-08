@@ -1,8 +1,10 @@
 package com.cgm.infolab.controller;
 
+import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.RoomSubscriptionEntity;
 import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
+import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
@@ -38,30 +40,26 @@ public class ChatController {
     //@Autowired
     //public JdbcTemplate jdbcTemplate;
 
-    private final ChatMessageRepository chatMessageRepository;
-
     private final UserRepository userRepository;
-
     private final RoomRepository roomRepository;
-
-    private ChatService chatService;
+    private final RoomSubscriptionRepository roomSubscriptionRepository;
+    private final ChatService chatService;
 
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     @Autowired
     public ChatController(SimpMessagingTemplate messagingTemplate,
-                          ChatMessageRepository chatMessageRepository,
                           UserRepository userRepository,
-                          RoomRepository roomRepository,
+                          RoomRepository roomRepository, RoomSubscriptionRepository roomSubscriptionRepository,
                           ChatService chatService) {
         this.messagingTemplate = messagingTemplate;
-        this.chatMessageRepository = chatMessageRepository;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
+        this.roomSubscriptionRepository = roomSubscriptionRepository;
         this.chatService = chatService;
     }
 
-    // Questo metodo in teoria viene chiamato quando un utente entra nella chat.
+    // Questo metodo in teoria viene chiamato quando un utente entra nella chat general.
     @SubscribeMapping("/public")
     public void welcome(Authentication principal){
 
@@ -69,6 +67,27 @@ public class ChatController {
             userRepository.add(UserEntity.of(principal.getName()));
         } catch (DuplicateKeyException e) {
             log.info(String.format("User username=\"%s\" già esistente nel database", principal.getName()));
+        }
+
+        RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
+        try {
+            RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed("general").orElseGet(() -> {
+                // Qui dentro non dovrebbe mai entrarci, dato che la room general viene aggiunta al lancio dell'app
+                return null;
+            });
+
+            UserEntity user = userRepository.getByUsername(principal.getName()).orElseGet(() -> {
+                // Qui dentro non dovrebbe mai entrarci, dato che l'utente se non c'era è stato aggiunto
+                log.info(String.format("User username=\"%s\" non trovato.", principal.getName()));
+                return null;
+            });
+
+            roomSubscription.setRoomId(room.getId());
+            roomSubscription.setUserId(user.getId());
+
+            roomSubscriptionRepository.add(roomSubscription);
+        } catch (DuplicateKeyException e) {
+            log.info("RoomSubscription " + roomSubscription + "già esistente nel database");
         }
     }
 

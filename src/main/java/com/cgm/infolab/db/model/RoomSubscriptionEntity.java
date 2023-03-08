@@ -14,7 +14,7 @@ public class RoomSubscriptionEntity {
         this.userId = userId;
     }
 
-    public RoomSubscriptionEntity empty() {
+    public static RoomSubscriptionEntity empty() {
         return new RoomSubscriptionEntity(ID.None, ID.None);
     }
 

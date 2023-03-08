@@ -69,6 +69,15 @@ public class RoomRepository {
         return Optional.empty();
     }
 
+    // Questo metodo è necessario perché altrimenti nella creazione della RoomSubscription in ChatController
+    // non si sarebbe in grado di recuperare l'id della room, necessario per effettuare l'iscrizione.
+    // Non ho potuto cambiare l'altro perché per ora la gestione della sicurezza in queryMessages di
+    // ChatMessagesRepository è basata sul fatto che se non si ha accesso alla stanza allora non viene ritornato l'id
+    // e viene lanciata un'eccezione
+    public Optional<RoomEntity> getByRoomNameEvenIfNotSubscribed(String roomName) {
+        return queryRoom(String.format("%s WHERE roomname = ?", ROOMS_QUERY), roomName);
+    }
+
     /**
      * Metodo che ritorna una room dal database, ricavandolo dall'id
      * @param id da cui risalire alla room
