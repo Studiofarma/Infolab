@@ -89,6 +89,7 @@ public class ChatMessageRepository {
                                                   String roomName,
                                                   Function<RoomEntity, Object[]> queryParamsBuilder,
                                                   String username) {
+        // TODO: gestire (o rilanciare e gestire in un altro posto) l'eccezione lanciata dal metodo.
         RoomEntity room = getRoomByNameOrThrow(roomName, username);
         try {
             Object[] queryParams = queryParamsBuilder.apply(room);
