@@ -25,20 +25,19 @@ public class RoomRepository {
     private final String ROOMS_QUERY_JOINED = ROOMS_QUERY + "RIGHT JOIN infolab.room_subscriptions s " +
                                                             "ON r.id = s.room_id " +
                                                             "RIGHT JOIN infolab.users u " +
-                                                            "%s " +
-                                                            "ON r.id = s.user_id ";
-    private final String NEW_ACCESS_CONDITION = "WHERE s.user_id = ? %s";
-    private final String ROOMS_DISTINCT_ON_QUERY = "SELECT DISTINCT ON (r.roomname) r.roomname, " +
-                                                    "m.id, m.sender_id, m.recipient_room_id, m.sent_at, m.\"content\" " +
-                                                    "FROM infolab.chatmessages m " +
-                                                    "LEFT JOIN infolab.rooms r " +
-                                                    "ON r.id = m.recipient_room_id %s " + // Questo è per aggiungere condizioni all'on
-                                                    "%s " + // Questo è per aggiungere WHERE o altre JOIN
-                                                    "order by r.roomname, sent_at desc ";
-    private final String ACCESS_CONDITION_QUERY =
-            "(r.roomname LIKE ? || '-%' OR r.roomname LIKE '%-' || ? OR r.roomname = 'general')";
-    private final String WHERE_ACCESS_CONDITION_QUERY =
-            "WHERE " + ACCESS_CONDITION_QUERY;
+                                                            "ON u.id = s.user_id " +
+                                                            "WHERE u.username = ? %s ";
+
+    private final String NEW_ROOMS_DISTINCT_ON_QUERY =
+                    "SELECT DISTINCT ON (r.roomname) * " +
+                    "FROM infolab.chatmessages m " +
+                    "LEFT JOIN infolab.rooms r ON r.id = m.recipient_room_id %s " + // per aggiungere condizioni nell'ON
+                    "RIGHT JOIN infolab.room_subscriptions s ON r.id = s.room_id " +
+                    "RIGHT JOIN infolab.users u ON u.id = s.user_id AND u.id = m.sender_id " +
+                    "WHERE EXISTS " +
+                    "(SELECT s.room_id FROM infolab.room_subscriptions s" +
+                        "LEFT JOIN infolab.users u ON u.id = s.user_id WHERE u.username = ?) " +
+                    "order by r.roomname, sent_at desc";
 
     public RoomRepository(JdbcTemplate jdbcTemplate,
                           DataSource dataSource,
@@ -101,7 +100,7 @@ public class RoomRepository {
     }
 
     public List<RoomEntity> getAllWhereLastMessageNotNull(String username) {
-        return queryRooms(addConditionToRoomsDistinctOnQuery(""), username, username);
+        return queryRooms(addConditionToNewRoomsDistinctOnQuery(""), username);
     }
 
     public List<RoomEntity> getAfterDate(LocalDate dateLimit, String username) {
@@ -109,7 +108,7 @@ public class RoomRepository {
             return getAllWhereLastMessageNotNull(username);
         }
 
-        return queryRooms(addConditionToRoomsDistinctOnQuery("AND m.sent_at > ?"), dateLimit, username, username);
+        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), dateLimit, username);
     }
 
     private List<RoomEntity> queryRooms(String query, Object... queryParams) {
@@ -139,12 +138,11 @@ public class RoomRepository {
         return room;
     }
 
-    private String addConditionToRoomsDistinctOnQuery(String condition) {
-        return String.format(ROOMS_DISTINCT_ON_QUERY, condition, WHERE_ACCESS_CONDITION_QUERY);
+    private String addConditionToNewRoomsDistinctOnQuery(String condition) {
+        return String.format(NEW_ROOMS_DISTINCT_ON_QUERY, condition);
     }
 
     private String addConditionToRoomsQueryJoined(String condition) {
-        String partialQuery = String.format(NEW_ACCESS_CONDITION, condition);
-        return String.format(ROOMS_QUERY_JOINED, partialQuery);
+        return String.format(ROOMS_QUERY_JOINED, condition);
     }
 }
