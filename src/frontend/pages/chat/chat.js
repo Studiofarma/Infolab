@@ -6,9 +6,9 @@ import Stomp from "stompjs";
 import { MarkdownService } from "../../services/markdown-services";
 
 import "../../components/button-icon";
-import "./input-controls.js";
-import "./chat-header.js";
-import "./sidebar.js";
+import "./input/input-controls.js";
+import "./sidebar/sidebar.js";
+import "./header/chat-header.js";
 
 export class Chat extends LitElement {
   static properties = {

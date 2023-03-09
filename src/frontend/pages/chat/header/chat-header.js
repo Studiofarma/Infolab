@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 
-import "../../components/button-icon";
+import "../../../components/button-icon";
 
 export class ChatHeader extends LitElement {
   static get properties() {

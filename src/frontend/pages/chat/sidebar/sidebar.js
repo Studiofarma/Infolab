@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 
 import "./search-chats.js";
-import "./conversation-list.js";
+import "./conversation/conversation-list.js";
 
 export class Sidebar extends LitElement {
   static styles = css`
