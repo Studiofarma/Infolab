@@ -4,6 +4,10 @@ const axios = require("axios").default;
 import "../../components/snackbar";
 import "../../components/button-icon";
 
+const USERNAME_COOKIE_NAME = "username";
+const PASSWORD_COOKIE_NAME = "password";
+const HEADER_COOKIE_NAME = "header";
+const TOKEN_COOKIE_NAME = "token";
 export class Login extends LitElement {
   static properties = {
     username: "",
@@ -11,6 +15,9 @@ export class Login extends LitElement {
     pswVisibility: false,
     emptyUsernameField: false,
     emptyPasswordField: false,
+    header: "",
+    token: "",
+    cookie: false,
   };
 
   constructor() {
@@ -20,7 +27,10 @@ export class Login extends LitElement {
     this.pswVisibility = false;
     this.emptyUsernameField = false;
     this.emptyPasswordField = false;
-    this.getCookie();
+    this.header = "";
+    this.token = "";
+    this.cookie = this.getCookie();
+    if (this.cookie) this.loginConfirm();
   }
 
   static styles = css`
@@ -197,32 +207,42 @@ export class Login extends LitElement {
     }
   `;
 
+  getCookiePropertyByName(name) {
+    const result = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(`${name}=`))
+      ?.split("=")[1];
+
+    return result;
+  }
+
   getCookie() {
-    const user = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("username="))
-      ?.split("=")[1];
+    const user = this.getCookiePropertyByName(USERNAME_COOKIE_NAME);
+    if (!user) return false;
 
-    if (!user || user === "''") return;
+    const pass = this.getCookiePropertyByName(PASSWORD_COOKIE_NAME);
+    if (!pass) return false;
+
+    const header = this.getCookiePropertyByName(HEADER_COOKIE_NAME);
+    if (!header) return false;
+
+    const token = this.getCookiePropertyByName(TOKEN_COOKIE_NAME);
+    if (!token) return false;
+
     this.username = user;
-
-    const pass = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("password="))
-      ?.split("=")[1];
-
-    if (!pass || pass === "''") return;
     this.password = pass;
+    this.header = header;
+    this.token = token;
 
-    this.loginConfirm(true);
+    return true;
   }
 
   setCookie() {
     let expires = new Date(Date.now() + 86400 * 1000).toUTCString();
-    document.cookie = `username=${this.username}; expires=${expires}; `;
-    document.cookie = `password=${this.password}; expires=${expires}; `;
-    console.log("test");
-    console.log(document.cookie);
+    document.cookie = `${USERNAME_COOKIE_NAME}=${this.username}; expires=${expires}; `;
+    document.cookie = `${PASSWORD_COOKIE_NAME}=${this.password}; expires=${expires}; `;
+    document.cookie = `${HEADER_COOKIE_NAME}=${this.header}; expires=${expires}; `;
+    document.cookie = `${TOKEN_COOKIE_NAME}=${this.token}; expires=${expires}; `;
   }
 
   render() {
@@ -272,9 +292,7 @@ export class Login extends LitElement {
           </label>
         </div>
         <div>
-          <button id="submit_btn" @click=${() => this.loginConfirm(false)}>
-            Connetti
-          </button>
+          <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
         </div>
       </div>
 
@@ -308,7 +326,27 @@ export class Login extends LitElement {
     this.pswVisibility = !this.pswVisibility;
   }
 
-  loginConfirm(cookie) {
+  confirmLoginEvent() {
+    this.dispatchEvent(
+      new CustomEvent("login-confirm", {
+        detail: {
+          login: {
+            username: this.username,
+            password: this.password,
+            headerName: this.header,
+            token: this.token,
+          },
+        },
+      })
+    );
+  }
+
+  loginConfirm() {
+    if (this.cookie) {
+      this.confirmLoginEvent();
+      return;
+    }
+
     if (this.username === "" && this.password === "") {
       this.emptyUsernameField = true;
       this.emptyPasswordField = true;
@@ -324,22 +362,13 @@ export class Login extends LitElement {
       this.emptyPasswordField = true;
       return;
     }
+
     this.executeLoginCall()
       .then((response) => {
-        if (!cookie) this.setCookie();
-
-        this.dispatchEvent(
-          new CustomEvent("login-confirm", {
-            detail: {
-              login: {
-                username: this.username,
-                password: this.password,
-                headerName: response.data.headerName,
-                token: response.data.token,
-              },
-            },
-          })
-        );
+        this.header = response.data.headerName;
+        this.token = response.data.token;
+        this.setCookie();
+        this.confirmLoginEvent();
       })
       .catch((e) => {
         this.emptyUsernameField = false;
