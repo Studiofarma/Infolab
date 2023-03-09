@@ -11,10 +11,6 @@ export class InputField extends LitElement {
       title: "",
     };
   }
-  constructor() {
-    super();
-    this.value = "";
-  }
 
   static styles = css`
     * {
@@ -31,7 +27,7 @@ export class InputField extends LitElement {
       width: 100%;
       height: 40px;
       padding: 5px 10px;
-      border: solid 1px;
+      border: solid 2px #989a9d;
       outline: none;
       font-size: 15pt;
       transition: 0.5s;
@@ -47,15 +43,24 @@ export class InputField extends LitElement {
           placeholder="${this.placeholder}"
           type="${this.type}"
           id="input"
-          value="${this.value}"
           @input=${this.setValue}
+          @blur="${this.setBlur}"
+          @focus="${this.setFocus}"
         />
       </div>
     `;
   }
 
   setValue(e) {
-    this.value = e.target.value;
+    this.renderRoot.value = e.target.value;
+  }
+
+  setFocus() {
+    this.renderRoot.querySelector("input").style.border = "solid 2px #1D1E20";
+  }
+
+  setBlur() {
+    this.renderRoot.querySelector("input").style.border = "solid 2px #989A9D";
   }
 }
 
