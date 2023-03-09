@@ -20,6 +20,7 @@ export class Login extends LitElement {
     this.pswVisibility = false;
     this.emptyUsernameField = false;
     this.emptyPasswordField = false;
+    this.getCookie();
   }
 
   static styles = css`
@@ -196,6 +197,34 @@ export class Login extends LitElement {
     }
   `;
 
+  getCookie() {
+    const user = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("username="))
+      ?.split("=")[1];
+
+    if (!user || user === "''") return;
+    this.username = user;
+
+    const pass = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("password="))
+      ?.split("=")[1];
+
+    if (!pass || pass === "''") return;
+    this.password = pass;
+
+    this.loginConfirm(true);
+  }
+
+  setCookie() {
+    let expires = new Date(Date.now() + 86400 * 1000).toUTCString();
+    document.cookie = `username=${this.username}; expires=${expires}; `;
+    document.cookie = `password=${this.password}; expires=${expires}; `;
+    console.log("test");
+    console.log(document.cookie);
+  }
+
   render() {
     return html`
       <div id="container">
@@ -243,7 +272,9 @@ export class Login extends LitElement {
           </label>
         </div>
         <div>
-          <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
+          <button id="submit_btn" @click=${() => this.loginConfirm(false)}>
+            Connetti
+          </button>
         </div>
       </div>
 
@@ -277,7 +308,7 @@ export class Login extends LitElement {
     this.pswVisibility = !this.pswVisibility;
   }
 
-  loginConfirm() {
+  loginConfirm(cookie) {
     if (this.username === "" && this.password === "") {
       this.emptyUsernameField = true;
       this.emptyPasswordField = true;
@@ -293,9 +324,10 @@ export class Login extends LitElement {
       this.emptyPasswordField = true;
       return;
     }
-
     this.executeLoginCall()
       .then((response) => {
+        if (!cookie) this.setCookie();
+
         this.dispatchEvent(
           new CustomEvent("login-confirm", {
             detail: {
