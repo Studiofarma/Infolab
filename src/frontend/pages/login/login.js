@@ -12,8 +12,6 @@ export class Login extends LitElement {
     pswVisibility: false,
     emptyUsernameField: true,
     emptyPasswordField: true,
-    psw: "",
-    user: "",
   };
 
   constructor() {
@@ -23,8 +21,6 @@ export class Login extends LitElement {
     this.pswVisibility = false;
     this.emptyUsernameField = true;
     this.emptyPasswordField = true;
-    this.psw = document.getElementById("password");
-    this.user = document.getElementById("username");
   }
 
   static styles = css`
