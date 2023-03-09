@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
 
 import "../../components/formatting-button";
+import "../../components/Button-text";
 
 import { MarkdownService } from "../../services/markdown-services";
 export class Editor extends LitElement {
@@ -101,18 +102,6 @@ export class Editor extends LitElement {
       margin-left: 25px;
     }
 
-    #preview_btn {
-      margin-left: auto;
-      padding: 5px 10px;
-      background: white;
-      min-width: 80px;
-      text-align: center;
-      border: none;
-      outline: none;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
     .previewer {
       padding: 10px;
       width: 100%;
@@ -203,7 +192,7 @@ export class Editor extends LitElement {
           </div>
         </div>
 
-        <button id="preview_btn" @click=${this.togglePreviewer}>preview</button>
+        <il-button-text @click=${this.togglePreviewer}></il-button-text>
       </div>
 
       ${!this.openPreview
