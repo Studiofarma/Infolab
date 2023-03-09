@@ -1,7 +1,6 @@
 import { LitElement, html, css } from "lit";
-import * as mdi from "@mdi/js";
-import "@jamescoyle/svg-icon";
 
+import "../../../../components/icon";
 class Conversation extends LitElement {
   static properties = {
     chat: {},
@@ -87,14 +86,14 @@ class Conversation extends LitElement {
         <il-avatar .chat=${this.chat}></il-avatar>
         <p class="name">${this.chat.name}</p>
         <p class="lastMessage">${this.chat.lastMessage}</p>
+
         <p id="unread">
           ${this.chat.unread > 0
             ? html`
-                <svg-icon
+                <il-icon
                   style="display:${this.notificationOpacity};"
-                  type="mdi"
-                  path="${mdi[this.getUnreadIconName(this.chat.unread)]}"
-                ></svg-icon>
+                  name="${this.getUnreadIconName(this.chat.unread)}"
+                ></il-icon>
               `
             : html``}
         </p>
