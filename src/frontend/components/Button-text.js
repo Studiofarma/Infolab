@@ -1,9 +1,14 @@
 import { LitElement,html,css } from "lit";
 
 export class ButtonText extends LitElement{
+
+    static properties = {
+        openPreview: false,
+    }
+
     constructor(){
         super();
-    
+        this.openPreview = false;
     }
     static styles = css`
     
@@ -11,7 +16,7 @@ export class ButtonText extends LitElement{
       margin-left: auto;
       padding: 7px 12px;
       border-radius:45px;
-      background: white;
+      background:white;
       min-width: 80px;
       text-align: center;
       border: none;
@@ -24,9 +29,14 @@ export class ButtonText extends LitElement{
 
     render(){
         return html `
-         <button id="preview_btn" @click=${this.togglePreviewer}>Preview</button>
-        `
+         <button onclick="change()" id="preview_btn">Apri preview</button>
+        `;
     }
+
+    change(){
+       let button = document.getElementById("preview_btn");
+    }
+
 }
 
 customElements.define("il-button-text", ButtonText);

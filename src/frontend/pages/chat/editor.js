@@ -219,6 +219,7 @@ export class Editor extends LitElement {
     this.openPreview = !this.openPreview;
   }
 
+
   setSelectedText() {
     const textarea = this.getTextarea();
 
