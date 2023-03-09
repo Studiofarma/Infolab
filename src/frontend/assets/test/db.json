@@ -25,18 +25,129 @@
       "avatar": "#"
     }
   ],
+
   "messages": [
     {
-      "sender": "chatBox user1",
-      "receiver": "1",
-      "content": "😃 ciao",
-      "date": ""
+      "id": 1,
+
+      "messages": [
+        {
+          "sender": "chatBox user1",
+          "receiver": "1",
+          "content": "😃 ciao",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        }
+      ]
     },
+
     {
-      "sender": "user1",
-      "receiver": "1",
-      "content": "lorem ipsum",
-      "date": ""
+      "id": 2,
+
+      "messages": [
+        {
+          "sender": "chatBox user1",
+          "receiver": "1",
+          "content": "😃 lorem1",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum 10",
+          "date": ""
+        }
+      ]
+    }
+  ],
+
+  "openChats": [
+    {
+      "name": "farmacia1",
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "2"
+    },
+
+    {
+      "name": "farmacia2",
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "0"
+    },
+
+    {
+      "name": "farmacia3",
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "22"
+    },
+
+    {
+      "name": "farmacia del Dr. Fantozzi Ugo",
+      "avatar": "#",
+      "lastMessage": "Ciao",
+      "unread": "2"
+    },
+
+    {
+      "name": "farmacia della Dr.essa Belladonna Anna",
+      "avatar": "#",
+      "lastMessage": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam",
+      "unread": "2"
     }
   ]
 }

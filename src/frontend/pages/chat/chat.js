@@ -4,7 +4,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
 import { MarkdownService } from "../../services/markdown-services";
-import { getMessagesServices } from "../../services/markdown-services";
+import { getMessagesServices } from "../../services/get-messages-service";
 
 import "../../components/button-icon";
 import "./search-chats.js";
@@ -16,6 +16,7 @@ export class Chat extends LitElement {
     stompClient: {},
     messages: [],
     message: "",
+    nMessages: 0,
   };
 
   static get properties() {
@@ -33,6 +34,7 @@ export class Chat extends LitElement {
     super();
     this.messages = [];
     this.message = "";
+    this.nMessages = 0;
   }
 
   connectedCallback() {
@@ -52,7 +54,7 @@ export class Chat extends LitElement {
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
+      min-height: 100%;
       background: #d3d3d3;
     }
 
@@ -64,7 +66,7 @@ export class Chat extends LitElement {
     section {
       display: grid;
       grid-template-columns: 350px auto;
-      height: 100%;
+      min-height: 100vh;
     }
 
     .sidebar {
@@ -82,15 +84,19 @@ export class Chat extends LitElement {
     }
 
     .chatHeader {
+      position: fixed;
+      top: 0px;
+      left: 350px;
       background: #083c72;
       box-shadow: 0px 1px 5px black;
-      width: 100%;
+      width: calc(100% - 350px);
       min-height: 50px;
       padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       color: white;
+      z-index: 1000;
     }
 
     .chatHeader .settings {
@@ -114,9 +120,10 @@ export class Chat extends LitElement {
       flex-direction: column;
       gap: 30px;
       width: 100%;
-      height: 480px;
+      height: calc(100% - 110px);
       overflow-y: auto;
       padding: 20px;
+      padding-top: 100px;
     }
 
     .messageBox::-webkit-scrollbar {
@@ -268,8 +275,9 @@ export class Chat extends LitElement {
   }
 
   async firstUpdated() {
-    getMessagesServices.executeMessagesCall().then((messages) => {
-      this.messages = messages.data;
+    getMessagesServices.executeMessagesCall(2).then((messages) => {
+      let obj = messages.data[0];
+      this.messages = obj.messages;
     });
   }
 
