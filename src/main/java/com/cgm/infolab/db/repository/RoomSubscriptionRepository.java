@@ -22,7 +22,7 @@ public class RoomSubscriptionRepository {
     public void add(RoomSubscriptionEntity entity) throws DuplicateKeyException {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
-                .withTableName("room_subscriptions");
+                .withTableName("rooms_subscriptions");
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("room_id", entity.getRoomId());

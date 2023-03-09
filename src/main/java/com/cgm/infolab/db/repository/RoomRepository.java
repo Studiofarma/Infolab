@@ -22,7 +22,7 @@ public class RoomRepository {
     private final ChatMessageRepository chatMessageRepository;
 
     private final String ROOMS_QUERY = "SELECT r.id, r.roomname FROM infolab.rooms r ";
-    private final String ROOMS_QUERY_JOINED = ROOMS_QUERY + "RIGHT JOIN infolab.room_subscriptions s " +
+    private final String ROOMS_QUERY_JOINED = ROOMS_QUERY + "RIGHT JOIN infolab.rooms_subscriptions s " +
                                                             "ON r.id = s.room_id " +
                                                             "RIGHT JOIN infolab.users u " +
                                                             "ON u.id = s.user_id " +
@@ -32,10 +32,10 @@ public class RoomRepository {
                     "SELECT DISTINCT ON (r.roomname) * " +
                     "FROM infolab.chatmessages m " +
                     "LEFT JOIN infolab.rooms r ON r.id = m.recipient_room_id %s " + // per aggiungere condizioni nell'ON
-                    "RIGHT JOIN infolab.room_subscriptions s ON r.id = s.room_id " +
+                    "RIGHT JOIN infolab.rooms_subscriptions s ON r.id = s.room_id " +
                     "RIGHT JOIN infolab.users u ON u.id = s.user_id AND u.id = m.sender_id " +
                     "WHERE EXISTS " +
-                    "(SELECT s.room_id FROM infolab.room_subscriptions s " +
+                    "(SELECT s.room_id FROM infolab.rooms_subscriptions s " +
                         "LEFT JOIN infolab.users u ON u.id = s.user_id WHERE u.username = ?) " +
                     "order by r.roomname, sent_at desc";
 

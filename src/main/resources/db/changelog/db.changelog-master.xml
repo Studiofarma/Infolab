@@ -48,7 +48,7 @@
         </createTable>
     </changeSet>
     <changeSet id="rooms_users_relation" author="Matei Ciofu">
-        <createTable schemaName="infolab" tableName="room_subscriptions">
+        <createTable schemaName="infolab" tableName="rooms_subscriptions">
             <column name="room_id" type="bigint">
                 <constraints foreignKeyName="fk_room_id" references="infolab.rooms(id)"/>
             </column>
@@ -57,7 +57,11 @@
             </column>
         </createTable>
 
-        <addUniqueConstraint schemaName="infolab" tableName="room_subscriptions"
+        <addUniqueConstraint schemaName="infolab" tableName="rooms_subscriptions"
                              columnNames="room_id, user_id"/>
+        <addColumn schemaName="infolab" tableName="rooms">
+            <column name="visibility" type="char(20)"/>
+        </addColumn>
+
     </changeSet>
 </databaseChangeLog>
