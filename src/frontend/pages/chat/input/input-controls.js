@@ -4,6 +4,7 @@ import { Picker } from "emoji-picker-element";
 import "./insertion-bar.js";
 import "./editor/editor.js";
 import "../../../components/button-icon";
+import "../../../components/input-field";
 
 export class InputControls extends LitElement {
   static properties = {
@@ -128,25 +129,27 @@ export class InputControls extends LitElement {
               @click=${this.prova}
             >
             </il-insertion-bar>
-            <input
+
+            <il-input-field
               class=${this.bEditor ? "closed" : "opened"}
-              type="text"
               placeholder="Scrivi un messaggio..."
-              @input=${this.onMessageInput}
               @keydown=${this.checkEnterKey}
               @mouseup=${this.setSelectedText}
               .value=${this.message}
-            />
+            ></il-input-field>
+
             <il-editor
               @typing-text=${this.onInputFromEditor}
               @is-selecting=${this.onSelectionFromTextarea}
             ></il-editor>
           </div>
+
           <emoji-picker
             @emoji-click=${this.insertEmoji}
             ?hidden=${!this.bEmoji}
           ></emoji-picker>
         </div>
+
         <div id="submitContainer">
           <il-button-icon
             @click=${this.sendMessage}
@@ -160,11 +163,6 @@ export class InputControls extends LitElement {
   onInputFromEditor(e) {
     const markdownText = e.detail.content;
     this.message = markdownText;
-  }
-
-  onMessageInput(e) {
-    const inputEl = e.target;
-    this.message = inputEl.value;
   }
 
   checkEnterKey(event) {
