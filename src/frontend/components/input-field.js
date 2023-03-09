@@ -52,7 +52,7 @@ export class InputField extends LitElement {
   }
 
   setValue(e) {
-    this.renderRoot.value = e.target.value;
+    this.value = e.target.value;
   }
 
   setFocus() {
