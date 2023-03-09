@@ -38,7 +38,7 @@ export class InputField extends LitElement {
   render() {
     return html`
       <div id="container">
-        <label>${this.title}</label>
+        ${this.title === "" ? html`` : html`<label>${this.title}</label>`}
         <input
           placeholder="${this.placeholder}"
           type="${this.type}"

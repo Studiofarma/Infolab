@@ -101,7 +101,7 @@ export class Login extends LitElement {
     .text-container il-button-icon {
       position: absolute;
       transform: translateY(50%);
-      bottom: 20px;
+      bottom: 25px;
       right: 10px;
       z-index: 2;
       color: rgba(10, 10, 128, 0.829);
@@ -217,7 +217,6 @@ export class Login extends LitElement {
             ></il-input-field>
           </div>
 
-          <label> Password </label>
           <div class="text-container">
             <il-input-field
               class=${this.emptyPasswordField ? "error" : ""}
@@ -225,6 +224,7 @@ export class Login extends LitElement {
               type=${this.pswVisibility ? "text" : "password"}
               @keydown=${this.checkEnterKey}
               placeholder="Inserisci la password"
+              title="Password"
             ></il-input-field>
 
             <il-button-icon
