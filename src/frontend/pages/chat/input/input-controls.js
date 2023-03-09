@@ -35,20 +35,24 @@ export class InputControls extends LitElement {
       margin: 0;
       padding: 0;
     }
+
     input {
       font-family: inherit;
     }
+
     .container {
       display: flex;
       flex-direction: column;
       flex-grow: 1;
       gap: 10px;
     }
+
     emoji-picker {
       width: 100%;
       height: 300px;
       --emoji-size: 15pt;
     }
+
     #inputControls {
       position: absolute;
       bottom: 0px;
@@ -62,6 +66,7 @@ export class InputControls extends LitElement {
       background: #083c72;
       box-shadow: 0px -1px 5px black;
     }
+
     .inputContainer {
       display: flex;
       flex-grow: 1;
@@ -71,12 +76,14 @@ export class InputControls extends LitElement {
       transition: 0.5s;
       transition-delay: 1s;
     }
+
     .inputContainer input[type="text"] {
       flex-grow: 1;
       border: none;
       outline: none;
       padding-left: 3px;
     }
+
     #submitContainer il-button-icon {
       width: 50px;
       height: 50px;
@@ -89,15 +96,18 @@ export class InputControls extends LitElement {
       justify-content: center;
       align-items: center;
     }
+
     il-editor {
       display: none;
       transition: 0.5s;
       height: 0px;
       overflow-y: hidden;
     }
+
     input[type="text"].closed {
       display: none;
     }
+
     input[type="text"].closed ~ il-editor {
       flex-grow: 1;
       width: calc(100% + 60px);
