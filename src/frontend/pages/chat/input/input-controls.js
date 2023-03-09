@@ -1,8 +1,8 @@
 import { LitElement, html, css } from "lit";
 import { Picker } from "emoji-picker-element";
 
-import "./insertion-bar.js";
-import "./editor/editor.js";
+import "./insertion-bar";
+import "./editor/editor";
 import "../../../components/button-icon";
 import "../../../components/input-field";
 
@@ -37,10 +37,6 @@ export class InputControls extends LitElement {
       padding: 0;
     }
 
-    input {
-      font-family: inherit;
-    }
-
     .container {
       display: flex;
       flex-direction: column;
@@ -71,14 +67,15 @@ export class InputControls extends LitElement {
     .inputContainer {
       display: flex;
       flex-grow: 1;
-      background: white;
       padding: 5px;
       border-radius: 10px;
       transition: 0.5s;
       transition-delay: 1s;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
-    .inputContainer input[type="text"] {
+    .inputContainer il-input-field[type="text"] {
       flex-grow: 1;
       border: none;
       outline: none;
@@ -105,16 +102,20 @@ export class InputControls extends LitElement {
       overflow-y: hidden;
     }
 
-    input[type="text"].closed {
+    il-input-field[type="text"].closed {
       display: none;
     }
 
-    input[type="text"].closed ~ il-editor {
+    il-input-field[type="text"].closed ~ il-editor {
       flex-grow: 1;
       width: calc(100% + 60px);
       height: 200px;
       display: block;
       overflow-x: hidden;
+    }
+
+    il-input-field {
+      margin-right: 20px;
     }
   `;
 
@@ -132,7 +133,9 @@ export class InputControls extends LitElement {
 
             <il-input-field
               class=${this.bEditor ? "closed" : "opened"}
+              type="text"
               placeholder="Scrivi un messaggio..."
+              @input=${this.onMessageInput}
               @keydown=${this.checkEnterKey}
               @mouseup=${this.setSelectedText}
               .value=${this.message}
@@ -143,7 +146,6 @@ export class InputControls extends LitElement {
               @is-selecting=${this.onSelectionFromTextarea}
             ></il-editor>
           </div>
-
           <emoji-picker
             @emoji-click=${this.insertEmoji}
             ?hidden=${!this.bEmoji}
@@ -163,6 +165,11 @@ export class InputControls extends LitElement {
   onInputFromEditor(e) {
     const markdownText = e.detail.content;
     this.message = markdownText;
+  }
+
+  onMessageInput(e) {
+    const inputEl = e.target;
+    this.message = inputEl.value;
   }
 
   checkEnterKey(event) {
