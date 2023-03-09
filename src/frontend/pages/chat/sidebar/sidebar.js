@@ -12,8 +12,10 @@ export class Sidebar extends LitElement {
       display: flex;
       flex-direction: column;
       box-shadow: 1px 1px 8px black;
-      z-index: 1000;
+      z-index: 1100;
       height: calc(100vh - 10px);
+      position: fixed;
+      width: 18.5%;
     }
   `;
 

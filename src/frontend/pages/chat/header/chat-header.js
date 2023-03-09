@@ -19,11 +19,16 @@ export class ChatHeader extends LitElement {
       justify-content: space-between;
       align-items: center;
       color: white;
+      position : fixed;
+      width :100%;
+      z-index: 1000;
+    
     }
 
     .chatHeader .settings {
       order: 2;
       display: flex;
+      
     }
 
     .chatHeader .contact {
