@@ -115,6 +115,10 @@ export class InputControls extends LitElement {
       display: block;
       overflow-x: hidden;
     }
+
+    il-input-field {
+      margin-right: 15px;
+    }
   `;
 
   render() {
