@@ -21,7 +21,7 @@ public class RoomRepository {
     private final DataSource dataSource;
     private final ChatMessageRepository chatMessageRepository;
 
-    private final String ROOMS_QUERY = "SELECT r.id, r.roomname FROM infolab.rooms r ";
+    private final String ROOMS_QUERY = "SELECT r.id, r.roomname, r.visibility FROM infolab.rooms r ";
     private final String ROOMS_QUERY_JOINED = ROOMS_QUERY + "RIGHT JOIN infolab.rooms_subscriptions s " +
                                                             "ON r.id = s.room_id " +
                                                             "RIGHT JOIN infolab.users u " +
@@ -125,6 +125,7 @@ public class RoomRepository {
     private RoomEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
         RoomEntity room = RoomEntity.of(rs.getString("roomname"));
         room.setId(rs.getLong("id"));
+        room.setVisibility(rs.getString("visibility"));
         return room;
     }
 
