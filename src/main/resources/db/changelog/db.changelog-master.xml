@@ -31,19 +31,6 @@
             </column>
         </createTable>
 
-        <createTable schemaName="infolab" tableName="room_subscriptions">
-            <column name="room_id" type="bigint">
-                <constraints foreignKeyName="fk_room_id" references="infolab.rooms(id)"/>
-            </column>
-            <column name="user_id" type="bigint">
-                <constraints foreignKeyName="fk_user_id" references="infolab.users(id)"/>
-            </column>
-        </createTable>
-        
-        <addUniqueConstraint schemaName="infolab" tableName="room_subscriptions"
-                             columnNames="room_id, user_id"/>
-
-
         <createTable schemaName="infolab" tableName="chatmessages">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="chatmessages_pk" />
@@ -59,5 +46,18 @@
             </column>
             <column name="content" type="varchar(5000)" />
         </createTable>
+    </changeSet>
+    <changeSet id="rooms_users_relation" author="Matei Ciofu">
+        <createTable schemaName="infolab" tableName="room_subscriptions">
+            <column name="room_id" type="bigint">
+                <constraints foreignKeyName="fk_room_id" references="infolab.rooms(id)"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints foreignKeyName="fk_user_id" references="infolab.users(id)"/>
+            </column>
+        </createTable>
+
+        <addUniqueConstraint schemaName="infolab" tableName="room_subscriptions"
+                             columnNames="room_id, user_id"/>
     </changeSet>
 </databaseChangeLog>
