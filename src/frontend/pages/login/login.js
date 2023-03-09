@@ -326,7 +326,7 @@ export class Login extends LitElement {
     this.pswVisibility = !this.pswVisibility;
   }
 
-  confirmLoginEvent() {
+  loginConfirmEvent() {
     this.dispatchEvent(
       new CustomEvent("login-confirm", {
         detail: {
@@ -343,7 +343,9 @@ export class Login extends LitElement {
 
   loginConfirm() {
     if (this.cookie) {
-      this.confirmLoginEvent();
+      Promise.resolve().then(() => {
+        this.loginConfirmEvent();
+      });
       return;
     }
 
@@ -368,7 +370,7 @@ export class Login extends LitElement {
         this.header = response.data.headerName;
         this.token = response.data.token;
         this.setCookie();
-        this.confirmLoginEvent();
+        this.loginConfirmEvent();
       })
       .catch((e) => {
         this.emptyUsernameField = false;
