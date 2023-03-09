@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
 
-import "../../components/button-icon";
+import "../../../components/button-icon";
 
 export class SearchChats extends LitElement {
   static properties = {
