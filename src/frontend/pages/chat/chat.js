@@ -7,9 +7,9 @@ import { MarkdownService } from "../../services/markdown-services";
 import { getMessagesServices } from "../../services/get-messages-service";
 
 import "../../components/button-icon";
-import "./search-chats.js";
-import "./chats-list.js";
-import "./input-controls.js";
+import "./input/input-controls.js";
+import "./sidebar/sidebar.js";
+import "./header/chat-header.js";
 
 export class Chat extends LitElement {
   static properties = {
@@ -67,16 +67,6 @@ export class Chat extends LitElement {
       display: grid;
       grid-template-columns: 350px auto;
       min-height: 100vh;
-    }
-
-    .sidebar {
-      background: #083c72;
-      color: white;
-      padding-top: 10px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 1px 1px 8px black;
-      z-index: 1000;
     }
 
     .chat {
@@ -229,25 +219,9 @@ export class Chat extends LitElement {
     return html`
       <main>
         <section>
-          <div class="sidebar">
-            <il-search></il-search>
-            <il-chats-list></il-chats-list>
-          </div>
-
+          <il-sidebar></il-sidebar>
           <div class="chat">
-            <div class="chatHeader">
-              <div class="settings">
-                <il-button-icon
-                  content="mdiCog"
-                  id="settingsIcon"
-                ></il-button-icon>
-              </div>
-
-              <div class="contact">
-                <h2>ChatBox ${this.login.username}</h2>
-              </div>
-            </div>
-
+            <il-chat-header username=${this.login.username}></il-chat-header>
             <ul class="messageBox">
               ${this.messages.map(
                 (item, _) =>
