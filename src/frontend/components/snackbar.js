@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 
-import "../../components/button-icon";
+import "./button-icon";
 
 export class Snackbar extends LitElement {
   static properties = {

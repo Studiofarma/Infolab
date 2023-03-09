@@ -3,7 +3,7 @@ import { resolveMarkdown } from "lit-markdown";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
-import { MarkdownService } from "../../services/services";
+import { MarkdownService } from "../../services/markdown-services";
 
 import "../../components/button-icon";
 import "./search-chats.js";
