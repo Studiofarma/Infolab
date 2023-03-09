@@ -27,7 +27,7 @@ export class InputField extends LitElement {
       width: 100%;
       height: 40px;
       padding: 5px 10px;
-      border: solid 2px #989a9d;
+      border: solid 2px #5a9bfb;
       outline: none;
       font-size: 15pt;
       transition: 0.5s;
@@ -56,11 +56,11 @@ export class InputField extends LitElement {
   }
 
   setFocus() {
-    this.renderRoot.querySelector("input").style.border = "solid 2px #1D1E20";
+    this.renderRoot.querySelector("input").style.border = "solid 2px #009C3E";
   }
 
   setBlur() {
-    this.renderRoot.querySelector("input").style.border = "solid 2px #989A9D";
+    this.renderRoot.querySelector("input").style.border = "solid 2px #5A9BFB";
   }
 }
 
