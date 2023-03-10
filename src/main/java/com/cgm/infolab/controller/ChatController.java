@@ -58,14 +58,11 @@ public class ChatController {
     // Questo metodo in teoria viene chiamato quando un utente entra nella chat general.
     @SubscribeMapping("/public")
     public void welcome(Authentication principal){
-
         try {
             userRepository.add(UserEntity.of(principal.getName()));
         } catch (DuplicateKeyException e) {
             log.info(String.format("User username=\"%s\" già esistente nel database", principal.getName()));
         }
-
-        roomSubscriptionService.subscribeUserToRoom("general", principal.getName());
     }
 
     @MessageMapping("/chat.register")
