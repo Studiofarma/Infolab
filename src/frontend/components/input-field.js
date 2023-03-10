@@ -6,7 +6,6 @@ export class InputField extends LitElement {
   static get properties() {
     return {
       placeholder: "",
-      type: "text",
       value: "",
       title: "",
     };
@@ -40,7 +39,6 @@ export class InputField extends LitElement {
       ${this.title === "" ? html`` : html`<label>${this.title}</label>`}
       <input
         placeholder="${this.placeholder}"
-        type="${this.type}"
         id="input"
         @input=${this.setValue}
         @blur="${this.setBlur}"
