@@ -10,17 +10,17 @@ export class Login extends LitElement {
     username: "",
     password: "",
     pswVisibility: false,
-    emptyUsernameField: false,
-    emptyPasswordField: false,
+    emptyUsernameField: true,
+    emptyPasswordField: true,
   };
 
   constructor() {
     super();
-    this.username = "user1";
-    this.password = "password1";
+    this.username = "";
+    this.password = "";
     this.pswVisibility = false;
-    this.emptyUsernameField = false;
-    this.emptyPasswordField = false;
+    this.emptyUsernameField = true;
+    this.emptyPasswordField = true;
   }
 
   static styles = css`
@@ -32,7 +32,7 @@ export class Login extends LitElement {
 
     #container {
       position: relative;
-      width: 500px;
+      width: 530px;
       max-width: 100%;
       min-height: 400px;
       background: white;
@@ -91,12 +91,13 @@ export class Login extends LitElement {
     .text-container {
       position: relative;
       width: 100%;
+      margin-bottom: 10px;
     }
 
     .text-container il-button-icon {
       position: absolute;
       transform: translateY(50%);
-      bottom: 20px;
+      bottom: 25px;
       right: 10px;
       z-index: 2;
       color: rgba(10, 10, 128, 0.829);
@@ -126,11 +127,10 @@ export class Login extends LitElement {
       outline: none;
       cursor: pointer;
       border-radius: 10px;
-      width: 100%;
+      width: 150px;
       margin-top: 30px;
     }
 
-    input,
     button {
       font-family: inherit;
     }
@@ -188,6 +188,10 @@ export class Login extends LitElement {
       display: block;
       margin-bottom: 10px;
     }
+
+    #input-container {
+      text-align: center;
+    }
   `;
 
   render() {
@@ -197,33 +201,26 @@ export class Login extends LitElement {
         <div class="ring2"></div>
 
         <h1 class="title">WELCOME BACK</h1>
-
-        <div>
-          <label> Username </label>
+        <div id="input-container">
           <div class="text-container">
             <il-input-field
               class=${this.emptyUsernameField ? "error" : ""}
               id="username"
               type="text"
-              @input=${this.onUsernameInput}
               @keydown=${this.checkEnterKey}
-              .value=${this.username}
               placeholder="Inserisci lo username"
+              title="Username"
             ></il-input-field>
           </div>
-        </div>
 
-        <div>
-          <label> Password </label>
           <div class="text-container">
             <il-input-field
               class=${this.emptyPasswordField ? "error" : ""}
               id="password"
               type=${this.pswVisibility ? "text" : "password"}
-              @input=${this.onPasswordInput}
               @keydown=${this.checkEnterKey}
-              .value=${this.password}
               placeholder="Inserisci la password"
+              title="Password"
             ></il-input-field>
 
             <il-button-icon
@@ -231,9 +228,12 @@ export class Login extends LitElement {
               content="${!this.pswVisibility ? "mdiEye" : "mdiEyeOff"}"
             ></il-button-icon>
           </div>
-        </div>
-        <div>
-          <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
+
+          <div>
+            <button id="submit_btn" @click=${this.loginConfirm}>
+              Connetti
+            </button>
+          </div>
         </div>
       </div>
 
@@ -249,16 +249,6 @@ export class Login extends LitElement {
     );
   }
 
-  onUsernameInput(e) {
-    const inputEl = e.target;
-    this.username = inputEl.value;
-  }
-
-  onPasswordInput(e) {
-    const inputEl = e.target;
-    this.password = inputEl.value;
-  }
-
   checkEnterKey(e) {
     if (e.key === "Enter") this.loginConfirm();
   }
@@ -268,6 +258,12 @@ export class Login extends LitElement {
   }
 
   loginConfirm() {
+    let psw = this.renderRoot.querySelector("div  il-input-field#password");
+    let user = this.renderRoot.querySelector("div  il-input-field#username");
+    this.password = psw.value;
+    this.username = user.value;
+
+    console.log(this.password, this.username);
     if (this.username === "" && this.password === "") {
       this.emptyUsernameField = true;
       this.emptyPasswordField = true;
