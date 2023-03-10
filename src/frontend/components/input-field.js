@@ -37,17 +37,15 @@ export class InputField extends LitElement {
 
   render() {
     return html`
-      <div id="container">
-        ${this.title === "" ? html`` : html`<label>${this.title}</label>`}
-        <input
-          placeholder="${this.placeholder}"
-          type="${this.type}"
-          id="input"
-          @input=${this.setValue}
-          @blur="${this.setBlur}"
-          @focus="${this.setFocus}"
-        />
-      </div>
+      ${this.title === "" ? html`` : html`<label>${this.title}</label>`}
+      <input
+        placeholder="${this.placeholder}"
+        type="${this.type}"
+        id="input"
+        @input=${this.setValue}
+        @blur="${this.setBlur}"
+        @focus="${this.setFocus}"
+      />
     `;
   }
 
