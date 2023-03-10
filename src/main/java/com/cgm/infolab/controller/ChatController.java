@@ -42,17 +42,14 @@ public class ChatController {
 
     private final UserRepository userRepository;
     private final ChatService chatService;
-    private final RoomSubscriptionService roomSubscriptionService;
 
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     @Autowired
     public ChatController(UserRepository userRepository,
-                          ChatService chatService,
-                          RoomSubscriptionService roomSubscriptionService) {
+                          ChatService chatService) {
         this.userRepository = userRepository;
         this.chatService = chatService;
-        this.roomSubscriptionService = roomSubscriptionService;
     }
 
     // Questo metodo in teoria viene chiamato quando un utente entra nella chat general.

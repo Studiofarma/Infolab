@@ -9,7 +9,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -18,25 +17,31 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.function.Function;
 
 @Component
 public class ChatMessageRepository {
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
-    private final UserRepository userRepository;
-    private final RoomRepository roomRepository;
 
-    private final String MESSAGES_BY_ROOM_QUERY = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? ORDER BY sent_at DESC";
+    private final String MESSAGES_BY_ROOM_QUERY =
+            "SELECT m.id message_id, u.id user_id, u.username, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content " +
+                    "FROM infolab.chatmessages m " +
+                    "LEFT JOIN infolab.rooms r " +
+                    "ON r.id = m.recipient_room_id " +
+                    "LEFT JOIN infolab.users u " +
+                    "ON u.id = m.sender_id " +
+                    "WHERE EXISTS (SELECT s.room_id FROM infolab.rooms_subscriptions s " +
+                        "LEFT JOIN infolab.users u " +
+                        "ON s.user_id = u.id " +
+                        "WHERE (u.username = ? OR r.visibility = 'PUBLIC')) " +
+                    "AND r.roomname = ? " +
+                    "ORDER BY sent_at DESC ";
 
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
-    public ChatMessageRepository(JdbcTemplate jdbcTemplate, DataSource dataSource,
-                                 UserRepository userRepository, RoomRepository roomRepository) {
+    public ChatMessageRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.dataSource = dataSource;
-        this.userRepository = userRepository;
-        this.roomRepository = roomRepository;
     }
 
     /**
@@ -65,10 +70,9 @@ public class ChatMessageRepository {
      */
     public List<ChatMessageEntity> getByRoomName(String roomName, String username) {
         return queryMessages(
-            MESSAGES_BY_ROOM_QUERY,
-            roomName,
-            (room) -> new Object[]{room.getId()},
-            username
+                MESSAGES_BY_ROOM_QUERY,
+                username,
+                roomName
         );
     }
 
@@ -80,20 +84,14 @@ public class ChatMessageRepository {
 
         return queryMessages(
             String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
-            roomName,
-            (room) -> new Object[]{room.getId(), numberOfMessages},
-            username
+                username,
+                roomName,
+                numberOfMessages
         );
     }
 
-    private List<ChatMessageEntity> queryMessages(String query,
-                                                  String roomName,
-                                                  Function<RoomEntity, Object[]> queryParamsBuilder,
-                                                  String username) {
-        // TODO: gestire (o rilanciare e gestire in un altro posto) l'eccezione lanciata dal metodo.
-        RoomEntity room = getRoomByNameOrThrow(roomName, username);
+    private List<ChatMessageEntity> queryMessages(String query, Object... queryParams) {
         try {
-            Object[] queryParams = queryParamsBuilder.apply(room);
             return jdbcTemplate.query(query, this::mapToEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
@@ -102,33 +100,18 @@ public class ChatMessageRepository {
 
     public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
 
-        long userId = Long.parseLong(rs.getString("sender_id"));
-        UserEntity user = userRepository.getById(userId).orElseGet(() -> {
-            log.info(String.format("Utente userId=\"%d\" non trovato.", userId));
-            return null;
-        });
+        UserEntity user = UserEntity.of(rs.getLong("user_id"), rs.getString("username"));
 
-        // TODO: considerare di spostarlo in un Bean
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        long roomId = Long.parseLong(rs.getString("recipient_room_id"));
-        RoomEntity room = roomRepository.getById(roomId, username).orElseGet(() -> {
-            log.info(String.format("Room roomId=\"%d\" non trovato.", roomId));
-            return null;
-        });
+        RoomEntity room = RoomEntity.of(
+                rs.getLong("room_id"), rs.getString("roomname"), rs.getString("visibility")
+        );
 
         return ChatMessageEntity
-                .of(rs.getLong("id"),
+                .of(rs.getLong("message_id"),
                         user,
                         room,
                         resultSetToLocalDateTime(rs),
                         rs.getString("content"));
-    }
-
-    private RoomEntity getRoomByNameOrThrow(String roomName, String username) {
-        return roomRepository.getByRoomName(roomName, username).orElseThrow(() -> {
-            throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
-        });
     }
 
     private static LocalDateTime resultSetToLocalDateTime(ResultSet rs) throws SQLException {

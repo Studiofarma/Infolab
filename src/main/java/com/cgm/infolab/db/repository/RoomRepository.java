@@ -2,7 +2,6 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,27 +20,30 @@ public class RoomRepository {
     private final DataSource dataSource;
     private final ChatMessageRepository chatMessageRepository;
 
-    private final String ROOMS_QUERY = "SELECT r.id, r.roomname, r.visibility FROM infolab.rooms r ";
-    private final String ROOMS_QUERY_JOINED = ROOMS_QUERY + "RIGHT JOIN infolab.rooms_subscriptions s " +
+    private final String ROOMS_QUERY = "SELECT r.id room_id, r.roomname, r.visibility FROM infolab.rooms r ";
+    private final String ROOMS_QUERY_JOINED = ROOMS_QUERY + "LEFT JOIN infolab.rooms_subscriptions s " +
                                                             "ON r.id = s.room_id " +
-                                                            "RIGHT JOIN infolab.users u " +
+                                                            "LEFT JOIN infolab.users u " +
                                                             "ON u.id = s.user_id " +
-                                                            "WHERE u.username = ? %s ";
+                                                            "WHERE (u.username = ? OR r.visibility = 'PUBLIC') %s ";
 
     private final String ROOMS_DISTINCT_ON_QUERY =
-                    "SELECT DISTINCT ON (r.roomname) * " +
+                    "SELECT DISTINCT ON (r.roomname) " +
+                            "r.id room_id, r.roomname, r.visibility, u.id user_id, u.username, " +
+                            "m.id message_id, m.sent_at, m.content " +
                     "FROM infolab.chatmessages m " +
-                    "LEFT JOIN infolab.rooms r ON r.id = m.recipient_room_id %s " + // per aggiungere condizioni nell'ON
-                    "RIGHT JOIN infolab.rooms_subscriptions s ON r.id = s.room_id " +
-                    "RIGHT JOIN infolab.users u ON u.id = s.user_id AND u.id = m.sender_id " +
+                    "LEFT JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
+                    "LEFT JOIN infolab.rooms_subscriptions s ON r.id = s.room_id " +
+                    "LEFT JOIN infolab.users u ON u.id = s.user_id AND u.id = m.sender_id " +
                     "WHERE EXISTS " +
                     "(SELECT s.room_id FROM infolab.rooms_subscriptions s " +
-                        "LEFT JOIN infolab.users u ON u.id = s.user_id WHERE u.username = ?) " +
+                        "LEFT JOIN infolab.users u ON u.id = s.user_id " +
+                        "WHERE (u.username = ? OR r.visibility = 'PUBLIC')) %s " + // per aggiungere condizioni nel WHERE
                     "order by r.roomname, sent_at desc";
 
     public RoomRepository(JdbcTemplate jdbcTemplate,
                           DataSource dataSource,
-                          /*è accettabile utilizzarlo per risolvere una circular reference?*/@Lazy ChatMessageRepository chatMessageRepository) {
+                          ChatMessageRepository chatMessageRepository) {
         this.jdbcTemplate = jdbcTemplate;
         this.dataSource = dataSource;
         this.chatMessageRepository = chatMessageRepository;
@@ -59,6 +61,7 @@ public class RoomRepository {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("roomname", room.getName());
+        parameters.put("visibility", room.getVisibility());
         return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
@@ -108,7 +111,7 @@ public class RoomRepository {
             return getAllWhereLastMessageNotNull(username);
         }
 
-        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), dateLimit, username);
+        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), username, dateLimit);
     }
 
     private List<RoomEntity> queryRooms(String query, Object... queryParams) {
@@ -124,7 +127,7 @@ public class RoomRepository {
      */
     private RoomEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
         return RoomEntity
-                .of(rs.getLong("id"),
+                .of(rs.getLong("room_id"),
                         rs.getString("roomname"),
                         rs.getString("visibility"));
     }
@@ -132,15 +135,14 @@ public class RoomRepository {
     private RoomEntity mapToEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
         ChatMessageEntity message = chatMessageRepository.mapToEntity(rs, rowNum);
         return RoomEntity
-                .of(rs.getLong("id"),
+                .of(rs.getLong("room_id"),
                         rs.getString("roomname"),
                         rs.getString("visibility"),
                         List.of(message));
     }
 
     private String addConditionToNewRoomsDistinctOnQuery(String condition) {
-        String query = String.format(ROOMS_DISTINCT_ON_QUERY, condition);
-        return query;
+        return String.format(ROOMS_DISTINCT_ON_QUERY, condition);
     }
 
     private String addConditionToRoomsQueryJoined(String condition) {
