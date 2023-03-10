@@ -2,6 +2,7 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -100,27 +101,28 @@ public class ChatMessageRepository {
     }
 
     public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-        ChatMessageEntity message = ChatMessageEntity.empty();
-        message.setId(rs.getLong("id"));
 
         long userId = Long.parseLong(rs.getString("sender_id"));
-        message.setSender(userRepository.getById(userId).orElseGet(() -> {
+        UserEntity user = userRepository.getById(userId).orElseGet(() -> {
             log.info(String.format("Utente userId=\"%d\" non trovato.", userId));
             return null;
-        }));
+        });
 
         // TODO: considerare di spostarlo in un Bean
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
 
         long roomId = Long.parseLong(rs.getString("recipient_room_id"));
-        message.setRoom(roomRepository.getById(roomId, username).orElseGet(() -> {
+        RoomEntity room = roomRepository.getById(roomId, username).orElseGet(() -> {
             log.info(String.format("Room roomId=\"%d\" non trovato.", roomId));
             return null;
-        }));
+        });
 
-        message.setTimestamp(resultSetToLocalDateTime(rs));
-        message.setContent(rs.getString("content"));
-        return message;
+        return ChatMessageEntity
+                .of(rs.getLong("id"),
+                        user,
+                        room,
+                        resultSetToLocalDateTime(rs),
+                        rs.getString("content"));
     }
 
     private RoomEntity getRoomByNameOrThrow(String roomName, String username) {

@@ -24,6 +24,10 @@ public class ChatMessageEntity {
         return new ChatMessageEntity(ID.None, sender, room, timestamp, content);
     }
 
+    public static ChatMessageEntity of(long id, UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content) {
+        return new ChatMessageEntity(id, sender, room, timestamp, content);
+    }
+
     public static ChatMessageEntity empty() {
         return new ChatMessageEntity(ID.None, null, null, null, null);
     }

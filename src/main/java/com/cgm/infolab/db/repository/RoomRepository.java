@@ -123,20 +123,19 @@ public class RoomRepository {
      * Rowmapper utilizzato nei metodi getByRoomName e getById
      */
     private RoomEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-        RoomEntity room = RoomEntity.of(rs.getString("roomname"));
-        room.setId(rs.getLong("id"));
-        room.setVisibility(rs.getString("visibility"));
-        return room;
+        return RoomEntity
+                .of(rs.getLong("id"),
+                        rs.getString("roomname"),
+                        rs.getString("visibility"));
     }
 
     private RoomEntity mapToEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
-        RoomEntity room = RoomEntity.of(rs.getString("roomname"));
-        room.setId(rs.getLong("id"));
-
-        // Qui invece di usare la repository avrei dovuto estrarre il metodo nel service e usare quello?
         ChatMessageEntity message = chatMessageRepository.mapToEntity(rs, rowNum);
-        room.setMessages(List.of(message));
-        return room;
+        return RoomEntity
+                .of(rs.getLong("id"),
+                        rs.getString("roomname"),
+                        rs.getString("visibility"),
+                        List.of(message));
     }
 
     private String addConditionToNewRoomsDistinctOnQuery(String condition) {

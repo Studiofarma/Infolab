@@ -72,8 +72,6 @@ public class UserRepository {
      * Rowmapper utilizzato nei metodi getByUsername e getById
      */
     private UserEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-        UserEntity user = UserEntity.of(rs.getString("username"));
-        user.setId(rs.getLong("id"));
-        return user;
+        return UserEntity.of(rs.getLong("id"), rs.getString("username"));
     }
 }

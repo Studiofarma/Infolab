@@ -7,9 +7,8 @@ import java.util.List;
 public class RoomEntity {
     private long id;
     private String name;
-    private List<ChatMessageEntity> messages;
-
     private String visibility;
+    private List<ChatMessageEntity> messages;
 
     private RoomEntity(long id, String name, String visibility, List<ChatMessageEntity> messages) {
         this.id = id;
@@ -20,6 +19,18 @@ public class RoomEntity {
 
     public static RoomEntity of(String name) {
         return new RoomEntity(ID.None, name, "", null);
+    }
+
+    public static RoomEntity of(String name, String visibility) {
+        return new RoomEntity(ID.None, name, visibility, null);
+    }
+
+    public static RoomEntity of(long id, String name, String visibility) {
+        return new RoomEntity(id, name, visibility, null);
+    }
+
+    public static RoomEntity of(long id, String name, String visibility, List<ChatMessageEntity> messages) {
+        return new RoomEntity(id, name, visibility, messages);
     }
 
     public long getId() {

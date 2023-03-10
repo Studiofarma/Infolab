@@ -13,16 +13,11 @@ import org.springframework.stereotype.Component;
 public class RunAfterStartup {
 
     public static final RoomEntity[] TEST_ROOMS =
-            {newRoom("PRIVATE","user1-user2"), newRoom("PRIVATE","user1-user3"), newRoom("PRIVATE","user3-user4")};
-    public static final RoomEntity[] ROOMS = {newRoom("PUBLIC","general")};
+            {RoomEntity.of("user1-user2", "PRIVATE"),
+            RoomEntity.of("user1-user3", "PRIVATE"),
+            RoomEntity.of("user3-user4", "PRIVATE")};
+    public static final RoomEntity[] ROOMS = {RoomEntity.of("general", "PUBLIC")};
     private final RoomRepository roomRepository;
-
-    private static RoomEntity newRoom(String visibility, String name){
-        RoomEntity entity= RoomEntity.of(name);
-        entity.setVisibility(visibility);
-
-        return entity;
-    }
 
     private final Logger log = LoggerFactory.getLogger(RunAfterStartup.class);
 
