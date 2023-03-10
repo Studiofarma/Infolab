@@ -249,7 +249,7 @@ export class Login extends LitElement {
   }
 
   loginConfirm() {
-    let psw = this.renderRoot.querySelector("div  il-input-field#password");
+    let psw = this.renderRoot.querySelector("div  il-input-password#password");
     let user = this.renderRoot.querySelector("div  il-input-field#username");
     this.password = psw.value;
     this.username = user.value;
