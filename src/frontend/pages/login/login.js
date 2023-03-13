@@ -3,23 +3,24 @@ const axios = require("axios").default;
 
 import "../../components/snackbar";
 import "../../components/button-icon";
+import "../../components/input-field";
 
 export class Login extends LitElement {
   static properties = {
     username: "",
     password: "",
     pswVisibility: false,
-    emptyUsernameField: false,
-    emptyPasswordField: false,
+    emptyUsernameField: true,
+    emptyPasswordField: true,
   };
 
   constructor() {
     super();
-    this.username = "user1";
-    this.password = "password1";
+    this.username = "";
+    this.password = "";
     this.pswVisibility = false;
-    this.emptyUsernameField = false;
-    this.emptyPasswordField = false;
+    this.emptyUsernameField = true;
+    this.emptyPasswordField = true;
   }
 
   static styles = css`
@@ -31,7 +32,7 @@ export class Login extends LitElement {
 
     #container {
       position: relative;
-      width: 500px;
+      width: 530px;
       max-width: 100%;
       min-height: 400px;
       background: white;
@@ -87,29 +88,16 @@ export class Login extends LitElement {
       align-self: center;
     }
 
-    input[type="text"],
-    input[type="password"] {
-      position: relative;
-      width: 100%;
-      height: 40px;
-      padding: 5px 10px;
-      border: none;
-      outline: none;
-      font-size: 15pt;
-      transition: 0.5s;
-      margin-top: 10px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #333333;
-    }
-
     .text-container {
       position: relative;
+      width: 100%;
+      margin-bottom: 10px;
     }
 
     .text-container il-button-icon {
       position: absolute;
       transform: translateY(50%);
-      bottom: 20px;
+      bottom: 25px;
       right: 10px;
       z-index: 2;
       color: rgba(10, 10, 128, 0.829);
@@ -139,11 +127,10 @@ export class Login extends LitElement {
       outline: none;
       cursor: pointer;
       border-radius: 10px;
-      width: 100%;
+      width: 150px;
       margin-top: 30px;
     }
 
-    input,
     button {
       font-family: inherit;
     }
@@ -194,6 +181,17 @@ export class Login extends LitElement {
     .text-container:hover::after {
       display: none;
     }
+
+    label {
+      text-align: center;
+      width: 100%;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    #input-container {
+      text-align: center;
+    }
   `;
 
   render() {
@@ -203,47 +201,39 @@ export class Login extends LitElement {
         <div class="ring2"></div>
 
         <h1 class="title">WELCOME BACK</h1>
+        <div id="input-container">
+          <div class="text-container">
+            <il-input-field
+              class=${this.emptyUsernameField ? "error" : ""}
+              id="username"
+              type="text"
+              @keydown=${this.checkEnterKey}
+              placeholder="Inserisci lo username"
+              title="Username"
+            ></il-input-field>
+          </div>
 
-        <div>
-          <label>
-            Username
-            <div class="text-container">
-              <input
-                class=${this.emptyUsernameField ? "error" : ""}
-                id="username"
-                type="text"
-                @input=${this.onUsernameInput}
-                @keydown=${this.checkEnterKey}
-                .value=${this.username}
-                placeholder="Inserisci lo username"
-              />
-            </div>
-          </label>
-        </div>
+          <div class="text-container">
+            <il-input-field
+              class=${this.emptyPasswordField ? "error" : ""}
+              id="password"
+              type=${this.pswVisibility ? "text" : "password"}
+              @keydown=${this.checkEnterKey}
+              placeholder="Inserisci la password"
+              title="Password"
+            ></il-input-field>
 
-        <div>
-          <label>
-            Password
-            <div class="text-container">
-              <input
-                class=${this.emptyPasswordField ? "error" : ""}
-                id="password"
-                type=${this.pswVisibility ? "text" : "password"}
-                @input=${this.onPasswordInput}
-                @keydown=${this.checkEnterKey}
-                .value=${this.password}
-                placeholder="Inserisci la password"
-              />
+            <il-button-icon
+              @click=${this.setVisibility}
+              content="${!this.pswVisibility ? "mdiEye" : "mdiEyeOff"}"
+            ></il-button-icon>
+          </div>
 
-              <il-button-icon
-                @click=${this.setVisibility}
-                content="${!this.pswVisibility ? "mdiEye" : "mdiEyeOff"}"
-              ></il-button-icon>
-            </div>
-          </label>
-        </div>
-        <div>
-          <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
+          <div>
+            <button id="submit_btn" @click=${this.loginConfirm}>
+              Connetti
+            </button>
+          </div>
         </div>
       </div>
 
@@ -259,16 +249,6 @@ export class Login extends LitElement {
     );
   }
 
-  onUsernameInput(e) {
-    const inputEl = e.target;
-    this.username = inputEl.value;
-  }
-
-  onPasswordInput(e) {
-    const inputEl = e.target;
-    this.password = inputEl.value;
-  }
-
   checkEnterKey(e) {
     if (e.key === "Enter") this.loginConfirm();
   }
@@ -278,6 +258,12 @@ export class Login extends LitElement {
   }
 
   loginConfirm() {
+    let psw = this.renderRoot.querySelector("div  il-input-field#password");
+    let user = this.renderRoot.querySelector("div  il-input-field#username");
+    this.password = psw.value;
+    this.username = user.value;
+
+    console.log(this.password, this.username);
     if (this.username === "" && this.password === "") {
       this.emptyUsernameField = true;
       this.emptyPasswordField = true;

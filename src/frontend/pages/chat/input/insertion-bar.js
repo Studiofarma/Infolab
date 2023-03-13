@@ -9,6 +9,7 @@ export class InsertionBar extends LitElement {
       flex-wrap: wrap;
       align-items: center;
       gap: 1px;
+      color: white;
     }
   `;
 
