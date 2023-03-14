@@ -186,13 +186,14 @@ export class InputControls extends LitElement {
     const option = e.detail.opt;
     if (option === "mdiPencil") {
       this.bEditor = !this.bEditor;
+      this.updateMessage();
       this.getTextarea().value = this.message;
     } else if (option === "mdiEmoticon") this.bEmoji = !this.bEmoji;
   }
 
   sendMessage() {
     this.renderRoot.querySelector("il-input-field").clear();
-    this.message = this.renderRoot.querySelector("il-input-field").value;
+    this.updateMessage();
     this.dispatchEvent(
       new CustomEvent("send-message", {
         detail: {
@@ -247,6 +248,10 @@ export class InputControls extends LitElement {
     if (changed.has("message")) {
       this.getInputText().focus();
     }
+  }
+
+  updateMessage() {
+    this.message = this.renderRoot.querySelector("il-input-field").value;
   }
 }
 
