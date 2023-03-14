@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
 
 import "../../components/formatting-button";
-import "../../components/Button-text";
+import "../../components/button-text";
 
 import { MarkdownService } from "../../services/markdown-services";
 export class Editor extends LitElement {
@@ -218,7 +218,6 @@ export class Editor extends LitElement {
   togglePreviewer() {
     this.openPreview = !this.openPreview;
   }
-
 
   setSelectedText() {
     const textarea = this.getTextarea();
