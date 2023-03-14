@@ -2,6 +2,7 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -15,29 +16,32 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+import java.util.*;
 
 @Component
 public class ChatMessageRepository {
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
-    private final UserRepository userRepository;
-    private final RoomRepository roomRepository;
 
-    private final String MESSAGES_BY_ROOM_QUERY = "SELECT * FROM infolab.chatmessages WHERE recipient_room_id = ? ORDER BY sent_at DESC";
+    private final String MESSAGES_BY_ROOM_QUERY =
+            "SELECT m.id message_id, u.id user_id, u.username, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content " +
+                    "FROM infolab.chatmessages m " +
+                    "LEFT JOIN infolab.rooms r " +
+                    "ON r.id = m.recipient_room_id " +
+                    "LEFT JOIN infolab.users u " +
+                    "ON u.id = m.sender_id " +
+                    "WHERE EXISTS (SELECT s.room_id FROM infolab.rooms_subscriptions s " +
+                        "LEFT JOIN infolab.users u " +
+                        "ON s.user_id = u.id " +
+                        "WHERE (u.username = ? OR r.visibility = 'PUBLIC')) " +
+                    "AND r.roomname = ? " +
+                    "ORDER BY sent_at DESC ";
 
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
-    public ChatMessageRepository(JdbcTemplate jdbcTemplate, DataSource dataSource,
-                                 UserRepository userRepository, RoomRepository roomRepository) {
+    public ChatMessageRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.dataSource = dataSource;
-        this.userRepository = userRepository;
-        this.roomRepository = roomRepository;
     }
 
     /**
@@ -64,61 +68,50 @@ public class ChatMessageRepository {
      * @param roomName da cui prendere i messaggi
      * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
      */
-    public List<ChatMessageEntity> getByRoomName(String roomName) {
+    public List<ChatMessageEntity> getByRoomName(String roomName, String username) {
         return queryMessages(
-            MESSAGES_BY_ROOM_QUERY,
-            roomName,
-            (room) -> new Object[]{room.getId()}
+                MESSAGES_BY_ROOM_QUERY,
+                username,
+                roomName
         );
     }
 
-    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages) {
+    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages, String username) {
         // In caso il parametro non sia valido vengono ritornati tutti i messaggi disponibili.
         if (numberOfMessages < 0) {
-            return getByRoomName(roomName);
+            return getByRoomName(roomName, username);
         }
 
         return queryMessages(
             String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
-            roomName,
-            (room) -> new Object[]{room.getId(), numberOfMessages});
+                username,
+                roomName,
+                numberOfMessages
+        );
     }
 
-    private List<ChatMessageEntity> queryMessages(String query, String roomName, Function<RoomEntity, Object[]> queryParamsBuilder) {
-        RoomEntity room = getRoomByNameOrThrow(roomName);
+    private List<ChatMessageEntity> queryMessages(String query, Object... queryParams) {
         try {
-            Object[] queryParams = queryParamsBuilder.apply(room);
             return jdbcTemplate.query(query, this::mapToEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
     }
 
-    private ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-        ChatMessageEntity message = ChatMessageEntity.emptyMessage();
-        message.setId(rs.getLong("id"));
+    public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
 
-        long userId = Long.parseLong(rs.getString("sender_id"));
-        message.setSender(userRepository.getById(userId).orElseGet(() -> {
-            log.info(String.format("Utente userId=\"%d\" non trovato.", userId));
-            return null;
-        }));
+        UserEntity user = UserEntity.of(rs.getLong("user_id"), rs.getString("username"));
 
-        long roomId = Long.parseLong(rs.getString("recipient_room_id"));
-        message.setRoom(roomRepository.getById(roomId).orElseGet(() -> {
-            log.info(String.format("Room roomId=\"%d\" non trovato.", roomId));
-            return null;
-        }));
+        RoomEntity room = RoomEntity.of(
+                rs.getLong("room_id"), rs.getString("roomname"), rs.getString("visibility")
+        );
 
-        message.setTimestamp(resultSetToLocalDateTime(rs));
-        message.setContent(rs.getString("content"));
-        return message;
-    }
-
-    private RoomEntity getRoomByNameOrThrow(String roomName) {
-        return roomRepository.getByRoomName(roomName).orElseThrow(() -> {
-            throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
-        });
+        return ChatMessageEntity
+                .of(rs.getLong("message_id"),
+                        user,
+                        room,
+                        resultSetToLocalDateTime(rs),
+                        rs.getString("content"));
     }
 
     private static LocalDateTime resultSetToLocalDateTime(ResultSet rs) throws SQLException {

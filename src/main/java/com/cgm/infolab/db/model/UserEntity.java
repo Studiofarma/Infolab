@@ -18,6 +18,10 @@ public class UserEntity {
         return new UserEntity(ID.None, name);
     }
 
+    public static UserEntity of(long id, String name) {
+        return new UserEntity(id, name);
+    }
+
     public long getId() {
         return id;
     }

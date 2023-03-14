@@ -4,6 +4,7 @@ const axios = require("axios").default;
 import "../../components/snackbar";
 import "../../components/button-icon";
 import "../../components/input-field";
+import "../../components/input-password";
 
 export class Login extends LitElement {
   static properties = {
@@ -182,13 +183,6 @@ export class Login extends LitElement {
       display: none;
     }
 
-    label {
-      text-align: center;
-      width: 100%;
-      display: block;
-      margin-bottom: 10px;
-    }
-
     #input-container {
       text-align: center;
     }
@@ -214,19 +208,13 @@ export class Login extends LitElement {
           </div>
 
           <div class="text-container">
-            <il-input-field
+            <il-input-password
               class=${this.emptyPasswordField ? "error" : ""}
               id="password"
-              type=${this.pswVisibility ? "text" : "password"}
               @keydown=${this.checkEnterKey}
               placeholder="Inserisci la password"
               title="Password"
-            ></il-input-field>
-
-            <il-button-icon
-              @click=${this.setVisibility}
-              content="${!this.pswVisibility ? "mdiEye" : "mdiEyeOff"}"
-            ></il-button-icon>
+            ></il-input-password>
           </div>
 
           <div>
@@ -253,12 +241,8 @@ export class Login extends LitElement {
     if (e.key === "Enter") this.loginConfirm();
   }
 
-  setVisibility() {
-    this.pswVisibility = !this.pswVisibility;
-  }
-
   loginConfirm() {
-    let psw = this.renderRoot.querySelector("div  il-input-field#password");
+    let psw = this.renderRoot.querySelector("div  il-input-password#password");
     let user = this.renderRoot.querySelector("div  il-input-field#username");
     this.password = psw.value;
     this.username = user.value;

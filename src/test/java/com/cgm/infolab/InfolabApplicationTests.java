@@ -1,6 +1,6 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.model.ChatMessage;
+import com.cgm.infolab.model.ChatMessageDto;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -74,20 +74,20 @@ class InfolabApplicationTests {
             .connectAsync(String.format("http://localhost:%d/chat?access_token=%s", port, encodedAuth("user1", "password1")), headers, stompHeaders, new StompSessionHandlerAdapter() {})
             .get(1, TimeUnit.SECONDS);
 
-        BlockingQueue<ChatMessage> receivedMessages = new ArrayBlockingQueue<>(2);
+        BlockingQueue<ChatMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
         session.subscribe("/topic/public", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
-                return ChatMessage.class;
+                return ChatMessageDto.class;
             }
 
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
-                receivedMessages.add((ChatMessage) payload);
+                receivedMessages.add((ChatMessageDto) payload);
             }
         });
 
-        ChatMessage sentMessage = new ChatMessage(null, "banana");
+        ChatMessageDto sentMessage = new ChatMessageDto(null, "banana");
         session.send("/app/chat.register", sentMessage);
 
         await()

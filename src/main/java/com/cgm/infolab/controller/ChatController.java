@@ -1,12 +1,14 @@
 package com.cgm.infolab.controller;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.RoomSubscriptionEntity;
 import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
+import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
-import com.cgm.infolab.model.ChatMessage;
+import com.cgm.infolab.model.ChatMessageDto;
+import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.service.RoomSubscriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +18,19 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
-import java.sql.Timestamp;
+import java.security.Principal;
 
 @Controller
 public class ChatController {
 
     //@Autowired
     // Tutorial: https://www.baeldung.com/spring-websockets-send-message-to-user
-    public SimpMessagingTemplate messagingTemplate;
+    //public SimpMessagingTemplate messagingTemplate;
 
     // Tutorial: https://www.baeldung.com/spring-jdbc-jdbctemplate#the-jdbctemplate-and-running-queries
     // Saltate pure la sezione 2 Configuration. Dopo avere letto come fare query di lettura e scrittura, vi
@@ -39,33 +40,21 @@ public class ChatController {
     //@Autowired
     //public JdbcTemplate jdbcTemplate;
 
-    private final ChatMessageRepository chatMessageRepository;
-
     private final UserRepository userRepository;
-
-    private final RoomRepository roomRepository;
-
-    private ChatService chatService;
+    private final ChatService chatService;
 
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     @Autowired
-    public ChatController(SimpMessagingTemplate messagingTemplate,
-                          ChatMessageRepository chatMessageRepository,
-                          UserRepository userRepository,
-                          RoomRepository roomRepository,
+    public ChatController(UserRepository userRepository,
                           ChatService chatService) {
-        this.messagingTemplate = messagingTemplate;
-        this.chatMessageRepository = chatMessageRepository;
         this.userRepository = userRepository;
-        this.roomRepository = roomRepository;
         this.chatService = chatService;
     }
 
-    // Questo metodo in teoria viene chiamato quando un utente entra nella chat.
+    // Questo metodo in teoria viene chiamato quando un utente entra nella chat general.
     @SubscribeMapping("/public")
     public void welcome(Authentication principal){
-
         try {
             userRepository.add(UserEntity.of(principal.getName()));
         } catch (DuplicateKeyException e) {
@@ -75,7 +64,7 @@ public class ChatController {
 
     @MessageMapping("/chat.register")
     @SendTo("/topic/public")
-    public ChatMessage register(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor){
+    public ChatMessageDto register(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor){
         headerAccessor.getSessionAttributes().put("username", message.getSender());
         return message;
     }
@@ -83,16 +72,16 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
 
-    public ChatMessage sendMessage(@Payload ChatMessage message, SimpMessageHeaderAccessor headerAccessor){
-        chatService.ChatServiceMetodo(message);
+    public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
+        chatService.saveMessageInDb(message, principal.getName());
         return message;
     }
 
     @MessageMapping("/chat.send.{destinationUser}")
     @SendTo("/queue/{destinationUser}")
     @SendToUser("/topic/me")
-    ChatMessage sendMessageToUser(
-            @Payload ChatMessage message,
+    ChatMessageDto sendMessageToUser(
+            @Payload ChatMessageDto message,
             @DestinationVariable String destinationUser,
             SimpMessageHeaderAccessor headerAccessor){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
