@@ -239,7 +239,7 @@ export class InputControls extends LitElement {
     if (this.bEditor) {
       this.renderRoot.querySelector("il-editor").message = this.message;
     }
-
+    this.renderRoot.querySelector("il-input-field").value = this.message;
     this.selectedText = null;
   }
 

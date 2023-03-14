@@ -8,6 +8,8 @@ export class InputField extends LitElement {
       placeholder: "",
       value: "",
       title: "",
+      selectionStart: "",
+      selectionEnd: "",
     };
   }
 
@@ -43,12 +45,15 @@ export class InputField extends LitElement {
         @input=${this.setValue}
         @blur="${this.setBlur}"
         @focus="${this.setFocus}"
+        value=${this.value}
       />
     `;
   }
 
   setValue(e) {
     this.value = e.target.value;
+    this.selectionStart = e.target.selectionStart;
+    this.selectionEnd = e.target.selectionEnd;
   }
 
   setFocus() {
