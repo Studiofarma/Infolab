@@ -183,13 +183,6 @@ export class Login extends LitElement {
       display: none;
     }
 
-    label {
-      text-align: center;
-      width: 100%;
-      display: block;
-      margin-bottom: 10px;
-    }
-
     #input-container {
       text-align: center;
     }
