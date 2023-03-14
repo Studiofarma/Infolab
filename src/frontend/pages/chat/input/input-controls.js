@@ -135,7 +135,6 @@ export class InputControls extends LitElement {
               class=${this.bEditor ? "closed" : "opened"}
               type="text"
               placeholder="Scrivi un messaggio..."
-              @input=${this.onMessageInput}
               @keydown=${this.checkEnterKey}
               @mouseup=${this.setSelectedText}
               .value=${this.message}
@@ -167,11 +166,6 @@ export class InputControls extends LitElement {
     this.message = markdownText;
   }
 
-  onMessageInput(e) {
-    const inputEl = e.target;
-    this.message = inputEl.value;
-  }
-
   checkEnterKey(event) {
     if (event.key === "Enter") this.sendMessage();
   }
@@ -185,7 +179,7 @@ export class InputControls extends LitElement {
   }
 
   getInputText() {
-    return this.renderRoot.querySelector("input") ?? null;
+    return this.renderRoot.querySelector("il-input-field") ?? null;
   }
 
   openInsertionMode(e) {
@@ -197,6 +191,8 @@ export class InputControls extends LitElement {
   }
 
   sendMessage() {
+    this.renderRoot.querySelector("il-input-field").clear();
+    this.message = this.renderRoot.querySelector("il-input-field").value;
     this.dispatchEvent(
       new CustomEvent("send-message", {
         detail: {

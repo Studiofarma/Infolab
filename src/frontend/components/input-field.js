@@ -58,6 +58,10 @@ export class InputField extends LitElement {
   setBlur() {
     this.renderRoot.querySelector("input").style.border = "solid 2px #5A9BFB";
   }
+
+  clear() {
+    this.renderRoot.querySelector("input").value = "";
+  }
 }
 
 customElements.define("il-input-field", InputField);
