@@ -238,7 +238,8 @@ export class Login extends LitElement {
   }
 
   setCookie() {
-    let expires = new Date(Date.now() + 86400 * 1000).toUTCString();
+    let expires = new Date(Date.now());
+    expires.setDate(expires.getDate() + 1);
     document.cookie = `${USERNAME_COOKIE_NAME}=${this.username}; expires=${expires}; `;
     document.cookie = `${PASSWORD_COOKIE_NAME}=${this.password}; expires=${expires}; `;
     document.cookie = `${HEADER_COOKIE_NAME}=${this.header}; expires=${expires}; `;
