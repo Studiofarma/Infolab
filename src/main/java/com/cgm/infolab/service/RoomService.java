@@ -1,6 +1,5 @@
 package com.cgm.infolab.service;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.model.LastMessageDto;
@@ -63,7 +62,7 @@ public class RoomService {
         }
     }
 
-    public void createPrivateRoom(String user1, String user2) {
+    public RoomEntity createPrivateRoom(String user1, String user2) {
         String[] users = {user1, user2};
         Arrays.sort(users);
         // Il criterio con cui vengono create le room è mettere i nomi degli utenti in ordine lessicografico,
@@ -71,9 +70,11 @@ public class RoomService {
         String roomName = String.format("%s-%s", users[0], users[1]);
 
         try {
-            roomRepository.add(RoomEntity.of(roomName, "PRIVATE"));
+            long roomId = roomRepository.add(RoomEntity.of(roomName, "PRIVATE"));
+            return RoomEntity.of(roomId, roomName, "PRIVATE");
         } catch (DuplicateKeyException e) {
             log.info(String.format("Room roomName=\"%s\" già esistente nel database", roomName));
+            return roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseGet(() -> null);
         }
     }
 }

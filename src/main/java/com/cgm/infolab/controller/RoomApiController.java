@@ -1,5 +1,6 @@
 package com.cgm.infolab.controller;
 
+import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.model.RoomDto;
 import com.cgm.infolab.service.RoomService;
 import com.cgm.infolab.service.RoomSubscriptionService;
@@ -30,6 +31,7 @@ public class RoomApiController {
      */
     @PostMapping("/api/rooms/{username}")
     public void postPrivateRoom(@PathVariable("username") String username, Principal principal){
-        roomService.createPrivateRoom(username, principal.getName());
+        RoomEntity room = roomService.createPrivateRoom(username, principal.getName());
+        roomSubscriptionService.subscribeUsersToRoom(room.getName(), username, principal.getName());
     }
 }

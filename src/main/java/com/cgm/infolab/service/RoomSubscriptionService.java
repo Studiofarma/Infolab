@@ -28,15 +28,12 @@ public class RoomSubscriptionService {
     public void subscribeUserToRoom(String roomName, String username) {
         RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
         try {
-            RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseGet(() -> {
-                // Qui dentro non dovrebbe mai entrarci, dato che la room general viene aggiunta al lancio dell'app
-                return null;
+            RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseThrow(() -> {
+                throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
             });
 
-            UserEntity user = userRepository.getByUsername(username).orElseGet(() -> {
-                // Qui dentro non dovrebbe mai entrarci, dato che l'utente se non c'era è stato aggiunto
-                log.info(String.format("User username=\"%s\" non trovato.", username));
-                return null;
+            UserEntity user = userRepository.getByUsername(username).orElseThrow(() -> {
+                throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username));
             });
 
             roomSubscription.setRoomId(room.getId());
@@ -45,6 +42,12 @@ public class RoomSubscriptionService {
             roomSubscriptionRepository.add(roomSubscription);
         } catch (DuplicateKeyException e) {
             log.info("RoomSubscription " + roomSubscription + "già esistente nel database");
+        }
+    }
+
+    public void subscribeUsersToRoom(String roomName, String... usernames) {
+        for (String u : usernames) {
+            subscribeUserToRoom(roomName, u);
         }
     }
 }

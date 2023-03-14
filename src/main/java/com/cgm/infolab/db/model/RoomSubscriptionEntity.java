@@ -33,4 +33,12 @@ public class RoomSubscriptionEntity {
     public void setUserId(long userId) {
         this.userId = userId;
     }
+
+    @Override
+    public String toString() {
+        return "RoomSubscriptionEntity{" +
+                "roomId=" + roomId +
+                ", userId=" + userId +
+                "}";
+    }
 }
