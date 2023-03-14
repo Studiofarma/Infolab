@@ -163,7 +163,8 @@ export class InputControls extends LitElement {
 
   onInputFromEditor(e) {
     const markdownText = e.detail.content;
-    this.message = markdownText;
+    this.renderRoot.querySelector("il-input-field").value = markdownText;
+    this.updateMessage();
   }
 
   checkEnterKey(event) {

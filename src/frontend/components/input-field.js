@@ -13,6 +13,11 @@ export class InputField extends LitElement {
     };
   }
 
+  constructor() {
+    super();
+    this.value = "";
+  }
+
   static styles = css`
     * {
       width: 100%;
@@ -45,7 +50,7 @@ export class InputField extends LitElement {
         @input=${this.setValue}
         @blur="${this.setBlur}"
         @focus="${this.setFocus}"
-        value=${this.value}
+        .value=${this.value}
       />
     `;
   }
