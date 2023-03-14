@@ -49,10 +49,6 @@ public class RoomRepository {
         this.chatMessageRepository = chatMessageRepository;
     }
 
-    /**
-     * Metodo che aggiunge una stanza al database.
-     * @return chiave che è stata auto generata per la stanza creata, oppure -1 se la stanza inserita esisteva già.
-     */
     public long add(RoomEntity room) throws DuplicateKeyException {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")

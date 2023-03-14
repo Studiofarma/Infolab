@@ -8,11 +8,13 @@ import com.cgm.infolab.model.RoomDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -58,6 +60,20 @@ public class RoomService {
         } else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             return LocalDate.parse(date, formatter);
+        }
+    }
+
+    public void createPrivateRoom(String user1, String user2) {
+        String[] users = {user1, user2};
+        Arrays.sort(users);
+        // Il criterio con cui vengono create le room è mettere i nomi degli utenti in ordine lessicografico,
+        // in modo da evitare room multiple tra gli stessi utenti
+        String roomName = String.format("%s-%s", users[0], users[1]);
+
+        try {
+            roomRepository.add(RoomEntity.of(roomName, "PRIVATE"));
+        } catch (DuplicateKeyException e) {
+            log.info(String.format("Room roomName=\"%s\" già esistente nel database", roomName));
         }
     }
 }

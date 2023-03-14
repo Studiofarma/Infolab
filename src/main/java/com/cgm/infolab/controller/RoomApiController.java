@@ -1,33 +1,35 @@
 package com.cgm.infolab.controller;
 
-import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.model.RoomDto;
 import com.cgm.infolab.service.RoomService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.cgm.infolab.service.RoomSubscriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class RoomApiController {
     private final RoomService roomService;
+    private final RoomSubscriptionService roomSubscriptionService;
 
     @Autowired
-    public RoomApiController(RoomService roomService) {
+    public RoomApiController(RoomService roomService, RoomSubscriptionService roomSubscriptionService) {
         this.roomService = roomService;
+        this.roomSubscriptionService = roomSubscriptionService;
     }
 
     @GetMapping("/api/rooms")
     public List<RoomDto> getAllRooms(@RequestParam(required = false) String date, Principal principal) {
         return roomService.getRooms(date, principal.getName());
+    }
+
+    /**
+     * @param username è l'utente con cui il principal inizia una conversazione privata
+     */
+    @PostMapping("/api/rooms/{username}")
+    public void postPrivateRoom(@PathVariable("username") String username, Principal principal){
+        roomService.createPrivateRoom(username, principal.getName());
     }
 }
