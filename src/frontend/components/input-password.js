@@ -2,10 +2,13 @@ import { LitElement, html, css } from "lit";
 
 import { InputField } from "./input-field";
 
-export class password extends InputField {
+export class InputPassword extends LitElement {
   static get properties() {
     return {
       pswVisibility: false,
+      placeholder: "",
+      value: "",
+      title: "",
     };
   }
 
@@ -81,4 +84,4 @@ export class password extends InputField {
   }
 }
 
-customElements.define("il-input-password", password);
+customElements.define("il-input-password", InputPassword);
