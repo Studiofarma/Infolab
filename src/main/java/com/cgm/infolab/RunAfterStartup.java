@@ -12,8 +12,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class RunAfterStartup {
 
-    public static final String[] ROOMS = {"general"};
-    public static final RoomEntity[] ROOMS2 = {RoomEntity.of("general")};
+    public static final RoomEntity[] TEST_ROOMS =
+            {RoomEntity.of("user1-user2", "PRIVATE"),
+            RoomEntity.of("user1-user3", "PRIVATE"),
+            RoomEntity.of("user3-user4", "PRIVATE")};
+    public static final RoomEntity[] ROOMS = {RoomEntity.of("general", "PUBLIC")};
     private final RoomRepository roomRepository;
 
     private final Logger log = LoggerFactory.getLogger(RunAfterStartup.class);
@@ -27,7 +30,12 @@ public class RunAfterStartup {
      */
     @EventListener(ApplicationReadyEvent.class)
     public void addAllRooms() {
-        for (RoomEntity r : ROOMS2) {
+        saveRooms(ROOMS);
+        saveRooms(TEST_ROOMS);
+    }
+
+    private void saveRooms(RoomEntity[] roomEntities) {
+        for (RoomEntity r : roomEntities) {
             try {
                 roomRepository.add(r);
             } catch (DuplicateKeyException e) {
