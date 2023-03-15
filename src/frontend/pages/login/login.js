@@ -296,6 +296,7 @@ export class Login extends LitElement {
   }
 
   loginConfirmEvent() {
+    this.setUserData();
     this.dispatchEvent(
       new CustomEvent("login-confirm", {
         detail: {
@@ -318,12 +319,8 @@ export class Login extends LitElement {
       return;
     }
 
-    let psw = this.renderRoot.querySelector("div  il-input-password#password");
-    let user = this.renderRoot.querySelector("div  il-input-field#username");
-    this.password = psw.value;
-    this.username = user.value;
+    this.setUserData();
 
-    console.log(this.password, this.username);
     if (this.username === "" && this.password === "") {
       this.emptyUsernameField = true;
       this.emptyPasswordField = true;
@@ -367,6 +364,13 @@ export class Login extends LitElement {
         password: this.password,
       },
     });
+  }
+
+  setUserData() {
+    let psw = this.renderRoot.querySelector("div  il-input-password#password");
+    let user = this.renderRoot.querySelector("div  il-input-field#username");
+    this.password = psw.value;
+    this.username = user.value;
   }
 }
 

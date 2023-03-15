@@ -12,6 +12,11 @@ export class InputPassword extends LitElement {
     };
   }
 
+  constructor() {
+    super();
+    this.value = "";
+  }
+
   static styles = css`
     * {
       width: 100%;
@@ -81,6 +86,10 @@ export class InputPassword extends LitElement {
 
   setVisibility() {
     this.pswVisibility = !this.pswVisibility;
+  }
+
+  setValue(e) {
+    this.value = e.target.value;
   }
 }
 
