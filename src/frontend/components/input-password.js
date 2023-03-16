@@ -22,6 +22,10 @@ export class InputPassword extends LitElement {
       width: 100%;
     }
 
+    ::-ms-reveal {
+      display: none;
+    }
+
     #input {
       font: inherit;
       border: none;
