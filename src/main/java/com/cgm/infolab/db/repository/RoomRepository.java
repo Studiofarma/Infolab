@@ -37,7 +37,7 @@ public class RoomRepository {
                     "LEFT JOIN infolab.users u ON u.id = s.user_id AND u.id = m.sender_id " +
                     "WHERE EXISTS " +
                     "(SELECT s.room_id FROM infolab.rooms_subscriptions s " +
-                        "LEFT JOIN infolab.users u ON u.id = s.user_id " +
+                        "RIGHT JOIN infolab.users u ON u.id = s.user_id " +
                         "WHERE (u.username = ? OR r.visibility = 'PUBLIC')) %s " + // per aggiungere condizioni nel WHERE
                     "order by r.roomname, sent_at desc";
 
