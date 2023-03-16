@@ -33,7 +33,6 @@ export class Editor extends LitElement {
 
     .formatting-bar {
       width: 100%;
-      height: 40px;
       background: #bcc7d9;
       display: flex;
       align-items: center;

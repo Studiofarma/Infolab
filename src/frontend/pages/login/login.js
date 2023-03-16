@@ -3,6 +3,7 @@ const axios = require("axios").default;
 
 import "../../components/snackbar";
 import "../../components/button-icon";
+import "../../components/button-text";
 
 export class Login extends LitElement {
   static properties = {
@@ -130,19 +131,6 @@ export class Login extends LitElement {
       font-size: 10pt;
     }
 
-    #submit_btn {
-      text-transform: uppercase;
-      padding: 15px 20px;
-      color: #e4e8ee;
-      background: #00234f;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      border-radius: 10px;
-      width: 100%;
-      margin-top: 30px;
-    }
-
     input,
     button {
       font-family: inherit;
@@ -243,7 +231,10 @@ export class Login extends LitElement {
           </label>
         </div>
         <div>
-          <button id="submit_btn" @click=${this.loginConfirm}>Connetti</button>
+          <il-button-text
+            @click=${this.loginConfirm}
+            text="Connetti"
+          ></il-button-text>
         </div>
       </div>
 

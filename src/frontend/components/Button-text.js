@@ -6,23 +6,21 @@ export class ButtonText extends LitElement {
   };
 
   static styles = css`
-    #preview_btn {
-      margin-left: auto;
-      padding: 8px 14px;
+    button {
+      padding: 0px 24px;
+      font-family: inherit;
       border-radius: 30px;
-      background: white;
-      min-width: 80px;
+      background: #00234f;
       text-align: center;
-      border: none;
-      outline: none;
       font-weight: bold;
-      cursor: pointer;
-      transition: all 0.3s ease-in-out;
+      color: white;
+      height: 40px;
+      margin: 8px;
     }
   `;
 
   render() {
-    return html` <button id="preview_btn">${this.text}</button> `;
+    return html` <button>${this.text}</button> `;
   }
 }
 
