@@ -192,7 +192,10 @@ export class Editor extends LitElement {
           </div>
         </div>
 
-        <il-button-text @click=${this.togglePreviewer}></il-button-text>
+        <il-button-text
+          @click=${this.togglePreviewer}
+          text=${this.openPreview ? "Chiudi preview" : "Apri preview "}
+        ></il-button-text>
       </div>
 
       ${!this.openPreview
