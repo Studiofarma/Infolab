@@ -1,9 +1,9 @@
 import { LitElement, html, css } from "lit";
 import { Picker } from "emoji-picker-element";
 
-import "./insertion-bar";
-import "./editor";
-import "../../components/button-icon";
+import "./insertion-bar.js";
+import "./editor/editor.js";
+import "../../../components/button-icon";
 
 export class InputControls extends LitElement {
   static properties = {

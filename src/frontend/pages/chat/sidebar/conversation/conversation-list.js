@@ -1,9 +1,9 @@
 import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
 
-import "../../components/avatar.js";
+import "../../../../components/avatar.js";
 import "./conversation.js";
-import { ConversationDto } from "../../models/conversation-dto.js";
+import { ConversationDto } from "../../../../models/conversation-dto.js";
 
 class ConversationList extends LitElement {
   static properties = {

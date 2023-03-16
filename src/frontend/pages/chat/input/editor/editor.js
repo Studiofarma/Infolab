@@ -1,10 +1,10 @@
 import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
 
-import "../../components/formatting-button";
-import "../../components/button-text";
+import "../../../../components/formatting-button";
+import "../../../../components/button-text";
 
-import { MarkdownService } from "../../services/markdown-services";
+import { MarkdownService } from "../../../../services/markdown-services";
 export class Editor extends LitElement {
   static properties = {
     message: "",

@@ -5,6 +5,10 @@ import "../../components/snackbar";
 import "../../components/button-icon";
 import "../../components/button-text";
 
+const USERNAME_COOKIE_NAME = "username";
+const PASSWORD_COOKIE_NAME = "password";
+const HEADER_COOKIE_NAME = "header";
+const TOKEN_COOKIE_NAME = "token";
 export class Login extends LitElement {
   static properties = {
     username: "",
@@ -12,6 +16,9 @@ export class Login extends LitElement {
     pswVisibility: false,
     emptyUsernameField: false,
     emptyPasswordField: false,
+    header: "",
+    token: "",
+    cookie: false,
   };
 
   constructor() {
@@ -21,6 +28,10 @@ export class Login extends LitElement {
     this.pswVisibility = false;
     this.emptyUsernameField = false;
     this.emptyPasswordField = false;
+    this.header = "";
+    this.token = "";
+    this.cookie = this.getCookie();
+    if (this.cookie) this.loginConfirm();
   }
 
   static styles = css`
@@ -184,6 +195,45 @@ export class Login extends LitElement {
     }
   `;
 
+  getCookiePropertyByName(name) {
+    const result = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(`${name}=`))
+      ?.split("=")[1];
+
+    return result;
+  }
+
+  getCookie() {
+    const user = this.getCookiePropertyByName(USERNAME_COOKIE_NAME);
+    if (!user) return false;
+
+    const pass = this.getCookiePropertyByName(PASSWORD_COOKIE_NAME);
+    if (!pass) return false;
+
+    const header = this.getCookiePropertyByName(HEADER_COOKIE_NAME);
+    if (!header) return false;
+
+    const token = this.getCookiePropertyByName(TOKEN_COOKIE_NAME);
+    if (!token) return false;
+
+    this.username = user;
+    this.password = pass;
+    this.header = header;
+    this.token = token;
+
+    return true;
+  }
+
+  setCookie() {
+    let expires = new Date(Date.now());
+    expires.setDate(expires.getDate() + 1);
+    document.cookie = `${USERNAME_COOKIE_NAME}=${this.username}; expires=${expires}; `;
+    document.cookie = `${PASSWORD_COOKIE_NAME}=${this.password}; expires=${expires}; `;
+    document.cookie = `${HEADER_COOKIE_NAME}=${this.header}; expires=${expires}; `;
+    document.cookie = `${TOKEN_COOKIE_NAME}=${this.token}; expires=${expires}; `;
+  }
+
   render() {
     return html`
       <div id="container">
@@ -268,7 +318,29 @@ export class Login extends LitElement {
     this.pswVisibility = !this.pswVisibility;
   }
 
+  loginConfirmEvent() {
+    this.dispatchEvent(
+      new CustomEvent("login-confirm", {
+        detail: {
+          login: {
+            username: this.username,
+            password: this.password,
+            headerName: this.header,
+            token: this.token,
+          },
+        },
+      })
+    );
+  }
+
   loginConfirm() {
+    if (this.cookie) {
+      Promise.resolve().then(() => {
+        this.loginConfirmEvent();
+      });
+      return;
+    }
+
     if (this.username === "" && this.password === "") {
       this.emptyUsernameField = true;
       this.emptyPasswordField = true;
@@ -287,18 +359,10 @@ export class Login extends LitElement {
 
     this.executeLoginCall()
       .then((response) => {
-        this.dispatchEvent(
-          new CustomEvent("login-confirm", {
-            detail: {
-              login: {
-                username: this.username,
-                password: this.password,
-                headerName: response.data.headerName,
-                token: response.data.token,
-              },
-            },
-          })
-        );
+        this.header = response.data.headerName;
+        this.token = response.data.token;
+        this.setCookie();
+        this.loginConfirmEvent();
       })
       .catch((e) => {
         this.emptyUsernameField = false;
