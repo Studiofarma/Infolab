@@ -3,6 +3,7 @@ package com.cgm.infolab.db.repository;
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
+import com.cgm.infolab.db.model.VisibilityEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -103,7 +104,7 @@ public class ChatMessageRepository {
         UserEntity user = UserEntity.of(rs.getLong("user_id"), rs.getString("username"));
 
         RoomEntity room = RoomEntity.of(
-                rs.getLong("room_id"), rs.getString("roomname"), rs.getString("visibility")
+                rs.getLong("room_id"), rs.getString("roomname"), VisibilityEnum.valueOf(rs.getString("visibility"))
         );
 
         return ChatMessageEntity

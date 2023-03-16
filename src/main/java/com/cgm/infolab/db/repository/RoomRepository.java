@@ -2,6 +2,7 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.VisibilityEnum;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -125,7 +126,7 @@ public class RoomRepository {
         return RoomEntity
                 .of(rs.getLong("room_id"),
                         rs.getString("roomname"),
-                        rs.getString("visibility"));
+                        VisibilityEnum.valueOf(rs.getString("visibility")));
     }
 
     private RoomEntity mapToEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
@@ -133,7 +134,7 @@ public class RoomRepository {
         return RoomEntity
                 .of(rs.getLong("room_id"),
                         rs.getString("roomname"),
-                        rs.getString("visibility"),
+                        VisibilityEnum.valueOf(rs.getString("visibility")),
                         List.of(message));
     }
 

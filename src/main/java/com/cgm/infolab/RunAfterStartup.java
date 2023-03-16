@@ -1,5 +1,6 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.db.model.VisibilityEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.model.RoomEntity;
 import org.slf4j.Logger;
@@ -13,10 +14,10 @@ import org.springframework.stereotype.Component;
 public class RunAfterStartup {
 
     public static final RoomEntity[] TEST_ROOMS =
-            {RoomEntity.of("user1-user2", "PRIVATE"),
-            RoomEntity.of("user1-user3", "PRIVATE"),
-            RoomEntity.of("user3-user4", "PRIVATE")};
-    public static final RoomEntity[] ROOMS = {RoomEntity.of("general", "PUBLIC")};
+            {RoomEntity.of("user1-user2", VisibilityEnum.PRIVATE),
+            RoomEntity.of("user1-user3", VisibilityEnum.PRIVATE),
+            RoomEntity.of("user3-user4", VisibilityEnum.PRIVATE)};
+    public static final RoomEntity[] ROOMS = {RoomEntity.of("general", VisibilityEnum.PUBLIC)};
     private final RoomRepository roomRepository;
 
     private final Logger log = LoggerFactory.getLogger(RunAfterStartup.class);

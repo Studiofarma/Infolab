@@ -1,6 +1,7 @@
 package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.VisibilityEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.model.LastMessageDto;
 import com.cgm.infolab.model.RoomDto;
@@ -70,8 +71,8 @@ public class RoomService {
         String roomName = String.format("%s-%s", users[0], users[1]);
 
         try {
-            long roomId = roomRepository.add(RoomEntity.of(roomName, "PRIVATE"));
-            return RoomEntity.of(roomId, roomName, "PRIVATE");
+            long roomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
+            return RoomEntity.of(roomId, roomName, VisibilityEnum.PRIVATE);
         } catch (DuplicateKeyException e) {
             log.info(String.format("Room roomName=\"%s\" già esistente nel database", roomName));
             return roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseGet(() -> null);
