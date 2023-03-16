@@ -6,6 +6,8 @@ import "./editor/editor";
 import "../../../components/button-icon";
 import "../../../components/input-field";
 
+import { IconNames } from "../../../enums/icon-names";
+
 export class InputControls extends LitElement {
   static properties = {
     message: "",
@@ -154,7 +156,7 @@ export class InputControls extends LitElement {
         <div id="submitContainer">
           <il-button-icon
             @click=${this.sendMessage}
-            content="mdiSend"
+            content=${IconNames.send}
           ></il-button-icon>
         </div>
       </div>
