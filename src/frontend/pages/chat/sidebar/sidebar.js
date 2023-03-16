@@ -15,7 +15,7 @@ export class Sidebar extends LitElement {
       z-index: 1100;
       height: calc(100vh - 10px);
       position: fixed;
-      width: 18.5%;
+      width: 350px;
     }
   `;
 

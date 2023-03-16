@@ -4,7 +4,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
 import { MarkdownService } from "../../services/markdown-services";
-import { getMessagesServices } from "../../services/get-messages-service";
+import { MessagesService } from "../../services/messages-service";
 
 import "../../components/button-icon";
 import "./input/input-controls.js";
@@ -249,7 +249,7 @@ export class Chat extends LitElement {
   }
 
   async firstUpdated() {
-    getMessagesServices.executeMessagesCall(2).then((messages) => {
+    MessagesService.getMessagesById(2).then((messages) => {
       let obj = messages.data[0];
       this.messages = obj.messages;
     });
