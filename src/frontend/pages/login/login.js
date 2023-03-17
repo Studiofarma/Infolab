@@ -253,6 +253,7 @@ export class Login extends LitElement {
               class=${this.emptyUsernameField ? "error" : ""}
               id="username"
               type="text"
+              @input=${this.onUsernameInput}
               @keydown=${this.checkEnterKey}
               placeholder="Inserisci lo username"
               title="Username"
@@ -263,6 +264,7 @@ export class Login extends LitElement {
             <il-input-password
               class=${this.emptyPasswordField ? "error" : ""}
               id="password"
+              @input=${this.onPasswordInput}
               @keydown=${this.checkEnterKey}
               placeholder="Inserisci la password"
               title="Password"
@@ -290,6 +292,16 @@ export class Login extends LitElement {
     );
   }
 
+  onUsernameInput(e) {
+    const inputEl = e.target;
+    this.username = inputEl.value;
+  }
+
+  onPasswordInput(e) {
+    const inputEl = e.target;
+    this.password = inputEl.value;
+  }
+
   checkEnterKey(e) {
     if (e.key === "Enter") this.loginConfirm();
   }
@@ -299,7 +311,6 @@ export class Login extends LitElement {
   }
 
   loginConfirmEvent() {
-    this.setUserData();
     this.dispatchEvent(
       new CustomEvent("login-confirm", {
         detail: {
@@ -321,8 +332,6 @@ export class Login extends LitElement {
       });
       return;
     }
-
-    this.setUserData();
 
     if (this.username === "" && this.password === "") {
       this.emptyUsernameField = true;
@@ -367,13 +376,6 @@ export class Login extends LitElement {
         password: this.password,
       },
     });
-  }
-
-  setUserData() {
-    let psw = this.renderRoot.querySelector("div  il-input-password#password");
-    let user = this.renderRoot.querySelector("div  il-input-field#username");
-    this.password = psw.value;
-    this.username = user.value;
   }
 }
 
