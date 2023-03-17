@@ -3,6 +3,7 @@ const axios = require("axios").default;
 
 import "../../components/snackbar";
 import "../../components/button-icon";
+import "../../components/button-text";
 import "../../components/input-field";
 import "../../components/input-password";
 
@@ -10,6 +11,7 @@ const USERNAME_COOKIE_NAME = "username";
 const PASSWORD_COOKIE_NAME = "password";
 const HEADER_COOKIE_NAME = "header";
 const TOKEN_COOKIE_NAME = "token";
+
 export class Login extends LitElement {
   static properties = {
     username: "",
@@ -143,7 +145,7 @@ export class Login extends LitElement {
       margin-top: 30px;
     }
 
-    button {
+    input {
       font-family: inherit;
     }
 
@@ -268,9 +270,10 @@ export class Login extends LitElement {
           </div>
 
           <div>
-            <button id="submit_btn" @click=${this.loginConfirm}>
-              Connetti
-            </button>
+            <il-button-text
+              @click=${this.loginConfirm}
+              text="Connetti"
+            ></il-button-text>
           </div>
         </div>
       </div>

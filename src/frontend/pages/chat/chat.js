@@ -4,6 +4,7 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
 import { MarkdownService } from "../../services/markdown-services";
+import { MessagesService } from "../../services/messages-service";
 
 import "../../components/button-icon";
 import "./input/input-controls.js";
@@ -15,6 +16,7 @@ export class Chat extends LitElement {
     stompClient: {},
     messages: [],
     message: "",
+    nMessages: 0,
   };
 
   static get properties() {
@@ -32,6 +34,7 @@ export class Chat extends LitElement {
     super();
     this.messages = [];
     this.message = "";
+    this.nMessages = 0;
   }
 
   connectedCallback() {
@@ -51,7 +54,7 @@ export class Chat extends LitElement {
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
+      min-height: 100%;
       background: #d3d3d3;
     }
 
@@ -63,11 +66,38 @@ export class Chat extends LitElement {
     section {
       display: grid;
       grid-template-columns: 350px auto;
-      height: 100%;
+      min-height: 100vh;
     }
 
     .chat {
       position: relative;
+    }
+
+    .chatHeader {
+      position: fixed;
+      top: 0px;
+      left: 350px;
+      background: #083c72;
+      box-shadow: 0px 1px 5px black;
+      width: calc(100% - 350px);
+      min-height: 50px;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      z-index: 1000;
+    }
+
+    .chatHeader .settings {
+      order: 2;
+      display: flex;
+    }
+
+    .chatHeader .contact {
+      order: 1;
+      display: flex;
+      gap: 1em;
     }
 
     il-input-controls {
@@ -77,13 +107,13 @@ export class Chat extends LitElement {
     .messageBox {
       list-style-type: none;
       display: flex;
-      align-items: flex-end;
       flex-direction: column;
       gap: 30px;
       width: 100%;
-      height: 480px;
+      height: calc(100% - 110px);
       overflow-y: auto;
-      padding: 30px 10px;
+      padding: 20px;
+      padding-top: 100px;
     }
 
     .messageBox::-webkit-scrollbar {
@@ -100,31 +130,20 @@ export class Chat extends LitElement {
       max-width: 500px;
       padding: 15px 8px;
       background: #f2f4f7;
-      border-radius: 10px 10px 0 10px;
       box-shadow: 0 0 10px #989a9d;
     }
 
-    .messageBox > li::after {
-      content: "";
-      position: absolute;
-      transform: translate(-50%, -50%);
-      bottom: -15px;
-      right: -5px;
-      border-top: 10px solid #f2f4f7;
-      border-left: 10px solid transparent;
-      border-right: 0px solid transparent;
+    @keyframes rotationAnim {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
-    .messageBox > li::before {
-      content: "";
-      position: absolute;
-      transform: translate(-50%, -50%);
-      bottom: -13px;
-      right: -8px;
-      border-top: 10px solid #989a9d;
-      border-left: 10px solid transparent;
-      border-right: 0px solid transparent;
-      filter: blur(10px);
+    #settingsIcon:hover {
+      animation: rotationAnim 2s infinite linear;
     }
 
     :not(.dropdown)::-webkit-scrollbar {
@@ -143,10 +162,60 @@ export class Chat extends LitElement {
     input {
       font-family: inherit;
     }
+
+    .sender {
+      align-self: flex-end !important;
+      border-radius: 10px 0 10px 10px;
+    }
+    .sender::after {
+      content: "";
+      position: absolute;
+      transform: translate(50%, -600%);
+      bottom: -15px;
+      right: -4px;
+      border-top: 10px solid #f2f4f7;
+      border-left: 0px solid transparent;
+      border-right: 10px solid transparent;
+    }
+    .sender::before {
+      content: "";
+      position: absolute;
+      transform: translate(-50%, -50%);
+      bottom: -13px;
+      right: -8px;
+      border-top: 10px solid #989a9d;
+      border-left: 10px solid transparent;
+      border-right: 0px solid transparent;
+      filter: blur(10px);
+    }
+    .receiver {
+      align-self: flex-start !important;
+      border-radius: 0 10px 10px 10px;
+    }
+    .receiver::after {
+      content: "";
+      position: absolute;
+      transform: translate(50%, -600%);
+      bottom: -15px;
+      left: -15px;
+      border-top: 10px solid #f2f4f7;
+      border-left: 10px solid transparent;
+      border-right: 0px solid transparent;
+    }
+    .receiver::before {
+      content: "";
+      position: absolute;
+      transform: translate(-50%, -50%);
+      bottom: -13px;
+      right: -8px;
+      border-top: 10px solid #989a9d;
+      border-left: 10px solid transparent;
+      border-right: 0px solid transparent;
+      filter: blur(10px);
+    }
   `;
 
   render() {
-    //aggiungo il main e lo metto in absolute per non andare in display flex che avevo messo per il login
     return html`
       <main>
         <section>
@@ -157,8 +226,14 @@ export class Chat extends LitElement {
               ${this.messages.map(
                 (item, _) =>
                   html`
-                    <li>
-                      ${resolveMarkdown(MarkdownService.parseMarkdown(item))}
+                    <li
+                      class=${item.sender == this.login.username
+                        ? "sender"
+                        : "receiver"}
+                    >
+                      ${resolveMarkdown(
+                        MarkdownService.parseMarkdown(item.content)
+                      )}
                     </li>
                   `
               )}
@@ -171,6 +246,13 @@ export class Chat extends LitElement {
         </section>
       </main>
     `;
+  }
+
+  async firstUpdated() {
+    MessagesService.getMessagesById(2).then((messages) => {
+      let obj = messages.data[0];
+      this.messages = obj.messages;
+    });
   }
 
   createSocket() {
@@ -206,7 +288,7 @@ export class Chat extends LitElement {
     var message = JSON.parse(payload.body);
 
     if (message.content) {
-      this.messages.push(message.content);
+      this.messages.push(message);
       this.update();
     }
   }

@@ -31,6 +31,95 @@
     }
   ],
 
+  "messages": [
+    {
+      "id": 1,
+
+      "messages": [
+        {
+          "sender": "chatBox user1",
+          "receiver": "1",
+          "content": "😃 ciao",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        }
+      ]
+    },
+
+    {
+      "id": 2,
+
+      "messages": [
+        {
+          "sender": "chatBox user1",
+          "receiver": "1",
+          "content": "😃 lorem1",
+          "date": ""
+          
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": ""
+        },
+        {
+          "sender": "user1",
+          "receiver": "1",
+          "content": "lorem ipsum 10",
+          "date": ""
+        }
+      ]
+    }
+  ],
+
   "openChats": [
     {
       "name": "farmacia1",

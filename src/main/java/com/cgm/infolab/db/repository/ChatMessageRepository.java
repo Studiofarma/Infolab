@@ -31,7 +31,7 @@ public class ChatMessageRepository {
                     "LEFT JOIN infolab.users u " +
                     "ON u.id = m.sender_id " +
                     "WHERE EXISTS (SELECT s.room_id FROM infolab.rooms_subscriptions s " +
-                        "LEFT JOIN infolab.users u " +
+                        "RIGHT JOIN infolab.users u " +
                         "ON s.user_id = u.id " +
                         "WHERE (u.username = ? OR r.visibility = 'PUBLIC')) " +
                     "AND r.roomname = ? " +

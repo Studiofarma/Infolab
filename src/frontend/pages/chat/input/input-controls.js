@@ -51,10 +51,10 @@ export class InputControls extends LitElement {
     }
 
     #inputControls {
-      position: absolute;
+      position: fixed;
       bottom: 0px;
-      left: 0px;
-      width: 100%;
+      left: 350px;
+      width: calc(100% - 350px);
       min-height: 60px;
       display: flex;
       align-items: center;

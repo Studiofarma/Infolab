@@ -27,7 +27,6 @@ class ConversationList extends LitElement {
     .pharmaciesList {
       transition: 0.5s;
       overflow-y: scroll;
-      height: 82vh;
     }
 
     ::-webkit-scrollbar {
