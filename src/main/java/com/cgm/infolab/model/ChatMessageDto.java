@@ -2,25 +2,24 @@ package com.cgm.infolab.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 
-public class ChatMessage {
+public class ChatMessageDto {
     private String content;
     private LocalDateTime timestamp;
     private String sender;
 
-    private ChatMessage() {
+    private ChatMessageDto() {
     }
 
-    public ChatMessage(String content, String sender) {
+    public ChatMessageDto(String content, String sender) {
         this.sender = sender;
         this.content = content;
     }
 
-    public ChatMessage(String content, LocalDateTime timestamp, String sender) {
+    public ChatMessageDto(String content, LocalDateTime timestamp, String sender) {
         this.content = content;
         this.timestamp = timestamp;
         this.sender = sender;
@@ -63,7 +62,7 @@ public class ChatMessage {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ChatMessage message = (ChatMessage) o;
+        ChatMessageDto message = (ChatMessageDto) o;
         return Objects.equals(sender, message.sender) && Objects.equals(content, message.content);
     }
 

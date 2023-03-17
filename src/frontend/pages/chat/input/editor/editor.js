@@ -2,8 +2,10 @@ import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
 
 import "../../../../components/formatting-button";
+import "../../../../components/button-text";
 
 import { MarkdownService } from "../../../../services/markdown-services";
+
 export class Editor extends LitElement {
   static properties = {
     message: "",
@@ -32,7 +34,6 @@ export class Editor extends LitElement {
 
     .formatting-bar {
       width: 100%;
-      height: 40px;
       background: #bcc7d9;
       display: flex;
       align-items: center;
@@ -99,18 +100,6 @@ export class Editor extends LitElement {
     .dropdown input[type="radio"] {
       display: block;
       margin-left: 25px;
-    }
-
-    #preview_btn {
-      margin-left: auto;
-      padding: 5px 10px;
-      background: white;
-      min-width: 80px;
-      text-align: center;
-      border: none;
-      outline: none;
-      font-weight: bold;
-      cursor: pointer;
     }
 
     .previewer {
@@ -203,7 +192,10 @@ export class Editor extends LitElement {
           </div>
         </div>
 
-        <button id="preview_btn" @click=${this.togglePreviewer}>preview</button>
+        <il-button-text
+          @click=${this.togglePreviewer}
+          text=${this.openPreview ? "Chiudi preview" : "Apri preview "}
+        ></il-button-text>
       </div>
 
       ${!this.openPreview
