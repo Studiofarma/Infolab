@@ -27,7 +27,7 @@ export class InputField extends LitElement {
       width: 100%;
     }
 
-    #input {
+    input {
       font: inherit;
       position: relative;
       width: 100%;
@@ -46,7 +46,6 @@ export class InputField extends LitElement {
       ${this.title === "" ? html`` : html`<label>${this.title}</label>`}
       <input
         placeholder="${this.placeholder}"
-        id="input"
         @input=${this.setValue}
         @blur="${this.setBlur}"
         @focus="${this.setFocus}"
