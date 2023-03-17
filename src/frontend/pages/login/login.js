@@ -4,11 +4,14 @@ const axios = require("axios").default;
 import "../../components/snackbar";
 import "../../components/button-icon";
 import "../../components/button-text";
+import "../../components/input-field";
+import "../../components/input-password";
 
 const USERNAME_COOKIE_NAME = "username";
 const PASSWORD_COOKIE_NAME = "password";
 const HEADER_COOKIE_NAME = "header";
 const TOKEN_COOKIE_NAME = "token";
+
 export class Login extends LitElement {
   static properties = {
     username: "",
@@ -23,8 +26,8 @@ export class Login extends LitElement {
 
   constructor() {
     super();
-    this.username = "user1";
-    this.password = "password1";
+    this.username = "";
+    this.password = "";
     this.pswVisibility = false;
     this.emptyUsernameField = false;
     this.emptyPasswordField = false;
@@ -43,7 +46,7 @@ export class Login extends LitElement {
 
     #container {
       position: relative;
-      width: 500px;
+      width: 530px;
       max-width: 100%;
       min-height: 400px;
       background: white;
@@ -99,29 +102,16 @@ export class Login extends LitElement {
       align-self: center;
     }
 
-    input[type="text"],
-    input[type="password"] {
-      position: relative;
-      width: 100%;
-      height: 40px;
-      padding: 5px 10px;
-      border: none;
-      outline: none;
-      font-size: 15pt;
-      transition: 0.5s;
-      margin-top: 10px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #333333;
-    }
-
     .text-container {
       position: relative;
+      width: 100%;
+      margin-bottom: 10px;
     }
 
     .text-container il-button-icon {
       position: absolute;
       transform: translateY(50%);
-      bottom: 20px;
+      bottom: 25px;
       right: 10px;
       z-index: 2;
       color: rgba(10, 10, 128, 0.829);
@@ -142,8 +132,20 @@ export class Login extends LitElement {
       font-size: 10pt;
     }
 
-    input,
-    button {
+    #submit_btn {
+      text-transform: uppercase;
+      padding: 15px 20px;
+      color: #e4e8ee;
+      background: #00234f;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      border-radius: 10px;
+      width: 150px;
+      margin-top: 30px;
+    }
+
+    input {
       font-family: inherit;
     }
 
@@ -193,6 +195,10 @@ export class Login extends LitElement {
     .text-container:hover::after {
       display: none;
     }
+
+    #input-container {
+      text-align: center;
+    }
   `;
 
   getCookiePropertyByName(name) {
@@ -241,47 +247,36 @@ export class Login extends LitElement {
         <div class="ring2"></div>
 
         <h1 class="title">WELCOME BACK</h1>
-
-        <label>
-          Username
+        <div id="input-container">
           <div class="text-container">
-            <input
+            <il-input-field
               class=${this.emptyUsernameField ? "error" : ""}
               id="username"
               type="text"
               @input=${this.onUsernameInput}
               @keydown=${this.checkEnterKey}
-              .value=${this.username}
               placeholder="Inserisci lo username"
-            />
+              title="Username"
+            ></il-input-field>
           </div>
-        </label>
 
-        <label>
-          Password
           <div class="text-container">
-            <input
+            <il-input-password
               class=${this.emptyPasswordField ? "error" : ""}
               id="password"
-              type=${this.pswVisibility ? "text" : "password"}
               @input=${this.onPasswordInput}
               @keydown=${this.checkEnterKey}
-              .value=${this.password}
               placeholder="Inserisci la password"
-            />
-
-            <il-button-icon
-              @click=${this.setVisibility}
-              content="${!this.pswVisibility ? "mdiEye" : "mdiEyeOff"}"
-            ></il-button-icon>
+              title="Password"
+            ></il-input-password>
           </div>
-        </label>
 
-        <div>
-          <il-button-text
-            @click=${this.loginConfirm}
-            text="Connetti"
-          ></il-button-text>
+          <div>
+            <il-button-text
+              @click=${this.loginConfirm}
+              text="Connetti"
+            ></il-button-text>
+          </div>
         </div>
       </div>
 

@@ -1,9 +1,10 @@
 import { LitElement, html, css } from "lit";
 import { Picker } from "emoji-picker-element";
 
-import "./insertion-bar.js";
-import "./editor/editor.js";
+import "./insertion-bar";
+import "./editor/editor";
 import "../../../components/button-icon";
+import "../../../components/input-field";
 
 export class InputControls extends LitElement {
   static properties = {
@@ -36,10 +37,6 @@ export class InputControls extends LitElement {
       padding: 0;
     }
 
-    input {
-      font-family: inherit;
-    }
-
     .container {
       display: flex;
       flex-direction: column;
@@ -70,14 +67,15 @@ export class InputControls extends LitElement {
     .inputContainer {
       display: flex;
       flex-grow: 1;
-      background: white;
       padding: 5px;
       border-radius: 10px;
       transition: 0.5s;
       transition-delay: 1s;
+      flex-wrap: wrap;
+      align-items: center;
     }
 
-    .inputContainer input[type="text"] {
+    .inputContainer il-input-field[type="text"] {
       flex-grow: 1;
       border: none;
       outline: none;
@@ -104,16 +102,20 @@ export class InputControls extends LitElement {
       overflow-y: hidden;
     }
 
-    input[type="text"].closed {
+    il-input-field[type="text"].closed {
       display: none;
     }
 
-    input[type="text"].closed ~ il-editor {
+    il-input-field[type="text"].closed ~ il-editor {
       flex-grow: 1;
       width: calc(100% + 60px);
       height: 200px;
       display: block;
       overflow-x: hidden;
+    }
+
+    il-input-field {
+      margin-right: 20px;
     }
   `;
 
@@ -129,15 +131,14 @@ export class InputControls extends LitElement {
             >
             </il-insertion-bar>
 
-            <input
+            <il-input-field
               class=${this.bEditor ? "closed" : "opened"}
               type="text"
               placeholder="Scrivi un messaggio..."
-              @input=${this.onMessageInput}
               @keydown=${this.checkEnterKey}
               @mouseup=${this.setSelectedText}
               .value=${this.message}
-            />
+            ></il-input-field>
 
             <il-editor
               @typing-text=${this.onInputFromEditor}
@@ -162,12 +163,8 @@ export class InputControls extends LitElement {
 
   onInputFromEditor(e) {
     const markdownText = e.detail.content;
-    this.message = markdownText;
-  }
-
-  onMessageInput(e) {
-    const inputEl = e.target;
-    this.message = inputEl.value;
+    this.renderRoot.querySelector("il-input-field").value = markdownText;
+    this.updateMessage();
   }
 
   checkEnterKey(event) {
@@ -183,18 +180,21 @@ export class InputControls extends LitElement {
   }
 
   getInputText() {
-    return this.renderRoot.querySelector("input") ?? null;
+    return this.renderRoot.querySelector("il-input-field") ?? null;
   }
 
   openInsertionMode(e) {
     const option = e.detail.opt;
     if (option === "mdiPencil") {
       this.bEditor = !this.bEditor;
+      this.updateMessage();
       this.getTextarea().value = this.message;
     } else if (option === "mdiEmoticon") this.bEmoji = !this.bEmoji;
   }
 
   sendMessage() {
+    this.renderRoot.querySelector("il-input-field").clear();
+    this.updateMessage();
     this.dispatchEvent(
       new CustomEvent("send-message", {
         detail: {
@@ -241,7 +241,7 @@ export class InputControls extends LitElement {
     if (this.bEditor) {
       this.renderRoot.querySelector("il-editor").message = this.message;
     }
-
+    this.renderRoot.querySelector("il-input-field").value = this.message;
     this.selectedText = null;
   }
 
@@ -249,6 +249,10 @@ export class InputControls extends LitElement {
     if (changed.has("message")) {
       this.getInputText().focus();
     }
+  }
+
+  updateMessage() {
+    this.message = this.renderRoot.querySelector("il-input-field").value;
   }
 }
 
