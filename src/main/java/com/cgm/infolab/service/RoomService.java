@@ -1,6 +1,7 @@
 package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.VisibilityEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.model.LastMessageDto;
@@ -40,7 +41,7 @@ public class RoomService {
         return roomDto;
     }
 
-    public List<RoomDto> getRooms(String date, String username) {
+    public List<RoomDto> getRooms(String date, Username username) {
         List<RoomDto> roomDtos = new ArrayList<>();
 
         List<RoomEntity> roomEntities = roomRepository.getAfterDate(fromStringToDate(date), username);
@@ -63,8 +64,8 @@ public class RoomService {
         }
     }
 
-    public RoomEntity createPrivateRoom(String user1, String user2) {
-        String[] users = {user1, user2};
+    public RoomEntity createPrivateRoom(Username user1, Username user2) {
+        String[] users = {user1.value(), user2.value()};
         Arrays.sort(users);
         // Il criterio con cui vengono create le room è mettere i nomi degli utenti in ordine lessicografico,
         // in modo da evitare room multiple tra gli stessi utenti

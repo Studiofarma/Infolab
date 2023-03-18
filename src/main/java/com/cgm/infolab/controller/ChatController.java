@@ -3,6 +3,7 @@ package com.cgm.infolab.controller;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.RoomSubscriptionEntity;
 import com.cgm.infolab.db.model.UserEntity;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
@@ -56,7 +57,7 @@ public class ChatController {
     @SubscribeMapping("/public")
     public void welcome(Authentication principal){
         try {
-            userRepository.add(UserEntity.of(principal.getName()));
+            userRepository.add(UserEntity.of(Username.of(principal.getName())));
         } catch (DuplicateKeyException e) {
             log.info(String.format("User username=\"%s\" già esistente nel database", principal.getName()));
         }
@@ -71,9 +72,8 @@ public class ChatController {
 
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
-
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-        chatService.saveMessageInDb(message, principal.getName());
+        chatService.saveMessageInDb(message, Username.of(principal.getName()));
         return message;
     }
 

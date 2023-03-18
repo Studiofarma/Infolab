@@ -3,6 +3,7 @@ package com.cgm.infolab.service;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.RoomSubscriptionEntity;
 import com.cgm.infolab.db.model.UserEntity;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
@@ -32,7 +33,7 @@ public class RoomSubscriptionService {
                 throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
             });
 
-            UserEntity user = userRepository.getByUsername(username).orElseThrow(() -> {
+            UserEntity user = userRepository.getByUsername(Username.of(username)).orElseThrow(() -> {
                 throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username));
             });
 

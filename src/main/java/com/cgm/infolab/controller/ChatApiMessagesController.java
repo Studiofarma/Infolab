@@ -1,6 +1,7 @@
 package com.cgm.infolab.controller;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.service.ChatService;
@@ -34,6 +35,6 @@ public class ChatApiMessagesController {
             numberOfMessages = -1;
         }
 
-        return chatService.getAllMessagesGeneral(numberOfMessages, principal.getName());
+        return chatService.getAllMessagesGeneral(numberOfMessages, Username.of(principal.getName()));
     }
 }

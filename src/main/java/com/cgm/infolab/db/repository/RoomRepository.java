@@ -2,6 +2,7 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.VisibilityEnum;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -67,8 +68,8 @@ public class RoomRepository {
      * @param roomName da cui risalire all'id
      * @return id della room con il nome passato a parametro. -1 in caso la room non esista.
      */
-    public Optional<RoomEntity> getByRoomName(String roomName, String username) {
-        return queryRoom(addConditionToRoomsQueryJoined(" AND r.roomname = ? "), username, roomName);
+    public Optional<RoomEntity> getByRoomName(String roomName, Username username) {
+        return queryRoom(addConditionToRoomsQueryJoined(" AND r.roomname = ? "), username.value(), roomName);
     }
 
     // Questo metodo è necessario perché altrimenti nella creazione della RoomSubscription in ChatController
@@ -85,8 +86,8 @@ public class RoomRepository {
      * @param id da cui risalire alla room
      * @return oggetto Room con il nome preso dal db. Ritorna null se la room non esiste.
      */
-    public Optional<RoomEntity> getById(long id, String username) {
-        return queryRoom(addConditionToRoomsQueryJoined("AND r.id = ?"), username, id);
+    public Optional<RoomEntity> getById(long id, Username username) {
+        return queryRoom(addConditionToRoomsQueryJoined("AND r.id = ?"), username.value(), id);
     }
 
     private Optional<RoomEntity> queryRoom(String query, Object... queryParams) {
@@ -99,16 +100,16 @@ public class RoomRepository {
         }
     }
 
-    public List<RoomEntity> getAllWhereLastMessageNotNull(String username) {
-        return queryRooms(addConditionToNewRoomsDistinctOnQuery(""), username);
+    public List<RoomEntity> getAllWhereLastMessageNotNull(Username username) {
+        return queryRooms(addConditionToNewRoomsDistinctOnQuery(""), username.value());
     }
 
-    public List<RoomEntity> getAfterDate(LocalDate dateLimit, String username) {
+    public List<RoomEntity> getAfterDate(LocalDate dateLimit, Username username) {
         if (dateLimit == null) {
             return getAllWhereLastMessageNotNull(username);
         }
 
-        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), username, dateLimit);
+        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), username.value(), dateLimit);
     }
 
     private List<RoomEntity> queryRooms(String query, Object... queryParams) {
