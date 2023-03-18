@@ -59,7 +59,7 @@ public class RoomRepository {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("roomname", room.getName());
-        parameters.put("visibility", room.getVisibility());
+        parameters.put("visibility", room.getVisibility().name());
         return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
