@@ -47,7 +47,7 @@ public class UserRepository {
      * @return id dell'utente con il nome passato a parametro. -1 in caso l'utente non esista.
      */
     public Optional<UserEntity> getByUsername(Username username) {
-        return queryUser(String.format("%s WHERE username = ?", USERS_QUERY), username);
+        return queryUser(String.format("%s WHERE username = ?", USERS_QUERY), username.value());
     }
 
     /**

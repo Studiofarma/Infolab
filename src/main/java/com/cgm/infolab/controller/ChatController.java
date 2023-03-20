@@ -1,15 +1,10 @@
 package com.cgm.infolab.controller;
 
-import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.model.RoomSubscriptionEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
-import com.cgm.infolab.db.repository.RoomRepository;
-import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
-import com.cgm.infolab.service.RoomSubscriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +51,7 @@ public class ChatController {
     // Questo metodo in teoria viene chiamato quando un utente entra nella chat general.
     @SubscribeMapping("/public")
     public void welcome(Authentication principal){
-        try {
-            userRepository.add(UserEntity.of(Username.of(principal.getName())));
-        } catch (DuplicateKeyException e) {
-            log.info(String.format("User username=\"%s\" già esistente nel database", principal.getName()));
-        }
+
     }
 
     @MessageMapping("/chat.register")

@@ -127,7 +127,7 @@ public class RoomRepository {
         return RoomEntity
                 .of(rs.getLong("room_id"),
                         rs.getString("roomname"),
-                        VisibilityEnum.valueOf(rs.getString("visibility")));
+                        VisibilityEnum.valueOf(rs.getString("visibility").trim()));
     }
 
     private RoomEntity mapToEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
