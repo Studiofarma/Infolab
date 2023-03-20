@@ -72,7 +72,7 @@ public class RoomService {
     }
 
     private RoomEntity createPrivateRoom(Username user1, Username user2) {
-        String[] users = {user1.value(), user2.value()};
+        String[] users = {user1.getValue(), user2.getValue()};
         Arrays.sort(users);
         // Il criterio con cui vengono create le room è mettere i nomi degli utenti in ordine lessicografico,
         // in modo da evitare room multiple tra gli stessi utenti
@@ -95,7 +95,7 @@ public class RoomService {
             });
 
             UserEntity user = userRepository.getByUsername(username).orElseThrow(() -> {
-                throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()));
+                throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.getValue()));
             });
 
             roomSubscription.setRoomId(room.getId());

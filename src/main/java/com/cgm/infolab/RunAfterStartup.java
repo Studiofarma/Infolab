@@ -59,7 +59,7 @@ public class RunAfterStartup {
             try {
                 userRepository.add(u);
             } catch (DuplicateKeyException e) {
-                log.info(String.format("User username=\"%s\" già esistente nel database", u.getName().value()));
+                log.info(String.format("User username=\"%s\" già esistente nel database", u.getName().getValue()));
             }
         }
     }

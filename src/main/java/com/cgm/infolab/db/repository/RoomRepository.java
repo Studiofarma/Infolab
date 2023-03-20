@@ -69,7 +69,7 @@ public class RoomRepository {
      * @return id della room con il nome passato a parametro. -1 in caso la room non esista.
      */
     public Optional<RoomEntity> getByRoomName(String roomName, Username username) {
-        return queryRoom(addConditionToRoomsQueryJoined(" AND r.roomname = ? "), username.value(), roomName);
+        return queryRoom(addConditionToRoomsQueryJoined(" AND r.roomname = ? "), username.getValue(), roomName);
     }
 
     // Questo metodo è necessario perché altrimenti nella creazione della RoomSubscription in ChatController
@@ -87,7 +87,7 @@ public class RoomRepository {
      * @return oggetto Room con il nome preso dal db. Ritorna null se la room non esiste.
      */
     public Optional<RoomEntity> getById(long id, Username username) {
-        return queryRoom(addConditionToRoomsQueryJoined("AND r.id = ?"), username.value(), id);
+        return queryRoom(addConditionToRoomsQueryJoined("AND r.id = ?"), username.getValue(), id);
     }
 
     private Optional<RoomEntity> queryRoom(String query, Object... queryParams) {
@@ -101,7 +101,7 @@ public class RoomRepository {
     }
 
     public List<RoomEntity> getAllWhereLastMessageNotNull(Username username) {
-        return queryRooms(addConditionToNewRoomsDistinctOnQuery(""), username.value());
+        return queryRooms(addConditionToNewRoomsDistinctOnQuery(""), username.getValue());
     }
 
     public List<RoomEntity> getAfterDate(LocalDate dateLimit, Username username) {
@@ -109,7 +109,7 @@ public class RoomRepository {
             return getAllWhereLastMessageNotNull(username);
         }
 
-        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), username.value(), dateLimit);
+        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), username.getValue(), dateLimit);
     }
 
     private List<RoomEntity> queryRooms(String query, Object... queryParams) {

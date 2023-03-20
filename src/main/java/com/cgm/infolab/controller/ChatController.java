@@ -1,6 +1,5 @@
 package com.cgm.infolab.controller;
 
-import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
@@ -8,7 +7,6 @@ import com.cgm.infolab.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -57,7 +55,7 @@ public class ChatController {
     @MessageMapping("/chat.register")
     @SendTo("/topic/public")
     public ChatMessageDto register(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor){
-        headerAccessor.getSessionAttributes().put("username", message.getSender());
+        headerAccessor.getSessionAttributes().put("username", message.getSender().getValue());
         return message;
     }
 
