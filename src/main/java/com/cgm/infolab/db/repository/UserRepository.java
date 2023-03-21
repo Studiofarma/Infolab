@@ -1,6 +1,7 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.UserEntity;
+import com.cgm.infolab.db.model.Username;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -36,7 +37,7 @@ public class UserRepository {
                 .usingGeneratedKeyColumns("id");
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("username", user.getName());
+        parameters.put("username", user.getName().getValue());
         return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
@@ -45,8 +46,8 @@ public class UserRepository {
      * @param username da cui risalire all'id
      * @return id dell'utente con il nome passato a parametro. -1 in caso l'utente non esista.
      */
-    public Optional<UserEntity> getByUsername(String username) {
-        return queryUser(String.format("%s WHERE username = ?", USERS_QUERY), username);
+    public Optional<UserEntity> getByUsername(Username username) {
+        return queryUser(String.format("%s WHERE username = ?", USERS_QUERY), username.getValue());
     }
 
     /**
@@ -72,6 +73,7 @@ public class UserRepository {
      * Rowmapper utilizzato nei metodi getByUsername e getById
      */
     private UserEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-        return UserEntity.of(rs.getLong("id"), rs.getString("username"));
+        return UserEntity.of(rs.getLong("id"),
+                Username.of(rs.getString("username")));
     }
 }

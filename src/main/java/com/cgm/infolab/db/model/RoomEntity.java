@@ -7,29 +7,27 @@ import java.util.List;
 public class RoomEntity {
     private long id;
     private String name;
-    private String visibility;
+    private VisibilityEnum visibility;
     private List<ChatMessageEntity> messages;
 
-    private RoomEntity(long id, String name, String visibility, List<ChatMessageEntity> messages) {
+    private RoomEntity(long id, String name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
         this.id = id;
         this.name = name;
         this.visibility = visibility;
         this.messages = messages;
     }
 
-    public static RoomEntity of(String name) {
-        return new RoomEntity(ID.None, name, "", null);
-    }
-
-    public static RoomEntity of(String name, String visibility) {
+    public static RoomEntity of(String name, VisibilityEnum visibility) {
         return new RoomEntity(ID.None, name, visibility, null);
     }
 
-    public static RoomEntity of(long id, String name, String visibility) {
+
+
+    public static RoomEntity of(long id, String name, VisibilityEnum visibility) {
         return new RoomEntity(id, name, visibility, null);
     }
 
-    public static RoomEntity of(long id, String name, String visibility, List<ChatMessageEntity> messages) {
+    public static RoomEntity of(long id, String name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
         return new RoomEntity(id, name, visibility, messages);
     }
 
@@ -57,11 +55,11 @@ public class RoomEntity {
         this.messages = messages;
     }
 
-    public String getVisibility() {
+    public VisibilityEnum getVisibility() {
         return visibility;
     }
 
-    public void setVisibility(String visibility) {
+    public void setVisibility(VisibilityEnum visibility) {
         this.visibility = visibility;
     }
 }

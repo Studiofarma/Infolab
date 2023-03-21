@@ -3,6 +3,7 @@ package com.cgm.infolab.service;
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
@@ -34,12 +35,12 @@ public class ChatService {
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
     }
-    public void saveMessageInDb(ChatMessageDto message, String username){
+    public void saveMessageInDb(ChatMessageDto message, Username username){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
         UserEntity sender = userRepository.getByUsername(message.getSender()).orElseGet(() -> {
-            log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
+            log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender().getValue()));
             return null;
         });
 
@@ -68,7 +69,7 @@ public class ChatService {
         return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp());
     }
 
-    public List<ChatMessageDto> getAllMessagesGeneral (int numberOfMessages, String username) {
+    public List<ChatMessageDto> getAllMessagesGeneral (int numberOfMessages, Username username) {
         List<ChatMessageEntity> chatMessageEntities;
         List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
         try {
