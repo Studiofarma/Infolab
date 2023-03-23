@@ -62,7 +62,7 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-        chatService.saveMessageInDb(message, Username.of(principal.getName()));
+       chatService.saveMessageInDb(message, Username.of(principal.getName()));
         return message;
     }
 
