@@ -110,7 +110,7 @@ export class Chat extends LitElement {
       flex-direction: column;
       gap: 30px;
       width: 100%;
-      height: calc(100% - 110px);
+      height: calc(100vh - 110px);
       overflow-y: auto;
       padding: 20px;
       padding-top: 100px;
