@@ -255,6 +255,10 @@ export class Chat extends LitElement {
     });
   }
 
+  updated() {
+    this.scrollToBottom();
+  }
+
   createSocket() {
     let basicAuth = window.btoa(
       this.login.username + ":" + this.login.password
@@ -270,6 +274,11 @@ export class Chat extends LitElement {
       () => this.onConnect(),
       () => this.onError()
     );
+  }
+
+  scrollToBottom() {
+    let element = this.renderRoot.querySelector("ul.messageBox");
+    element.scrollBy({ top: element.scrollHeight - element.offsetHeight });
   }
 
   onConnect() {

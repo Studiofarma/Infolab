@@ -18,28 +18,15 @@ class ConversationList extends LitElement {
     }
 
     .pharmaciesList {
-      overflow-y: auto !important;
+      overflow-y: scroll;
       display: flex;
       flex-direction: column;
       gap: 10px;
-    }
-
-    .pharmaciesList {
-      transition: 0.5s;
-      overflow-y: scroll;
+      height: calc(100vh - 110px);
     }
 
     ::-webkit-scrollbar {
-      background-color: #0074bc;
-      border-radius: 10px;
-      border: 5px solid #003366;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-color: #0da2ff;
-      border-radius: 10px;
-      width: 5px;
-      border: 3px solid #003366;
+      width: 0px;
     }
   `;
 
