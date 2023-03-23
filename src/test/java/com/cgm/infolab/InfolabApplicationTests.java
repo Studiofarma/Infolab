@@ -1,5 +1,6 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.ChatMessageDto;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Assertions;
@@ -87,7 +88,7 @@ class InfolabApplicationTests {
             }
         });
 
-        ChatMessageDto sentMessage = new ChatMessageDto(null, "banana");
+        ChatMessageDto sentMessage = new ChatMessageDto(null, Username.of("banana"));
         session.send("/app/chat.register", sentMessage);
 
         await()

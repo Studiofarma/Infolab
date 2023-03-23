@@ -1,8 +1,6 @@
 package com.cgm.infolab.db.repository;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.model.UserEntity;
+import com.cgm.infolab.db.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -68,15 +66,15 @@ public class ChatMessageRepository {
      * @param roomName da cui prendere i messaggi
      * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
      */
-    public List<ChatMessageEntity> getByRoomName(String roomName, String username) {
+    public List<ChatMessageEntity> getByRoomName(String roomName, Username username) {
         return queryMessages(
                 MESSAGES_BY_ROOM_QUERY,
-                username,
+                username.getValue(),
                 roomName
         );
     }
 
-    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages, String username) {
+    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages, Username username) {
         // In caso il parametro non sia valido vengono ritornati tutti i messaggi disponibili.
         if (numberOfMessages < 0) {
             return getByRoomName(roomName, username);
@@ -84,7 +82,7 @@ public class ChatMessageRepository {
 
         return queryMessages(
             String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
-                username,
+                username.getValue(),
                 roomName,
                 numberOfMessages
         );
@@ -100,10 +98,11 @@ public class ChatMessageRepository {
 
     public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
 
-        UserEntity user = UserEntity.of(rs.getLong("user_id"), rs.getString("username"));
+        UserEntity user = UserEntity.of(rs.getLong("user_id"),
+                Username.of(rs.getString("username")));
 
         RoomEntity room = RoomEntity.of(
-                rs.getLong("room_id"), rs.getString("roomname"), rs.getString("visibility")
+                rs.getLong("room_id"), rs.getString("roomname"), VisibilityEnum.valueOf(rs.getString("visibility").trim())
         );
 
         return ChatMessageEntity

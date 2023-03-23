@@ -4,21 +4,21 @@ import com.cgm.infolab.db.ID;
 
 public class UserEntity {
     private long id;
-    private String name;
+    private Username name;
 
 //    public UserEntity() {
 //    }
 
-    private UserEntity(long id, String name) {
+    private UserEntity(long id, Username name) {
         this.id = id;
         this.name = name;
     }
 
-    public static UserEntity of(String name) {
+    public static UserEntity of(Username name) {
         return new UserEntity(ID.None, name);
     }
 
-    public static UserEntity of(long id, String name) {
+    public static UserEntity of(long id, Username name) {
         return new UserEntity(id, name);
     }
 
@@ -30,11 +30,11 @@ public class UserEntity {
         this.id = id;
     }
 
-    public String getName() {
+    public Username getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(Username name) {
         this.name = name;
     }
 }
