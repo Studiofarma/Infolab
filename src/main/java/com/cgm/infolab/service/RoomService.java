@@ -72,11 +72,7 @@ public class RoomService {
     }
 
     private RoomEntity createPrivateRoom(Username user1, Username user2) {
-        String[] users = {user1.getValue(), user2.getValue()};
-        Arrays.sort(users);
-        // Il criterio con cui vengono create le room è mettere i nomi degli utenti in ordine lessicografico,
-        // in modo da evitare room multiple tra gli stessi utenti
-        String roomName = String.format("%s-%s", users[0], users[1]);
+        String roomName = RoomName.of(user1, user2).getValue();
 
         try {
             long roomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));

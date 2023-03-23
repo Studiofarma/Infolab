@@ -1,5 +1,6 @@
 package com.cgm.infolab.controller;
 
+import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
@@ -62,7 +63,7 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-       chatService.saveMessageInDb(message, Username.of(principal.getName()));
+       chatService.saveMessageInDb(message, Username.of(principal.getName()), "general");
         return message;
     }
 
@@ -72,9 +73,12 @@ public class ChatController {
     ChatMessageDto sendMessageToUser(
             @Payload ChatMessageDto message,
             @DestinationVariable String destinationUser,
-            SimpMessageHeaderAccessor headerAccessor){
+            SimpMessageHeaderAccessor headerAccessor,
+            Principal principal){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         log.info(String.format("message from %s to %s", username, destinationUser));
+        chatService.saveMessageInDb(message, Username.of(principal.getName()),
+            RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)).getValue());
         return message;
     }
 }

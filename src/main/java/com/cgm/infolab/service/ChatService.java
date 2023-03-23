@@ -35,7 +35,7 @@ public class ChatService {
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
     }
-    public void saveMessageInDb(ChatMessageDto message, Username username){
+    public void saveMessageInDb(ChatMessageDto message, Username username, String roomName){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
@@ -44,7 +44,6 @@ public class ChatService {
             return null;
         });
 
-        String roomName = "general";
         RoomEntity room = roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
             log.info(String.format("Room roomName=\"%s\" non trovata.", roomName));
             return null;
