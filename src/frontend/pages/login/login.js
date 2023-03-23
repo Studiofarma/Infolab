@@ -327,10 +327,8 @@ export class Login extends LitElement {
 
   loginConfirm() {
     if (this.cookie) {
-      Promise.resolve().then(() => {
-        this.loginConfirmEvent();
-      });
-      return;
+      this.username = this.getCookiePropertyByName(USERNAME_COOKIE_NAME);
+      this.password = this.getCookiePropertyByName(PASSWORD_COOKIE_NAME);
     }
 
     if (this.username === "" && this.password === "") {
