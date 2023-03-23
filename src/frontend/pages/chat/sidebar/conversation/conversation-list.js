@@ -25,27 +25,9 @@ class ConversationList extends LitElement {
       height: calc(100vh - 110px);
     }
 
-    /* .pharmaciesList {
-      transition: 0.5s;
-      overflow-y: scroll;
-    } */
-
     ::-webkit-scrollbar {
       width: 0px;
     }
-
-    /* ::-webkit-scrollbar {
-      background-color: #0074bc;
-      border-radius: 10px;
-      border: 5px solid #003366;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-color: #0da2ff;
-      border-radius: 10px;
-      width: 5px;
-      border: 3px solid #003366;
-    } */
   `;
 
   constructor() {
