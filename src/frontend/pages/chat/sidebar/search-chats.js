@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
-const axios = require("axios").default;
+
+import { UsersService } from "../../../services/users-service";
 
 import "../../../components/button-icon";
 import { IconNames } from "../../../enums/icon-names";
@@ -152,15 +153,7 @@ export class SearchChats extends LitElement {
     `;
   }
 
-  async executePharmaciesCall() {
-    return axios({
-      url: "http://localhost:3000/users",
-      method: "get",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-      },
-    });
-  }
+
 
   setFilter(event) {
     const text = event.target.value;
@@ -168,7 +161,7 @@ export class SearchChats extends LitElement {
 
     let tmp = [];
 
-    this.executePharmaciesCall()
+    UsersService.GetUsers()
       .then((element) => {
         element["data"].forEach((pharmacy) => {
           if (pharmacy.name.toLowerCase().indexOf(this.query) > -1)

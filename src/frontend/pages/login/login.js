@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
-const axios = require("axios").default;
+
+import { LoginService } from "../../services/login-service";
 
 import "../../components/snackbar";
 import "../../components/button-icon";
@@ -349,7 +350,7 @@ export class Login extends LitElement {
       return;
     }
 
-    this.executeLoginCall()
+    LoginService.getLogin(this.username, this.password)
       .then((response) => {
         this.header = response.data.headerName;
         this.token = response.data.token;
@@ -364,19 +365,7 @@ export class Login extends LitElement {
       });
   }
 
-  async executeLoginCall() {
-    return axios({
-      url: "/csrf",
-      method: "get",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-      },
-      auth: {
-        username: this.username,
-        password: this.password,
-      },
-    });
-  }
+
 }
 
 customElements.define("il-login", Login);
