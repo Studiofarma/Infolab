@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 const axios = require("axios").default;
 
 import "../../../components/button-icon";
+import { IconNames } from "../../../enums/icon-names";
 
 export class SearchChats extends LitElement {
   static properties = {
@@ -143,7 +144,7 @@ export class SearchChats extends LitElement {
             @input=${this.setFilter}
             @click=${this.setFilter}
           />
-          <il-button-icon content="mdiMagnify"></il-button-icon>
+          <il-button-icon content= ${IconNames.magnify}></il-button-icon>
 
           <div class="dropdown">${this.showTips()}</div>
         </div>

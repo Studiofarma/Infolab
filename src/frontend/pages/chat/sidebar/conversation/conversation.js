@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 
 import "../../../../components/icon";
+import { IconNames } from "../../../../enums/icon-names";
 class Conversation extends LitElement {
   static properties = {
     chat: {},
@@ -104,34 +105,34 @@ class Conversation extends LitElement {
   getUnreadIconName(unread) {
     switch (unread) {
       case 1:
-        return "mdiNumeric1Circle";
+        return IconNames.numeric1;
 
       case 2:
-        return "mdiNumeric2Circle";
+        return IconNames.numeric2;
 
       case 3:
-        return "mdiNumeric3Circle";
+        return IconNames.numeric3;
 
       case 4:
-        return "mdiNumeric4Circle";
+        return IconNames.numeric4;
 
       case 5:
-        return "mdiNumeric5Circle";
+        return IconNames.numeric5;
 
       case 6:
-        return "mdiNumeric6Circle";
+        return IconNames.numeric6;
 
       case 7:
-        return "mdiNumeric7Circle";
+        return IconNames.numeric7;
 
       case 8:
-        return "mdiNumeric8Circle";
+        return IconNames.numeric8;
 
       case 9:
-        return "mdiNumeric9Circle";
+        return IconNames.numeric9;
 
       default:
-        return "mdiNumeric9PlusCircle";
+        return IconNames.numericPlus;
     }
   }
 }
