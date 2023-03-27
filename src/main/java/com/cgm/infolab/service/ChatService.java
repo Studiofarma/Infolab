@@ -39,8 +39,8 @@ public class ChatService {
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
-        UserEntity sender = userRepository.getByUsername(message.getSender()).orElseGet(() -> {
-            log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender().getValue()));
+        UserEntity sender = userRepository.getByUsername(Username.of(message.getSender())).orElseGet(() -> {
+            log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
             return null;
         });
 
@@ -62,7 +62,7 @@ public class ChatService {
     public ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
         return new ChatMessageDto(messageEntity.getContent(),
                 messageEntity.getTimestamp(),
-                messageEntity.getSender().getName());
+                messageEntity.getSender().getName().value());
     }
 
     public LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {

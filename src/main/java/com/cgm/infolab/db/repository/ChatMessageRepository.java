@@ -69,7 +69,7 @@ public class ChatMessageRepository {
     public List<ChatMessageEntity> getByRoomName(String roomName, Username username) {
         return queryMessages(
                 MESSAGES_BY_ROOM_QUERY,
-                username.getValue(),
+                username.value(),
                 roomName
         );
     }
@@ -82,7 +82,7 @@ public class ChatMessageRepository {
 
         return queryMessages(
             String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
-                username.getValue(),
+                username.value(),
                 roomName,
                 numberOfMessages
         );
@@ -102,7 +102,7 @@ public class ChatMessageRepository {
                 Username.of(rs.getString("username")));
 
         RoomEntity room = RoomEntity.of(
-                rs.getLong("room_id"), rs.getString("roomname"), VisibilityEnum.valueOf(rs.getString("visibility").trim())
+                rs.getLong("room_id"), rs.getString("roomname"), VisibilityEnum.valueOf(rs.getString("visibility"))
         );
 
         return ChatMessageEntity
