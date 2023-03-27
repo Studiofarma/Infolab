@@ -69,9 +69,8 @@ public class ChatService {
         return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp());
     }
 
-    public List<ChatMessageDto> getAllMessagesGeneral (int numberOfMessages, Username username) {
-        List<ChatMessageEntity> chatMessageEntities;
-        List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
+    public List<ChatMessageEntity> getAllMessagesGeneral (int numberOfMessages, Username username) {
+        List<ChatMessageEntity> chatMessageEntities = new ArrayList<>();
         try {
             chatMessageEntities = chatMessageRepository
                     .getByRoomNameNumberOfMessages("general",
@@ -79,16 +78,10 @@ public class ChatService {
                             username);
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());
-            return chatMessageDtos;
+            return chatMessageEntities;
         }
 
-        if (chatMessageEntities.size() > 0) {
-            chatMessageDtos = chatMessageEntities.stream().map(this::fromEntityToChatMessageDto).toList();
-        } else {
-            log.info("Non sono stati trovati messaggi nella room specificata");
-        }
-
-        return chatMessageDtos;
+        return chatMessageEntities;
     }
 }
 
