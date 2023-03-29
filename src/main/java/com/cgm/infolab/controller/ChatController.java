@@ -78,7 +78,7 @@ public class ChatController {
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         log.info(String.format("message from %s to %s", username, destinationUser));
         chatService.saveMessageInDb(message, Username.of(principal.getName()),
-            RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)).getValue());
+            RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)).value());
         return message;
     }
 }

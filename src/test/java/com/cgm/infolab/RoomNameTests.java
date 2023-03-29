@@ -10,6 +10,6 @@ public class RoomNameTests {
     @Test
     void aRoomNameShouldBeGenerated_FromTwoUsersName_AlphabeticallyOrdered() {
         RoomName roomName = RoomName.of(Username.of("b"), Username.of("A"));
-        Assertions.assertEquals("a-b", roomName.getValue());
+        Assertions.assertEquals("a-b", roomName.value());
     }
 }

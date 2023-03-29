@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -72,7 +71,7 @@ public class RoomService {
     }
 
     private RoomEntity createPrivateRoom(Username user1, Username user2) {
-        String roomName = RoomName.of(user1, user2).getValue();
+        String roomName = RoomName.of(user1, user2).value();
 
         try {
             long roomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
