@@ -7,6 +7,7 @@ import { MarkdownService } from "../../services/markdown-services";
 import { MessagesService } from "../../services/messages-service";
 
 import "../../components/button-icon";
+import "../../components/avatar.js";
 import "./input/input-controls.js";
 import "./sidebar/sidebar.js";
 import "./header/chat-header.js";
@@ -126,11 +127,6 @@ export class Chat extends LitElement {
 
     .messageBox > li {
       position: relative;
-      min-width: 300px;
-      max-width: 500px;
-      padding: 15px 8px;
-      background: #f2f4f7;
-      box-shadow: 0 0 10px #989a9d;
     }
 
     @keyframes rotationAnim {
@@ -167,17 +163,17 @@ export class Chat extends LitElement {
       align-self: flex-end !important;
       border-radius: 10px 0 10px 10px;
     }
-    .sender::after {
+    .sender .message-body::after {
       content: "";
       position: absolute;
       transform: translate(50%, -600%);
-      bottom: -15px;
-      right: -4px;
-      border-top: 10px solid #f2f4f7;
+      bottom: 6px;
+      right: -5px;
+      border-top: 10px solid #989a9d;
       border-left: 0px solid transparent;
       border-right: 10px solid transparent;
     }
-    .sender::before {
+    .sender .message-body::before {
       content: "";
       position: absolute;
       transform: translate(-50%, -50%);
@@ -192,17 +188,22 @@ export class Chat extends LitElement {
       align-self: flex-start !important;
       border-radius: 0 10px 10px 10px;
     }
-    .receiver::after {
+
+    .receiver .message-content {
+      padding-top: 10px;
+    }
+
+    .receiver .message-body::after {
       content: "";
       position: absolute;
-      transform: translate(50%, -600%);
-      bottom: -15px;
-      left: -15px;
+      transform: translate(50%, -50%);
+      top: 5px;
+      left: -14px;
       border-top: 10px solid #f2f4f7;
       border-left: 10px solid transparent;
       border-right: 0px solid transparent;
     }
-    .receiver::before {
+    .receiver .message-body::before {
       content: "";
       position: absolute;
       transform: translate(-50%, -50%);
@@ -212,6 +213,58 @@ export class Chat extends LitElement {
       border-left: 10px solid transparent;
       border-right: 0px solid transparent;
       filter: blur(10px);
+    }
+
+    .messageBox li {
+      display: flex;
+      gap: 10px;
+    }
+
+    .messageBox li.sender {
+      flex-direction: row-reverse;
+    }
+
+    .avatar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 20px;
+      text-transform: uppercase;
+      width: 50px;
+      height: 50px;
+      background: #5a9bfb;
+      border-radius: 50%;
+    }
+
+    .messageBox li .message-body {
+      position: relative;
+      min-width: 300px;
+      max-width: 500px;
+      box-shadow: 0 0 10px #989a9d;
+    }
+
+    .message-body .message-sender {
+      background: #989a9d;
+      color: white;
+      font-size: 15px;
+      padding: 2px 10px;
+    }
+
+    .message-body .message-content {
+      background: #f2f4f7;
+    }
+
+    .message-content > p {
+      font-size: 15px;
+      padding: 5px 10px;
+    }
+
+    .message-content .message-footer {
+      display: flex;
+      justify-content: space-between;
+      padding: 2px;
+      font-size: 12px;
     }
   `;
 
@@ -225,15 +278,44 @@ export class Chat extends LitElement {
             <ul class="messageBox">
               ${this.messages.map(
                 (item, _) =>
+                  // componente messaggio da fare. P.S: Venturi non odiarmi.
                   html`
                     <li
                       class=${item.sender == this.login.username
                         ? "sender"
                         : "receiver"}
                     >
-                      ${resolveMarkdown(
-                        MarkdownService.parseMarkdown(item.content)
-                      )}
+                      <div
+                        class="avatar-container"
+                        ?hidden=${item.sender != this.login.username}
+                      >
+                        <div class="avatar">
+                          ${this.getInitials(item.sender)}
+                        </div>
+                      </div>
+
+                      <div class="message-body">
+                        <div
+                          class="message-sender"
+                          ?hidden=${item.sender != this.login.username}
+                        >
+                          ${item.sender}
+                        </div>
+
+                        <div class="message-content">
+                          <p>
+                            ${resolveMarkdown(
+                              MarkdownService.parseMarkdown(item.content)
+                            )}
+                          </p>
+                          <div class="message-footer">
+                            <p class="message-date">
+                              ${this.getMessageDate(item.date || "")}
+                            </p>
+                            <p class="message-time">${item.time}</p>
+                          </div>
+                        </div>
+                      </div>
                     </li>
                   `
               )}
@@ -246,6 +328,25 @@ export class Chat extends LitElement {
         </section>
       </main>
     `;
+  }
+
+  getInitials(name) {
+    return name[0]; //da aggiungere controllo se possiede davvero un avatar. P.S: Venturi, scusami ancora per il to do
+  }
+
+  getMessageDate(dateString) {
+    let today = new Date().toLocaleDateString();
+
+    if (dateString !== today) {
+      let year = dateString.slice(-4);
+      let currentYear = new Date().getFullYear();
+
+      if (year == currentYear) dateString = dateString.slice(0, -5);
+
+      return dateString;
+    }
+
+    return "";
   }
 
   async firstUpdated() {

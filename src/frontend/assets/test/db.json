@@ -40,13 +40,15 @@
           "sender": "chatBox user1",
           "receiver": "1",
           "content": "😃 ciao",
-          "date": ""
+          "date": "20/1/2006",
+          "time": ""
         },
         {
           "sender": "user1",
           "receiver": "1",
           "content": "lorem ipsum",
-          "date": ""
+          "date": "20/1/2006",
+          "time": ""
         }
       ]
     },
@@ -59,62 +61,71 @@
           "sender": "chatBox user1",
           "receiver": "1",
           "content": "😃 lorem1",
-          "date": ""
-          
+          "date": "29/3/2023",
+          "time": "15:35"
+        },
+        {
+          "sender": "chatBox user1",
+          "receiver": "1",
+          "content": "lorem ipsum",
+          "date": "20/1/2006",
+          "time": "15:35"
         },
         {
           "sender": "user1",
           "receiver": "1",
           "content": "lorem ipsum",
-          "date": ""
+          "date": "20/1/2006",
+          "time": "15:35"
         },
         {
           "sender": "user1",
           "receiver": "1",
           "content": "lorem ipsum",
-          "date": ""
+          "date": "20/1/2006",
+          "time": "15:35"
         },
         {
           "sender": "user1",
           "receiver": "1",
           "content": "lorem ipsum",
-          "date": ""
+          "date": "20/1/2006",
+          "time": "15:35"
         },
         {
           "sender": "user1",
           "receiver": "1",
           "content": "lorem ipsum",
-          "date": ""
+          "date": "20/1/2006",
+          "time": "15:35"
         },
         {
           "sender": "user1",
           "receiver": "1",
           "content": "lorem ipsum",
-          "date": ""
+          "date": "20/1/2006",
+          "time": "15:35"
         },
         {
           "sender": "user1",
           "receiver": "1",
           "content": "lorem ipsum",
-          "date": ""
+          "date": "20/1/2006",
+          "time": "15:35"
         },
         {
           "sender": "user1",
           "receiver": "1",
           "content": "lorem ipsum",
-          "date": ""
-        },
-        {
-          "sender": "user1",
-          "receiver": "1",
-          "content": "lorem ipsum",
-          "date": ""
+          "date": "20/1/2006",
+          "time": "15:35"
         },
         {
           "sender": "user1",
           "receiver": "1",
           "content": "lorem ipsum 10",
-          "date": ""
+          "date": "24/3/2023",
+          "time": "15:35"
         }
       ]
     }
