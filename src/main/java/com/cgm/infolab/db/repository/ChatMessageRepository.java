@@ -70,7 +70,7 @@ public class ChatMessageRepository {
         return queryMessages(
                 MESSAGES_BY_ROOM_QUERY,
                 username.value(),
-                roomName
+                roomName.value()
         );
     }
 
