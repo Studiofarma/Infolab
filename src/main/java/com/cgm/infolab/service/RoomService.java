@@ -47,18 +47,8 @@ public class RoomService {
         return roomDto;
     }
 
-    public List<RoomDto> getRooms(String date, Username username) {
-        List<RoomDto> roomDtos = new ArrayList<>();
-
-        List<RoomEntity> roomEntities = roomRepository.getAfterDate(fromStringToDate(date), username);
-
-        if (roomEntities.size() > 0) {
-            roomDtos = roomEntities.stream().map(this::fromEntityToDto).toList();
-        } else {
-            log.info("Non sono state trovate room");
-        }
-
-        return roomDtos;
+    public List<RoomEntity> getRooms(String date, Username username) {
+        return roomRepository.getAfterDate(fromStringToDate(date), username);
     }
 
     private LocalDate fromStringToDate(String date) {
@@ -90,7 +80,7 @@ public class RoomService {
             });
 
             UserEntity user = userRepository.getByUsername(username).orElseThrow(() -> {
-                throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.getValue()));
+                throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()));
             });
 
             roomSubscription.setRoomId(room.getId());

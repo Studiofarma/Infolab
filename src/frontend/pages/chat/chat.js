@@ -110,7 +110,7 @@ export class Chat extends LitElement {
       flex-direction: column;
       gap: 30px;
       width: 100%;
-      height: calc(100% - 110px);
+      height: calc(100vh - 110px);
       overflow-y: auto;
       padding: 20px;
       padding-top: 100px;
@@ -255,6 +255,10 @@ export class Chat extends LitElement {
     });
   }
 
+  updated() {
+    this.scrollToBottom();
+  }
+
   createSocket() {
     let basicAuth = window.btoa(
       this.login.username + ":" + this.login.password
@@ -270,6 +274,11 @@ export class Chat extends LitElement {
       () => this.onConnect(),
       () => this.onError()
     );
+  }
+
+  scrollToBottom() {
+    let element = this.renderRoot.querySelector("ul.messageBox");
+    element.scrollBy({ top: element.scrollHeight - element.offsetHeight });
   }
 
   onConnect() {

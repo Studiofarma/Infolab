@@ -25,20 +25,20 @@ public class RoomRepository {
                                                             "LEFT JOIN infolab.users u " +
                                                             "ON u.id = s.user_id " +
                                                             "WHERE (u.username = ? OR r.visibility = 'PUBLIC') %s ";
-
     private final String ROOMS_DISTINCT_ON_QUERY =
                     "SELECT DISTINCT ON (r.roomname) " +
                             "r.id room_id, r.roomname, r.visibility, u.id user_id, u.username, " +
                             "m.id message_id, m.sent_at, m.content " +
-                    "FROM infolab.chatmessages m " +
-                    "LEFT JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
-                    "LEFT JOIN infolab.rooms_subscriptions s ON r.id = s.room_id " +
-                    "LEFT JOIN infolab.users u ON u.id = s.user_id AND u.id = m.sender_id " +
+                    "FROM infolab.rooms r " +
+                    "INNER JOIN infolab.chatmessages m ON m.recipient_room_id = r.id " +
+                    "LEFT JOIN infolab.rooms_subscriptions s ON s.room_id = r.id " +
+                    "LEFT JOIN infolab.users u ON m.sender_id = u.id " +
                     "WHERE EXISTS " +
-                    "(SELECT s.room_id FROM infolab.rooms_subscriptions s " +
-                        "RIGHT JOIN infolab.users u ON u.id = s.user_id " +
-                        "WHERE (u.username = ? OR r.visibility = 'PUBLIC')) %s " + // per aggiungere condizioni nel WHERE
-                    "order by r.roomname, sent_at desc";
+                        "(SELECT * FROM infolab.rooms r2 " +
+                            "LEFT JOIN infolab.rooms_subscriptions s2 ON s2.room_id = r2.id " +
+                            "LEFT JOIN infolab.users u2 ON u2.id = s2.user_id " +
+                            "WHERE (u2.username = ? OR r2.visibility = 'PUBLIC') AND r2.id = r.id) %s " + // per aggiungere condizioni nel WHERE
+                    "ORDER BY r.roomname, m.sent_at DESC";
 
     public RoomRepository(JdbcTemplate jdbcTemplate,
                           DataSource dataSource,
@@ -84,7 +84,7 @@ public class RoomRepository {
      * @return oggetto Room con il nome preso dal db. Ritorna null se la room non esiste.
      */
     public Optional<RoomEntity> getById(long id, Username username) {
-        return queryRoom(addConditionToRoomsQueryJoined("AND r.id = ?"), username.getValue(), id);
+        return queryRoom(addConditionToRoomsQueryJoined("AND r.id = ?"), username.value(), id);
     }
 
     private Optional<RoomEntity> queryRoom(String query, Object... queryParams) {
@@ -98,7 +98,7 @@ public class RoomRepository {
     }
 
     public List<RoomEntity> getAllWhereLastMessageNotNull(Username username) {
-        return queryRooms(addConditionToNewRoomsDistinctOnQuery(""), username.getValue());
+        return queryRooms(addConditionToNewRoomsDistinctOnQuery(""), username.value());
     }
 
     public List<RoomEntity> getAfterDate(LocalDate dateLimit, Username username) {
@@ -106,7 +106,7 @@ public class RoomRepository {
             return getAllWhereLastMessageNotNull(username);
         }
 
-        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), username.getValue(), dateLimit);
+        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), username.value(), dateLimit);
     }
 
     private List<RoomEntity> queryRooms(String query, Object... queryParams) {

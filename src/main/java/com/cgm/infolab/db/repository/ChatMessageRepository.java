@@ -69,8 +69,8 @@ public class ChatMessageRepository {
     public List<ChatMessageEntity> getByRoomName(RoomName roomName, Username username) {
         return queryMessages(
                 MESSAGES_BY_ROOM_QUERY,
-                username.getValue(),
-                roomName.value()
+                username.value(),
+                roomName
         );
     }
 
@@ -82,8 +82,8 @@ public class ChatMessageRepository {
 
         return queryMessages(
             String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
-                username.getValue(),
-                roomName.value(),
+                username.value(),
+                roomName,
                 numberOfMessages
         );
     }
