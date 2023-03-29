@@ -78,14 +78,14 @@ public class RoomService {
             return RoomEntity.of(roomId, roomName, VisibilityEnum.PRIVATE);
         } catch (DuplicateKeyException e) {
             log.info(String.format("Room roomName=\"%s\" già esistente nel database", roomName));
-            return roomRepository.getByRoomNameEvenIfNotSubscribed(roomName.value()).orElseGet(() -> null); // TODO: rimuovere il value
+            return roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseGet(() -> null);
         }
     }
 
     private void subscribeUserToRoom(String roomName, Username username) {
         RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
         try {
-            RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseThrow(() -> {
+            RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed(RoomName.of(roomName)).orElseThrow(() -> {
                 throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
             });
 

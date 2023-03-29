@@ -1,9 +1,6 @@
 package com.cgm.infolab.service;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
@@ -44,7 +41,7 @@ public class ChatService {
             return null;
         });
 
-        RoomEntity room = roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
+        RoomEntity room = roomRepository.getByRoomName(RoomName.of(roomName), username).orElseGet(() -> {
             log.info(String.format("Room roomName=\"%s\" non trovata.", roomName));
             return null;
         });
@@ -73,7 +70,7 @@ public class ChatService {
         List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
         try {
             chatMessageEntities = chatMessageRepository
-                    .getByRoomNameNumberOfMessages("general",
+                    .getByRoomNameNumberOfMessages(RoomName.of("general"),
                             numberOfMessages,
                             username);
         } catch (IllegalArgumentException e) {

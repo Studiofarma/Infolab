@@ -65,7 +65,7 @@ public class RoomRepository {
      * @param roomName da cui risalire all'id
      * @return id della room con il nome passato a parametro. -1 in caso la room non esista.
      */
-    public Optional<RoomEntity> getByRoomName(String roomName, Username username) {
+    public Optional<RoomEntity> getByRoomName(RoomName roomName, Username username) {
         return queryRoom(addConditionToRoomsQueryJoined(" AND r.roomname = ? "), username.getValue(), roomName);
     }
 
@@ -74,7 +74,7 @@ public class RoomRepository {
     // Non ho potuto cambiare l'altro perché per ora la gestione della sicurezza in queryMessages di
     // ChatMessagesRepository è basata sul fatto che se non si ha accesso alla stanza allora non viene ritornato l'id
     // e viene lanciata un'eccezione
-    public Optional<RoomEntity> getByRoomNameEvenIfNotSubscribed(String roomName) {
+    public Optional<RoomEntity> getByRoomNameEvenIfNotSubscribed(RoomName roomName) {
         return queryRoom(String.format("%s WHERE roomname = ?", ROOMS_QUERY), roomName);
     }
 
