@@ -82,11 +82,11 @@ public class RoomService {
         }
     }
 
-    private void subscribeUserToRoom(String roomName, Username username) {
+    private void subscribeUserToRoom(RoomName roomName, Username username) {
         RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
         try {
-            RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed(RoomName.of(roomName)).orElseThrow(() -> {
-                throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
+            RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseThrow(() -> {
+                throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
             });
 
             UserEntity user = userRepository.getByUsername(username).orElseThrow(() -> {
@@ -102,7 +102,7 @@ public class RoomService {
         }
     }
 
-    private void subscribeUsersToRoom(String roomName, Username... usernames) {
+    private void subscribeUsersToRoom(RoomName roomName, Username... usernames) {
         for (Username u : usernames) {
             subscribeUserToRoom(roomName, u);
         }
@@ -110,6 +110,6 @@ public class RoomService {
 
     public void createPrivateRoomAndSubscribeUsers(Username user1, Username user2) {
         RoomEntity room = createPrivateRoom(user1, user2);
-        subscribeUsersToRoom(room.getName().value(), user1, user2); // TODO: rimuovere il value
+        subscribeUsersToRoom(room.getName(), user1, user2);
     }
 }

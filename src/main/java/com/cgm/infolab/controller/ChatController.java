@@ -63,7 +63,7 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-       chatService.saveMessageInDb(message, Username.of(principal.getName()), "general");
+       chatService.saveMessageInDb(message, Username.of(principal.getName()), RoomName.of("general"));
         return message;
     }
 
@@ -78,7 +78,7 @@ public class ChatController {
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         log.info(String.format("message from %s to %s", username, destinationUser));
         chatService.saveMessageInDb(message, Username.of(principal.getName()),
-            RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)).value());
+            RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)));
         return message;
     }
 }

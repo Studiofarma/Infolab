@@ -13,9 +13,12 @@ public record RoomName(String value) {
         return new RoomName(roomName);
     }
 
-    public static RoomName of(String roomName) throws IllegalArgumentException {
+    public static RoomName of(String roomName) {
         if (!roomName.contains("-")) {
-            throw new IllegalArgumentException();
+            // Esclude dal controllo room come general che non contengono -.
+            // Altrimenti va in crash.
+            return new RoomName(roomName);
+
         }
 
         Username user1 = Username.of(roomName.substring(0, roomName.indexOf("-")));
