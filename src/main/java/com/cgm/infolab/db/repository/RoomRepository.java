@@ -132,7 +132,7 @@ public class RoomRepository {
         return RoomEntity
                 .of(rs.getLong("room_id"),
                         RoomName.of(rs.getString("roomname")),
-                        VisibilityEnum.valueOf(rs.getString("visibility")),
+                        VisibilityEnum.valueOf(rs.getString("visibility").trim()),
                         List.of(message));
     }
 
