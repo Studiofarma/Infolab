@@ -83,7 +83,7 @@ public class ChatMessageRepository {
         return queryMessages(
             String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
                 username.value(),
-                roomName,
+                roomName.value(),
                 numberOfMessages
         );
     }

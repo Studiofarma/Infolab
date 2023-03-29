@@ -66,7 +66,7 @@ public class RoomRepository {
      * @return id della room con il nome passato a parametro. -1 in caso la room non esista.
      */
     public Optional<RoomEntity> getByRoomName(RoomName roomName, Username username) {
-        return queryRoom(addConditionToRoomsQueryJoined(" AND r.roomname = ? "), username.getValue(), roomName);
+        return queryRoom(addConditionToRoomsQueryJoined(" AND r.roomname = ? "), username.value(), roomName.value());
     }
 
     // Questo metodo è necessario perché altrimenti nella creazione della RoomSubscription in ChatController
@@ -75,7 +75,7 @@ public class RoomRepository {
     // ChatMessagesRepository è basata sul fatto che se non si ha accesso alla stanza allora non viene ritornato l'id
     // e viene lanciata un'eccezione
     public Optional<RoomEntity> getByRoomNameEvenIfNotSubscribed(RoomName roomName) {
-        return queryRoom(String.format("%s WHERE roomname = ?", ROOMS_QUERY), roomName);
+        return queryRoom(String.format("%s WHERE roomname = ?", ROOMS_QUERY), roomName.value());
     }
 
     /**

@@ -5,7 +5,7 @@ import java.util.Arrays;
 public record RoomName(String value) {
 
     public static RoomName of(Username user1, Username user2) {
-        String[] users = {user1.getValue(), user2.getValue()};
+        String[] users = {user1.value(), user2.value()};
         Arrays.sort(users);
         // Il criterio con cui vengono create le room è mettere i nomi degli utenti in ordine lessicografico,
         // in modo da evitare room multiple tra gli stessi utenti

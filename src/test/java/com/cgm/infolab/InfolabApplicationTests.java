@@ -90,7 +90,7 @@ class InfolabApplicationTests {
             }
         });
 
-        ChatMessageDto sentMessage = new ChatMessageDto(null, Username.of("banana"));
+        ChatMessageDto sentMessage = new ChatMessageDto(null, Username.of("banana").value());
         client.send("/app/chat.register", sentMessage);
 
         await()
@@ -115,7 +115,7 @@ class InfolabApplicationTests {
             }
         });
 
-        ChatMessageDto sentMessage = new ChatMessageDto("pippo", userBanana.getName());
+        ChatMessageDto sentMessage = new ChatMessageDto("pippo", userBanana.getName().value());
         client.send("/app/chat.send", sentMessage);
 
         await()
@@ -132,7 +132,7 @@ class InfolabApplicationTests {
 
         BlockingQueue<ChatMessageDto> receivedMessagesSender = new ArrayBlockingQueue<>(2);
         BlockingQueue<ChatMessageDto> receivedMessagesDestination = new ArrayBlockingQueue<>(2);
-        client.subscribe("/queue/" + userBanana.getName().getValue(), new StompFrameHandler() {
+        client.subscribe("/queue/" + userBanana.getName().value(), new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
                 return ChatMessageDto.class;
@@ -156,8 +156,8 @@ class InfolabApplicationTests {
             }
         });
 
-        ChatMessageDto sentMessage = new ChatMessageDto("pippo", userBanana.getName());
-        client.send("/app/chat.send." + userBanana.getName().getValue(), sentMessage);
+        ChatMessageDto sentMessage = new ChatMessageDto("pippo", userBanana.getName().value());
+        client.send("/app/chat.send." + userBanana.getName().value(), sentMessage);
 
         await()
             .atMost(1, TimeUnit.SECONDS)
@@ -173,7 +173,7 @@ class InfolabApplicationTests {
     }
 
     private StompSession getStompSession() throws InterruptedException, ExecutionException, TimeoutException {
-        String basicAuth = basicAuth(user1.getName().getValue(), "password1");
+        String basicAuth = basicAuth(user1.getName().value(), "password1");
 
         ResponseEntity<MyCsrfToken> csrfResponse = rest.exchange(
                 RequestEntity
