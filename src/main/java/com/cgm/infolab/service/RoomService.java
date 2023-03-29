@@ -38,7 +38,7 @@ public class RoomService {
     }
 
     public RoomDto fromEntityToDto(RoomEntity roomEntity) {
-        RoomDto roomDto = RoomDto.of(roomEntity.getName());
+        RoomDto roomDto = RoomDto.of(roomEntity.getName().value());
 
         LastMessageDto message = chatService.fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
 
@@ -71,14 +71,14 @@ public class RoomService {
     }
 
     private RoomEntity createPrivateRoom(Username user1, Username user2) {
-        String roomName = RoomName.of(user1, user2).value();
+        RoomName roomName = RoomName.of(user1, user2);
 
         try {
             long roomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
             return RoomEntity.of(roomId, roomName, VisibilityEnum.PRIVATE);
         } catch (DuplicateKeyException e) {
             log.info(String.format("Room roomName=\"%s\" già esistente nel database", roomName));
-            return roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseGet(() -> null);
+            return roomRepository.getByRoomNameEvenIfNotSubscribed(roomName.value()).orElseGet(() -> null); // TODO: rimuovere il value
         }
     }
 
@@ -110,6 +110,6 @@ public class RoomService {
 
     public void createPrivateRoomAndSubscribeUsers(Username user1, Username user2) {
         RoomEntity room = createPrivateRoom(user1, user2);
-        subscribeUsersToRoom(room.getName(), user1, user2);
+        subscribeUsersToRoom(room.getName().value(), user1, user2); // TODO: rimuovere il value
     }
 }

@@ -1,9 +1,6 @@
 package com.cgm.infolab.db.repository;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.model.Username;
-import com.cgm.infolab.db.model.VisibilityEnum;
+import com.cgm.infolab.db.model.*;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -58,7 +55,7 @@ public class RoomRepository {
                 .usingGeneratedKeyColumns("id");
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("roomname", room.getName());
+        parameters.put("roomname", room.getName().value());
         parameters.put("visibility", room.getVisibility().name());
         return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
@@ -126,7 +123,7 @@ public class RoomRepository {
     private RoomEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
         return RoomEntity
                 .of(rs.getLong("room_id"),
-                        rs.getString("roomname"),
+                        RoomName.of(rs.getString("roomname")),
                         VisibilityEnum.valueOf(rs.getString("visibility").trim()));
     }
 
@@ -134,7 +131,7 @@ public class RoomRepository {
         ChatMessageEntity message = chatMessageRepository.mapToEntity(rs, rowNum);
         return RoomEntity
                 .of(rs.getLong("room_id"),
-                        rs.getString("roomname"),
+                        RoomName.of(rs.getString("roomname")),
                         VisibilityEnum.valueOf(rs.getString("visibility")),
                         List.of(message));
     }

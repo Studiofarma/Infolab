@@ -102,7 +102,9 @@ public class ChatMessageRepository {
                 Username.of(rs.getString("username")));
 
         RoomEntity room = RoomEntity.of(
-                rs.getLong("room_id"), rs.getString("roomname"), VisibilityEnum.valueOf(rs.getString("visibility").trim())
+                rs.getLong("room_id"),
+                RoomName.of(rs.getString("roomname")),
+                VisibilityEnum.valueOf(rs.getString("visibility").trim())
         );
 
         return ChatMessageEntity

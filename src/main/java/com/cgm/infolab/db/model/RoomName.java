@@ -12,4 +12,15 @@ public record RoomName(String value) {
         String roomName = String.format("%s-%s", users[0], users[1]);
         return new RoomName(roomName);
     }
+
+    public static RoomName of(String roomName) throws IllegalArgumentException {
+        if (!roomName.contains("-")) {
+            throw new IllegalArgumentException();
+        }
+
+        Username user1 = Username.of(roomName.substring(0, roomName.indexOf("-")));
+        Username user2 = Username.of(roomName.substring(roomName.indexOf("-") + 1));
+
+        return RoomName.of(user1, user2); // Così avviene lo stesso il controllo della correttezza del nome.
+    }
 }
