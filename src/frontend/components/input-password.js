@@ -1,6 +1,7 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 
 import { IconNames } from "../enums/icon-names";
+import { InputField } from "./input-field";
 
 export class InputPassword extends InputField {
   static get properties() {
