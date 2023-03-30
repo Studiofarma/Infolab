@@ -1,6 +1,5 @@
 package com.cgm.infolab.model;
 
-import com.cgm.infolab.db.model.Username;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
@@ -10,17 +9,17 @@ import java.util.Objects;
 public class ChatMessageDto {
     private String content;
     private LocalDateTime timestamp;
-    private Username sender;
+    private String sender;
 
     private ChatMessageDto() {
     }
 
-    public ChatMessageDto(String content, Username sender) {
-        this.content = content;
+    public ChatMessageDto(String content, String sender) {
         this.sender = sender;
+        this.content = content;
     }
 
-    public ChatMessageDto(String content, LocalDateTime timestamp, Username sender) {
+    public ChatMessageDto(String content, LocalDateTime timestamp, String sender) {
         this.content = content;
         this.timestamp = timestamp;
         this.sender = sender;
@@ -43,11 +42,11 @@ public class ChatMessageDto {
         this.timestamp = timestamp;
     }
 
-    public Username getSender() {
+    public String getSender() {
         return sender;
     }
 
-    public void setSender(Username sender) {
+    public void setSender(String sender) {
         this.sender = sender;
     }
 

@@ -66,15 +66,15 @@ public class ChatMessageRepository {
      * @param roomName da cui prendere i messaggi
      * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
      */
-    public List<ChatMessageEntity> getByRoomName(String roomName, Username username) {
+    public List<ChatMessageEntity> getByRoomName(RoomName roomName, Username username) {
         return queryMessages(
                 MESSAGES_BY_ROOM_QUERY,
-                username.getValue(),
-                roomName
+                username.value(),
+                roomName.value()
         );
     }
 
-    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(String roomName, int numberOfMessages, Username username) {
+    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(RoomName roomName, int numberOfMessages, Username username) {
         // In caso il parametro non sia valido vengono ritornati tutti i messaggi disponibili.
         if (numberOfMessages < 0) {
             return getByRoomName(roomName, username);
@@ -82,8 +82,8 @@ public class ChatMessageRepository {
 
         return queryMessages(
             String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
-                username.getValue(),
-                roomName,
+                username.value(),
+                roomName.value(),
                 numberOfMessages
         );
     }
@@ -102,7 +102,9 @@ public class ChatMessageRepository {
                 Username.of(rs.getString("username")));
 
         RoomEntity room = RoomEntity.of(
-                rs.getLong("room_id"), rs.getString("roomname"), VisibilityEnum.valueOf(rs.getString("visibility").trim())
+                rs.getLong("room_id"),
+                RoomName.of(rs.getString("roomname")),
+                VisibilityEnum.valueOf(rs.getString("visibility").trim())
         );
 
         return ChatMessageEntity

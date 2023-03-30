@@ -1,9 +1,6 @@
 package com.cgm.infolab.db.repository;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.model.Username;
-import com.cgm.infolab.db.model.VisibilityEnum;
+import com.cgm.infolab.db.model.*;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,20 +25,20 @@ public class RoomRepository {
                                                             "LEFT JOIN infolab.users u " +
                                                             "ON u.id = s.user_id " +
                                                             "WHERE (u.username = ? OR r.visibility = 'PUBLIC') %s ";
-
     private final String ROOMS_DISTINCT_ON_QUERY =
                     "SELECT DISTINCT ON (r.roomname) " +
                             "r.id room_id, r.roomname, r.visibility, u.id user_id, u.username, " +
                             "m.id message_id, m.sent_at, m.content " +
-                    "FROM infolab.chatmessages m " +
-                    "LEFT JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
-                    "LEFT JOIN infolab.rooms_subscriptions s ON r.id = s.room_id " +
-                    "LEFT JOIN infolab.users u ON u.id = s.user_id AND u.id = m.sender_id " +
+                    "FROM infolab.rooms r " +
+                    "INNER JOIN infolab.chatmessages m ON m.recipient_room_id = r.id " +
+                    "LEFT JOIN infolab.rooms_subscriptions s ON s.room_id = r.id " +
+                    "LEFT JOIN infolab.users u ON m.sender_id = u.id " +
                     "WHERE EXISTS " +
-                    "(SELECT s.room_id FROM infolab.rooms_subscriptions s " +
-                        "RIGHT JOIN infolab.users u ON u.id = s.user_id " +
-                        "WHERE (u.username = ? OR r.visibility = 'PUBLIC')) %s " + // per aggiungere condizioni nel WHERE
-                    "order by r.roomname, sent_at desc";
+                        "(SELECT * FROM infolab.rooms r2 " +
+                            "LEFT JOIN infolab.rooms_subscriptions s2 ON s2.room_id = r2.id " +
+                            "LEFT JOIN infolab.users u2 ON u2.id = s2.user_id " +
+                            "WHERE (u2.username = ? OR r2.visibility = 'PUBLIC') AND r2.id = r.id) %s " + // per aggiungere condizioni nel WHERE
+                    "ORDER BY r.roomname, m.sent_at DESC";
 
     public RoomRepository(JdbcTemplate jdbcTemplate,
                           DataSource dataSource,
@@ -58,7 +55,7 @@ public class RoomRepository {
                 .usingGeneratedKeyColumns("id");
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("roomname", room.getName());
+        parameters.put("roomname", room.getName().value());
         parameters.put("visibility", room.getVisibility().name());
         return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
@@ -68,8 +65,8 @@ public class RoomRepository {
      * @param roomName da cui risalire all'id
      * @return id della room con il nome passato a parametro. -1 in caso la room non esista.
      */
-    public Optional<RoomEntity> getByRoomName(String roomName, Username username) {
-        return queryRoom(addConditionToRoomsQueryJoined(" AND r.roomname = ? "), username.getValue(), roomName);
+    public Optional<RoomEntity> getByRoomName(RoomName roomName, Username username) {
+        return queryRoom(addConditionToRoomsQueryJoined(" AND r.roomname = ? "), username.value(), roomName.value());
     }
 
     // Questo metodo è necessario perché altrimenti nella creazione della RoomSubscription in ChatController
@@ -77,8 +74,8 @@ public class RoomRepository {
     // Non ho potuto cambiare l'altro perché per ora la gestione della sicurezza in queryMessages di
     // ChatMessagesRepository è basata sul fatto che se non si ha accesso alla stanza allora non viene ritornato l'id
     // e viene lanciata un'eccezione
-    public Optional<RoomEntity> getByRoomNameEvenIfNotSubscribed(String roomName) {
-        return queryRoom(String.format("%s WHERE roomname = ?", ROOMS_QUERY), roomName);
+    public Optional<RoomEntity> getByRoomNameEvenIfNotSubscribed(RoomName roomName) {
+        return queryRoom(String.format("%s WHERE roomname = ?", ROOMS_QUERY), roomName.value());
     }
 
     /**
@@ -87,7 +84,7 @@ public class RoomRepository {
      * @return oggetto Room con il nome preso dal db. Ritorna null se la room non esiste.
      */
     public Optional<RoomEntity> getById(long id, Username username) {
-        return queryRoom(addConditionToRoomsQueryJoined("AND r.id = ?"), username.getValue(), id);
+        return queryRoom(addConditionToRoomsQueryJoined("AND r.id = ?"), username.value(), id);
     }
 
     private Optional<RoomEntity> queryRoom(String query, Object... queryParams) {
@@ -101,7 +98,7 @@ public class RoomRepository {
     }
 
     public List<RoomEntity> getAllWhereLastMessageNotNull(Username username) {
-        return queryRooms(addConditionToNewRoomsDistinctOnQuery(""), username.getValue());
+        return queryRooms(addConditionToNewRoomsDistinctOnQuery(""), username.value());
     }
 
     public List<RoomEntity> getAfterDate(LocalDate dateLimit, Username username) {
@@ -109,7 +106,7 @@ public class RoomRepository {
             return getAllWhereLastMessageNotNull(username);
         }
 
-        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), username.getValue(), dateLimit);
+        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), username.value(), dateLimit);
     }
 
     private List<RoomEntity> queryRooms(String query, Object... queryParams) {
@@ -126,7 +123,7 @@ public class RoomRepository {
     private RoomEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
         return RoomEntity
                 .of(rs.getLong("room_id"),
-                        rs.getString("roomname"),
+                        RoomName.of(rs.getString("roomname")),
                         VisibilityEnum.valueOf(rs.getString("visibility").trim()));
     }
 
@@ -134,8 +131,8 @@ public class RoomRepository {
         ChatMessageEntity message = chatMessageRepository.mapToEntity(rs, rowNum);
         return RoomEntity
                 .of(rs.getLong("room_id"),
-                        rs.getString("roomname"),
-                        VisibilityEnum.valueOf(rs.getString("visibility")),
+                        RoomName.of(rs.getString("roomname")),
+                        VisibilityEnum.valueOf(rs.getString("visibility").trim()),
                         List.of(message));
     }
 

@@ -6,28 +6,28 @@ import java.util.List;
 
 public class RoomEntity {
     private long id;
-    private String name;
+    private RoomName name;
     private VisibilityEnum visibility;
     private List<ChatMessageEntity> messages;
 
-    private RoomEntity(long id, String name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
+    private RoomEntity(long id, RoomName name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
         this.id = id;
         this.name = name;
         this.visibility = visibility;
         this.messages = messages;
     }
 
-    public static RoomEntity of(String name, VisibilityEnum visibility) {
+    public static RoomEntity of(RoomName name, VisibilityEnum visibility) {
         return new RoomEntity(ID.None, name, visibility, null);
     }
 
 
 
-    public static RoomEntity of(long id, String name, VisibilityEnum visibility) {
+    public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility) {
         return new RoomEntity(id, name, visibility, null);
     }
 
-    public static RoomEntity of(long id, String name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
+    public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
         return new RoomEntity(id, name, visibility, messages);
     }
 
@@ -39,11 +39,11 @@ public class RoomEntity {
         this.id = id;
     }
 
-    public String getName() {
+    public RoomName getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(RoomName name) {
         this.name = name;
     }
 

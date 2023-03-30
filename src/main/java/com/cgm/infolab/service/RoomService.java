@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -39,7 +38,7 @@ public class RoomService {
     }
 
     public RoomDto fromEntityToDto(RoomEntity roomEntity) {
-        RoomDto roomDto = RoomDto.of(roomEntity.getName());
+        RoomDto roomDto = RoomDto.of(roomEntity.getName().value());
 
         LastMessageDto message = chatService.fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
 
@@ -48,18 +47,8 @@ public class RoomService {
         return roomDto;
     }
 
-    public List<RoomDto> getRooms(String date, Username username) {
-        List<RoomDto> roomDtos = new ArrayList<>();
-
-        List<RoomEntity> roomEntities = roomRepository.getAfterDate(fromStringToDate(date), username);
-
-        if (roomEntities.size() > 0) {
-            roomDtos = roomEntities.stream().map(this::fromEntityToDto).toList();
-        } else {
-            log.info("Non sono state trovate room");
-        }
-
-        return roomDtos;
+    public List<RoomEntity> getRooms(String date, Username username) {
+        return roomRepository.getAfterDate(fromStringToDate(date), username);
     }
 
     private LocalDate fromStringToDate(String date) {
@@ -72,11 +61,7 @@ public class RoomService {
     }
 
     private RoomEntity createPrivateRoom(Username user1, Username user2) {
-        String[] users = {user1.getValue(), user2.getValue()};
-        Arrays.sort(users);
-        // Il criterio con cui vengono create le room è mettere i nomi degli utenti in ordine lessicografico,
-        // in modo da evitare room multiple tra gli stessi utenti
-        String roomName = String.format("%s-%s", users[0], users[1]);
+        RoomName roomName = RoomName.of(user1, user2);
 
         try {
             long roomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
@@ -87,15 +72,15 @@ public class RoomService {
         }
     }
 
-    private void subscribeUserToRoom(String roomName, Username username) {
+    private void subscribeUserToRoom(RoomName roomName, Username username) {
         RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
         try {
             RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseThrow(() -> {
-                throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName));
+                throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
             });
 
             UserEntity user = userRepository.getByUsername(username).orElseThrow(() -> {
-                throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.getValue()));
+                throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()));
             });
 
             roomSubscription.setRoomId(room.getId());
@@ -107,7 +92,7 @@ public class RoomService {
         }
     }
 
-    private void subscribeUsersToRoom(String roomName, Username... usernames) {
+    private void subscribeUsersToRoom(RoomName roomName, Username... usernames) {
         for (Username u : usernames) {
             subscribeUserToRoom(roomName, u);
         }

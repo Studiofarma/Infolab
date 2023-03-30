@@ -18,6 +18,7 @@ import java.util.List;
 @RestController
 public class ChatApiMessagesController {
     private final ChatService chatService;
+    private final Logger log = LoggerFactory.getLogger(ChatApiMessagesController.class);
 
     public ChatApiMessagesController(ChatService chatService) {
         this.chatService = chatService;
@@ -35,6 +36,16 @@ public class ChatApiMessagesController {
             numberOfMessages = -1;
         }
 
-        return chatService.getAllMessagesGeneral(numberOfMessages, Username.of(principal.getName()));
+        List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
+        List<ChatMessageEntity> chatMessageEntities =
+                chatService.getAllMessagesGeneral(numberOfMessages, Username.of(principal.getName()));
+
+        if (chatMessageEntities.size() > 0) {
+            chatMessageDtos = chatMessageEntities.stream().map(chatService::fromEntityToChatMessageDto).toList();
+        } else {
+            log.info("Non sono stati trovati messaggi nella room specificata");
+        }
+
+        return chatMessageDtos;
     }
 }

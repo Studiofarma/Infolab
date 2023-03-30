@@ -1,7 +1,13 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.db.model.ChatMessageEntity;
+import com.cgm.infolab.db.model.RoomName;
+import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.repository.ChatMessageRepository;
+import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
+import com.cgm.infolab.service.RoomService;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,9 +34,7 @@ import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static org.awaitility.Awaitility.await;
 
@@ -44,7 +48,19 @@ class InfolabApplicationTests {
     @Autowired
     public TestRestTemplate rest;
 
+    @Autowired
+    public ChatMessageRepository chatMessageRepository;
+
+    @Autowired
+    public UserRepository userRepository;
+
     WebSocketStompClient websocket;
+
+    UserEntity userBanana = UserEntity.of(Username.of("banana"));
+    UserEntity user1 = UserEntity.of(Username.of("user1"));
+
+    @Autowired
+    RoomService roomService;
 
     @BeforeAll
     public void setupAll(){
@@ -53,11 +69,111 @@ class InfolabApplicationTests {
                 new SockJsClient(
                         List.of(new WebSocketTransport(new StandardWebSocketClient()))));
         websocket.setMessageConverter(new MappingJackson2MessageConverter());
+        userRepository.add(userBanana);
+        roomService.createPrivateRoomAndSubscribeUsers(user1.getName(), userBanana.getName());
     }
 
     @Test
     void whenSomeoneRegister_everyoneReceivesAJoinNotification() throws Exception {
-        String basicAuth = basicAuth("user1", "password1");
+        StompSession client = getStompSession();
+
+        BlockingQueue<ChatMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
+        client.subscribe("/topic/public", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return ChatMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessages.add((ChatMessageDto) payload);
+            }
+        });
+
+        ChatMessageDto sentMessage = new ChatMessageDto(null, Username.of("banana").value());
+        client.send("/app/chat.register", sentMessage);
+
+        await()
+            .atMost(1, TimeUnit.SECONDS)
+            .untilAsserted(() -> Assertions.assertEquals(sentMessage, receivedMessages.poll()));
+    }
+    @Test
+    void whenMessageIsSentInGeneral_thenItShouldBeSavedInTheDbAndTheMessageIsReceived() throws Exception {
+
+        StompSession client = getStompSession();
+
+        BlockingQueue<ChatMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
+        client.subscribe("/topic/public", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return ChatMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessages.add((ChatMessageDto) payload);
+            }
+        });
+
+        ChatMessageDto sentMessage = new ChatMessageDto("pippo", userBanana.getName().value());
+        client.send("/app/chat.send", sentMessage);
+
+        await()
+            .atMost(1, TimeUnit.SECONDS)
+            .untilAsserted(() -> Assertions.assertEquals(sentMessage, receivedMessages.poll()));
+        List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("general"), 1, Username.of("user1"));
+        Assertions.assertEquals(1,messages.size());
+        Assertions.assertEquals(sentMessage.getContent(),messages.get(0).getContent());
+    }
+
+    @Test
+    void whenMessageIsSentInPrivateChat_thenMessageShouldBeSavedInDbAndReceivedByTheSenderAndByTheDestinationUser() throws Exception {
+        StompSession client = getStompSession();
+
+        BlockingQueue<ChatMessageDto> receivedMessagesSender = new ArrayBlockingQueue<>(2);
+        BlockingQueue<ChatMessageDto> receivedMessagesDestination = new ArrayBlockingQueue<>(2);
+        client.subscribe("/queue/" + userBanana.getName().value(), new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return ChatMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessagesDestination.add((ChatMessageDto) payload);
+            }
+        });
+
+        client.subscribe("/user/topic/me", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return ChatMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessagesSender.add((ChatMessageDto) payload);
+            }
+        });
+
+        ChatMessageDto sentMessage = new ChatMessageDto("pippo", userBanana.getName().value());
+        client.send("/app/chat.send." + userBanana.getName().value(), sentMessage);
+
+        await()
+            .atMost(1, TimeUnit.SECONDS)
+            .untilAsserted(() -> Assertions.assertEquals(sentMessage, receivedMessagesSender.poll()));
+
+        await()
+            .atMost(1, TimeUnit.SECONDS)
+            .untilAsserted(() -> Assertions.assertEquals(sentMessage, receivedMessagesDestination.poll()));
+
+        List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("banana-user1"), 1, Username.of("user1"));
+        Assertions.assertEquals(1,messages.size());
+        Assertions.assertEquals(sentMessage.getContent(),messages.get(0).getContent());
+    }
+
+    private StompSession getStompSession() throws InterruptedException, ExecutionException, TimeoutException {
+        String basicAuth = basicAuth(user1.getName().value(), "password1");
 
         ResponseEntity<MyCsrfToken> csrfResponse = rest.exchange(
                 RequestEntity
@@ -74,26 +190,7 @@ class InfolabApplicationTests {
         StompSession session = websocket
             .connectAsync(String.format("http://localhost:%d/chat?access_token=%s", port, encodedAuth("user1", "password1")), headers, stompHeaders, new StompSessionHandlerAdapter() {})
             .get(1, TimeUnit.SECONDS);
-
-        BlockingQueue<ChatMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
-        session.subscribe("/topic/public", new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return ChatMessageDto.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                receivedMessages.add((ChatMessageDto) payload);
-            }
-        });
-
-        ChatMessageDto sentMessage = new ChatMessageDto(null, Username.of("banana"));
-        session.send("/app/chat.register", sentMessage);
-
-        await()
-            .atMost(1, TimeUnit.SECONDS)
-            .untilAsserted(() -> Assertions.assertEquals(sentMessage, receivedMessages.poll()));
+        return session;
     }
 
     private static String basicAuth(String user, String password) {

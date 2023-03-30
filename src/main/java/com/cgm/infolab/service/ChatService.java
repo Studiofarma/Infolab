@@ -1,9 +1,6 @@
 package com.cgm.infolab.service;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
@@ -35,18 +32,17 @@ public class ChatService {
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
     }
-    public void saveMessageInDb(ChatMessageDto message, Username username){
+    public void saveMessageInDb(ChatMessageDto message, Username username, RoomName roomName){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
-        UserEntity sender = userRepository.getByUsername(message.getSender()).orElseGet(() -> {
-            log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender().getValue()));
+        UserEntity sender = userRepository.getByUsername(Username.of(message.getSender())).orElseGet(() -> {
+            log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
             return null;
         });
 
-        String roomName = "general";
         RoomEntity room = roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
-            log.info(String.format("Room roomName=\"%s\" non trovata.", roomName));
+            log.info(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
             return null;
         });
         ChatMessageEntity messageEntity =
@@ -62,33 +58,26 @@ public class ChatService {
     public ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
         return new ChatMessageDto(messageEntity.getContent(),
                 messageEntity.getTimestamp(),
-                messageEntity.getSender().getName());
+                messageEntity.getSender().getName().value());
     }
 
     public LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
         return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp());
     }
 
-    public List<ChatMessageDto> getAllMessagesGeneral (int numberOfMessages, Username username) {
-        List<ChatMessageEntity> chatMessageEntities;
-        List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
+    public List<ChatMessageEntity> getAllMessagesGeneral (int numberOfMessages, Username username) {
+        List<ChatMessageEntity> chatMessageEntities = new ArrayList<>();
         try {
             chatMessageEntities = chatMessageRepository
-                    .getByRoomNameNumberOfMessages("general",
+                    .getByRoomNameNumberOfMessages(RoomName.of("general"),
                             numberOfMessages,
                             username);
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());
-            return chatMessageDtos;
+            return chatMessageEntities;
         }
 
-        if (chatMessageEntities.size() > 0) {
-            chatMessageDtos = chatMessageEntities.stream().map(this::fromEntityToChatMessageDto).toList();
-        } else {
-            log.info("Non sono stati trovati messaggi nella room specificata");
-        }
-
-        return chatMessageDtos;
+        return chatMessageEntities;
     }
 }
 
