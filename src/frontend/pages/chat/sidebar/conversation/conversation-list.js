@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 
+import { CookieService } from "../../../../services/cookie-service";
 import { OpenChatsService } from "../../../../services/open-chats-service";
 
 import "../../../../components/avatar.js";
@@ -43,8 +44,9 @@ class ConversationList extends LitElement {
 
   setList() {
     let tmp = [];
+    let cookie = CookieService.getCookie();
 
-    OpenChatsService.getOpenChats()
+    OpenChatsService.getOpenChats(cookie.username, cookie.password)
       .then((element) => {
         element["data"].forEach((pharmacy) => {
           tmp.push(pharmacy);
