@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
-const axios = require("axios").default;
+
+import { OpenChatService }from"../../../../services/open-chat-service";
 
 import "../../../../components/avatar.js";
 import "./conversation.js";
@@ -40,20 +41,12 @@ class ConversationList extends LitElement {
     return html` <div class="pharmaciesList">${this.renderList()}</div> `;
   }
 
-  async executePharmaciesCall() {
-    return axios({
-      url: "http://localhost:3000/openChats",
-      method: "get",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-      },
-    });
-  }
+
 
   setList() {
     let tmp = [];
 
-    this.executePharmaciesCall()
+    OpenChatService.getOpenChats()
       .then((element) => {
         element["data"].forEach((pharmacy) => {
           tmp.push(pharmacy);
