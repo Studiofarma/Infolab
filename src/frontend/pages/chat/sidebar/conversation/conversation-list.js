@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 
-import { OpenChatService }from"../../../../services/open-chat-service";
+import { OpenChatsService } from "../../../../services/open-chats-service";
 
 import "../../../../components/avatar.js";
 import "./conversation.js";
@@ -41,12 +41,10 @@ class ConversationList extends LitElement {
     return html` <div class="pharmaciesList">${this.renderList()}</div> `;
   }
 
-
-
   setList() {
     let tmp = [];
 
-    OpenChatService.getOpenChats()
+    OpenChatsService.getOpenChats()
       .then((element) => {
         element["data"].forEach((pharmacy) => {
           tmp.push(pharmacy);
