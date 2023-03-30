@@ -253,7 +253,7 @@ export class Chat extends LitElement {
       this.login.username,
       this.login.password
     ).then((messages) => {
-      this.messages = messages.data;
+      this.messages = messages.data.reverse();
     });
   }
 
