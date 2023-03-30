@@ -3,10 +3,9 @@ import { resolveMarkdown } from "lit-markdown";
 
 import "../../../../components/formatting-button";
 import "../../../../components/button-text";
-import { IconNames } from "../../../../enums/icon-names";
 
+import { IconNames } from "../../../../enums/icon-names";
 import { MarkdownService } from "../../../../services/markdown-services";
-//import { Icon } from "../../../../components/icon";
 
 export class Editor extends LitElement {
   static properties = {
@@ -117,7 +116,7 @@ export class Editor extends LitElement {
       <!-- diventerà un componente -->
       <div class="formatting-bar">
         <il-formatting-button
-          content= ${IconNames.bold}
+          content=${IconNames.bold}
           @click=${this.insertBold}
         ></il-formatting-button>
         <il-formatting-button

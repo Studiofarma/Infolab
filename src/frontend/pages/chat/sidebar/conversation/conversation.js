@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 
 import "../../../../components/icon";
 import { IconNames } from "../../../../enums/icon-names";
+
 class Conversation extends LitElement {
   static properties = {
     chat: {},
