@@ -4,6 +4,7 @@ import { resolveMarkdown } from "lit-markdown";
 import "../../../../components/formatting-button";
 import "../../../../components/button-text";
 
+import { IconNames } from "../../../../enums/icon-names";
 import { MarkdownService } from "../../../../services/markdown-services";
 
 export class Editor extends LitElement {
@@ -115,29 +116,29 @@ export class Editor extends LitElement {
       <!-- diventerà un componente -->
       <div class="formatting-bar">
         <il-formatting-button
-          content="mdiFormatBold"
+          content=${IconNames.bold}
           @click=${this.insertBold}
         ></il-formatting-button>
         <il-formatting-button
-          content="mdiFormatItalic"
+          content=${IconNames.italic}
           @click=${this.insertItalic}
         ></il-formatting-button>
         <il-formatting-button
-          content="mdiFormatStrikethroughVariant"
+          content=${IconNames.strikethrough}
           @click=${this.insertStrike}
         ></il-formatting-button>
         <il-formatting-button
-          content="mdiLink"
+          content=${IconNames.link}
           @click=${this.insertLink}
         ></il-formatting-button>
         <il-formatting-button
-          content="mdiMinus"
+          content=${IconNames.minus}
           @click=${this.insertLine}
         ></il-formatting-button>
 
         <div class="select-list">
           <il-formatting-button
-            content="mdiFormatListBulleted"
+            content=${IconNames.listBulleted}
             @click=${this.insertList}
           ></il-formatting-button>
           <div class="dropdown">
@@ -167,7 +168,7 @@ export class Editor extends LitElement {
 
         <div class="select-heading">
           <il-formatting-button
-            content="mdiFormatTitle"
+            content=${IconNames.title}
             @click=${this.insertHeading}
           ></il-formatting-button>
           <div class="dropdown">

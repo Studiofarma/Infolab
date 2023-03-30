@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
-import * as mdi from "@mdi/js";
-import "@jamescoyle/svg-icon";
+
+import "./icon";
 
 export class ButtonIcon extends LitElement {
   static get properties() {
@@ -47,7 +47,7 @@ export class ButtonIcon extends LitElement {
   render() {
     return html`
       <div id="button">
-        <svg-icon type="mdi" path="${mdi[this.content]}"></svg-icon>
+        <il-icon name="${this.content}"></il-icon>
       </div>
     `;
   }

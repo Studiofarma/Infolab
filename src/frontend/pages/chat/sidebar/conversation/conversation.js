@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
-import * as mdi from "@mdi/js";
-import "@jamescoyle/svg-icon";
+
+import "../../../../components/icon";
+import { IconNames } from "../../../../enums/icon-names";
 
 class Conversation extends LitElement {
   static properties = {
@@ -44,7 +45,7 @@ class Conversation extends LitElement {
       grid-area: avatar;
     }
 
-    svg-icon {
+    il-icon {
       border-radius: 50%;
       background-color: #e7f3ff;
       height: 25px;
@@ -87,14 +88,14 @@ class Conversation extends LitElement {
         <il-avatar .chat=${this.chat}></il-avatar>
         <p class="name">${this.chat.name}</p>
         <p class="lastMessage">${this.chat.lastMessage}</p>
+
         <p id="unread">
           ${this.chat.unread > 0
             ? html`
-                <svg-icon
+                <il-icon
                   style="display:${this.notificationOpacity};"
-                  type="mdi"
-                  path="${mdi[this.getUnreadIconName(this.chat.unread)]}"
-                ></svg-icon>
+                  name="${this.getUnreadIconName(this.chat.unread)}"
+                ></il-icon>
               `
             : html``}
         </p>
@@ -105,34 +106,34 @@ class Conversation extends LitElement {
   getUnreadIconName(unread) {
     switch (unread) {
       case 1:
-        return "mdiNumeric1Circle";
+        return IconNames.numeric1;
 
       case 2:
-        return "mdiNumeric2Circle";
+        return IconNames.numeric2;
 
       case 3:
-        return "mdiNumeric3Circle";
+        return IconNames.numeric3;
 
       case 4:
-        return "mdiNumeric4Circle";
+        return IconNames.numeric4;
 
       case 5:
-        return "mdiNumeric5Circle";
+        return IconNames.numeric5;
 
       case 6:
-        return "mdiNumeric6Circle";
+        return IconNames.numeric6;
 
       case 7:
-        return "mdiNumeric7Circle";
+        return IconNames.numeric7;
 
       case 8:
-        return "mdiNumeric8Circle";
+        return IconNames.numeric8;
 
       case 9:
-        return "mdiNumeric9Circle";
+        return IconNames.numeric9;
 
       default:
-        return "mdiNumeric9PlusCircle";
+        return IconNames.numericPlus;
     }
   }
 }

@@ -1,5 +1,6 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 
+import { IconNames } from "../enums/icon-names";
 import { InputField } from "./input-field";
 
 export class InputPassword extends InputField {
@@ -58,7 +59,7 @@ export class InputPassword extends InputField {
 
         <il-button-icon
           @click=${this.setVisibility}
-          content="${!this.pswVisibility ? "mdiEye" : "mdiEyeOff"}"
+          content="${!this.pswVisibility ? IconNames.eye : IconNames.eyeOff}"
         ></il-button-icon>
       </div>
     `;

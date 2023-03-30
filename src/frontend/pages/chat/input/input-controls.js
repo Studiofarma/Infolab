@@ -6,6 +6,8 @@ import "./editor/editor";
 import "../../../components/button-icon";
 import "../../../components/input-field";
 
+import { IconNames } from "../../../enums/icon-names";
+
 export class InputControls extends LitElement {
   static properties = {
     message: "",
@@ -154,7 +156,7 @@ export class InputControls extends LitElement {
         <div id="submitContainer">
           <il-button-icon
             @click=${this.sendMessage}
-            content="mdiSend"
+            content=${IconNames.send}
           ></il-button-icon>
         </div>
       </div>
@@ -185,11 +187,11 @@ export class InputControls extends LitElement {
 
   openInsertionMode(e) {
     const option = e.detail.opt;
-    if (option === "mdiPencil") {
+    if (option === IconNames.pencil) {
       this.bEditor = !this.bEditor;
       this.updateMessage();
       this.getTextarea().value = this.message;
-    } else if (option === "mdiEmoticon") this.bEmoji = !this.bEmoji;
+    } else if (option == IconNames.emoticon) this.bEmoji = !this.bEmoji;
   }
 
   sendMessage() {

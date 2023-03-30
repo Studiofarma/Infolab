@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 
 import "./button-icon";
+import { IconNames } from "../enums/icon-names";
 
 export class Snackbar extends LitElement {
   static properties = {
@@ -73,7 +74,7 @@ export class Snackbar extends LitElement {
       <div id="snackbar" class=${this.type}>
         <p>${this.content}</p>
         <il-button-icon
-          content="mdiClose"
+          content=${IconNames.close}
           @click=${this.closeSnackbar}
         ></il-button-icon>
       </div>

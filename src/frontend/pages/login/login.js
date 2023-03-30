@@ -270,7 +270,6 @@ export class Login extends LitElement {
               title="Password"
             ></il-input-password>
           </div>
-
           <div>
             <il-button-text
               @click=${this.loginConfirm}
@@ -278,9 +277,12 @@ export class Login extends LitElement {
             ></il-button-text>
           </div>
         </div>
-      </div>
 
-      <il-snackbar content="CREDENZIALI NON VALIDE" type="error"></il-snackbar>
+        <il-snackbar
+          content="CREDENZIALI NON VALIDE"
+          type="error"
+        ></il-snackbar>
+      </div>
     `;
   }
 

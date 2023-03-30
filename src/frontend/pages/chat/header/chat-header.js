@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 
 import "../../../components/button-icon";
+import { IconNames } from "../../../enums/icon-names";
 
 export class ChatHeader extends LitElement {
   static get properties() {
@@ -40,7 +41,7 @@ export class ChatHeader extends LitElement {
     return html`
       <div class="chatHeader">
         <div class="settings">
-          <il-button-icon content="mdiCog"></il-button-icon>
+          <il-button-icon content=${IconNames.option}></il-button-icon>
         </div>
 
         <div class="contact">
