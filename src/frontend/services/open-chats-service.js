@@ -1,12 +1,13 @@
 const axios = require("axios").default;
 
 export class OpenChatsService {
-  static async getOpenChats() {
+  static async getOpenChats(username, password) {
     return axios({
-      url: "http://localhost:3000/openChats",
+      url: "/api/rooms",
       method: "get",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
+      auth: {
+        username: username,
+        password: password,
       },
     });
   }

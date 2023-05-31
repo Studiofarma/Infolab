@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 
 import { LoginService } from "../../services/login-service";
+import { CookieService } from "../../services/cookie-service";
 
 import "../../components/snackbar";
 import "../../components/button-icon";
@@ -34,8 +35,8 @@ export class Login extends LitElement {
     this.emptyPasswordField = false;
     this.header = "";
     this.token = "";
-    this.cookie = this.getCookie();
-    if (this.cookie) this.loginConfirm();
+    this.cookie = CookieService.getCookie();
+    if (this.cookie.isValid) this.loginConfirm();
   }
 
   static styles = css`
@@ -202,36 +203,6 @@ export class Login extends LitElement {
     }
   `;
 
-  getCookiePropertyByName(name) {
-    const result = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith(`${name}=`))
-      ?.split("=")[1];
-
-    return result;
-  }
-
-  getCookie() {
-    const user = this.getCookiePropertyByName(USERNAME_COOKIE_NAME);
-    if (!user) return false;
-
-    const pass = this.getCookiePropertyByName(PASSWORD_COOKIE_NAME);
-    if (!pass) return false;
-
-    const header = this.getCookiePropertyByName(HEADER_COOKIE_NAME);
-    if (!header) return false;
-
-    const token = this.getCookiePropertyByName(TOKEN_COOKIE_NAME);
-    if (!token) return false;
-
-    this.username = user;
-    this.password = pass;
-    this.header = header;
-    this.token = token;
-
-    return true;
-  }
-
   setCookie() {
     let expires = new Date(Date.now());
     expires.setDate(expires.getDate() + 1);
@@ -329,9 +300,9 @@ export class Login extends LitElement {
   }
 
   loginConfirm() {
-    if (this.cookie) {
-      this.username = this.getCookiePropertyByName(USERNAME_COOKIE_NAME);
-      this.password = this.getCookiePropertyByName(PASSWORD_COOKIE_NAME);
+    if (this.cookie.isValid) {
+      this.username = this.cookie.username;
+      this.password = this.cookie.password;
     }
 
     if (this.username === "" && this.password === "") {
@@ -364,8 +335,6 @@ export class Login extends LitElement {
         this.getDivInSnackbar().style.bottom = "20px";
       });
   }
-
-
 }
 
 customElements.define("il-login", Login);

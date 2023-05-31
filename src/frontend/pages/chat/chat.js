@@ -249,9 +249,11 @@ export class Chat extends LitElement {
   }
 
   async firstUpdated() {
-    MessagesService.getMessagesById(2).then((messages) => {
-      let obj = messages.data[0];
-      this.messages = obj.messages;
+    MessagesService.getMessagesById(
+      this.login.username,
+      this.login.password
+    ).then((messages) => {
+      this.messages = messages.data.reverse();
     });
   }
 
