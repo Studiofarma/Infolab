@@ -277,26 +277,34 @@ export class Editor extends LitElement {
 
 	insertBold() {
 		const text = this.getText("grassetto");
-		this.insertInTextArea("**" + text + "**");
+		let regEx = /[*]{2}/g;
+		if (text.startsWith('**') && text.endsWith('**')) this.insertInTextArea(text.replace(regEx, ""));
+		else this.insertInTextArea("**" + text + "**");
 	}
 
 	insertItalic() {
 		const text = this.getText("italic");
-		this.insertInTextArea("*" + text + "*");
+		let regEx = /[*]{1}/g;
+		if (text.startsWith('*') && text.endsWith('*')) this.insertInTextArea(text.replace(regEx, ""));
+		else this.insertInTextArea("*" + text + "*");
 	}
 
 	insertStrike() {
 		const text = this.getText("barrato");
-		this.insertInTextArea("~~" + text + "~~");
+		let regEx = /[~]{2}/g;
+		if (text.startsWith('~~') && text.endsWith('~~')) this.insertInTextArea(text.replace(regEx, ""));
+		else this.insertInTextArea("~~" + text + "~~");
 	}
 
 	insertLink() {
 		const text = this.getText("testo");
-		this.insertInTextArea("[" + text + "](link)");
+		let regEx = /[\[\]]+|(\(.*\))/g;
+		if (text.startsWith('[') && text.includes('](') && text.endsWith(')')) this.insertInTextArea(text.replace(regEx, ""));
+		else this.insertInTextArea("[" + text + "](insert link)");
 	}
 
 	insertLine() {
-		this.insertInTextArea("\n - - - \n");
+	  this.insertInTextArea("\n - - - \n");
 	}
 
 	insertList() {
