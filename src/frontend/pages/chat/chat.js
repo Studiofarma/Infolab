@@ -128,7 +128,7 @@ export class Chat extends LitElement {
       position: relative;
       min-width: 300px;
       max-width: 500px;
-      padding: 15px 8px;
+      padding: 8px 8px 10px;
       background: #f2f4f7;
       box-shadow: 0 0 10px #989a9d;
     }
@@ -170,9 +170,8 @@ export class Chat extends LitElement {
     .sender::after {
       content: "";
       position: absolute;
-      transform: translate(50%, -600%);
-      bottom: -15px;
-      right: -4px;
+      top: 0px;
+      right: -9px;
       border-top: 10px solid #f2f4f7;
       border-left: 0px solid transparent;
       border-right: 10px solid transparent;
@@ -195,9 +194,8 @@ export class Chat extends LitElement {
     .receiver::after {
       content: "";
       position: absolute;
-      transform: translate(50%, -600%);
-      bottom: -15px;
-      left: -15px;
+      top: 0px;
+      left: -9px;
       border-top: 10px solid #f2f4f7;
       border-left: 10px solid transparent;
       border-right: 0px solid transparent;
@@ -212,6 +210,10 @@ export class Chat extends LitElement {
       border-left: 10px solid transparent;
       border-right: 0px solid transparent;
       filter: blur(10px);
+    }
+    .receiver-name {
+      font-size: 13px;
+      color: blue;
     }
   `;
 
@@ -231,6 +233,9 @@ export class Chat extends LitElement {
                         ? "sender"
                         : "receiver"}
                     >
+                      <p class="receiver-name">
+                        ${item.sender != this.login.username ? item.sender : ""}
+                      </p>
                       ${resolveMarkdown(
                         MarkdownService.parseMarkdown(item.content)
                       )}
