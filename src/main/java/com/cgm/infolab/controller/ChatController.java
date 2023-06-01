@@ -21,6 +21,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+import java.sql.Timestamp;
 
 @Controller
 public class ChatController {
@@ -65,7 +66,8 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-       chatService.saveMessageInDb(message, Username.of(principal.getName()), RoomName.of("general"));
+        Timestamp time = chatService.saveMessageInDb(message, Username.of(principal.getName()), RoomName.of("general"));
+        message.setTimestamp(time.toLocalDateTime());
         return message;
     }
 

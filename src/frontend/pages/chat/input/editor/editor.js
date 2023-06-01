@@ -12,12 +12,14 @@ export class Editor extends LitElement {
 	static properties = {
 		message: "",
 		openPreview: mdiFormatListText,
+	 	lastKeyPressed: '',
 	};
 
 	constructor() {
 		super();
 		this.message = "";
 		this.openPreview = false;
+		this.lastKeyPressed = '';
 	}
 
 	static styles = css`
@@ -205,7 +207,6 @@ export class Editor extends LitElement {
 					text=${this.openPreview ? "Chiudi preview" : "Apri preview "}
 				></il-button-text>
 			</div>
-
 			${!this.openPreview
 				? html`<textarea
 						placeholder="Scrivi un messaggio..."
@@ -254,6 +255,21 @@ export class Editor extends LitElement {
 				return;
 			}
 		}
+
+		let currentKeyPressed = event.key;
+		if (this.lastKeyPressed === 'Alt' && currentKeyPressed === 'b') {
+			this.insertBold();
+		}
+		if (this.lastKeyPressed === 'Alt' && currentKeyPressed === 'i') {
+			this.insertItalic();
+		}
+		if (this.lastKeyPressed === 'Alt' && currentKeyPressed === 's') {
+			this.insertStrike();
+		}
+		if (this.lastKeyPressed === 'Alt' && currentKeyPressed === 'l') {
+			this.insertLink();
+		}
+		this.lastKeyPressed = currentKeyPressed;
 	}
 
 	insertInTextArea(str) {
@@ -261,14 +277,15 @@ export class Editor extends LitElement {
 		let start = textarea.selectionStart;
 		let finish = textarea.selectionEnd;
 
-		this.message =
-			this.message.slice(0, start) + str + this.message.slice(finish);
+		this.message = textarea.value.slice(0, start) + str + textarea.value.slice(finish);
+		textarea.value = this.message;
 	}
 
 	//funzioni per formatting-buttons
 
 	getText(text) {
-		const sel = window.getSelection();
+		let sel = window.getSelection();
+		console.log(sel);
 		const t = sel ? sel.toString() : "";
 		if (t !== "") sel.deleteFromDocument();
 		else t = text;

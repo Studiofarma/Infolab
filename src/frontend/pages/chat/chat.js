@@ -284,7 +284,6 @@ export class Chat extends LitElement {
   }
 
   scrollToBottom() {
-    console.log('Andato a capo');
     let element = this.renderRoot.querySelector("ul.messageBox");
     element.scrollBy({ top: element.scrollHeight - element.offsetHeight });
   }
