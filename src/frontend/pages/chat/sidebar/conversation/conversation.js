@@ -75,7 +75,7 @@ class Conversation extends LitElement {
 		}
 
 		// Need to get the sender of the last message from BE
-		this.chat.lastMessage.sender = "User";
+		this.chat.lastMessage.sender = "user";
 
 		let timestamp = new Date(
 			this.chat.lastMessage.timestamp
@@ -87,9 +87,11 @@ class Conversation extends LitElement {
 				<div class="name-box">
 					<p class="chat-name">${this.chat.name}</p>
 					<p class="last-message">
-						${this.chat.lastMessage.sender +
-						": " +
-						this.chat.lastMessage.preview}
+						${this.fixLastMessageLength(
+							this.chat.lastMessage.sender +
+								": " +
+								this.chat.lastMessage.preview
+						)}
 					</p>
 				</div>
 				<div class="date-box">
@@ -112,6 +114,16 @@ class Conversation extends LitElement {
 				</div>
 			</div>
 		`;
+	}
+
+	fixLastMessageLength(message) {
+		let maxLength = 20;
+		if (message.length > maxLength) {
+			message = message.substring(0, maxLength);
+			message += "...";
+		}
+
+		return message;
 	}
 
 	getUnreadIconName(unread) {

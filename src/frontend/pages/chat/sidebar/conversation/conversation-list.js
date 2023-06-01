@@ -61,27 +61,10 @@ class ConversationList extends LitElement {
 	}
 
 	renderList() {
-		this.checkMessageLength();
-
 		return this.pharmaciesList.map((pharmacy) => {
 			let conversation = new ConversationDto(pharmacy);
 			return html`<il-conversation .chat=${conversation}></il-conversation>`;
 		});
-	}
-
-	checkMessageLength() {
-		this.pharmaciesList.forEach((pharmacy) => {
-			pharmacy.lastMessage = this.normalizeLastMessage(pharmacy.lastMessage);
-		});
-	}
-
-	normalizeLastMessage(message) {
-		if (message.length > 35) {
-			message = message.substring(0, 30);
-			message += " ...";
-		}
-
-		return message;
 	}
 }
 

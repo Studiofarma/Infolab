@@ -217,6 +217,10 @@ export class Chat extends LitElement {
 			color: blue;
 		}
 
+		.message {
+			overflow-wrap: break-word;
+		}
+
 		.message-timestamp {
 			text-align: end;
 
@@ -244,9 +248,11 @@ export class Chat extends LitElement {
 											<p class="receiver-name">
 												${item.sender != this.login.username ? item.sender : ""}
 											</p>
-											${resolveMarkdown(
-												MarkdownService.parseMarkdown(item.content)
-											)}
+											<p class="message">
+												${resolveMarkdown(
+													MarkdownService.parseMarkdown(item.content)
+												)}
+											</p>
 											<p class="message-timestamp">
 												${new Date(item.timestamp).toLocaleTimeString([], {
 													hour: "2-digit",
@@ -318,13 +324,15 @@ export class Chat extends LitElement {
 		var message = JSON.parse(payload.body);
 
 		if (message.content) {
-      this.messages.push(message);
-      this.update();
-      this.updated();
-      let sidebar = this.renderRoot.querySelector('main > section > il-sidebar');
-      sidebar.shadowRoot.querySelector('div > il-conversation-list').setList();
-    }
-  }
+			this.messages.push(message);
+			this.update();
+			this.updated();
+			let sidebar = this.renderRoot.querySelector(
+				"main > section > il-sidebar"
+			);
+			sidebar.shadowRoot.querySelector("div > il-conversation-list").setList();
+		}
+	}
 
 	sendMessage(e) {
 		this.message = e.detail.message;
