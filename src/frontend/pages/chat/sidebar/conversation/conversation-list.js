@@ -8,80 +8,81 @@ import "./conversation.js";
 import { ConversationDto } from "../../../../models/conversation-dto.js";
 
 class ConversationList extends LitElement {
-  static properties = {
-    pharmaciesList: { state: true },
-  };
+	static properties = {
+		pharmaciesList: { state: true },
+	};
 
-  static styles = css`
-    * {
-      box-sizing: border-box;
-      padding: 0;
-      margin: 0;
-    }
+	static styles = css`
+		* {
+			box-sizing: border-box;
+			padding: 0;
+			margin: 0;
+		}
 
-    .pharmaciesList {
-      overflow-y: scroll;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      height: calc(100vh - 110px);
-    }
+		.pharmaciesList {
+			overflow-y: scroll;
+			display: flex;
+			height: auto;
+			flex-direction: column;
+			gap: 10px;
+			height: calc(100vh - 70px);
+		}
 
-    ::-webkit-scrollbar {
-      width: 0px;
-    }
-  `;
+		::-webkit-scrollbar {
+			width: 0px;
+		}
+	`;
 
-  constructor() {
-    super();
-    this.pharmaciesList = [];
-    this.setList();
-  }
+	constructor() {
+		super();
+		this.pharmaciesList = [];
+		this.setList();
+	}
 
-  render() {
-    return html` <div class="pharmaciesList">${this.renderList()}</div> `;
-  }
+	render() {
+		return html` <div class="pharmaciesList">${this.renderList()}</div> `;
+	}
 
-  setList() {
-    let tmp = [];
-    let cookie = CookieService.getCookie();
+	setList() {
+		let tmp = [];
+		let cookie = CookieService.getCookie();
 
-    OpenChatsService.getOpenChats(cookie.username, cookie.password)
-      .then((element) => {
-        element["data"].forEach((pharmacy) => {
-          tmp.push(pharmacy);
-        });
+		OpenChatsService.getOpenChats(cookie.username, cookie.password)
+			.then((element) => {
+				element["data"].forEach((pharmacy) => {
+					tmp.push(pharmacy);
+				});
 
-        this.pharmaciesList = tmp;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+				this.pharmaciesList = tmp;
+			})
+			.catch((error) => {
+				console.log(error);
+			});
+	}
 
-  renderList() {
-    this.checkMessageLength();
+	renderList() {
+		this.checkMessageLength();
 
-    return this.pharmaciesList.map((pharmacy) => {
-      let conversation = new ConversationDto(pharmacy);
-      return html`<il-conversation .chat=${conversation}></il-conversation>`;
-    });
-  }
+		return this.pharmaciesList.map((pharmacy) => {
+			let conversation = new ConversationDto(pharmacy);
+			return html`<il-conversation .chat=${conversation}></il-conversation>`;
+		});
+	}
 
-  checkMessageLength() {
-    this.pharmaciesList.forEach((pharmacy) => {
-      pharmacy.lastMessage = this.normalizeLastMessage(pharmacy.lastMessage);
-    });
-  }
+	checkMessageLength() {
+		this.pharmaciesList.forEach((pharmacy) => {
+			pharmacy.lastMessage = this.normalizeLastMessage(pharmacy.lastMessage);
+		});
+	}
 
-  normalizeLastMessage(message) {
-    if (message.length > 35) {
-      message = message.substring(0, 30);
-      message += " ...";
-    }
+	normalizeLastMessage(message) {
+		if (message.length > 35) {
+			message = message.substring(0, 30);
+			message += " ...";
+		}
 
-    return message;
-  }
+		return message;
+	}
 }
 
 customElements.define("il-conversation-list", ConversationList);
