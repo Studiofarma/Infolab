@@ -318,11 +318,13 @@ export class Chat extends LitElement {
 		var message = JSON.parse(payload.body);
 
 		if (message.content) {
-			this.messages.push(message);
-			this.update();
-			this.updated();
-		}
-	}
+      this.messages.push(message);
+      this.update();
+      this.updated();
+      let sidebar = this.renderRoot.querySelector('main > section > il-sidebar');
+      sidebar.shadowRoot.querySelector('div > il-conversation-list').setList();
+    }
+  }
 
 	sendMessage(e) {
 		this.message = e.detail.message;

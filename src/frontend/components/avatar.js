@@ -26,19 +26,24 @@ export class Avatar extends LitElement {
 		this.defaultAvatar = true;
 	}
 
+	getInitials(text) {
+		const words = text.split(" ");
+		let initials = "";
+
+		for (let i = 0; i < words.length; i++) {
+			const word = words[i];
+			initials += word.charAt(0);
+		}
+		return initials.toUpperCase();
+	}
+
 	createIcon() {
 		if (this.chat.avatarLink) {
 			this.defaultAvatar = true;
 		} else {
 			this.defaultAvatar = false;
 		}
-
-		this.chat.name
-			.split(" ")
-			.slice(0, 2)
-			.forEach((s) => {
-				this.initials += s[0].toUpperCase();
-			});
+		this.initials = this.getInitials(this.chat.name);
 
 		switch (this.chat.id % 8) {
 			case 0:

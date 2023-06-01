@@ -4,6 +4,7 @@ export class ConversationDto {
   avatar = "";
   lastMessage = "";
   unread = 0;
+  sender = '';
 
   constructor(obj) {
     this.id = obj.id !== undefined ? obj.id : 0;
