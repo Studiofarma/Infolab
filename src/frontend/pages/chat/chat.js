@@ -12,322 +12,336 @@ import "./sidebar/sidebar.js";
 import "./header/chat-header.js";
 
 export class Chat extends LitElement {
-  static properties = {
-    stompClient: {},
-    messages: [],
-    message: "",
-    nMessages: 0,
-  };
+	static properties = {
+		stompClient: {},
+		messages: [],
+		message: "",
+		nMessages: 0,
+	};
 
-  static get properties() {
-    return {
-      login: {
-        username: "",
-        password: "",
-        headerName: "",
-        token: "",
-      },
-    };
-  }
+	static get properties() {
+		return {
+			login: {
+				username: "",
+				password: "",
+				headerName: "",
+				token: "",
+			},
+		};
+	}
 
-  constructor() {
-    super();
-    this.messages = [];
-    this.message = "";
-    this.nMessages = 0;
-  }
+	constructor() {
+		super();
+		this.messages = [];
+		this.message = "";
+		this.nMessages = 0;
+	}
 
-  connectedCallback() {
-    super.connectedCallback();
-    this.createSocket();
-  }
+	connectedCallback() {
+		super.connectedCallback();
+		this.createSocket();
+	}
 
-  static styles = css`
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+	static styles = css`
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
 
-    main {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      min-height: 100%;
-      background: #d3d3d3;
-    }
+		main {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			min-height: 100%;
+			background: #d3d3d3;
+		}
 
-    input[type="text"] {
-      border: none;
-      outline: none;
-    }
+		input[type="text"] {
+			border: none;
+			outline: none;
+		}
 
-    section {
-      display: grid;
-      grid-template-columns: 350px auto;
-      min-height: 100vh;
-    }
+		section {
+			display: grid;
+			grid-template-columns: 350px auto;
+			min-height: 100vh;
+		}
 
-    .chat {
-      position: relative;
-    }
+		.chat {
+			position: relative;
+		}
 
-    .chatHeader {
-      position: fixed;
-      top: 0px;
-      left: 350px;
-      background: #083c72;
-      box-shadow: 0px 1px 5px black;
-      width: calc(100% - 350px);
-      min-height: 50px;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: white;
-      z-index: 1000;
-    }
+		.chatHeader {
+			position: fixed;
+			top: 0px;
+			left: 350px;
+			background: #083c72;
+			box-shadow: 0px 1px 5px black;
+			width: calc(100% - 350px);
+			min-height: 50px;
+			padding: 15px 30px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			color: white;
+			z-index: 1000;
+		}
 
-    .chatHeader .settings {
-      order: 2;
-      display: flex;
-    }
+		.chatHeader .settings {
+			order: 2;
+			display: flex;
+		}
 
-    .chatHeader .contact {
-      order: 1;
-      display: flex;
-      gap: 1em;
-    }
+		.chatHeader .contact {
+			order: 1;
+			display: flex;
+			gap: 1em;
+		}
 
-    il-input-controls {
-      margin-top: auto;
-    }
+		il-input-controls {
+			margin-top: auto;
+		}
 
-    .messageBox {
-      list-style-type: none;
-      display: flex;
-      flex-direction: column;
-      gap: 30px;
-      width: 100%;
-      height: calc(100vh - 110px);
-      overflow-y: auto;
-      padding: 20px;
-      padding-top: 100px;
-    }
+		.messageBox {
+			list-style-type: none;
+			display: flex;
+			flex-direction: column;
+			gap: 30px;
+			width: 100%;
+			height: calc(100vh - 110px);
+			overflow-y: auto;
+			padding: 20px;
+			padding-top: 100px;
+		}
 
-    .messageBox::-webkit-scrollbar {
-      width: 0px;
-    }
+		.messageBox::-webkit-scrollbar {
+			width: 0px;
+		}
 
-    li {
-      list-style-position: inside;
-    }
+		li {
+			list-style-position: inside;
+		}
 
-    .messageBox > li {
-      position: relative;
-      min-width: 300px;
-      max-width: 500px;
-      padding: 8px 8px 10px;
-      background: #f2f4f7;
-      box-shadow: 0 0 10px #989a9d;
-    }
+		.messageBox > li {
+			position: relative;
+			min-width: 300px;
+			max-width: 500px;
+			padding: 8px 8px 6px 10px;
+			background: #f2f4f7;
+			box-shadow: 0 0 10px #989a9d;
+		}
 
-    @keyframes rotationAnim {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
+		@keyframes rotationAnim {
+			from {
+				transform: rotate(0deg);
+			}
+			to {
+				transform: rotate(360deg);
+			}
+		}
 
-    #settingsIcon:hover {
-      animation: rotationAnim 2s infinite linear;
-    }
+		#settingsIcon:hover {
+			animation: rotationAnim 2s infinite linear;
+		}
 
-    :not(.dropdown)::-webkit-scrollbar {
-      background-color: #0074bc;
-      border-radius: 10px;
-      border: 5px solid #083c72;
-    }
+		:not(.dropdown)::-webkit-scrollbar {
+			background-color: #0074bc;
+			border-radius: 10px;
+			border: 5px solid #083c72;
+		}
 
-    :not(.dropdown)::-webkit-scrollbar-thumb {
-      background-color: #0da2ff;
-      border-radius: 10px;
-      width: 5px;
-      border: 3px solid #083c72;
-    }
+		:not(.dropdown)::-webkit-scrollbar-thumb {
+			background-color: #0da2ff;
+			border-radius: 10px;
+			width: 5px;
+			border: 3px solid #083c72;
+		}
 
-    input {
-      font-family: inherit;
-    }
+		input {
+			font-family: inherit;
+		}
 
-    .sender {
-      align-self: flex-end !important;
-      border-radius: 10px 0 10px 10px;
-    }
-    .sender::after {
-      content: "";
-      position: absolute;
-      top: 0px;
-      right: -9px;
-      border-top: 10px solid #f2f4f7;
-      border-left: 0px solid transparent;
-      border-right: 10px solid transparent;
-    }
-    .sender::before {
-      content: "";
-      position: absolute;
-      transform: translate(-50%, -50%);
-      bottom: -13px;
-      right: -8px;
-      border-top: 10px solid #989a9d;
-      border-left: 10px solid transparent;
-      border-right: 0px solid transparent;
-      filter: blur(10px);
-    }
-    .receiver {
-      align-self: flex-start !important;
-      border-radius: 0 10px 10px 10px;
-    }
-    .receiver::after {
-      content: "";
-      position: absolute;
-      top: 0px;
-      left: -9px;
-      border-top: 10px solid #f2f4f7;
-      border-left: 10px solid transparent;
-      border-right: 0px solid transparent;
-    }
-    .receiver::before {
-      content: "";
-      position: absolute;
-      transform: translate(-50%, -50%);
-      bottom: -13px;
-      right: -8px;
-      border-top: 10px solid #989a9d;
-      border-left: 10px solid transparent;
-      border-right: 0px solid transparent;
-      filter: blur(10px);
-    }
-    .receiver-name {
-      font-size: 13px;
-      color: blue;
-    }
-  `;
+		.sender {
+			align-self: flex-end !important;
+			border-radius: 10px 0 10px 10px;
+		}
+		.sender::after {
+			content: "";
+			position: absolute;
+			top: 0px;
+			right: -9px;
+			border-top: 10px solid #f2f4f7;
+			border-left: 0px solid transparent;
+			border-right: 10px solid transparent;
+		}
+		.sender::before {
+			content: "";
+			position: absolute;
+			transform: translate(-50%, -50%);
+			bottom: -13px;
+			right: -8px;
+			border-top: 10px solid #989a9d;
+			border-left: 10px solid transparent;
+			border-right: 0px solid transparent;
+			filter: blur(10px);
+		}
 
-  render() {
-    return html`
-      <main>
-        <section>
-          <il-sidebar></il-sidebar>
-          <div class="chat">
-            <il-chat-header username=${this.login.username}></il-chat-header>
-            <ul class="messageBox">
-              ${this.messages.map(
-                (item, _) =>
-                  html`
-                    <li
-                      class=${item.sender == this.login.username
-                        ? "sender"
-                        : "receiver"}
-                    >
-                      <p class="receiver-name">
-                        ${item.sender != this.login.username ? item.sender : ""}
-                      </p>
-                      ${resolveMarkdown(
-                        MarkdownService.parseMarkdown(item.content)
-                      )}
-                    </li>
-                  `
-              )}
-            </ul>
+		.receiver {
+			align-self: flex-start !important;
+			border-radius: 0 10px 10px 10px;
+		}
+		.receiver::after {
+			content: "";
+			position: absolute;
+			top: 0px;
+			left: -9px;
+			border-top: 10px solid #f2f4f7;
+			border-left: 10px solid transparent;
+			border-right: 0px solid transparent;
+		}
+		.receiver::before {
+			content: "";
+			position: absolute;
+			transform: translate(-50%, -50%);
+			bottom: -13px;
+			right: -8px;
+			border-top: 10px solid #989a9d;
+			border-left: 10px solid transparent;
+			border-right: 0px solid transparent;
+			filter: blur(10px);
+		}
+		.receiver-name {
+			font-size: 13px;
+			color: blue;
+		}
 
-            <il-input-controls
-              @send-message="${this.sendMessage}"
-            ></il-input-controls>
-          </div>
-        </section>
-      </main>
-    `;
-  }
+		.message-timestamp {
+			text-align: end;
 
-  async firstUpdated() {
-    MessagesService.getMessagesById(
-      this.login.username,
-      this.login.password
-    ).then((messages) => {
-      this.messages = messages.data.reverse();
-    });
-  }
+			font-size: 11px;
+			color: #8c8d8d;
+		}
+	`;
 
-  updated() {
-    this.scrollToBottom();
-  }
+	render() {
+		return html`
+			<main>
+				<section>
+					<il-sidebar></il-sidebar>
+					<div class="chat">
+						<il-chat-header username=${this.login.username}></il-chat-header>
+						<ul class="messageBox">
+							${this.messages.map(
+								(item, _) =>
+									html`
+										<li
+											class=${item.sender == this.login.username
+												? "sender"
+												: "receiver"}
+										>
+											<p class="receiver-name">
+												${item.sender != this.login.username ? item.sender : ""}
+											</p>
+											${resolveMarkdown(
+												MarkdownService.parseMarkdown(item.content)
+											)}
+											<p class="message-timestamp">
+												${new Date(item.timestamp).toLocaleTimeString([], {
+													hour: "2-digit",
+													minute: "2-digit",
+												})}
+											</p>
+										</li>
+									`
+							)}
+						</ul>
 
-  createSocket() {
-    let basicAuth = window.btoa(
-      this.login.username + ":" + this.login.password
-    );
+						<il-input-controls
+							@send-message="${this.sendMessage}"
+						></il-input-controls>
+					</div>
+				</section>
+			</main>
+		`;
+	}
 
-    const socket = new SockJS("chat?access_token=" + basicAuth.toString());
-    this.stompClient = Stomp.over(socket);
+	async firstUpdated() {
+		MessagesService.getMessagesById(
+			this.login.username,
+			this.login.password
+		).then((messages) => {
+			this.messages = messages.data.reverse();
+		});
+	}
 
-    let headers = {};
-    headers[this.login.headerName] = this.login.token;
-    this.stompClient.connect(
-      headers,
-      () => this.onConnect(),
-      () => this.onError()
-    );
-  }
+	updated() {
+		this.scrollToBottom();
+	}
 
-  scrollToBottom() {
-    let element = this.renderRoot.querySelector("ul.messageBox");
-    element.scrollBy({ top: element.scrollHeight - element.offsetHeight });
-  }
+	createSocket() {
+		let basicAuth = window.btoa(
+			this.login.username + ":" + this.login.password
+		);
 
-  onConnect() {
-    this.stompClient.subscribe("/topic/public", (payload) =>
-      this.onMessage(payload)
-    );
+		const socket = new SockJS("chat?access_token=" + basicAuth.toString());
+		this.stompClient = Stomp.over(socket);
 
-    this.stompClient.send(
-      "/app/chat.register",
-      {},
-      JSON.stringify({ sender: this.login.username, type: "JOIN" })
-    );
-  }
+		let headers = {};
+		headers[this.login.headerName] = this.login.token;
+		this.stompClient.connect(
+			headers,
+			() => this.onConnect(),
+			() => this.onError()
+		);
+	}
 
-  onMessage(payload) {
-    var message = JSON.parse(payload.body);
+	scrollToBottom() {
+		let element = this.renderRoot.querySelector("ul.messageBox");
+		element.scrollBy({ top: element.scrollHeight - element.offsetHeight });
+	}
 
-    if (message.content) {
-      this.messages.push(message);
-      this.update();
-      this.updated()
-    }
-  }
+	onConnect() {
+		this.stompClient.subscribe("/topic/public", (payload) =>
+			this.onMessage(payload)
+		);
 
-  sendMessage(e) {
-    this.message = e.detail.message;
-    let messageContent = this.message.trim();
+		this.stompClient.send(
+			"/app/chat.register",
+			{},
+			JSON.stringify({ sender: this.login.username, type: "JOIN" })
+		);
+	}
 
-    if (messageContent && this.stompClient) {
-      const chatMessage = {
-        sender: this.login.username,
-        content: messageContent,
-        type: "CHAT",
-      };
+	onMessage(payload) {
+		var message = JSON.parse(payload.body);
 
-      this.stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
-    }
-  }
+		if (message.content) {
+			this.messages.push(message);
+			this.update();
+			this.updated();
+		}
+	}
 
-  onError(error) {
-    console.log(error);
-  }
+	sendMessage(e) {
+		this.message = e.detail.message;
+		let messageContent = this.message.trim();
+
+		if (messageContent && this.stompClient) {
+			const chatMessage = {
+				sender: this.login.username,
+				content: messageContent,
+				type: "CHAT",
+			};
+
+			this.stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+		}
+	}
+
+	onError(error) {
+		console.log(error);
+	}
 }
 
 customElements.define("il-chat", Chat);

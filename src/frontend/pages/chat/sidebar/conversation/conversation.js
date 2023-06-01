@@ -85,7 +85,7 @@ class Conversation extends LitElement {
 			<div class="chat-box">
 				<il-avatar .chat=${this.chat}></il-avatar>
 				<div class="name-box">
-					<p class="chat-name">${this.chat.name || "NotFromDB"}</p>
+					<p class="chat-name">${this.chat.name}</p>
 					<p class="last-message">
 						${this.chat.lastMessage.sender +
 						": " +
@@ -102,9 +102,8 @@ class Conversation extends LitElement {
 					<p class="unread-counter">
 						${this.chat.unread > 0
 							? html`
-									<!-- Missing icon when this.chat.unread == 9 -->
-									<!-- style="display:${this.notificationOpacity};" -->
 									<il-icon
+										style="display:${this.notificationOpacity};"
 										name="${this.getUnreadIconName(this.chat.unread)}"
 									></il-icon>
 							  `
