@@ -25,7 +25,7 @@ class Conversation extends LitElement {
 		}
 
 		.chat-box:hover {
-			background-color: #00234f;
+			background-color: #235188;
 		}
 
 		.date-box {
@@ -36,6 +36,14 @@ class Conversation extends LitElement {
 		.unread-counter {
 			display: flex;
 			justify-content: flex-end;
+		}
+
+		.last-message {
+			color: #bcbec2;
+		}
+
+		.last-message-timestamp {
+			color: #bcbec2;
 		}
 
 		il-icon {
@@ -66,21 +74,37 @@ class Conversation extends LitElement {
 			this.notificationOpacity = "block";
 		}
 
+		// Need to get the sender of the last message from BE
+		this.chat.lastMessage.sender = "User";
+
+		let timestamp = new Date(
+			this.chat.lastMessage.timestamp
+		).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
 		return html`
 			<div class="chat-box">
 				<il-avatar .chat=${this.chat}></il-avatar>
 				<div class="name-box">
 					<p class="chat-name">${this.chat.name || "NotFromDB"}</p>
-					<p class="last-message">${this.chat.lastMessage.preview}</p>
+					<p class="last-message">
+						${this.chat.lastMessage.sender +
+						": " +
+						this.chat.lastMessage.preview}
+					</p>
 				</div>
 				<div class="date-box">
-					<p class="last-message-date">13:45</p>
+					<p
+						class="last-message-timestamp"
+						style="${this.chat.unread > 0 ? "color:rgb(58 179 255)" : ""}"
+					>
+						${timestamp}
+					</p>
 					<p class="unread-counter">
 						${this.chat.unread > 0
 							? html`
 									<!-- Missing icon when this.chat.unread == 9 -->
+									<!-- style="display:${this.notificationOpacity};" -->
 									<il-icon
-										style="display:${this.notificationOpacity};"
 										name="${this.getUnreadIconName(this.chat.unread)}"
 									></il-icon>
 							  `
