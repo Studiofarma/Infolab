@@ -35,6 +35,14 @@ export class ChatHeader extends LitElement {
 			display: flex;
 			gap: 1em;
 		}
+
+		.settings {
+			transition: 1s;
+		}
+
+		.settings:hover {
+			transform: rotate(180deg);
+		}
 	`;
 
 	render() {

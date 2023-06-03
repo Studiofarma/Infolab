@@ -40,9 +40,8 @@ public class RoomService {
     public RoomDto fromEntityToDto(RoomEntity roomEntity) {
         RoomDto roomDto = RoomDto.of(roomEntity.getName().value());
 
-        LastMessageDto message = chatService.fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
-
-        roomDto.setLastMessage(message);
+        LastMessageDto lastMessage = chatService.fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
+        roomDto.setLastMessage(lastMessage);
 
         return roomDto;
     }
