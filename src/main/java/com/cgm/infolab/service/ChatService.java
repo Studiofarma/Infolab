@@ -65,7 +65,7 @@ public class ChatService {
     }
 
     public LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
-        return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp());
+        return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender());
     }
 
     public List<ChatMessageEntity> getAllMessagesGeneral (int numberOfMessages, Username username) {

@@ -135,19 +135,6 @@ export class Chat extends LitElement {
 			box-shadow: 0 0 10px #989a9d;
 		}
 
-		@keyframes rotationAnim {
-			from {
-				transform: rotate(0deg);
-			}
-			to {
-				transform: rotate(360deg);
-			}
-		}
-
-		#settingsIcon:hover {
-			animation: rotationAnim 2s infinite linear;
-		}
-
 		:not(.dropdown)::-webkit-scrollbar {
 			background-color: #0074bc;
 			border-radius: 10px;
@@ -346,6 +333,7 @@ export class Chat extends LitElement {
 			this.messages.push(message);
 			this.update();
 			this.updated();
+			this.scrollToBottom();
 			let sidebar = this.renderRoot.querySelector(
 				"main > section > il-sidebar"
 			);

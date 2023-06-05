@@ -1,4 +1,7 @@
 import { LitElement, html, css } from "lit";
+import { resolveMarkdown } from "lit-markdown";
+
+import { MarkdownService } from "../../../../services/markdown-services";
 
 import "../../../../components/icon";
 import { IconNames } from "../../../../enums/icon-names";
@@ -74,9 +77,6 @@ class Conversation extends LitElement {
 			this.notificationOpacity = "block";
 		}
 
-		// Need to get the sender of the last message from BE
-		this.chat.lastMessage.sender = "user";
-
 		let timestamp = new Date(
 			this.chat.lastMessage.timestamp
 		).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -87,10 +87,14 @@ class Conversation extends LitElement {
 				<div class="name-box">
 					<p class="chat-name">${this.chat.name}</p>
 					<p class="last-message">
-						${this.fixLastMessageLength(
-							this.chat.lastMessage.sender +
-								": " +
-								this.chat.lastMessage.preview
+						${resolveMarkdown(
+							MarkdownService.parseMarkdown(
+								this.fixLastMessageLength(
+									this.chat.lastMessage.sender +
+										": " +
+										this.chat.lastMessage.preview
+								)
+							)
 						)}
 					</p>
 				</div>
