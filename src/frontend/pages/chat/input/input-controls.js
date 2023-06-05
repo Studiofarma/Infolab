@@ -64,6 +64,7 @@ export class InputControls extends LitElement {
 			padding: 20px 10px;
 			background: #083c72;
 			box-shadow: 0px -1px 5px black;
+			z-index: 1000;
 		}
 
 		.inputContainer {
