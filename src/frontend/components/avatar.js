@@ -78,8 +78,8 @@ export class Avatar extends LitElement {
 		return html`
 			<div class="avatar">
 				${this.defaultAvatar
-					? html`<img src=${this.chat.avatarLink} />`
-					: html`<div
+				? html`<img src=${this.chat.avatarLink} />`
+				: html`<div
 							id="avatar-default"
 							style="background-color:${this.color}"
 					  >

@@ -1,4 +1,5 @@
 export const IconNames = {
+	scrollDownArrow: "mdiArrowDown",
 	settings: "mdiCog",
 	eye: "mdiEye",
 	eyeOff: "mdiEyeOff",

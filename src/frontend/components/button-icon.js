@@ -5,7 +5,7 @@ import "./icon";
 export class ButtonIcon extends LitElement {
   static get properties() {
     return {
-      content: "",
+      content: ""
     };
   }
 
@@ -18,6 +18,7 @@ export class ButtonIcon extends LitElement {
     #button {
       height: 100%;
       width: 100%;
+      display: flex;
       justify-content: center;
       align-items: center;
       font-weight: normal;
@@ -27,7 +28,6 @@ export class ButtonIcon extends LitElement {
       line-height: 1;
       letter-spacing: normal;
       text-transform: none;
-      display: flex;
       white-space: nowrap;
       word-wrap: normal;
       direction: ltr;
@@ -48,7 +48,7 @@ export class ButtonIcon extends LitElement {
     return html`
       <div id="button">
         <il-icon name="${this.content}"></il-icon>
-      </div>
+  </div>
     `;
   }
 }

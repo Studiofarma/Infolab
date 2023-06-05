@@ -6,6 +6,8 @@ import Stomp from "stompjs";
 import { MarkdownService } from "../../services/markdown-services";
 import { MessagesService } from "../../services/messages-service";
 
+import { IconNames } from "../../enums/icon-names";
+
 import "../../components/button-icon";
 import "./input/input-controls.js";
 import "./sidebar/sidebar.js";
@@ -227,6 +229,17 @@ export class Chat extends LitElement {
 			font-size: 11px;
 			color: #8c8d8d;
 		}
+    .scroll-button {
+      z-index: 9999;
+      position: absolute;
+      right: 20px;
+      bottom: 130px;
+      
+      border-radius: 5px;
+      padding: 2px;
+      background-color: rgb(8, 60, 114);
+      color: white;
+    }
 	`;
 
 	render() {
@@ -263,7 +276,13 @@ export class Chat extends LitElement {
 									`
 							)}
 						</ul>
-
+            <il-button-icon 
+              class='scroll-button'
+              @click='${this.scrollToBottom}'
+              content='${IconNames.scrollDownArrow}'
+            >
+              Bottom
+            </il-button-icon >
 						<il-input-controls
 							@send-message="${this.sendMessage}"
 						></il-input-controls>
