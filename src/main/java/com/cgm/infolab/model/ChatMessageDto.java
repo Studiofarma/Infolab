@@ -8,6 +8,9 @@ import java.util.Objects;
 
 public class ChatMessageDto {
     private String content;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+
     private LocalDateTime timestamp;
     private String sender;
 
@@ -33,7 +36,6 @@ public class ChatMessageDto {
         this.content = content;
     }
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
@@ -52,9 +54,10 @@ public class ChatMessageDto {
 
     @Override
     public String toString() {
-        return "ChatMessage{" +
-                "sender='" + sender + '\'' +
-                ", content='" + content + '\'' +
+        return "ChatMessageDto{" +
+                "content='" + content + '\'' +
+                ", timestamp=" + timestamp +
+                ", sender='" + sender + '\'' +
                 '}';
     }
 
@@ -62,13 +65,13 @@ public class ChatMessageDto {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ChatMessageDto message = (ChatMessageDto) o;
-        return Objects.equals(sender, message.sender) && Objects.equals(content, message.content);
+        ChatMessageDto that = (ChatMessageDto) o;
+        return Objects.equals(content, that.content) && Objects.equals(timestamp, that.timestamp) && Objects.equals(sender, that.sender);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sender, content);
+        return Objects.hash(content, timestamp, sender);
     }
 }
 
