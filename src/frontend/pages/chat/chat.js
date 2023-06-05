@@ -38,6 +38,9 @@ export class Chat extends LitElement {
 		this.message = "";
 		this.nMessages = 0;
 		this.scrolledToBottom = true;
+		window.addEventListener('resize', () => {
+			this.scrollToBottom()
+		});
 	}
 
 	connectedCallback() {
