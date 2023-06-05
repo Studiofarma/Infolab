@@ -37,6 +37,7 @@ export class Chat extends LitElement {
 		this.messages = [];
 		this.message = "";
 		this.nMessages = 0;
+		this.scrolledToBottom = true;
 	}
 
 	connectedCallback() {
@@ -106,7 +107,7 @@ export class Chat extends LitElement {
 			margin-top: auto;
 		}
 
-		.messageBox {
+		.message-box {
 			list-style-type: none;
 			display: flex;
 			flex-direction: column;
@@ -118,7 +119,7 @@ export class Chat extends LitElement {
 			padding-top: 100px;
 		}
 
-		.messageBox::-webkit-scrollbar {
+		.message-box::-webkit-scrollbar {
 			width: 0px;
 		}
 
@@ -126,7 +127,7 @@ export class Chat extends LitElement {
 			list-style-position: inside;
 		}
 
-		.messageBox > li {
+		.message-box > li {
 			position: relative;
 			min-width: 300px;
 			max-width: 500px;
@@ -216,17 +217,19 @@ export class Chat extends LitElement {
 			font-size: 11px;
 			color: #8c8d8d;
 		}
-    .scroll-button {
-      z-index: 9999;
-      position: absolute;
-      right: 20px;
-      bottom: 130px;
-      
-      border-radius: 5px;
-      padding: 2px;
-      background-color: rgb(8, 60, 114);
-      color: white;
-    }
+		.scroll-button {
+			z-index: 9999;
+			position: absolute;
+			right: 20px;
+			bottom: 130px;
+
+			border-radius: 5px;
+			padding: 2px;
+			background-color: rgb(8, 60, 114);
+			color: white;
+			opacity: 0;
+			transition: opacity 0.2s ease-in-out;
+		}
 	`;
 
 	render() {
@@ -236,7 +239,23 @@ export class Chat extends LitElement {
 					<il-sidebar></il-sidebar>
 					<div class="chat">
 						<il-chat-header username=${this.login.username}></il-chat-header>
-						<ul class="messageBox">
+						<ul
+							@scroll="${(e) => {
+								if (this.checkScrolledToBottom()) {
+									this.renderRoot.querySelector(
+										".scroll-button"
+									).style.opacity = "0";
+								} else if (
+									this.renderRoot.querySelector(".scroll-button").style
+										.opacity == 0
+								) {
+									this.renderRoot.querySelector(
+										".scroll-button"
+									).style.opacity = "1";
+								}
+							}}"
+							class="message-box"
+						>
 							${this.messages.map(
 								(item, _) =>
 									html`
@@ -263,13 +282,12 @@ export class Chat extends LitElement {
 									`
 							)}
 						</ul>
-            <il-button-icon 
-              class='scroll-button'
-              @click='${this.scrollToBottom}'
-              content='${IconNames.scrollDownArrow}'
-            >
-              Bottom
-            </il-button-icon >
+						<il-button-icon
+							class="scroll-button"
+							@click="${this.scrollToBottom}"
+							content="${IconNames.scrollDownArrow}"
+						></il-button-icon>
+
 						<il-input-controls
 							@send-message="${this.sendMessage}"
 						></il-input-controls>
@@ -309,8 +327,19 @@ export class Chat extends LitElement {
 		);
 	}
 
+	checkScrolledToBottom() {
+		try {
+			let element = this.renderRoot.querySelector("ul.message-box");
+			return (
+				element.scrollHeight - element.offsetHeight <= element.scrollTop + 10
+			);
+		} catch (error) {
+			return false;
+		}
+	}
+
 	scrollToBottom() {
-		let element = this.renderRoot.querySelector("ul.messageBox");
+		let element = this.renderRoot.querySelector("ul.message-box");
 		element.scrollBy({ top: element.scrollHeight - element.offsetHeight });
 	}
 

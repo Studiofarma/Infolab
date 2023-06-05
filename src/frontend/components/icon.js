@@ -11,7 +11,7 @@ export class Icon extends LitElement {
 
 	static styles = css`
 		svg-icon {
-			transform: translateY(-2px) !important;
+			font-size: 0px;
 		}
 	`;
 
