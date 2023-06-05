@@ -61,7 +61,7 @@ export class Chat extends LitElement {
 			left: 0;
 			width: 100%;
 			min-height: 100%;
-			background: #d3d3d3;
+			background: rgb(247, 247, 247);
 		}
 
 		input[type="text"] {
@@ -135,8 +135,8 @@ export class Chat extends LitElement {
 			min-width: 300px;
 			max-width: 500px;
 			padding: 8px 8px 6px 10px;
-			background: #f2f4f7;
-			box-shadow: 0 0 10px #989a9d;
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+			z-index: 3;
 		}
 
 		:not(.dropdown)::-webkit-scrollbar {
@@ -159,51 +159,59 @@ export class Chat extends LitElement {
 		.sender {
 			align-self: flex-end !important;
 			border-radius: 10px 0 10px 10px;
+
+			color: white;
+			background-color: rgb(54, 123, 251);
 		}
 		.sender::after {
 			content: "";
 			position: absolute;
 			top: 0px;
 			right: -9px;
-			border-top: 10px solid #f2f4f7;
+			border-top: 10px solid rgb(54, 123, 251);
 			border-left: 0px solid transparent;
 			border-right: 10px solid transparent;
+			z-index: 3;
 		}
 		.sender::before {
 			content: "";
 			position: absolute;
-			transform: translate(-50%, -50%);
-			bottom: -13px;
-			right: -8px;
-			border-top: 10px solid #989a9d;
-			border-left: 10px solid transparent;
-			border-right: 0px solid transparent;
-			filter: blur(10px);
+			top: -1px;
+			right: -13px;
+			border-top: 11px solid rgb(209 209 209 / 34%);
+			border-left: 0px solid transparent;
+			border-right: 12px solid transparent;
+			filter: blur(0.8px);
+			z-index: 2;
 		}
 
 		.receiver {
 			align-self: flex-start !important;
 			border-radius: 0 10px 10px 10px;
+
+			color: black;
+			background-color: white;
 		}
 		.receiver::after {
 			content: "";
 			position: absolute;
 			top: 0px;
 			left: -9px;
-			border-top: 10px solid #f2f4f7;
+			border-top: 10px solid white;
 			border-left: 10px solid transparent;
 			border-right: 0px solid transparent;
+			z-index: 3;
 		}
 		.receiver::before {
 			content: "";
 			position: absolute;
-			transform: translate(-50%, -50%);
-			bottom: -13px;
-			right: -8px;
-			border-top: 10px solid #989a9d;
-			border-left: 10px solid transparent;
+			top: -1px;
+			left: -13px;
+			border-top: 11px solid rgb(209 209 209 / 34%);
 			border-right: 0px solid transparent;
-			filter: blur(10px);
+			border-left: 12px solid transparent;
+			filter: blur(0.8px);
+			z-index: 2;
 		}
 		.receiver-name {
 			font-size: 13px;
@@ -214,12 +222,20 @@ export class Chat extends LitElement {
 			overflow-wrap: break-word;
 		}
 
-		.message-timestamp {
+		.sender .message-timestamp {
+			text-align: end;
+
+			font-size: 11px;
+			color: #e9e9e9;
+		}
+
+		.receiver .message-timestamp {
 			text-align: end;
 
 			font-size: 11px;
 			color: #8c8d8d;
 		}
+
 		.scroll-button {
 			z-index: 9999;
 			position: absolute;
