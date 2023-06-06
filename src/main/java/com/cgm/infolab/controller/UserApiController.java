@@ -41,7 +41,7 @@ public class UserApiController {
     }
 
     public UserDto fromEntityToDto(UserEntity userEntity) {
-        UserDto userDto = UserDto.of(userEntity.getName().value(), userEntity.getId());
+        UserDto userDto = UserDto.of(userEntity.getName().value(), userEntity.getId(), userEntity.getDescription());
         return userDto;
     }
 }
