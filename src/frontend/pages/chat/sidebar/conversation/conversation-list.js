@@ -67,13 +67,13 @@ class ConversationList extends LitElement {
 	}
 
 	renderList() {
-		return this.pharmaciesList.map((pharmacy) => {
+		return this.pharmaciesList.map((pharmacy, id) => {
 			let conversation = new ConversationDto(pharmacy);
 			return html`<il-conversation
-				class=${conversation.id == this.activeChatId ? "active" : ""}
+				class=${id == this.activeChatId ? "active" : ""}
 				.chat=${conversation}
 				@click=${() => {
-					this.activeChatId = conversation.id;
+					this.activeChatId = id;
 					this.updateMessages();
 				}}
 			></il-conversation>`;

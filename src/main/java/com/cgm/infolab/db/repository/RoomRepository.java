@@ -40,6 +40,24 @@ public class RoomRepository {
                             "WHERE (u2.username = ? OR r2.visibility = 'PUBLIC') AND r2.id = r.id) %s " + // per aggiungere condizioni nel WHERE
                     "ORDER BY r.roomname, m.sent_at DESC";
 
+
+    /*
+    SELECT r.roomname, u.username, c.content, c.sent_at
+FROM infolab.chatmessages c
+INNER JOIN infolab.users u ON c.sender_id = u.id
+INNER JOIN infolab.rooms r ON c.recipient_room_id = r.id
+WHERE c.sent_at in (
+	SELECT MAX(c.sent_at)
+	FROM infolab.chatmessages c
+	GROUP BY c.recipient_room_id
+) and
+c.recipient_room_id in (
+	SELECT r.id room_id
+	FROM infolab.rooms r, infolab.rooms_subscriptions s
+	WHERE s.user_id = 1 AND (r.visibility = 'PUBLIC' OR r.id = s.room_id)
+)
+
+     */
     public RoomRepository(JdbcTemplate jdbcTemplate,
                           DataSource dataSource,
                           ChatMessageRepository chatMessageRepository) {

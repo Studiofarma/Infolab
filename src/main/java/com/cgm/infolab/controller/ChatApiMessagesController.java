@@ -32,7 +32,7 @@ public class ChatApiMessagesController {
     // Potete provare le chiamate all'API aprendo un browser all'indirizzo http://localhost:8081/api/messages/general (vi chiedera' username e password. user1 - password1)
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/{roomName}")
-    public List<ChatMessageDto> getAllMessagesGeneral(@PathVariable("roomName") String roomName, Integer numberOfMessages, Principal principal) {
+    public List<ChatMessageDto> getAllMessages(@PathVariable("roomName") String roomName, Integer numberOfMessages, Principal principal) {
         if (numberOfMessages == null) {
             numberOfMessages = -1;
         }
