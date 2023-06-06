@@ -68,11 +68,11 @@ public class ChatService {
         return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender());
     }
 
-    public List<ChatMessageEntity> getAllMessagesGeneral (int numberOfMessages, Username username) {
+    public List<ChatMessageEntity> getAllMessages(int numberOfMessages, Username username, String roomName) {
         List<ChatMessageEntity> chatMessageEntities = new ArrayList<>();
         try {
             chatMessageEntities = chatMessageRepository
-                    .getByRoomNameNumberOfMessages(RoomName.of("general"),
+                    .getByRoomNameNumberOfMessages(RoomName.of(roomName),
                             numberOfMessages,
                             username);
         } catch (IllegalArgumentException e) {
