@@ -10,9 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class UserRepository {
@@ -48,6 +46,23 @@ public class UserRepository {
      */
     public Optional<UserEntity> getByUsername(Username username) {
         return queryUser(String.format("%s WHERE username = ?", USERS_QUERY), username.value());
+    }
+
+    /**
+     * Metodo che risale all'id di un utente dal suo nome
+     * @param username da cui risalire agli users
+     * @return una lista di users.
+     */
+    public List<UserEntity> getByUsernameWithLike(String username) {
+        return queryUsers(String.format("%s WHERE username ILIKE ? || ?", USERS_QUERY) , username, "%");
+    }
+
+    private List<UserEntity> queryUsers(String query, String username, String wildCard) {
+        try {
+            return jdbcTemplate.query(query, this::mapToEntity, username, wildCard);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
     }
 
     /**
