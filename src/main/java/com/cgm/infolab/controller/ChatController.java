@@ -71,18 +71,21 @@ public class ChatController {
         return message;
     }
 
+//    To fix
     @MessageMapping("/chat.send.{destinationUser}")
-    @SendTo("/queue/{destinationUser}")
-    @SendToUser("/topic/me")
-    ChatMessageDto sendMessageToUser(
+//    @SendTo("/queue/{destinationUser}")
+//    @SendToUser("/topic/me")
+    @SendTo("/topic/public")
+    public ChatMessageDto sendMessageToUser(
             @Payload ChatMessageDto message,
             @DestinationVariable String destinationUser,
             SimpMessageHeaderAccessor headerAccessor,
             Principal principal){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         log.info(String.format("message from %s to %s", username, destinationUser));
-        chatService.saveMessageInDb(message, Username.of(principal.getName()),
+        Timestamp time = chatService.saveMessageInDb(message, Username.of(principal.getName()),
             RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)));
+        message.setTimestamp(time.toLocalDateTime());
         return message;
     }
 }

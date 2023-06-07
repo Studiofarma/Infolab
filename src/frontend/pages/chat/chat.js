@@ -5,6 +5,7 @@ import Stomp from "stompjs";
 
 import { MarkdownService } from "../../services/markdown-services";
 import { MessagesService } from "../../services/messages-service";
+import { CookieService } from "../../services/cookie-service";
 
 import { IconNames } from "../../enums/icon-names";
 
@@ -29,6 +30,7 @@ export class Chat extends LitElement {
 				headerName: "",
 				token: "",
 			},
+			chatName: "",
 		};
 	}
 
@@ -37,6 +39,7 @@ export class Chat extends LitElement {
 		this.messages = [];
 		this.message = "";
 		this.nMessages = 0;
+		this.chatName = "general";
 		this.scrolledToBottom = false;
 		window.addEventListener("resize", () => {
 			this.scrollToBottom();
@@ -255,7 +258,10 @@ export class Chat extends LitElement {
 		return html`
 			<main>
 				<section>
-					<il-sidebar></il-sidebar>
+					<il-sidebar
+						@update-message="${this.updateMessages}"
+						.login=${this.login}
+					></il-sidebar>
 					<div class="chat">
 						<il-chat-header username=${this.login.username}></il-chat-header>
 						<ul
@@ -327,14 +333,15 @@ export class Chat extends LitElement {
 	}
 
 	updateMessages(e) {
-		// not working beacuse is not the child
 		MessagesService.getMessagesById(
 			this.login.username,
 			this.login.password,
-			e.detail.roomId
+			e.detail.roomName
 		).then((messages) => {
 			this.messages = messages.data.reverse();
 		});
+
+		this.chatName = e.detail.roomName;
 	}
 
 	updated() {
@@ -412,12 +419,27 @@ export class Chat extends LitElement {
 				type: "CHAT",
 			};
 
-			this.stompClient.send("/app/chat.send", {}, JSON.stringify(chatMessage));
+			let chatName = this.chatNameFormatter(this.chatName);
+
+			this.stompClient.send(
+				`/app/chat.send${chatName != "general" ? `.${chatName}` : ""}`,
+				{},
+				JSON.stringify(chatMessage)
+			);
 		}
 	}
 
 	onError(error) {
 		console.log(error);
+	}
+
+	chatNameFormatter(chatName) {
+		let cookie = CookieService.getCookie();
+		if (chatName.includes("-")) {
+			chatName = chatName.split("-");
+			chatName.splice(chatName.indexOf(cookie.username), 1);
+		}
+		return chatName;
 	}
 }
 

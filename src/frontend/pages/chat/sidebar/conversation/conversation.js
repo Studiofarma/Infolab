@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
 
 import { MarkdownService } from "../../../../services/markdown-services";
+import { CookieService } from "../../../../services/cookie-service";
 
 import "../../../../components/icon";
 import { IconNames } from "../../../../enums/icon-names";
@@ -68,8 +69,6 @@ class Conversation extends LitElement {
 			vertical-align: middle;
 			line-height: 1.5;
 		}
-
-		
 	`;
 
 	render() {
@@ -87,16 +86,11 @@ class Conversation extends LitElement {
 			<div class="chat-box">
 				<il-avatar .chat=${this.chat}></il-avatar>
 				<div class="name-box">
-					<p class="chat-name">${this.chat.name}</p>
+					<p class="chat-name">${this.chatNameFormatter(this.chat.name)}</p>
 					<p class="last-message">
-						${resolveMarkdown(
-							MarkdownService.parseMarkdown(
-								this.fixLastMessageLength(
-									this.chat.lastMessage.sender +
-										": " +
-										this.chat.lastMessage.preview
-								)
-							)
+						${this.lastMessageTextFormatter(
+							this.chat.lastMessage.sender,
+							this.chat.lastMessage.preview
 						)}
 					</p>
 				</div>
@@ -120,6 +114,23 @@ class Conversation extends LitElement {
 				</div>
 			</div>
 		`;
+	}
+
+	chatNameFormatter(chatName) {
+		let cookie = CookieService.getCookie();
+		if (chatName.includes("-")) {
+			chatName = chatName.split("-");
+			chatName.splice(chatName.indexOf(cookie.username), 1);
+		}
+		return chatName;
+	}
+
+	lastMessageTextFormatter(sender, message) {
+		return resolveMarkdown(
+			MarkdownService.parseMarkdown(
+				this.fixLastMessageLength(`${sender}: ${message}`)
+			)
+		);
 	}
 
 	fixLastMessageLength(message) {

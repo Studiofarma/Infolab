@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 
+import { CookieService } from "../../../services/cookie-service";
 import { UsersService } from "../../../services/users-service";
 
 import "../../../components/button-icon";
@@ -157,14 +158,17 @@ export class SearchChats extends LitElement {
 		this.query = event.target.value.toLowerCase();
 		this.pharmaciesList = [];
 		let temp = [];
+		let cookie = CookieService.getCookie();
 
 		if (this.query.length > 1) {
-			UsersService.GetUsers(this.query).then((element) => {
-				element["data"].forEach((element) => {
-					temp.push(element);
-				});
-				this.pharmaciesList = temp;
-			});
+			UsersService.GetUsers(this.query, cookie.username, cookie.password).then(
+				(element) => {
+					element["data"].forEach((element) => {
+						temp.push(element);
+					});
+					this.pharmaciesList = temp;
+				}
+			);
 		}
 	}
 

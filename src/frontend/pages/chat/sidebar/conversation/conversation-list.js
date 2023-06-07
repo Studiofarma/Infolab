@@ -10,7 +10,7 @@ import { ConversationDto } from "../../../../models/conversation-dto.js";
 class ConversationList extends LitElement {
 	static properties = {
 		pharmaciesList: { state: true },
-		activeChatId: { state: 0 },
+		activeChatName: { state: "general" },
 	};
 
 	static styles = css`
@@ -42,7 +42,7 @@ class ConversationList extends LitElement {
 		super();
 		this.pharmaciesList = [];
 		this.setList();
-		this.activeChatId = 0;
+		this.activeChatName = "general";
 	}
 
 	render() {
@@ -59,6 +59,7 @@ class ConversationList extends LitElement {
 					tmp.push(pharmacy);
 				});
 
+				tmp.sort(this.compareTimestamp);
 				this.pharmaciesList = tmp;
 			})
 			.catch((error) => {
@@ -66,26 +67,34 @@ class ConversationList extends LitElement {
 			});
 	}
 
+	compareTimestamp(a, b) {
+		var timestampA = Date.parse(a.lastMessage.timestamp);
+		var timestampB = Date.parse(b.lastMessage.timestamp);
+		return timestampB - timestampA;
+	}
+
 	renderList() {
-		return this.pharmaciesList.map((pharmacy, id) => {
+		return this.pharmaciesList.map((pharmacy) => {
 			let conversation = new ConversationDto(pharmacy);
 			return html`<il-conversation
-				class=${id == this.activeChatId ? "active" : ""}
+				class=${conversation.name == this.activeChatName ? "active" : ""}
 				.chat=${conversation}
 				@click=${() => {
-					this.activeChatId = id;
-					this.updateMessages();
+					this.activeChatName = conversation.name;
+					this.updateMessages(conversation.name);
 				}}
 			></il-conversation>`;
 		});
 	}
 
-	updateMessages() {
+	updateMessages(roomName) {
 		this.dispatchEvent(
 			new CustomEvent("update-message", {
 				detail: {
-					roomId: this.activeChatId,
+					roomName: roomName,
 				},
+				bubbles: true,
+				composed: true,
 			})
 		);
 	}
