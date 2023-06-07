@@ -263,7 +263,10 @@ export class Chat extends LitElement {
 						.login=${this.login}
 					></il-sidebar>
 					<div class="chat">
-						<il-chat-header username=${this.login.username}></il-chat-header>
+						<il-chat-header
+							userName=${this.login.username}
+							roomName=${this.chatNameFormatter(this.chatName)}
+						></il-chat-header>
 						<ul
 							@scroll="${(e) => {
 								if (this.checkScrolledToBottom()) {

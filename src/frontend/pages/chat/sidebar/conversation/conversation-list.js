@@ -97,6 +97,16 @@ class ConversationList extends LitElement {
 				composed: true,
 			})
 		);
+		let messagInput = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > div > il-input-controls")
+			.shadowRoot.querySelector(
+				"#inputControls > div.container > div > il-input-field"
+			)
+			.shadowRoot.querySelector("#message-input");
+
+		messagInput.focus();
 	}
 }
 
