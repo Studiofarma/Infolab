@@ -164,7 +164,9 @@ export class SearchChats extends LitElement {
 			UsersService.GetUsers(this.query, cookie.username, cookie.password).then(
 				(element) => {
 					element["data"].forEach((element) => {
-						temp.push(element);
+						if (element.name != cookie.username) {
+							temp.push(element);
+						}
 					});
 					this.pharmaciesList = temp;
 				}
@@ -176,7 +178,11 @@ export class SearchChats extends LitElement {
 		if (this.pharmaciesList.length > 0) {
 			return this.pharmaciesList.map(
 				(pharmacy) => html`
-					<div>
+					<div
+						@click=${() => {
+							this.loadChat(pharmacy.name);
+						}}
+					>
 						<p>${pharmacy.name}</p>
 					</div>
 				`
@@ -184,6 +190,18 @@ export class SearchChats extends LitElement {
 		} else {
 			return html`<div><p class="nofound">Nessun risultato trovato</p></div>`;
 		}
+	}
+
+	loadChat(selectedChatName) {
+		this.dispatchEvent(
+			new CustomEvent("load-chat", {
+				detail: {
+					selectedChatName: selectedChatName,
+				},
+				bubbles: true,
+				composed: true,
+			})
+		);
 	}
 }
 

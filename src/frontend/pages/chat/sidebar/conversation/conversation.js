@@ -26,10 +26,7 @@ class Conversation extends LitElement {
 			padding: 12px 12px;
 			cursor: pointer;
 			transition: 0.5s;
-		}
 
-		.chat-box:hover {
-			background-color: #235188;
 		}
 
 		.date-box {

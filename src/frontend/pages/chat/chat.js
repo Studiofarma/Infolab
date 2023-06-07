@@ -335,7 +335,7 @@ export class Chat extends LitElement {
 		});
 	}
 
-	updateMessages(e) {
+	async updateMessages(e) {
 		MessagesService.getMessagesById(
 			this.login.username,
 			this.login.password,

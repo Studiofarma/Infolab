@@ -21,10 +21,20 @@ export class Sidebar extends LitElement {
 	render() {
 		return html`
 			<div>
-				<il-search></il-search>
+				<il-search
+					@load-chat=${(e) => {
+						this.loadChat(e);
+					}}
+				></il-search>
 				<il-conversation-list></il-conversation-list>
 			</div>
 		`;
+	}
+
+	loadChat(e) {
+		this.shadowRoot
+			.querySelector("il-conversation-list")
+			.selectChat(e.detail.selectedChatName);
 	}
 }
 
