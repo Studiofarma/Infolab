@@ -389,6 +389,16 @@ export class Chat extends LitElement {
 			this.onMessage(payload)
 		);
 
+
+		// fixare questo
+		this.stompClient.subscribe("/user/topic/me", (payload) =>
+			this.onMessage(payload)
+		);
+
+		this.stompClient.subscribe(`/queue/${this.login.username}`, (payload) =>
+			this.onMessage(payload)
+		);
+
 		this.stompClient.send(
 			"/app/chat.register",
 			{},

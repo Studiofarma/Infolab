@@ -73,9 +73,8 @@ public class ChatController {
 
 //    To fix
     @MessageMapping("/chat.send.{destinationUser}")
-//    @SendTo("/queue/{destinationUser}")
-//    @SendToUser("/topic/me")
-    @SendTo("/topic/public")
+    @SendTo("/queue/{destinationUser}")
+    @SendToUser("/topic/me")
     public ChatMessageDto sendMessageToUser(
             @Payload ChatMessageDto message,
             @DestinationVariable String destinationUser,
