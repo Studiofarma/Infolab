@@ -74,9 +74,12 @@ class Conversation extends LitElement {
 			this.notificationOpacity = "block";
 		}
 
-		let timestamp = new Date(
-			this.chat.lastMessage.timestamp
-		).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+		let timestamp = this.chat.lastMessage.timestamp
+			? new Date(this.chat.lastMessage.timestamp).toLocaleTimeString([], {
+					hour: "2-digit",
+					minute: "2-digit",
+			  })
+			: "";
 
 		return html`
 			<div class="chat-box">
@@ -128,7 +131,7 @@ class Conversation extends LitElement {
 	lastMessageTextFormatter(sender, message) {
 		return resolveMarkdown(
 			MarkdownService.parseMarkdown(
-				this.fixLastMessageLength(`${sender}: ${message}`)
+				this.fixLastMessageLength(sender ? `${sender}: ${message}` : "New Chat")
 			)
 		);
 	}

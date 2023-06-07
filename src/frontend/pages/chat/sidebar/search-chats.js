@@ -104,7 +104,7 @@ export class SearchChats extends LitElement {
 		}
 
 		.dropdown {
-			display: none;
+			/* display: none; */
 			position: absolute;
 			top: 39px;
 			left: 0px;
