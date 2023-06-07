@@ -389,7 +389,6 @@ export class Chat extends LitElement {
 			this.onMessage(payload)
 		);
 
-
 		// fixare questo
 		this.stompClient.subscribe("/user/topic/me", (payload) =>
 			this.onMessage(payload)
@@ -408,12 +407,14 @@ export class Chat extends LitElement {
 
 	onMessage(payload) {
 		var message = JSON.parse(payload.body);
-
+		console.log(message);
 		if (message.content) {
-			this.messages.push(message);
-			this.update();
-			this.updated();
-			this.scrollToBottom();
+			if (this.chatName == message.roomName) {
+				this.messages.push(message);
+				this.update();
+				this.updated();
+				this.scrollToBottom();
+			}
 			let sidebar = this.renderRoot.querySelector(
 				"main > section > il-sidebar"
 			);

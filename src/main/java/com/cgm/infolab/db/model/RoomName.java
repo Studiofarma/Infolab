@@ -13,6 +13,15 @@ public record RoomName(String value) {
         return new RoomName(roomName);
     }
 
+    public static String getRoomNameByUsers(Username user1, Username user2) {
+        String[] users = {user1.value(), user2.value()};
+        Arrays.sort(users);
+        // Il criterio con cui vengono create le room è mettere i nomi degli utenti in ordine lessicografico,
+        // in modo da evitare room multiple tra gli stessi utenti
+        String roomName = String.format("%s-%s", users[0], users[1]);
+        return roomName;
+    }
+
     public static RoomName of(String roomName) {
         if (!roomName.contains("-")) {
             // Esclude dal controllo room come general che non contengono -.

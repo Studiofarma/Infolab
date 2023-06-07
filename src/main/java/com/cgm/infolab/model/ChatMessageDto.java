@@ -13,6 +13,7 @@ public class ChatMessageDto {
 
     private LocalDateTime timestamp;
     private String sender;
+    private String roomName;
 
     private ChatMessageDto() {
     }
@@ -26,6 +27,15 @@ public class ChatMessageDto {
         this.content = content;
         this.timestamp = timestamp;
         this.sender = sender;
+        this.roomName = "";
+    }
+
+    public String getRoomName() {
+        return roomName;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
     }
 
     public String getContent() {

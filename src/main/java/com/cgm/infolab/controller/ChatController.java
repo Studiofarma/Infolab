@@ -68,6 +68,7 @@ public class ChatController {
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
         Timestamp time = chatService.saveMessageInDb(message, Username.of(principal.getName()), RoomName.of("general"));
         message.setTimestamp(time.toLocalDateTime());
+        message.setRoomName("general");
         return message;
     }
 
@@ -85,6 +86,7 @@ public class ChatController {
         Timestamp time = chatService.saveMessageInDb(message, Username.of(principal.getName()),
             RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)));
         message.setTimestamp(time.toLocalDateTime());
+        message.setRoomName(RoomName.getRoomNameByUsers(Username.of(principal.getName()), Username.of(destinationUser)));
         return message;
     }
 }
