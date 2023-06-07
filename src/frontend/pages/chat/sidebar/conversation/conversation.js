@@ -26,7 +26,6 @@ class Conversation extends LitElement {
 			padding: 12px 12px;
 			cursor: pointer;
 			transition: 0.5s;
-
 		}
 
 		.date-box {
@@ -81,7 +80,11 @@ class Conversation extends LitElement {
 
 		return html`
 			<div class="chat-box">
-				<il-avatar .chat=${this.chat}></il-avatar>
+				<il-avatar
+					.avatarLink=${this.chat.avatarLink}
+					.name=${this.chat.name}
+					.id=${this.chat.id}
+				></il-avatar>
 				<div class="name-box">
 					<p class="chat-name">${this.chatNameFormatter(this.chat.name)}</p>
 					<p class="last-message">

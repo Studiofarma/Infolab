@@ -26,7 +26,6 @@ class ConversationList extends LitElement {
 			height: auto;
 			flex-direction: column;
 			gap: 10px;
-			height: calc(100vh - 70px);
 			margin-right: 3px;
 		}
 

@@ -19,25 +19,92 @@ export class SearchChats extends LitElement {
 			padding: 0;
 		}
 
-		#searchChats {
+		.search-chats {
 			width: 100%;
-			padding: 5px 10px;
+			padding: 15px 10px 10px;
 			margin-bottom: 20px;
 			column-gap: 10px;
 			position: relative;
 		}
 
-		#searchChats input {
+		.container-input {
+			position: relative;
+			display: flex;
+		}
+
+		.search-icon {
+			color: #b6b5b5;
+			transition: 0.4s;
+			width: 30px;
+		}
+
+		.search-input {
 			width: 100%;
 			height: 40px;
 			border-radius: 10px;
 			padding: 10px;
-			transition: 0.5s;
 			border: none;
 			outline: none;
+			color: white;
+			background-color: rgb(0, 38, 78);
+			position: relative;
+			overflow: hidden;
 		}
 
-		#searchChats .dropdown {
+		.search-input::placeholder {
+			color: #b6b5b5;
+		}
+
+		.search-icon {
+			width: 30px;
+			animation: showElement 0.5s forwards;
+		}
+
+		.search-input:focus {
+			width: 100%;
+			transition: width 0.5s;
+		}
+
+		.search-input:focus ~ .dropdown {
+			max-height: 325px;
+			margin-top: 3px;
+			overflow-y: auto;
+		}
+
+		.search-input:focus ~ .search-icon {
+			animation: hideElement 0.5s forwards;
+		}
+
+		@keyframes hideElement {
+			0% {
+				opacity: 1;
+				width: 30px;
+			}
+
+			100% {
+				opacity: 0;
+				width: 0;
+			}
+		}
+
+		@keyframes showElement {
+			0% {
+				opacity: 0;
+				width: 0;
+			}
+
+			100% {
+				opacity: 1;
+				width: 30px;
+			}
+		}
+
+		.search-input {
+			font-family: inherit;
+		}
+
+		.dropdown {
+			display: none;
 			position: absolute;
 			top: 39px;
 			left: 0px;
@@ -50,19 +117,6 @@ export class SearchChats extends LitElement {
 			overflow-y: hidden;
 			transition: 0.5s;
 			text-align: center;
-		}
-
-		#searchChats input:focus {
-			border-bottom-left-radius: 0px;
-			border-bottom-right-radius: 0px;
-		}
-
-		#searchChats input:focus ~ .dropdown {
-			max-height: 325px;
-			margin-top: 3px;
-			border-bottom-left-radius: 10px;
-			border-bottom-right-radius: 10px;
-			overflow-y: auto;
 		}
 
 		.dropdown::-webkit-scrollbar {
@@ -105,29 +159,6 @@ export class SearchChats extends LitElement {
 		.dropdown > div:hover {
 			background: lightgray;
 		}
-
-		#searchChats .containerInput {
-			position: relative;
-		}
-
-		.containerInput input:focus ~ il-button-icon {
-			opacity: 0;
-			visibility: hidden;
-		}
-
-		.containerInput il-button-icon {
-			position: absolute;
-			transform: translate(-50%, -50%);
-			top: 50%;
-			right: 0px;
-			z-index: 5;
-			color: #6f6f6f;
-			transition: 0.5s;
-		}
-
-		input {
-			font-family: inherit;
-		}
 	`;
 
 	constructor() {
@@ -138,15 +169,19 @@ export class SearchChats extends LitElement {
 
 	render() {
 		return html`
-			<div id="searchChats">
-				<div class="containerInput">
+			<div class="search-chats">
+				<div class="container-input">
 					<input
+						class="search-input"
 						type="text"
 						placeholder="cerca farmacie"
 						@input=${this.setFilter}
 						@click=${this.setFilter}
 					/>
-					<il-button-icon content=${IconNames.magnify}></il-button-icon>
+					<il-button-icon
+						class="search-icon"
+						content=${IconNames.magnify}
+					></il-button-icon>
 
 					<div class="dropdown">${this.showTips()}</div>
 				</div>

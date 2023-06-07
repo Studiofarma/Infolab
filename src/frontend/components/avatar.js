@@ -2,7 +2,9 @@ import { LitElement, html, css } from "lit";
 export class Avatar extends LitElement {
 	static get properties() {
 		return {
-			chat: {},
+			avatarLink: "",
+			name: "",
+			id: 0,
 		};
 	}
 
@@ -38,14 +40,13 @@ export class Avatar extends LitElement {
 	}
 
 	createIcon() {
-		if (this.chat.avatarLink) {
+		if (this.avatarLink) {
 			this.defaultAvatar = true;
 		} else {
 			this.defaultAvatar = false;
 		}
-		this.initials = this.getInitials(this.chat.name);
-		console.log(this.chat);
-		switch (this.chat.id % 8) {
+		this.initials = this.getInitials(this.name);
+		switch (this.id || 0 % 8) {
 			case 0:
 				this.color = "#08c771";
 				break;
@@ -78,7 +79,7 @@ export class Avatar extends LitElement {
 		return html`
 			<div class="avatar">
 				${this.defaultAvatar
-					? html`<img src=${this.chat.avatarLink} />`
+					? html`<img src=${this.avatarLink} />`
 					: html`<div
 							id="avatar-default"
 							style="background-color:${this.color}"
