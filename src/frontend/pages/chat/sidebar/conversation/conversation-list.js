@@ -70,8 +70,24 @@ class ConversationList extends LitElement {
 		return html` <div class="conversation-list">${this.renderList()}</div> `;
 	}
 
-	setList() {
+	setList(lista) {
 		let tmp = [];
+		if (lista) {
+			lista.forEach((pharmacy) => {
+				tmp.push({
+					avatarLink: null,
+					roomName: pharmacy.name,
+					unreadMessages: 0,
+					lastMessage: {
+						preview: null,
+						sender: null,
+						timestamp: null,
+					},
+				});
+			});
+			this.update();
+		}
+
 		let cookie = CookieService.getCookie();
 
 		OpenChatsService.getOpenChats(cookie.username, cookie.password)
@@ -81,11 +97,13 @@ class ConversationList extends LitElement {
 				});
 
 				tmp.sort(this.compareTimestamp);
-				this.conversationList = tmp;
+				this.update();
 			})
 			.catch((error) => {
 				console.log(error);
 			});
+
+		this.conversationList = tmp;
 	}
 
 	compareTimestamp(a, b) {

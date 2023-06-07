@@ -104,7 +104,7 @@ export class SearchChats extends LitElement {
 		}
 
 		.dropdown {
-			/* display: none; */
+			display: none;
 			position: absolute;
 			top: 39px;
 			left: 0px;
@@ -204,9 +204,23 @@ export class SearchChats extends LitElement {
 						}
 					});
 					this.pharmaciesList = temp;
+
+					if (this.pharmaciesList.length > 0) {
+						this.populateConversationListWithUsers(this.pharmaciesList);
+					}
 				}
 			);
 		}
+	}
+
+	populateConversationListWithUsers(pharmacyName) {
+		let conversationList = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > il-sidebar")
+			.shadowRoot.querySelector("div > il-conversation-list");
+
+		conversationList.setList(pharmacyName);
 	}
 
 	showTips() {
