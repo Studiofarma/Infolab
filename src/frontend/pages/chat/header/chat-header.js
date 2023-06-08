@@ -14,7 +14,6 @@ export class ChatHeader extends LitElement {
 	static styles = css`
 		.chatHeader {
 			background: #083c72;
-			box-shadow: 0px 1px 5px black;
 			height: 40px;
 			padding: 15px 30px;
 			display: flex;
@@ -23,6 +22,7 @@ export class ChatHeader extends LitElement {
 			color: white;
 			position: fixed;
 			width: calc(100vw - 400px);
+			border-bottom: 1px solid black;
 			z-index: 1000;
 		}
 

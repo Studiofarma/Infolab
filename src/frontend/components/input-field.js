@@ -33,11 +33,18 @@ export class InputField extends LitElement {
 			width: 100%;
 			height: 40px;
 			padding: 5px 10px;
-			border: solid 2px #5a9bfb;
+			/* border: solid 2px #5a9bfb; */
+			background-color: rgb(8, 60, 114);
+			color: white;
+			border: none;
 			outline: none;
 			font-size: 15pt;
 			transition: 0.5s;
 			border-radius: 10px;
+		}
+
+		input::placeholder {
+			color: rgb(214, 214, 214);
 		}
 	`;
 
@@ -48,12 +55,12 @@ export class InputField extends LitElement {
 				id="message-input"
 				placeholder="${this.placeholder}"
 				@input=${this.setValue}
-				@blur="${this.setBlur}"
-				@focus="${this.setFocus}"
 				.value=${this.value}
 			/>
 		`;
 	}
+	// @blur="${this.setBlur}"
+	// @focus="${this.setFocus}"
 
 	firstUpdated() {
 		this.renderRoot.querySelector("input").focus();
@@ -65,13 +72,13 @@ export class InputField extends LitElement {
 		this.selectionEnd = e.target.selectionEnd;
 	}
 
-	setFocus() {
-		this.renderRoot.querySelector("input").style.border = "solid 2px #009C3E";
-	}
+	// setFocus() {
+	// 	this.renderRoot.querySelector("input").style.border = "solid 2px #009C3E";
+	// }
 
-	setBlur() {
-		this.renderRoot.querySelector("input").style.border = "solid 2px #5A9BFB";
-	}
+	// setBlur() {
+	// 	this.renderRoot.querySelector("input").style.border = "solid 2px #5A9BFB";
+	// }
 
 	clear() {
 		this.renderRoot.querySelector("input").value = "";

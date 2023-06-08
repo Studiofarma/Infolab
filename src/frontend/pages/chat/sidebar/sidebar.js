@@ -22,10 +22,9 @@ export class Sidebar extends LitElement {
 			display: flex;
 			flex-direction: column;
 			height: 100vh;
-			width: 350px;
+			width: 349px;
+			border-right: 1px solid black;
 			z-index: 1100;
-
-			box-shadow: rgb(0 0 0 / 40%) 0px 0px 11px 0.2px;
 		}
 
 		.search,
@@ -38,7 +37,6 @@ export class Sidebar extends LitElement {
 			display: flex;
 			align-items: center;
 			gap: 20px;
-			border-top: 1px solid black;
 			cursor: pointer;
 			transition: transform 0.5s;
 		}
