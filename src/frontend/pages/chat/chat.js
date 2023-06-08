@@ -32,7 +32,7 @@ export class Chat extends LitElement {
 				headerName: "",
 				token: "",
 			},
-			chatName: "",
+			activeChatName: "",
 		};
 	}
 
@@ -41,7 +41,7 @@ export class Chat extends LitElement {
 		this.messages = [];
 		this.message = "";
 		this.nMessages = 0;
-		this.chatName = "general";
+		this.activeChatName = "general";
 		this.scrolledToBottom = false;
 		window.addEventListener("resize", () => {
 			this.scrollToBottom();
@@ -267,7 +267,7 @@ export class Chat extends LitElement {
 					<div class="chat">
 						<il-chat-header
 							userName=${this.login.username}
-							roomName=${this.chatNameFormatter(this.chatName)}
+							roomName=${this.activeChatNameFormatter(this.activeChatName)}
 						></il-chat-header>
 						<ul
 							@scroll="${(e) => {
@@ -346,7 +346,7 @@ export class Chat extends LitElement {
 			this.messages = messages.data.reverse();
 		});
 
-		this.chatName = e.detail.roomName;
+		this.activeChatName = e.detail.roomName;
 	}
 
 	updated() {
@@ -411,7 +411,7 @@ export class Chat extends LitElement {
 		var message = JSON.parse(payload.body);
 
 		if (message.content) {
-			if (this.chatName == message.roomName) {
+			if (this.activeChatName == message.roomName) {
 				this.messages.push(message);
 				this.update();
 				this.updated();
@@ -436,11 +436,12 @@ export class Chat extends LitElement {
 				type: "CHAT",
 			};
 
-			let chatName = this.chatNameFormatter(this.chatName);
-			CreatePrivateRoomService.createPrivateRoom(chatName);
+			let activeChatName = this.activeChatNameFormatter(this.activeChatName);
 
 			this.stompClient.send(
-				`/app/chat.send${chatName != "general" ? `.${chatName}` : ""}`,
+				`/app/chat.send${
+					activeChatName != "general" ? `.${activeChatName}` : ""
+				}`,
 				{},
 				JSON.stringify(chatMessage)
 			);
@@ -451,13 +452,13 @@ export class Chat extends LitElement {
 		console.log(error);
 	}
 
-	chatNameFormatter(chatName) {
+	activeChatNameFormatter(activeChatName) {
 		let cookie = CookieService.getCookie();
-		if (chatName.includes("-")) {
-			chatName = chatName.split("-");
-			chatName.splice(chatName.indexOf(cookie.username), 1);
+		if (activeChatName.includes("-")) {
+			activeChatName = activeChatName.split("-");
+			activeChatName.splice(activeChatName.indexOf(cookie.username), 1);
 		}
-		return chatName;
+		return activeChatName;
 	}
 }
 
