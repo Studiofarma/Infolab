@@ -22,8 +22,8 @@ export class Sidebar extends LitElement {
 			display: flex;
 			flex-direction: column;
 			height: 100vh;
-			width: 349px;
-			border-right: 1px solid black;
+			width: 350px;
+			box-shadow: inset -1px 0px 0px 0px black;
 			z-index: 1100;
 		}
 
