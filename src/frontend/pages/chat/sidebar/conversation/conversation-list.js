@@ -56,6 +56,11 @@ class ConversationList extends LitElement {
 		.active {
 			background-color: #1460b1;
 		}
+
+		.separator {
+			padding: 5px 0px 5px 10px;
+			color: #d6d6d6;
+		}
 	`;
 
 	constructor() {
@@ -69,7 +74,15 @@ class ConversationList extends LitElement {
 	}
 
 	render() {
-		return html` <div class="conversation-list">${this.renderList()}</div> `;
+		return html`
+			<p class="separator">
+				${this.renderConversationSearched().length > 0 ? "New Chat" : ""}
+			</p>
+			<div class="conversation-list">${this.renderConversationSearched()}</div>
+
+			<p class="separator">Chat</p>
+			<div class="conversation-list">${this.renderConversationList()}</div>
+		`;
 	}
 
 	setListSearched(list, query) {
@@ -140,33 +153,67 @@ class ConversationList extends LitElement {
 		return timestampB - timestampA;
 	}
 
-	formaLists(list1, list2) {
-		let concatLists = [];
+	formatLists(list1, list2) {
 		list1 = list1.filter((element) => {
 			return !list2.some((element2) => element2.roomName === element.roomName);
 		});
 
-		concatLists = concatLists.concat(list1);
-
 		list2 = list2.filter((obj) => obj.roomName.includes(this.query));
-		concatLists = concatLists.concat(list2);
 
-		return concatLists;
+		return [list1, list2];
 	}
 
-	renderList() {
-		let conversationListAndSearched = this.formaLists(
+	renderConversationList() {
+		let conversationList = this.formatLists(
 			this.conversationSearched,
 			this.conversationList
-		);
+		)[1];
 
-		return conversationListAndSearched.map((pharmacy) => {
+		return conversationList.map((pharmacy) => {
+			let conversation = new ConversationDto(pharmacy);
+			if (
+				conversation.lastMessage.preview ||
+				conversation.name == this.activeChatName
+			) {
+				return html`<il-conversation
+					class=${"conversation " +
+					(conversation.name == this.activeChatName ? "active" : "")}
+					.chat=${conversation}
+					@click=${() => {
+						this.activeChatName = conversation.name;
+						this.updateMessages(conversation.name);
+					}}
+				></il-conversation>`;
+			}
+		});
+	}
+
+	renderConversationSearched() {
+		let cookie = CookieService.getCookie();
+
+		let conversationList = this.formatLists(
+			this.conversationSearched,
+			this.conversationList
+		)[0];
+
+		return conversationList.map((pharmacy) => {
 			let conversation = new ConversationDto(pharmacy);
 			return html`<il-conversation
-				class=${"conversation " +
+				class=${"conversation new " +
 				(conversation.name == this.activeChatName ? "active" : "")}
 				.chat=${conversation}
 				@click=${() => {
+					this.conversationList.unshift({
+						avatarLink: null,
+						roomName: conversation.name,
+
+						unreadMessages: 0,
+						lastMessage: {
+							preview: null,
+							sender: null,
+							timestamp: null,
+						},
+					});
 					this.activeChatName = conversation.name;
 					this.updateMessages(conversation.name);
 				}}

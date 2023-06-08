@@ -22,7 +22,6 @@ export class SearchChats extends LitElement {
 		.search-chats {
 			width: 100%;
 			padding: 15px 10px 10px;
-			margin-bottom: 20px;
 			column-gap: 10px;
 			position: relative;
 		}
