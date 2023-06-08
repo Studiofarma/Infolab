@@ -202,7 +202,7 @@ class ConversationList extends LitElement {
 		return conversationList.map((pharmacy) => {
 			let conversation = new ConversationDto(pharmacy);
 			return html`<il-conversation
-				class=${"conversation new " +
+				class=${"conversation new-conversation " +
 				(conversation.name == this.activeChatName ? "active" : "")}
 				.chat=${conversation}
 				@click=${() => {
