@@ -169,7 +169,7 @@ class ConversationList extends LitElement {
 			this.conversationList
 		)[1];
 
-		return conversationList.map((pharmacy) => {
+		return conversationList.map((pharmacy, index) => {
 			let conversation = new ConversationDto(pharmacy);
 			if (
 				conversation.lastMessage.preview ||
@@ -184,6 +184,8 @@ class ConversationList extends LitElement {
 						this.updateMessages(conversation.name);
 					}}
 				></il-conversation>`;
+			} else {
+				this.conversationList.splice(index, 1);
 			}
 		});
 	}
@@ -203,22 +205,27 @@ class ConversationList extends LitElement {
 				(conversation.name == this.activeChatName ? "active" : "")}
 				.chat=${conversation}
 				@click=${() => {
-					this.conversationList.unshift({
-						avatarLink: null,
-						roomName: conversation.name,
-
-						unreadMessages: 0,
-						lastMessage: {
-							preview: null,
-							sender: null,
-							timestamp: null,
-						},
-					});
-					this.activeChatName = conversation.name;
-					this.updateMessages(conversation.name);
+					this.updateListOnConversationClick(conversation);
 				}}
 			></il-conversation>`;
 		});
+	}
+
+	updateListOnConversationClick(conversation) {
+		this.setListSearched([], "");
+		this.conversationList.unshift({
+			avatarLink: null,
+			roomName: conversation.name,
+
+			unreadMessages: 0,
+			lastMessage: {
+				preview: null,
+				sender: null,
+				timestamp: null,
+			},
+		});
+		this.activeChatName = conversation.name;
+		this.updateMessages(conversation.name);
 	}
 
 	updateMessages(roomName) {
