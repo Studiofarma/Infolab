@@ -74,12 +74,12 @@ class Conversation extends LitElement {
 			this.notificationOpacity = "block";
 		}
 
-		let timestamp = this.chat.lastMessage.timestamp
-			? new Date(this.chat.lastMessage.timestamp).toLocaleTimeString([], {
-					hour: "2-digit",
-					minute: "2-digit",
-			  })
-			: "";
+		// let timestamp = this.chat.lastMessage.timestamp
+		// 	? new Date(this.chat.lastMessage.timestamp).toLocaleTimeString([], {
+		// 			hour: "2-digit",
+		// 			minute: "2-digit",
+		// 	  })
+		// 	: "";
 
 		return html`
 			<div class="chat-box">
@@ -102,7 +102,7 @@ class Conversation extends LitElement {
 						class="last-message-timestamp"
 						style="${this.chat.unread > 0 ? "color:rgb(58 179 255)" : ""}"
 					>
-						${timestamp}
+						${this.compareMessageDate(this.chat.lastMessage.timestamp)}
 					</p>
 					<p class="unread-counter">
 						${this.chat.unread > 0
@@ -117,6 +117,52 @@ class Conversation extends LitElement {
 				</div>
 			</div>
 		`;
+	}
+
+	compareMessageDate(messageDate) {
+		if (!messageDate) {
+			return "";
+		}
+
+		const today = new Date().toDateString();
+		const message = new Date(messageDate).toDateString();
+
+		if (today === message) {
+			const time = new Date(messageDate).toLocaleTimeString([], {
+				hour: "2-digit",
+				minute: "2-digit",
+			});
+			return time;
+		}
+
+		const yesterday = new Date();
+		yesterday.setDate(yesterday.getDate() - 1);
+
+		if (yesterday.toDateString() === message) {
+			return "Yesterday";
+		}
+
+		const messageYear = new Date(messageDate).getFullYear();
+		const currentYear = new Date().getFullYear();
+
+		if (messageYear === currentYear) {
+			const dayMonth = new Date(messageDate).toLocaleDateString("default", {
+				day: "2-digit",
+				month: "2-digit",
+			});
+			return dayMonth;
+		}
+
+		if (messageYear < currentYear) {
+			const fullDate = new Date(messageDate).toLocaleDateString("default", {
+				day: "2-digit",
+				month: "2-digit",
+				year: "2-digit",
+			});
+			return fullDate;
+		}
+
+		return "Date not available";
 	}
 
 	chatNameFormatter(chatName) {
