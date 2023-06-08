@@ -7,7 +7,6 @@ import { MarkdownService } from "../../services/markdown-services";
 import { MessagesService } from "../../services/messages-service";
 
 import { CookieService } from "../../services/cookie-service";
-import { CreatePrivateRoomService } from "../../services/create-private-room-service";
 
 import { IconNames } from "../../enums/icon-names";
 
