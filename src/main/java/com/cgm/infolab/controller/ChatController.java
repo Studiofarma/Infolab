@@ -66,13 +66,12 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-        Timestamp time = chatService.saveMessageInDb(message, Username.of(principal.getName()), RoomName.of("general"));
+        Timestamp time = chatService.saveMessageInDbPublicRooms(message, Username.of(principal.getName()), RoomName.of("general"));
         message.setTimestamp(time.toLocalDateTime());
         message.setRoomName("general");
         return message;
     }
 
-//    To fix
     @MessageMapping("/chat.send.{destinationUser}")
     @SendTo("/queue/{destinationUser}")
     @SendToUser("/topic/me")
@@ -83,7 +82,7 @@ public class ChatController {
             Principal principal){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         log.info(String.format("message from %s to %s", username, destinationUser));
-        Timestamp time = chatService.saveMessageInDb(message, Username.of(principal.getName()),
+        Timestamp time = chatService.saveMessageInDbPrivateRooms(message, Username.of(principal.getName()),
             RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)));
         message.setTimestamp(time.toLocalDateTime());
         message.setRoomName(RoomName.getRoomNameByUsers(Username.of(principal.getName()), Username.of(destinationUser)));

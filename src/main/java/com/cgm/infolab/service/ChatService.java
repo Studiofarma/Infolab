@@ -3,6 +3,7 @@ package com.cgm.infolab.service;
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
+import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.LastMessageDto;
@@ -23,17 +24,21 @@ public class ChatService {
     private final RoomRepository roomRepository;
     private final ChatMessageRepository chatMessageRepository;
 
+    private final RoomSubscriptionRepository roomSubscriptionRepository;
+
     private final Logger log = LoggerFactory.getLogger(ChatService.class);
 
     @Autowired
     public ChatService(UserRepository userRepository,
                        RoomRepository roomRepository,
-                       ChatMessageRepository chatMessageRepository){
+                       ChatMessageRepository chatMessageRepository,
+                       RoomSubscriptionRepository roomSubscriptionRepository){
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
+        this.roomSubscriptionRepository = roomSubscriptionRepository;
     }
-    public Timestamp saveMessageInDb(ChatMessageDto message, Username username, RoomName roomName){
+    public Timestamp saveMessageInDbPublicRooms(ChatMessageDto message, Username username, RoomName roomName){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
@@ -44,6 +49,60 @@ public class ChatService {
 
         RoomEntity room = roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
             log.info(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
+            return null;
+        });
+        ChatMessageEntity messageEntity =
+                ChatMessageEntity.of(sender, room, timestamp.toLocalDateTime(), message.getContent());
+
+        try {
+            chatMessageRepository.add(messageEntity);
+        } catch (DuplicateKeyException e) {
+            log.info(String.format("ChatMessageEntity id=\"%s\" già esistente nel database", messageEntity.getContent()));
+        }
+
+        return timestamp;
+    }
+
+    public Timestamp saveMessageInDbPrivateRooms(ChatMessageDto message, Username username, RoomName roomName){
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
+
+        UserEntity sender = userRepository.getByUsername(Username.of(message.getSender())).orElseGet(() -> {
+            log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
+            return null;
+        });
+
+        RoomEntity room = roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
+            log.info(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
+
+            String[] users = roomName.value().split("-");
+
+            List<UserEntity> usernames = new ArrayList<UserEntity>();
+            for (String user : users) {
+                UserEntity tmp = userRepository.getByUsername(Username.of(user)).orElseThrow(() -> {
+                    throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()));
+                });
+                usernames.add(tmp);
+            }
+
+            RoomName newRoomName = RoomName.of(Username.of(users[0]), Username.of(users[1]));
+
+            try {
+                long newRoomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
+                RoomEntity newRoom = RoomEntity.of(newRoomId, newRoomName, VisibilityEnum.PRIVATE);
+
+                for (UserEntity userName : usernames) {
+                    RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
+                    roomSubscription.setRoomId(newRoom.getId());
+                    roomSubscription.setUserId(userName.getId());
+                    roomSubscriptionRepository.add(roomSubscription);
+                }
+
+                return newRoom;
+            } catch (Exception e) {
+                log.error("Room già esistente");
+            }
+
             return null;
         });
         ChatMessageEntity messageEntity =

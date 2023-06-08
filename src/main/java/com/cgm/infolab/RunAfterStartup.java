@@ -14,9 +14,7 @@ import org.springframework.stereotype.Component;
 public class RunAfterStartup {
 
     public static final RoomEntity[] TEST_ROOMS =
-            {RoomEntity.of(RoomName.of("user1-user2"), VisibilityEnum.PRIVATE),
-            RoomEntity.of(RoomName.of("user1-user3"), VisibilityEnum.PRIVATE),
-            RoomEntity.of(RoomName.of("user3-user4"), VisibilityEnum.PRIVATE)};
+            {RoomEntity.of(RoomName.of("user1-user2"), VisibilityEnum.PRIVATE)};
     public static final UserEntity[] TEST_USERS =
             {UserEntity.of(Username.of("user1"), "Mario Rossi"),
             UserEntity.of(Username.of("user2"), "Fabrizio Bruno"),
