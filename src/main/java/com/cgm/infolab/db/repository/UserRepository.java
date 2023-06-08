@@ -54,7 +54,7 @@ public class UserRepository {
      * @return una lista di users.
      */
     public List<UserEntity> getByUsernameWithLike(String username) {
-        return queryUsers(String.format("%s WHERE username ILIKE ? || ? LIMIT 10", USERS_QUERY) , username, "%");
+        return queryUsers(String.format("%s WHERE username ILIKE ? || ? LIMIT 5", USERS_QUERY) , username, "%");
     }
 
     private List<UserEntity> queryUsers(String query, String username, String wildCard) {

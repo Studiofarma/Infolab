@@ -60,7 +60,9 @@ class ConversationList extends LitElement {
 
 	constructor() {
 		super();
+		this.query = "";
 		this.conversationList = [];
+		this.conversationSearched = [];
 		this.setList();
 
 		this.activeChatName = "general";
@@ -70,40 +72,66 @@ class ConversationList extends LitElement {
 		return html` <div class="conversation-list">${this.renderList()}</div> `;
 	}
 
-	setList(lista) {
-		let tmp = [];
-		if (lista) {
-			lista.forEach((pharmacy) => {
-				tmp.push({
-					avatarLink: null,
-					roomName: pharmacy.name,
-					unreadMessages: 0,
-					lastMessage: {
-						preview: null,
-						sender: null,
-						timestamp: null,
-					},
-				});
-			});
-			this.update();
-		}
+	setListSearched(list, query) {
+		let cookie = CookieService.getCookie();
+		this.query = query;
 
+		this.conversationSearched = [];
+
+		list.forEach((element, index) => {
+			list[index] = {
+				avatarLink: null,
+				roomName: this.chatNameRecomposer(cookie.username, element.name),
+				unreadMessages: 0,
+				lastMessage: {
+					preview: null,
+					sender: null,
+					timestamp: null,
+				},
+			};
+		});
+
+		if (list.length > 0) {
+			list.forEach((pharmacy) => {
+				this.conversationSearched = list.filter((obj2) =>
+					this.conversationSearched.some(
+						(obj1) => obj1.roomName === obj2.roomName
+					)
+				);
+
+				this.conversationSearched.unshift(pharmacy);
+			});
+		} else {
+			this.conversationSearched = [];
+		}
+		this.update();
+	}
+
+	setList() {
 		let cookie = CookieService.getCookie();
 
 		OpenChatsService.getOpenChats(cookie.username, cookie.password)
 			.then((element) => {
 				element["data"].forEach((pharmacy) => {
-					tmp.push(pharmacy);
+					let isPresent = this.conversationList.some(
+						(obj) => obj.roomName === pharmacy.roomName
+					);
+					if (!isPresent) {
+						this.conversationList.unshift(pharmacy);
+					} else {
+						let index = this.conversationList.findIndex(
+							(obj) => obj.roomName === pharmacy.roomName
+						);
+						this.conversationList[index] = pharmacy;
+					}
 				});
 
-				tmp.sort(this.compareTimestamp);
+				this.conversationList.sort(this.compareTimestamp);
 				this.update();
 			})
 			.catch((error) => {
 				console.log(error);
 			});
-
-		this.conversationList = tmp;
 	}
 
 	compareTimestamp(a, b) {
@@ -112,8 +140,27 @@ class ConversationList extends LitElement {
 		return timestampB - timestampA;
 	}
 
+	formaLists(list1, list2) {
+		let concatLists = [];
+		list1 = list1.filter((element) => {
+			return !list2.some((element2) => element2.roomName === element.roomName);
+		});
+
+		concatLists = concatLists.concat(list1);
+
+		list2 = list2.filter((obj) => obj.roomName.includes(this.query));
+		concatLists = concatLists.concat(list2);
+
+		return concatLists;
+	}
+
 	renderList() {
-		return this.conversationList.map((pharmacy) => {
+		let conversationListAndSearched = this.formaLists(
+			this.conversationSearched,
+			this.conversationList
+		);
+
+		return conversationListAndSearched.map((pharmacy) => {
 			let conversation = new ConversationDto(pharmacy);
 			return html`<il-conversation
 				class=${"conversation " +
@@ -179,7 +226,6 @@ class ConversationList extends LitElement {
 		this.activeChatName = selectedChatName;
 		this.updateMessages(this.activeChatName);
 
-		console.log(this.conversationList);
 		this.update();
 	}
 

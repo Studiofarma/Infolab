@@ -195,7 +195,7 @@ export class SearchChats extends LitElement {
 		let temp = [];
 		let cookie = CookieService.getCookie();
 
-		if (this.query.length > 1) {
+		if (this.query.length >= 1) {
 			UsersService.GetUsers(this.query, cookie.username, cookie.password).then(
 				(element) => {
 					element["data"].forEach((element) => {
@@ -205,22 +205,22 @@ export class SearchChats extends LitElement {
 					});
 					this.pharmaciesList = temp;
 
-					if (this.pharmaciesList.length > 0) {
-						this.populateConversationListWithUsers(this.pharmaciesList);
-					}
+					this.populateConversationListWithUsers(this.pharmaciesList);
 				}
 			);
+		} else {
+			this.populateConversationListWithUsers([]);
 		}
 	}
 
-	populateConversationListWithUsers(pharmacyName) {
+	populateConversationListWithUsers(pharmacyNames) {
 		let conversationList = document
 			.querySelector("body > il-app")
 			.shadowRoot.querySelector("il-chat")
 			.shadowRoot.querySelector("main > section > il-sidebar")
 			.shadowRoot.querySelector("div > il-conversation-list");
 
-		conversationList.setList(pharmacyName);
+		conversationList.setListSearched(pharmacyNames, this.query);
 	}
 
 	showTips() {
