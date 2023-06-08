@@ -182,6 +182,7 @@ class ConversationList extends LitElement {
 					@click=${() => {
 						this.activeChatName = conversation.name;
 						this.updateMessages(conversation.name);
+						this.setList();
 					}}
 				></il-conversation>`;
 			} else {
