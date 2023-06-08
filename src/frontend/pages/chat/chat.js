@@ -5,7 +5,9 @@ import Stomp from "stompjs";
 
 import { MarkdownService } from "../../services/markdown-services";
 import { MessagesService } from "../../services/messages-service";
+
 import { CookieService } from "../../services/cookie-service";
+import { CreatePrivateRoomService } from "../../services/create-private-room-service";
 
 import { IconNames } from "../../enums/icon-names";
 
@@ -424,6 +426,7 @@ export class Chat extends LitElement {
 
 	sendMessage(e) {
 		this.message = e.detail.message;
+
 		let messageContent = this.message.trim();
 
 		if (messageContent && this.stompClient) {
@@ -434,6 +437,7 @@ export class Chat extends LitElement {
 			};
 
 			let chatName = this.chatNameFormatter(this.chatName);
+			CreatePrivateRoomService.createPrivateRoom(chatName);
 
 			this.stompClient.send(
 				`/app/chat.send${chatName != "general" ? `.${chatName}` : ""}`,

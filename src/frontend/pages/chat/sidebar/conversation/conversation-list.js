@@ -120,31 +120,32 @@ class ConversationList extends LitElement {
 		this.update();
 	}
 
-	setList() {
-		let cookie = CookieService.getCookie();
 
-		OpenChatsService.getOpenChats(cookie.username, cookie.password)
-			.then((element) => {
-				element["data"].forEach((pharmacy) => {
-					let isPresent = this.conversationList.some(
-						(obj) => obj.roomName === pharmacy.roomName
-					);
-					if (!isPresent) {
-						this.conversationList.unshift(pharmacy);
-					} else {
-						let index = this.conversationList.findIndex(
-							(obj) => obj.roomName === pharmacy.roomName
-						);
-						this.conversationList[index] = pharmacy;
-					}
-				});
+	async setList() {
+		try {
+			const cookie = CookieService.getCookie();
+			const element = await OpenChatsService.getOpenChats(
+				cookie.username,
+				cookie.password
+			);
 
-				this.conversationList.sort(this.compareTimestamp);
-				this.update();
-			})
-			.catch((error) => {
-				console.log(error);
+			element["data"].forEach((pharmacy) => {
+				const index = this.conversationList.findIndex(
+					(obj) => obj.roomName === pharmacy.roomName
+				);
+
+				if (index !== -1) {
+					this.conversationList[index] = pharmacy;
+				} else {
+					this.conversationList.unshift(pharmacy);
+				}
 			});
+
+			this.conversationList.sort(this.compareTimestamp);
+			this.update();
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
 	compareTimestamp(a, b) {
