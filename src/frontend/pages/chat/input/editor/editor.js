@@ -215,12 +215,12 @@ export class Editor extends LitElement {
 
 						<il-formatting-button
 								content=${IconNames.listBulleted}
-								@click=${this.insertList}
+								@click=${this.insertListBulleted}
 						></il-formatting-button>
 
 							<il-formatting-button
 								content=${IconNames.listNumbered}
-								@click=${this.insertList}
+								@click=${this.insertListNumbered}
 						></il-formatting-button>
 						
             <il-formatting-button
@@ -370,40 +370,19 @@ export class Editor extends LitElement {
 		this.insertInTextArea("\n - - - \n");
 	}
 
-	insertList() {
+	insertListBulleted() {
 		const text = this.getText("punto");
-		this.insertInTextArea(this.getTypeOfList(text));
+		this.insertInTextArea("* " + text);
+	}
+
+	insertListNumbered() {
+		const text = this.getText("punto");
+		this.insertInTextArea("1. " + text);
 	}
 
 	insertHeading() {
 		const text = this.getText("Titolo");
-		this.insertInTextArea(this.getTypeOfHeading(text));
-	}
-
-	getTypeOfList(text) {
-		const checkedList =
-			this.renderRoot.querySelector(`input[name="forList"]:checked`) ?? null;
-
-		switch (checkedList.id) {
-			case "disc":
-				return "* " + text;
-			case "number":
-				return "1. " + text;
-		}
-	}
-
-	getTypeOfHeading(text) {
-		const checkedHeading =
-			this.renderRoot.querySelector(`input[name="forHeading"]:checked`) ?? null;
-
-		switch (checkedHeading.id) {
-			case "h1":
-				return "# " + text;
-			case "h2":
-				return "## " + text;
-			case "h3":
-				return "### " + text;
-		}
+		this.insertInTextArea("### " + text);
 	}
 
 	getTextarea() {

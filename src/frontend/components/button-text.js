@@ -22,6 +22,7 @@ export class ButtonText extends LitElement {
 			border-bottom: 0;
 			color: rgb(194, 192, 192);
 			height: 40px;
+			cursor: pointer;
 		}
 
 		button:hover {
