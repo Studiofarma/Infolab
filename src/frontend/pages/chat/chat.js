@@ -253,6 +253,12 @@ export class Chat extends LitElement {
 			opacity: 0;
 			transition: opacity 0.2s ease-in-out;
 		}
+
+		.message-date {
+			justify-self: center;
+			width: 15%;
+			background-color: #ddd;
+		}
 	`;
 
 	render() {
@@ -286,8 +292,13 @@ export class Chat extends LitElement {
 							class="message-box"
 						>
 							${this.messages.map(
-								(item, _) =>
+								(item, index) =>
 									html`
+										${this.compareMessageDate(
+											this.messages[this.messages.length - 1].timestamp, // preso il messaggio di oggi
+											this.messages[index - 1]?.timestamp,
+											item.timestamp
+										)}
 										<li
 											class=${item.sender == this.login.username
 												? "sender"
@@ -324,6 +335,39 @@ export class Chat extends LitElement {
 				</section>
 			</main>
 		`;
+	}
+
+	compareMessageDate(firstMessageDate, messageDate1, messageDate2) {
+		const today = new Date(firstMessageDate).toDateString();
+		const message = new Date(messageDate2).toDateString();
+
+		if (
+			new Date(messageDate1).toDateString() ==
+			new Date(messageDate2).toDateString()
+		) {
+			return "";
+		}
+
+		if (today === message) {
+			return html`<div class="message-date">Today</div>`;
+		}
+
+		const yesterday = new Date(firstMessageDate);
+		yesterday.setDate(yesterday.getDate() - 1);
+
+		if (yesterday.toDateString() === message) {
+			return html`<div class="message-date">Yesterday</div>`;
+		}
+
+		const currentYear = new Date(firstMessageDate).getFullYear();
+		const messageYear = new Date(messageDate2).getFullYear();
+
+		const dayMonth = new Date(messageDate2).toLocaleDateString("default", {
+			day: "2-digit",
+			month: "long",
+			year: "numeric",
+		});
+		return html`<div class="message-date">${dayMonth}</div>`;
 	}
 
 	async firstUpdated() {
