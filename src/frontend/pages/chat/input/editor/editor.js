@@ -219,7 +219,7 @@ export class Editor extends LitElement {
 						></il-formatting-button>
 
 							<il-formatting-button
-								content=${IconNames.listBulleted}
+								content=${IconNames.listNumbered}
 								@click=${this.insertList}
 						></il-formatting-button>
 						

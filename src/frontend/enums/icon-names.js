@@ -15,6 +15,7 @@ export const IconNames = {
   link: "mdiLink",
   minus: "mdiMinus",
   listBulleted: "mdiFormatListBulleted",
+  listNumbered: "mdiFormatListNumbered",
   title: "mdiFormatTitle",
   numeric1: "mdiNumeric1Circle",
   numeric2: "mdiNumeric2Circle",
