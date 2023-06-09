@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 public class ChatService {
@@ -72,39 +74,7 @@ public class ChatService {
             return null;
         });
 
-        RoomEntity room = roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
-            log.info(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
-
-            String[] users = roomName.value().split("-");
-
-            List<UserEntity> usernames = new ArrayList<UserEntity>();
-            for (String user : users) {
-                UserEntity tmp = userRepository.getByUsername(Username.of(user)).orElseThrow(() -> {
-                    throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()));
-                });
-                usernames.add(tmp);
-            }
-
-            RoomName newRoomName = RoomName.of(Username.of(users[0]), Username.of(users[1]));
-
-            try {
-                long newRoomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
-                RoomEntity newRoom = RoomEntity.of(newRoomId, newRoomName, VisibilityEnum.PRIVATE);
-
-                for (UserEntity userName : usernames) {
-                    RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
-                    roomSubscription.setRoomId(newRoom.getId());
-                    roomSubscription.setUserId(userName.getId());
-                    roomSubscriptionRepository.add(roomSubscription);
-                }
-
-                return newRoom;
-            } catch (Exception e) {
-                log.error("Room già esistente");
-            }
-
-            return null;
-        });
+        RoomEntity room = getOrCreateRoom(username, roomName);
         ChatMessageEntity messageEntity =
                 ChatMessageEntity.of(sender, room, timestamp.toLocalDateTime(), message.getContent());
 
@@ -115,6 +85,40 @@ public class ChatService {
         }
 
         return timestamp;
+    }
+
+    private RoomEntity getOrCreateRoom(Username username, RoomName roomName) {
+        return roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
+            log.info(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
+
+            String[] users = roomName.value().split("-");
+
+            Stream<UserEntity> usernames = Arrays.stream(users).map((user) ->
+                    userRepository.getByUsername(Username.of(user)).orElseThrow(() ->
+                            new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()))
+                    ));
+
+            try {
+                return getRoomEntity(roomName, usernames);
+            } catch (Exception e) {
+                log.error("Room già esistente");
+            }
+
+            return null;
+        });
+    }
+
+    private RoomEntity getRoomEntity(RoomName roomName, Stream<UserEntity> usernames) {
+        long newRoomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
+        RoomEntity newRoom = RoomEntity.of(newRoomId, roomName, VisibilityEnum.PRIVATE);
+
+        usernames.forEach( (userName) -> {
+            RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
+            roomSubscription.setRoomId(newRoom.getId());
+            roomSubscription.setUserId(userName.getId());
+            roomSubscriptionRepository.add(roomSubscription);
+        });
+        return newRoom;
     }
 
     public ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
