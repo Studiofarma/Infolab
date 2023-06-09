@@ -116,8 +116,8 @@ export class Chat extends LitElement {
 
 		.message-box {
 			list-style-type: none;
-			display: flex;
-			flex-direction: column;
+			display: grid;
+			grid-auto-rows: max-content;
 			gap: 30px;
 			width: 100%;
 			height: calc(100vh - 70px);
@@ -161,7 +161,7 @@ export class Chat extends LitElement {
 		}
 
 		.sender {
-			align-self: flex-end !important;
+			justify-self: flex-end;
 			border-radius: 10px 0 10px 10px;
 
 			color: white;
@@ -190,7 +190,7 @@ export class Chat extends LitElement {
 		}
 
 		.receiver {
-			align-self: flex-start !important;
+			justify-self: flex-start;
 			border-radius: 0 10px 10px 10px;
 
 			color: black;
@@ -256,8 +256,9 @@ export class Chat extends LitElement {
 
 		.message-date {
 			justify-self: center;
-			width: 15%;
-			background-color: #ddd;
+			padding: 5px;
+			border-radius: 6px;
+			background-color: rgb(221, 221, 221);
 		}
 	`;
 
@@ -295,7 +296,7 @@ export class Chat extends LitElement {
 								(item, index) =>
 									html`
 										${this.compareMessageDate(
-											this.messages[this.messages.length - 1].timestamp, // preso il messaggio di oggi
+											this.messages[this.messages.length - 1].timestamp,
 											this.messages[index - 1]?.timestamp,
 											item.timestamp
 										)}
@@ -338,7 +339,7 @@ export class Chat extends LitElement {
 	}
 
 	compareMessageDate(firstMessageDate, messageDate1, messageDate2) {
-		const today = new Date(firstMessageDate).toDateString();
+		const today = new Date().toDateString();
 		const message = new Date(messageDate2).toDateString();
 
 		if (
@@ -352,15 +353,12 @@ export class Chat extends LitElement {
 			return html`<div class="message-date">Today</div>`;
 		}
 
-		const yesterday = new Date(firstMessageDate);
+		const yesterday = new Date(today);
 		yesterday.setDate(yesterday.getDate() - 1);
 
 		if (yesterday.toDateString() === message) {
 			return html`<div class="message-date">Yesterday</div>`;
 		}
-
-		const currentYear = new Date(firstMessageDate).getFullYear();
-		const messageYear = new Date(messageDate2).getFullYear();
 
 		const dayMonth = new Date(messageDate2).toLocaleDateString("default", {
 			day: "2-digit",
