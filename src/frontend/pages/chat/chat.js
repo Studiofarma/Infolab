@@ -127,10 +127,6 @@ export class Chat extends LitElement {
 			padding-top: 100px;
 		}
 
-		.message-box::-webkit-scrollbar {
-			width: 0px;
-		}
-
 		li {
 			list-style-position: inside;
 		}
@@ -143,7 +139,7 @@ export class Chat extends LitElement {
 			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 			z-index: 3;
 		}
-
+/* 
 		:not(.dropdown)::-webkit-scrollbar {
 			background-color: #0074bc;
 			border-radius: 10px;
@@ -155,7 +151,7 @@ export class Chat extends LitElement {
 			border-radius: 10px;
 			width: 5px;
 			border: 3px solid #083c72;
-		}
+		} */
 
 		input {
 			font-family: inherit;
@@ -260,6 +256,21 @@ export class Chat extends LitElement {
 			padding: 5px;
 			border-radius: 6px;
 			background-color: rgb(221, 221, 221);
+		}
+
+		.message-box::-webkit-scrollbar {
+			width: 4px;
+			margin-right: 10px;
+		}
+
+		.message-box::-webkit-scrollbar-track {
+			background-color: none;
+		}
+
+		.message-box::-webkit-scrollbar-thumb {
+			border-radius: 10px;
+			background-color: rgb(54, 123, 251);
+			min-height: 40px;
 		}
 	`;
 
