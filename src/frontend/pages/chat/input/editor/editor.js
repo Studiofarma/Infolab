@@ -263,56 +263,56 @@ export class Editor extends LitElement {
 	}
 
 	checkList(event) {
-		if (event.key === "Enter") {
-			const rows = this.message.split("\n");
-			let last_row = rows[rows.length - 1];
-			const indexOfPoint = last_row.indexOf(".");
+    if (event.key === "Enter") {
+      const rows = this.message.split("\n");
+      let last_row = rows[rows.length - 1];
+      const indexOfPoint = last_row.indexOf(".");
 
-			if (last_row.startsWith("* ")) {
-				this.message += "\n* ";
-				event.preventDefault();
-				return;
-			}
+      if (last_row.startsWith("* ")) {
+        this.message += "\n* ";
+        event.preventDefault();
+        return;
+      }
 
-			if (
-				indexOfPoint != -1 &&
-				!isNaN(parseInt(last_row.slice(0, indexOfPoint))) &&
-				last_row.startsWith(". ", indexOfPoint)
-			) {
-				this.message +=
-					"\n" +
-					(parseInt(last_row.slice(0, indexOfPoint)) + 1).toString() +
-					". ";
-				event.preventDefault();
-				return;
-			}
-		}
+      if (
+        indexOfPoint != -1 &&
+        !isNaN(parseInt(last_row.slice(0, indexOfPoint))) &&
+        last_row.startsWith(". ", indexOfPoint)
+      ) {
+        this.message +=
+          "\n" +
+          (parseInt(last_row.slice(0, indexOfPoint)) + 1).toString() +
+          ". ";
+        event.preventDefault();
+        return;
+      }
+    }
 
-		let currentKeyPressed = event.key;
+    let currentKeyPressed = event.key;
 
-		this.applyMarkdown(this.lastKeyPressed, currentKeyPressed);
+    this.applyMarkdown(this.lastKeyPressed, currentKeyPressed);
 
-		this.lastKeyPressed = currentKeyPressed;
-	}
+    this.lastKeyPressed = currentKeyPressed;
+  }
 
-	applyMarkdown(lastKeyPressed, currentKeyPressed) {
-		if (lastKeyPressed === this.Alt && currentKeyPressed === "b") {
-			this.insertBold();
-			return;
-		}
-		if (lastKeyPressed === this.Alt && currentKeyPressed === "i") {
-			this.insertItalic();
-			return;
-		}
-		if (lastKeyPressed === this.Alt && currentKeyPressed === "s") {
-			this.insertStrike();
-			return;
-		}
-		if (lastKeyPressed === this.Alt && currentKeyPressed === "l") {
-			this.insertLink();
-			return;
-		}
-	}
+  applyMarkdown(lastKeyPressed, currentKeyPressed) {
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "b") {
+      this.insertBold();
+      return;
+    }
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "i") {
+      this.insertItalic();
+      return;
+    }
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "s") {
+      this.insertStrike();
+      return;
+    }
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "l") {
+      this.insertLink();
+      return;
+    }
+  }
 
 	insertInTextArea(str) {
 		let textarea = this.getTextarea();

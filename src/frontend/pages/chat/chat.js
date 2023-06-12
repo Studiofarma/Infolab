@@ -35,7 +35,7 @@ export class Chat extends LitElement {
 			},
 			activeChatName: "",
 			forwardList: [],
-			messageToForward: ''
+			messageToForward: "",
 		};
 	}
 
@@ -47,7 +47,7 @@ export class Chat extends LitElement {
 		this.activeChatName = "general";
 		this.scrolledToBottom = false;
 		this.forwardList = [];
-		this.messageToForward =  '';
+		this.messageToForward = "";
 		window.addEventListener("resize", () => {
 			this.scrollToBottom();
 		});
@@ -290,6 +290,7 @@ export class Chat extends LitElement {
 		}
 
 		.sender .message-settings {
+			color: black;
 			left: -40px;
 		}
 
@@ -310,8 +311,7 @@ export class Chat extends LitElement {
 		.sender .menu-options {
 			position: absolute;
 			top: -3px;
-			left: 0px;
-			transform: translateX(-50px);
+			transform: translateX(-133px);
 			width: max-content;
 		}
 
@@ -418,7 +418,11 @@ export class Chat extends LitElement {
 													>
 														Inoltra
 													</p>
-													<p @click=${() => console.log("Scrivi in privato")}>
+													<p
+														@click=${() => {
+															this.goToChat(item.sender);
+														}}
+													>
 														Scrivi in privato
 													</p>
 													<p @click=${() => console.log("Elimina")}>Elimina</p>
@@ -442,6 +446,16 @@ export class Chat extends LitElement {
 				</section>
 			</main>
 		`;
+	}
+
+	goToChat(roomName) {
+		let conversationList = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > il-sidebar")
+			.shadowRoot.querySelector("div > il-conversation-list");
+
+		conversationList.selectChat(roomName);
 	}
 
 	updateForwardList() {
@@ -474,15 +488,9 @@ export class Chat extends LitElement {
 	}
 
 	forwardMessage(roomName) {
-		let conversationList = document
-			.querySelector("body > il-app")
-			.shadowRoot.querySelector("il-chat")
-			.shadowRoot.querySelector("main > section > il-sidebar")
-			.shadowRoot.querySelector("div > il-conversation-list");
-		
-		conversationList.selectChat(roomName);
-		
-		this.sendMessage({"detail": {"message": this.messageToForward}})
+		this.goToChat(roomName);
+
+		this.sendMessage({ detail: { message: this.messageToForward } });
 	}
 
 	compareMessageDate(firstMessageDate, messageDate1, messageDate2) {
