@@ -7,6 +7,7 @@ import Stomp from "stompjs";
 import { MarkdownService } from "../../services/markdown-services";
 import { MessagesService } from "../../services/messages-service";
 
+import { ConversationDto } from "../../models/conversation-dto.js";
 import { CookieService } from "../../services/cookie-service";
 
 import { IconNames } from "../../enums/icon-names";
@@ -33,6 +34,8 @@ export class Chat extends LitElement {
 				token: "",
 			},
 			activeChatName: "",
+			forwardList: [],
+			messageToForward: ''
 		};
 	}
 
@@ -43,6 +46,8 @@ export class Chat extends LitElement {
 		this.nMessages = 0;
 		this.activeChatName = "general";
 		this.scrolledToBottom = false;
+		this.forwardList = [];
+		this.messageToForward =  '';
 		window.addEventListener("resize", () => {
 			this.scrollToBottom();
 		});
@@ -273,16 +278,65 @@ export class Chat extends LitElement {
 			min-height: 40px;
 		}
 
-		.sender:hover .message-settings,
-		.receiver:hover .message-settings {
-			display: block;
+		.message-settings {
+			opacity: 0;
+			position: absolute;
+			top: 50%;
+			transform: translate(0, -50%);
+
+			background: white;
+			border-radius: 6px;
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 		}
 
-		.message-settings {
-			display: none;
+		.sender .message-settings {
+			left: -40px;
+		}
+
+		.receiver .message-settings {
+			right: -40px;
+		}
+
+		.sender:hover .message-settings,
+		.receiver:hover .message-settings {
+			opacity: 1;
+		}
+
+		.message-settings:hover,
+		.menu-options:hover .message-settings {
+			opacity: 1;
+		}
+
+		.sender .menu-options {
 			position: absolute;
-			right: 3px;
-			top: 3px;
+			top: -3px;
+			left: 0px;
+			transform: translateX(-50px);
+			width: max-content;
+		}
+
+		.receiver .menu-options {
+			position: absolute;
+			top: -3px;
+			transform: translateX(50px);
+			width: max-content;
+		}
+		.forward-list {
+			background: blue;
+			width: max-content;
+			position: absolute;
+			top: 0px;
+			z-index: 1000;
+
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+
+		.forward-conversation {
+			display: flex;
+			align-items: center;
+			gap: 5px;
 		}
 	`;
 
@@ -344,18 +398,37 @@ export class Chat extends LitElement {
 													minute: "2-digit",
 												})}
 											</p>
-											<il-button-icon
-												class="message-settings"
-												content="${IconNames.dotsVertical}"
-												@click=${() => {
-													console.log("Opzioni pressed");
-												}}
-												styleProp="color: black;"
-											></il-button-icon>
+											<div class="message-settings">
+												<il-button-icon
+													content="${IconNames.dotsHorizontal}"
+													@click=${() => {
+														console.log("Opzioni pressed");
+													}}
+													styleProp="color: black;"
+												>
+													...
+												</il-button-icon>
+												<div class="menu-options">
+													<p
+														@click=${() => {
+															this.updateForwardList();
+															this.messageToForward = item.content;
+															this.update();
+														}}
+													>
+														Inoltra
+													</p>
+													<p @click=${() => console.log("Scrivi in privato")}>
+														Scrivi in privato
+													</p>
+													<p @click=${() => console.log("Elimina")}>Elimina</p>
+												</div>
+											</div>
 										</li>
 									`
 							)}
 						</ul>
+						<div class="forward-list">${this.renderForwardList()}</div>
 						<il-button-icon
 							class="scroll-button"
 							@click="${this.scrollToBottom}"
@@ -369,6 +442,47 @@ export class Chat extends LitElement {
 				</section>
 			</main>
 		`;
+	}
+
+	updateForwardList() {
+		let convList = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > il-sidebar")
+			.shadowRoot.querySelector("div > il-conversation-list");
+		this.forwardList = convList.conversationList;
+	}
+
+	renderForwardList() {
+		return this.forwardList.map((pharmacy, index) => {
+			let conversation = new ConversationDto(pharmacy);
+			let roomName = this.activeChatNameFormatter(conversation.name);
+
+			return html`
+				<div
+					@click=${() => {
+						this.forwardMessage(roomName);
+					}}
+				>
+					<div class="forward-conversation">
+						<il-avatar .avatarLink="" .name=${roomName} .id=""></il-avatar>
+						<p>${roomName}</p>
+					</div>
+				</div>
+			`;
+		});
+	}
+
+	forwardMessage(roomName) {
+		let conversationList = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > il-sidebar")
+			.shadowRoot.querySelector("div > il-conversation-list");
+		
+		conversationList.selectChat(roomName);
+		
+		this.sendMessage({"detail": {"message": this.messageToForward}})
 	}
 
 	compareMessageDate(firstMessageDate, messageDate1, messageDate2) {
@@ -529,7 +643,6 @@ export class Chat extends LitElement {
 
 	onMessage(payload) {
 		let message = JSON.parse(payload.body);
-		console.log(message);
 		if (message.content) {
 			if (this.activeChatName == message.roomName) {
 				this.messages.push(message);
