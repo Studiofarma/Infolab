@@ -139,7 +139,7 @@ export class Chat extends LitElement {
 			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 			z-index: 3;
 		}
-/* 
+		/* 
 		:not(.dropdown)::-webkit-scrollbar {
 			background-color: #0074bc;
 			border-radius: 10px;
@@ -466,9 +466,49 @@ export class Chat extends LitElement {
 		);
 	}
 
-	onMessage(payload) {
-		var message = JSON.parse(payload.body);
+	messageNotification(message) {
+		if (!message.content || this.login.username === message.sender) {
+			return;
+		}
 
+		let conversationList = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > il-sidebar")
+			.shadowRoot.querySelector("div > il-conversation-list");
+
+		let roomName = this.activeChatNameFormatter(message.roomName);
+
+		if (Notification.permission === "granted") {
+			let notification = new Notification(roomName, {
+				body: message.content,
+			});
+
+			notification.onclick = function () {
+				conversationList.selectChat(roomName);
+				window.focus("/");
+			};
+		} else if (Notification.permission !== "denied") {
+			Notification.requestPermission().then(function (permission) {
+				if (permission === "granted") {
+					let notification = new Notification(roomName, {
+						body: message.content,
+					});
+
+					notification.onclick = function () {
+						conversationList.selectChat(
+							this.activeChatNameFormatter(message.roomName)
+						);
+						window.focus("/");
+					};
+				}
+			});
+		}
+	}
+
+	onMessage(payload) {
+		let message = JSON.parse(payload.body);
+		console.log(message);
 		if (message.content) {
 			if (this.activeChatName == message.roomName) {
 				this.messages.push(message);
@@ -491,6 +531,8 @@ export class Chat extends LitElement {
 			let room = conversationListElement.convertUserToRoom(message.roomName);
 			conversationListElement.onMessageInNewChat(room, message);
 		}
+
+		this.messageNotification(message);
 	}
 
 	sendMessage(e) {

@@ -365,6 +365,7 @@ class ConversationList extends LitElement {
 	}
 
 	selectChat(selectedChatName) {
+		console.log(selectedChatName);
 		let cookie = CookieService.getCookie();
 
 		for (let conversation of this.conversationList) {
