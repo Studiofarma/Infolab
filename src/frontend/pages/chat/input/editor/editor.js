@@ -20,6 +20,7 @@ export class Editor extends LitElement {
     this.message = "";
     this.openPreview = false;
     this.lastKeyPressed = "";
+    this.Alt = 'Alt';
   }
 
   static styles = css`
@@ -257,19 +258,29 @@ export class Editor extends LitElement {
     }
 
     let currentKeyPressed = event.key;
-    if (this.lastKeyPressed === "Alt" && currentKeyPressed === "b") {
-      this.insertBold();
-    }
-    if (this.lastKeyPressed === "Alt" && currentKeyPressed === "i") {
-      this.insertItalic();
-    }
-    if (this.lastKeyPressed === "Alt" && currentKeyPressed === "s") {
-      this.insertStrike();
-    }
-    if (this.lastKeyPressed === "Alt" && currentKeyPressed === "l") {
-      this.insertLink();
-    }
+
+    this.applyMarkdown(this.lastKeyPressed, currentKeyPressed);
+
     this.lastKeyPressed = currentKeyPressed;
+  }
+
+  applyMarkdown(lastKeyPressed, currentKeyPressed) {
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "b") {
+      this.insertBold();
+      return;
+    }
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "i") {
+      this.insertItalic();
+      return;
+    }
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "s") {
+      this.insertStrike();
+      return;
+    }
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "l") {
+      this.insertLink();
+      return;
+    }
   }
 
   insertInTextArea(str) {
