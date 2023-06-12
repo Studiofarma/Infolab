@@ -272,6 +272,18 @@ export class Chat extends LitElement {
 			background-color: rgb(54, 123, 251);
 			min-height: 40px;
 		}
+
+		.sender:hover .message-settings,
+		.receiver:hover .message-settings {
+			display: block;
+		}
+
+		.message-settings {
+			display: none;
+			position: absolute;
+			right: 3px;
+			top: 3px;
+		}
 	`;
 
 	render() {
@@ -312,6 +324,7 @@ export class Chat extends LitElement {
 											this.messages[index - 1]?.timestamp,
 											item.timestamp
 										)}
+
 										<li
 											class=${item.sender == this.login.username
 												? "sender"
@@ -331,6 +344,14 @@ export class Chat extends LitElement {
 													minute: "2-digit",
 												})}
 											</p>
+											<il-button-icon
+												class="message-settings"
+												content="${IconNames.dotsVertical}"
+												@click=${() => {
+													console.log("Opzioni pressed");
+												}}
+												styleProp="color: black;"
+											></il-button-icon>
 										</li>
 									`
 							)}

@@ -1,20 +1,20 @@
 import { LitElement, html, css } from "lit";
 
 import "./icon";
-import { ConversationDto } from "./../models/conversation-dto";
 
 export class ButtonIcon extends LitElement {
 	static get properties() {
 		return {
 			content: "",
+			styleProp: "",
 		};
 	}
 
-  static styles = css`
-    :host {
-      display: flex;
-      align-items: center;
-    }
+	static styles = css`
+		:host {
+			display: flex;
+			align-items: center;
+		}
 
 		.icon-button {
 			height: 100%;
@@ -26,6 +26,7 @@ export class ButtonIcon extends LitElement {
 			-webkit-font-smoothing: antialiased;
 			cursor: pointer;
 			user-select: none;
+			padding: 5px;
 		}
 
 		.icon-button:hover {
@@ -36,7 +37,10 @@ export class ButtonIcon extends LitElement {
 	render() {
 		return html`
 			<div class="icon-button">
-				<il-icon name="${this.content}"></il-icon>
+				<il-icon
+					name="${this.content}"
+					style="${this.styleProp ? this.styleProp : ""}"
+				></il-icon>
 			</div>
 		`;
 	}
