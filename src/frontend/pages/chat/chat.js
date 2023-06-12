@@ -121,10 +121,10 @@ export class Chat extends LitElement {
 			grid-auto-rows: max-content;
 			gap: 30px;
 			width: 100%;
-			height: calc(100vh - 70px);
+			height: calc(100vh - 141px);
 			overflow-y: auto;
 			padding: 20px;
-			padding-top: 100px;
+			margin-top: 71px;
 		}
 
 		li {
