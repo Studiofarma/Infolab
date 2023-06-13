@@ -33,7 +33,7 @@ public class ChatService {
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
     }
-    public Timestamp saveMessageInDb(ChatMessageDto message, Username username, RoomName roomName){
+    public ChatMessageEntity saveMessageInDb(ChatMessageDto message, Username username, RoomName roomName){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
@@ -55,7 +55,7 @@ public class ChatService {
             log.info(String.format("ChatMessageEntity id=\"%s\" già esistente nel database", messageEntity.getContent()));
         }
 
-        return timestamp;
+        return messageEntity;
     }
 
     public ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
