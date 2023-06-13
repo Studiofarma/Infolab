@@ -46,8 +46,6 @@ export class Editor extends LitElement {
 
     il-button-text {
       margin-left: auto;
-      /* max-width: 200px;
-			width: 100%; */
     }
 
     textarea {
