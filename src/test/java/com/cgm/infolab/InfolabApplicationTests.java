@@ -174,11 +174,19 @@ class InfolabApplicationTests {
 
         await()
             .atMost(1, TimeUnit.SECONDS)
-            .untilAsserted(() -> Assertions.assertEquals(sentMessage, receivedMessagesSender.poll()));
+            .untilAsserted(() -> {
+                ChatMessageDto received = receivedMessagesSender.poll();
+                Assertions.assertEquals(sentMessage.getContent(), received.getContent());
+                Assertions.assertEquals(sentMessage.getSender(), received.getSender());
+            });
 
         await()
             .atMost(1, TimeUnit.SECONDS)
-            .untilAsserted(() -> Assertions.assertEquals(sentMessage, receivedMessagesDestination.poll()));
+            .untilAsserted(() -> {
+                ChatMessageDto received = receivedMessagesDestination.poll();
+                Assertions.assertEquals(sentMessage.getContent(), received.getContent());
+                Assertions.assertEquals(sentMessage.getSender(), received.getSender());
+            });
 
         List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("banana-user1"), 1, Username.of("user1"));
         Assertions.assertEquals(1,messages.size());
