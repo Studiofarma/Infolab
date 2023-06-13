@@ -7,12 +7,12 @@ import Stomp from "stompjs";
 import { MarkdownService } from "../../services/markdown-services";
 import { MessagesService } from "../../services/messages-service";
 
-import { ConversationDto } from "../../models/conversation-dto.js";
 import { CookieService } from "../../services/cookie-service";
 
 import { IconNames } from "../../enums/icon-names";
 
 import "../../components/button-icon";
+import "../../components/forward-list";
 import "./input/input-controls.js";
 import "./sidebar/sidebar.js";
 import "./header/chat-header.js";
@@ -34,8 +34,6 @@ export class Chat extends LitElement {
 				token: "",
 			},
 			activeChatName: "",
-			forwardList: [],
-			messageToForward: "",
 		};
 	}
 
@@ -45,9 +43,8 @@ export class Chat extends LitElement {
 		this.message = "";
 		this.nMessages = 0;
 		this.activeChatName = "general";
+		this.forwardListVisibility = false;
 		this.scrolledToBottom = false;
-		this.forwardList = [];
-		this.messageToForward = "";
 		window.addEventListener("resize", () => {
 			this.scrollToBottom();
 		});
@@ -86,6 +83,8 @@ export class Chat extends LitElement {
 		}
 
 		.chat {
+			display: flex;
+			flex-direction: column;
 			position: relative;
 		}
 
@@ -144,19 +143,11 @@ export class Chat extends LitElement {
 			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 			z-index: 3;
 		}
-		/* 
-		:not(.dropdown)::-webkit-scrollbar {
-			background-color: #0074bc;
-			border-radius: 10px;
-			border: 5px solid #083c72;
-		}
 
-		:not(.dropdown)::-webkit-scrollbar-thumb {
-			background-color: #0da2ff;
-			border-radius: 10px;
-			width: 5px;
-			border: 3px solid #083c72;
-		} */
+		.message-box .sender .message > p::selection {
+			color: black;
+			background-color: white;
+		}
 
 		input {
 			font-family: inherit;
@@ -308,35 +299,31 @@ export class Chat extends LitElement {
 			opacity: 1;
 		}
 
-		.sender .menu-options {
-			position: absolute;
+		.menu-options {
+			display: none;
 			top: -3px;
-			transform: translateX(-133px);
 			width: max-content;
+
+			padding: 5px;
 		}
 
-		.receiver .menu-options {
-			position: absolute;
-			top: -3px;
-			transform: translateX(50px);
-			width: max-content;
-		}
-		.forward-list {
-			background: blue;
-			width: max-content;
-			position: absolute;
-			top: 0px;
-			z-index: 1000;
-
-			display: flex;
-			flex-direction: column;
-			gap: 5px;
+		.menu-options > p {
+			cursor: pointer;
+			padding: 2px;
+			border-radius: 5px;
+			user-select: none;
 		}
 
-		.forward-conversation {
-			display: flex;
-			align-items: center;
-			gap: 5px;
+		.menu-options > p:hover {
+			background-color: #f5f5f5;
+		}
+
+		.message-settings:hover .menu-options {
+			display: block !important;
+		}
+
+		.message-settings:hover il-button-icon {
+			display: none !important;
 		}
 	`;
 
@@ -406,33 +393,47 @@ export class Chat extends LitElement {
 													}}
 													styleProp="color: black;"
 												>
-													...
 												</il-button-icon>
 												<div class="menu-options">
 													<p
 														@click=${() => {
-															this.updateForwardList();
-															this.messageToForward = item.content;
-															this.update();
+															this.copyToClipboard(item.content);
+														}}
+													>
+														Copia
+													</p>
+													<p
+														@click=${() => {
+															this.forwardMessage(item.content);
 														}}
 													>
 														Inoltra
 													</p>
+													${item.sender != this.login.username
+														? html`<p
+																@click=${() => {
+																	this.goToChat(item.sender);
+																}}
+														  >
+																Scrivi in privato
+														  </p>`
+														: null}
 													<p
 														@click=${() => {
-															this.goToChat(item.sender);
+															this.deleteMessage(item);
+															this.update();
 														}}
 													>
-														Scrivi in privato
+														Elimina
 													</p>
-													<p @click=${() => console.log("Elimina")}>Elimina</p>
 												</div>
 											</div>
 										</li>
 									`
 							)}
 						</ul>
-						<div class="forward-list">${this.renderForwardList()}</div>
+						<il-forward-list></il-forward-list>
+
 						<il-button-icon
 							class="scroll-button"
 							@click="${this.scrollToBottom}"
@@ -448,6 +449,26 @@ export class Chat extends LitElement {
 		`;
 	}
 
+	forwardMessage(message) {
+		let forwardListElement = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > div > il-forward-list");
+
+		let e = { message: message };
+
+		forwardListElement.forwardMessageHandler(e);
+	}
+
+	copyToClipboard(text) {
+		navigator.clipboard.writeText(text);
+	}
+
+	deleteMessage(message) {
+		console.log(message);
+		this.messages.splice(this.messages.indexOf(message), 1);
+	}
+
 	goToChat(roomName) {
 		let conversationList = document
 			.querySelector("body > il-app")
@@ -456,41 +477,6 @@ export class Chat extends LitElement {
 			.shadowRoot.querySelector("div > il-conversation-list");
 
 		conversationList.selectChat(roomName);
-	}
-
-	updateForwardList() {
-		let convList = document
-			.querySelector("body > il-app")
-			.shadowRoot.querySelector("il-chat")
-			.shadowRoot.querySelector("main > section > il-sidebar")
-			.shadowRoot.querySelector("div > il-conversation-list");
-		this.forwardList = convList.conversationList;
-	}
-
-	renderForwardList() {
-		return this.forwardList.map((pharmacy, index) => {
-			let conversation = new ConversationDto(pharmacy);
-			let roomName = this.activeChatNameFormatter(conversation.name);
-
-			return html`
-				<div
-					@click=${() => {
-						this.forwardMessage(roomName);
-					}}
-				>
-					<div class="forward-conversation">
-						<il-avatar .avatarLink="" .name=${roomName} .id=""></il-avatar>
-						<p>${roomName}</p>
-					</div>
-				</div>
-			`;
-		});
-	}
-
-	forwardMessage(roomName) {
-		this.goToChat(roomName);
-
-		this.sendMessage({ detail: { message: this.messageToForward } });
 	}
 
 	compareMessageDate(firstMessageDate, messageDate1, messageDate2) {
