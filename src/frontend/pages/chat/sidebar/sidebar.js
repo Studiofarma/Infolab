@@ -11,7 +11,7 @@ export class Sidebar extends LitElement {
       padding-top: 10px;
       display: flex;
       flex-direction: column;
-      box-shadow: 1px 1px 8px black;
+      box-shadow: rgb(0 0 0 / 40%) 0px 0px 11px 0.2px;
       z-index: 1100;
       position: fixed;
       width: 350px;

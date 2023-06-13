@@ -6,19 +6,21 @@ import "../../../../components/button-text";
 
 import { IconNames } from "../../../../enums/icon-names";
 import { MarkdownService } from "../../../../services/markdown-services";
+import { mdiFormatListText } from "@mdi/js";
 
 export class Editor extends LitElement {
   static properties = {
     message: "",
-    openPreview: false,
-    selectedText: { startingPoint: NaN, endingPoint: NaN },
+    openPreview: mdiFormatListText,
+    lastKeyPressed: "",
   };
 
   constructor() {
     super();
     this.message = "";
     this.openPreview = false;
-    this.selectedText = null;
+    this.lastKeyPressed = "";
+    this.Alt = 'Alt';
   }
 
   static styles = css`
@@ -40,6 +42,10 @@ export class Editor extends LitElement {
       align-items: center;
       gap: 10px;
       padding: 0px 10px;
+    }
+
+    il-button-text {
+      margin-left: auto;
     }
 
     textarea {
@@ -104,10 +110,12 @@ export class Editor extends LitElement {
     }
 
     .previewer {
-      padding: 10px;
+      padding: 5px;
       width: 100%;
       height: calc(100% - 40px);
+      background: #ffffff;
       overflow-y: auto;
+      cursor: default;
     }
   `;
 
@@ -198,12 +206,10 @@ export class Editor extends LitElement {
           text=${this.openPreview ? "Chiudi preview" : "Apri preview "}
         ></il-button-text>
       </div>
-
       ${!this.openPreview
         ? html`<textarea
             placeholder="Scrivi un messaggio..."
             @input=${this.onMessageInput}
-            @mouseup=${this.setSelectedText}
             @keydown=${this.checkList}
             .value=${this.message}
           >
@@ -221,24 +227,6 @@ export class Editor extends LitElement {
 
   togglePreviewer() {
     this.openPreview = !this.openPreview;
-  }
-
-  setSelectedText() {
-    const textarea = this.getTextarea();
-
-    this.selectedText = {
-      startingPoint: textarea.selectionStart,
-      endingPoint: textarea.selectionEnd,
-    };
-
-    this.dispatchEvent(
-      new CustomEvent("is-selecting", {
-        detail: {
-          start: this.selectedText.startingPoint,
-          end: this.selectedText.endingPoint,
-        },
-      })
-    );
   }
 
   checkList(event) {
@@ -266,24 +254,48 @@ export class Editor extends LitElement {
         return;
       }
     }
+
+    let currentKeyPressed = event.key;
+
+    this.applyMarkdown(this.lastKeyPressed, currentKeyPressed);
+
+    this.lastKeyPressed = currentKeyPressed;
+  }
+
+  applyMarkdown(lastKeyPressed, currentKeyPressed) {
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "b") {
+      this.insertBold();
+      return;
+    }
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "i") {
+      this.insertItalic();
+      return;
+    }
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "s") {
+      this.insertStrike();
+      return;
+    }
+    if (lastKeyPressed === this.Alt && currentKeyPressed === "l") {
+      this.insertLink();
+      return;
+    }
   }
 
   insertInTextArea(str) {
-    if (this.selectedText !== null) {
-      this.message =
-        this.message.slice(0, this.selectedText.startingPoint) +
-        str +
-        this.message.slice(this.selectedText.endingPoint);
-    } else {
-      this.message = this.message + str;
-    }
-    this.selectedText = null;
+    let textarea = this.getTextarea();
+    let start = textarea.selectionStart;
+    let finish = textarea.selectionEnd;
+
+    this.message =
+      textarea.value.slice(0, start) + str + textarea.value.slice(finish);
+    textarea.value = this.message;
   }
 
   //funzioni per formatting-buttons
 
   getText(text) {
-    const sel = window.getSelection();
+    let sel = window.getSelection();
+    console.log(sel);
     const t = sel ? sel.toString() : "";
     if (t !== "") sel.deleteFromDocument();
     else t = text;
@@ -292,22 +304,34 @@ export class Editor extends LitElement {
 
   insertBold() {
     const text = this.getText("grassetto");
-    this.insertInTextArea("**" + text + "**");
+    let regEx = /[*]{2}/g;
+    if (text.startsWith("**") && text.endsWith("**"))
+      this.insertInTextArea(text.replace(regEx, ""));
+    else this.insertInTextArea("**" + text + "**");
   }
 
   insertItalic() {
     const text = this.getText("italic");
-    this.insertInTextArea("*" + text + "*");
+    let regEx = /[*]{1}/g;
+    if (text.startsWith("*") && text.endsWith("*"))
+      this.insertInTextArea(text.replace(regEx, ""));
+    else this.insertInTextArea("*" + text + "*");
   }
 
   insertStrike() {
     const text = this.getText("barrato");
-    this.insertInTextArea("~~" + text + "~~");
+    let regEx = /[~]{2}/g;
+    if (text.startsWith("~~") && text.endsWith("~~"))
+      this.insertInTextArea(text.replace(regEx, ""));
+    else this.insertInTextArea("~~" + text + "~~");
   }
 
   insertLink() {
     const text = this.getText("testo");
-    this.insertInTextArea("[" + text + "](link)");
+    let regEx = /[\[\]]+|(\(.*\))/g;
+    if (text.startsWith("[") && text.includes("](") && text.endsWith(")"))
+      this.insertInTextArea(text.replace(regEx, ""));
+    else this.insertInTextArea("[" + text + "](insert link)");
   }
 
   insertLine() {

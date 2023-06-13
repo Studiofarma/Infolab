@@ -64,6 +64,7 @@ export class InputControls extends LitElement {
       padding: 20px 10px;
       background: #083c72;
       box-shadow: 0px -1px 5px black;
+      z-index: 1000;
     }
 
     .inputContainer {
@@ -195,7 +196,6 @@ export class InputControls extends LitElement {
   }
 
   sendMessage() {
-    this.renderRoot.querySelector("il-input-field").clear();
     this.updateMessage();
     this.dispatchEvent(
       new CustomEvent("send-message", {
@@ -205,6 +205,7 @@ export class InputControls extends LitElement {
       })
     );
 
+    this.renderRoot.querySelector("il-input-field").value = "";
     this.message = "";
     if (this.bEditor) {
       this.getTextarea().value = "";

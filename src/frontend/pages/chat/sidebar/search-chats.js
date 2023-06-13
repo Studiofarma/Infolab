@@ -21,7 +21,7 @@ export class SearchChats extends LitElement {
     #searchChats {
       width: 100%;
       padding: 5px 10px;
-      margin-bottom: 50px;
+      margin-bottom: 20px;
       column-gap: 10px;
       position: relative;
     }
@@ -145,15 +145,13 @@ export class SearchChats extends LitElement {
             @input=${this.setFilter}
             @click=${this.setFilter}
           />
-          <il-button-icon content= ${IconNames.magnify}></il-button-icon>
+          <il-button-icon content=${IconNames.magnify}></il-button-icon>
 
           <div class="dropdown">${this.showTips()}</div>
         </div>
       </div>
     `;
   }
-
-
 
   setFilter(event) {
     const text = event.target.value;
