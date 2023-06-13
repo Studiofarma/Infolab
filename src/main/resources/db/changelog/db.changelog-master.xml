@@ -54,7 +54,7 @@
                 <constraints foreignKeyName="fk_room_id" references="infolab.rooms(id)"/>
             </column>
             <column name="user_id" type="bigint">
-                <constraints foreignKeyName="fk_user_id" references="infolab.users(id)"/>
+                <constraints foreignKeyName="fk_rooms_subscriptions_user_id" references="infolab.users(id)"/>
             </column>
         </createTable>
 
@@ -69,7 +69,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="user_id" type="bigint">
-                <constraints foreignKeyName="fk_user_id" references="infolab.users(id)"/>
+                <constraints foreignKeyName="fk_download_dates_user_id" references="infolab.users(id)"/>
             </column>
             <column name="message_id" type="bigint">
                 <constraints foreignKeyName="fk_message_id" references="infolab.chatmessages(id)"/>
