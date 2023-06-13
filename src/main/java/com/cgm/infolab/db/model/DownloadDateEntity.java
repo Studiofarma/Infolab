@@ -6,12 +6,12 @@ import java.util.Objects;
 public class DownloadDateEntity {
     private LocalDateTime timestamp;
     private long userId;
-    private long roomId;
+    private long messageId;
 
-    private DownloadDateEntity(LocalDateTime timestamp, long userId, long roomId) {
+    private DownloadDateEntity(LocalDateTime timestamp, long userId, long messageId) {
         this.timestamp = timestamp;
         this.userId = userId;
-        this.roomId = roomId;
+        this.messageId = messageId;
     }
 
     public static DownloadDateEntity of(LocalDateTime timestamp, long userId, long roomId) {
@@ -34,12 +34,12 @@ public class DownloadDateEntity {
         this.userId = userId;
     }
 
-    public long getRoomId() {
-        return roomId;
+    public long getMessageId() {
+        return messageId;
     }
 
-    public void setRoomId(long roomId) {
-        this.roomId = roomId;
+    public void setMessageId(long messageId) {
+        this.messageId = messageId;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class DownloadDateEntity {
         return "DownloadDateEntity{" +
                 "timestamp=" + timestamp +
                 ", userId=" + userId +
-                ", roomId=" + roomId +
+                ", messageId=" + messageId +
                 '}';
     }
 
@@ -56,11 +56,11 @@ public class DownloadDateEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DownloadDateEntity that = (DownloadDateEntity) o;
-        return userId == that.userId && roomId == that.roomId && Objects.equals(timestamp, that.timestamp);
+        return userId == that.userId && messageId == that.messageId && Objects.equals(timestamp, that.timestamp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(timestamp, userId, roomId);
+        return Objects.hash(timestamp, userId, messageId);
     }
 }

@@ -58,8 +58,6 @@
             </column>
         </createTable>
 
-        <addUniqueConstraint schemaName="infolab" tableName="rooms_subscriptions"
-                             columnNames="room_id, user_id"/>
         <addColumn schemaName="infolab" tableName="rooms">
             <column name="visibility" type="char(20)"/>
         </addColumn>
@@ -78,9 +76,7 @@
             </column>
         </createTable>
         
-        <dropUniqueConstraint schemaName="infolab" tableName="rooms_subscriptions" uniqueColumns="room_id, user_id"/>
-        
-        <addPrimaryKey tableName="rooms_subscriptions" columnNames="room_id, user_id"/>
-        <addPrimaryKey tableName="download_dates" columnNames="timestamp, user_id, message_id"/>
+        <addPrimaryKey schemaName="infolab" tableName="rooms_subscriptions" columnNames="room_id, user_id"/>
+        <addPrimaryKey schemaName="infolab" tableName="download_dates" columnNames="timestamp, user_id, message_id"/>
     </changeSet>
 </databaseChangeLog>

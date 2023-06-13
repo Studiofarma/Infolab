@@ -2,6 +2,7 @@ package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
+import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
@@ -13,7 +14,6 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,16 +22,18 @@ public class ChatService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final DownloadDateRepository downloadDateRepository;
 
     private final Logger log = LoggerFactory.getLogger(ChatService.class);
 
     @Autowired
     public ChatService(UserRepository userRepository,
                        RoomRepository roomRepository,
-                       ChatMessageRepository chatMessageRepository){
+                       ChatMessageRepository chatMessageRepository, DownloadDateRepository downloadDateRepository){
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
+        this.downloadDateRepository = downloadDateRepository;
     }
     public ChatMessageEntity saveMessageInDb(ChatMessageDto message, Username username, RoomName roomName){
 
@@ -81,6 +83,10 @@ public class ChatService {
         }
 
         return chatMessageEntities;
+    }
+
+    public void setAllMessagesAsDownloadedInRoom(UserEntity user, RoomEntity room) {
+        downloadDateRepository.addWhereNotDownloadedYetForUser(user, room);
     }
 }
 
