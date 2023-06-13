@@ -75,13 +75,13 @@ class ConversationList extends LitElement {
 
 	render() {
 		return html`
+			<p class="separator">Chat</p>
+			<div class="conversation-list">${this.renderConversationList()}</div>
+			
 			<p class="separator">
 				${this.renderConversationSearched().length > 0 ? "New Chat" : ""}
 			</p>
 			<div class="conversation-list">${this.renderConversationSearched()}</div>
-
-			<p class="separator">Chat</p>
-			<div class="conversation-list">${this.renderConversationList()}</div>
 		`;
 	}
 

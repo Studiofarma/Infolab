@@ -173,7 +173,7 @@ export class SearchChats extends LitElement {
 					<input
 						class="search-input"
 						type="text"
-						placeholder="cerca farmacie"
+						placeholder="Cerca o inizia una nuova chat"
 						@input=${this.setFilter}
 						@click=${this.setFilter}
 					/>
