@@ -1,5 +1,6 @@
 package com.cgm.infolab.controller;
 
+import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.Username;
@@ -66,27 +67,23 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-        Timestamp time = chatService.saveMessageInDbPublicRooms(message, Username.of(principal.getName()), RoomName.of("general"));
-        message.setTimestamp(time.toLocalDateTime());
-        message.setRoomName("general");
-        return message;
+        ChatMessageEntity messageEntity = chatService.saveMessageInDbPublicRooms(message, Username.of(principal.getName()), RoomName.of("general"));
+        return new ChatMessageDto(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender().getName().value(), "general");
     }
 
     @MessageMapping("/chat.send.{destinationUser}")
     @SendTo("/queue/{destinationUser}")
     @SendToUser("/topic/me")
-    public ChatMessageDto sendMessageToUser(
+    ChatMessageDto sendMessageToUser(
             @Payload ChatMessageDto message,
             @DestinationVariable String destinationUser,
             SimpMessageHeaderAccessor headerAccessor,
             Principal principal){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         log.info(String.format("message from %s to %s", username, destinationUser));
-        Timestamp time = chatService.saveMessageInDbPrivateRooms(message, Username.of(principal.getName()),
+        ChatMessageEntity messageEntity = chatService.saveMessageInDbPrivateRooms(message, Username.of(principal.getName()),
             RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)));
-        message.setTimestamp(time.toLocalDateTime());
-        message.setRoomName(RoomName.getRoomNameByUsers(Username.of(principal.getName()), Username.of(destinationUser)));
-        return message;
+        return new ChatMessageDto(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender().getName().value(), RoomName.getRoomNameByUsers(Username.of(principal.getName()), Username.of(destinationUser)));
     }
 }
 

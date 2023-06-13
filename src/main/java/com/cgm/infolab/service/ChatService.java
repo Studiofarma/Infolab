@@ -40,7 +40,7 @@ public class ChatService {
         this.chatMessageRepository = chatMessageRepository;
         this.roomSubscriptionRepository = roomSubscriptionRepository;
     }
-    public Timestamp saveMessageInDbPublicRooms(ChatMessageDto message, Username username, RoomName roomName){
+    public ChatMessageEntity saveMessageInDbPublicRooms(ChatMessageDto message, Username username, RoomName roomName){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
@@ -62,10 +62,10 @@ public class ChatService {
             log.info(String.format("ChatMessageEntity id=\"%s\" già esistente nel database", messageEntity.getContent()));
         }
 
-        return timestamp;
+        return messageEntity;
     }
 
-    public Timestamp saveMessageInDbPrivateRooms(ChatMessageDto message, Username username, RoomName roomName){
+    public ChatMessageEntity saveMessageInDbPrivateRooms(ChatMessageDto message, Username username, RoomName roomName){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
@@ -84,7 +84,7 @@ public class ChatService {
             log.info(String.format("ChatMessageEntity id=\"%s\" già esistente nel database", messageEntity.getContent()));
         }
 
-        return timestamp;
+        return messageEntity;
     }
 
     private RoomEntity getOrCreateRoom(Username username, RoomName roomName) {
