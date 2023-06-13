@@ -70,14 +70,17 @@
             <column name="date" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id">
+            <column name="user_id" type="bigint">
                 <constraints foreignKeyName="fk_user_id" references="infolab.users(id)"/>
             </column>
-            <column name="message_id">
+            <column name="message_id" type="bigint">
                 <constraints foreignKeyName="fk_message_id" references="infolab.chatmessages(id)"/>
             </column>
         </createTable>
-
-        <addUniqueConstraint schemaName="infolab" tableName="read_dates" columnNames="date, user_id, message_id"/>
+        
+        <dropUniqueConstraint schemaName="infolab" tableName="rooms_subscriptions" uniqueColumns="room_id, user_id"/>
+        
+        <addPrimaryKey tableName="rooms_subscriptions" columnNames="room_id, user_id"/>
+        <addPrimaryKey tableName="download_dates" columnNames="date, user_id, message_id"/>
     </changeSet>
 </databaseChangeLog>
