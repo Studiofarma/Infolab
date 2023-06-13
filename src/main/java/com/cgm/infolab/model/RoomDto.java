@@ -1,5 +1,8 @@
 package com.cgm.infolab.model;
 
+import com.cgm.infolab.db.model.Username;
+import java.security.Principal;
+
 import java.net.URL;
 
 public class RoomDto {
@@ -7,6 +10,7 @@ public class RoomDto {
     private URL avatarLink;
     private int unreadMessages;
     private LastMessageDto lastMessage;
+    private String username;
 
     private RoomDto() {
     }
@@ -59,5 +63,9 @@ public class RoomDto {
 
     public void setLastMessage(LastMessageDto lastMessage) {
         this.lastMessage = lastMessage;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

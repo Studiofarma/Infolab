@@ -1,141 +1,173 @@
 import { LitElement, html, css } from "lit";
+import { resolveMarkdown } from "lit-markdown";
+
+import { MarkdownService } from "../../../../services/markdown-services";
 
 import "../../../../components/icon";
 import { IconNames } from "../../../../enums/icon-names";
 
 class Conversation extends LitElement {
-  static properties = {
-    chat: {},
-  };
+	static properties = {
+		chat: {},
+	};
 
-  static styles = css`
-    div {
-      display: grid;
-      gap: 10px;
-      padding: 8px 12px;
-      cursor: pointer;
-      transition: 0.5s;
-      grid-template-areas: "avatar nome nome nome" "avatar messaggio messaggio notifiche";
-      grid-template-columns: 50px;
-      grid-template-rows: 2fr 1fr;
-    }
+	static styles = css`
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
+		.chat-box {
+			display: flex;
+			gap: 12px;
+			align-items: flex-start;
 
-    div > p {
-      text-align: left;
-    }
+			padding: 12px 12px;
+			cursor: pointer;
+			transition: 0.5s;
+		}
 
-    div:hover {
-      background-color: #00234f;
-    }
+		.chat-box:hover {
+			background-color: #235188;
+		}
 
-    p {
-      margin: 0px;
-    }
+		.date-box {
+			margin-left: auto;
+			text-align: right;
+		}
 
-    .name {
-      grid-area: nome;
-    }
+		.unread-counter {
+			display: flex;
+			justify-content: flex-end;
+		}
 
-    .lastMessage {
-      grid-area: messaggio;
-      font-size: 0.7em;
-    }
+		.last-message {
+			color: #bcbec2;
+		}
 
-    il-avatar {
-      grid-area: avatar;
-    }
+		.last-message-timestamp {
+			color: #bcbec2;
+		}
 
-    il-icon {
-      border-radius: 50%;
-      background-color: #e7f3ff;
-      height: 25px;
-      width: 25px;
-      grid-area: unread;
-      color: #083c72;
-      text-align: center;
-      vertical-align: middle;
-      line-height: 1.5;
-    }
+		il-icon {
+			border-radius: 50%;
+			display: flex;
+			height: 24px;
+			width: 25px;
+			color: rgb(13, 162, 255);
+		}
 
-    span {
-      border-radius: 50%;
-      background-color: #e7f3ff;
-      height: 25px;
-      width: 25px;
-      grid-area: unread;
-      color: #083c72;
-      text-align: center;
-      vertical-align: middle;
-      line-height: 1.5;
-    }
+		span {
+			border-radius: 50%;
+			background-color: #e7f3ff;
+			height: 25px;
+			width: 25px;
+			grid-area: unread;
+			color: #083c72;
+			text-align: center;
+			vertical-align: middle;
+			line-height: 1.5;
+		}
 
-    #unread {
-      display: grid;
-      grid-template-areas: "null  null unread";
-      grid-template-columns: 1fr 1fr 25px;
-    }
-  `;
+		.unread {
+			color: rgb(58 179 255);
+		}
+	`;
 
-  render() {
-    if (this.chat.unread === 0) {
-      this.notificationOpacity = "none";
-    } else {
-      this.notificationOpacity = "block";
-    }
+	render() {
+		if (this.chat.unread === 0) {
+			this.notificationOpacity = "none";
+		} else {
+			this.notificationOpacity = "block";
+		}
 
-    return html`
-      <div>
-        <il-avatar .chat=${this.chat}></il-avatar>
-        <p class="name">${this.chat.name}</p>
-        <p class="lastMessage">${this.chat.lastMessage}</p>
+		let timestamp = new Date(
+			this.chat.lastMessage.timestamp
+		).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-        <p id="unread">
-          ${this.chat.unread > 0
-            ? html`
-                <il-icon
-                  style="display:${this.notificationOpacity};"
-                  name="${this.getUnreadIconName(this.chat.unread)}"
-                ></il-icon>
-              `
-            : html``}
-        </p>
-      </div>
-    `;
-  }
+		return html`
+			<div class="chat-box">
+				<il-avatar .chat=${this.chat}></il-avatar>
+				<div class="name-box">
+					<p class="chat-name">${this.chat.name}</p>
+					<p class="last-message">
+						${resolveMarkdown(
+							MarkdownService.parseMarkdown(
+								this.fixLastMessageLength(
+									this.chat.lastMessage.sender +
+										": " +
+										this.chat.lastMessage.preview
+								)
+							)
+						)}
+					</p>
+				</div>
+				<div class="date-box">
+					<p
+						class="last-message-timestamp ${this.chat.unread > 0
+							? "unread"
+							: ""}"
+					>
+						${timestamp}
+					</p>
+					<p class="unread-counter">
+						${this.chat.unread > 0
+							? html`
+									<il-icon
+										style="display:${this.notificationOpacity};"
+										name="${this.getUnreadIconName(this.chat.unread)}"
+									></il-icon>
+							  `
+							: html``}
+					</p>
+				</div>
+			</div>
+		`;
+	}
 
-  getUnreadIconName(unread) {
-    switch (unread) {
-      case 1:
-        return IconNames.numeric1;
+	fixLastMessageLength(message) {
+		let maxLength = 20;
+		if (message.length > maxLength) {
+			message = message.substring(0, maxLength);
+			message += "...";
+		}
 
-      case 2:
-        return IconNames.numeric2;
+		return message;
+	}
 
-      case 3:
-        return IconNames.numeric3;
+	getUnreadIconName(unread) {
+		switch (unread) {
+			case 1:
+				return IconNames.numeric1;
 
-      case 4:
-        return IconNames.numeric4;
+			case 2:
+				return IconNames.numeric2;
 
-      case 5:
-        return IconNames.numeric5;
+			case 3:
+				return IconNames.numeric3;
 
-      case 6:
-        return IconNames.numeric6;
+			case 4:
+				return IconNames.numeric4;
 
-      case 7:
-        return IconNames.numeric7;
+			case 5:
+				return IconNames.numeric5;
 
-      case 8:
-        return IconNames.numeric8;
+			case 6:
+				return IconNames.numeric6;
 
-      case 9:
-        return IconNames.numeric9;
+			case 7:
+				return IconNames.numeric7;
 
-      default:
-        return IconNames.numericPlus;
-    }
-  }
+			case 8:
+				return IconNames.numeric8;
+
+			case 9:
+				return IconNames.numeric9;
+
+			default:
+				return IconNames.numericPlus;
+		}
+	}
 }
 
 customElements.define("il-conversation", Conversation);

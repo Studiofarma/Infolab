@@ -21,7 +21,7 @@ export class ChatHeader extends LitElement {
       align-items: center;
       color: white;
       position: fixed;
-      width: 100%;
+      width: calc(100vw - 400px);
       z-index: 1000;
     }
 
@@ -35,17 +35,26 @@ export class ChatHeader extends LitElement {
       display: flex;
       gap: 1em;
     }
+
+    .settings {
+      transition: 1s;
+    }
+
+    .settings:hover {
+      transform: rotate(180deg);
+    }
   `;
 
   render() {
+    let roomName = "Hardcoded General";
     return html`
       <div class="chatHeader">
         <div class="settings">
-          <il-button-icon content=${IconNames.option}></il-button-icon>
+          <il-button-icon content=${IconNames.settings}></il-button-icon>
         </div>
 
         <div class="contact">
-          <h2>ChatBox ${this.username}</h2>
+          <h2>Room name: ${roomName} | Username: ${this.username}</h2>
         </div>
       </div>
     `;

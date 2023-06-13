@@ -1,6 +1,4 @@
 import { LitElement, html, css } from "lit";
-import Immagine from "../assets/images/immagine.jpeg";
-
 export class Avatar extends LitElement {
   static get properties() {
     return {
@@ -25,43 +23,52 @@ export class Avatar extends LitElement {
     super();
     this.initials = "";
     this.color = "";
-    this.bAvatar = true;
+    this.defaultAvatar = true;
+  }
+
+  getInitials(text) {
+    const words = text.split(" ");
+    let initials = "";
+
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      initials += word.charAt(0);
+    }
+    return initials.toUpperCase();
   }
 
   createIcon() {
-    if (this.chat.avatar == "#") {
-      this.bAvatar = false;
-      this.chat.name
-        .split(" ")
-        .slice(0, 2)
-        .forEach((s) => {
-          this.initials += s[0].toUpperCase();
-        });
-      switch (this.chat.id % 8) {
-        case 0:
-          this.color = "#083C72";
-          break;
-        case 1:
-          this.color = "#00234F";
-          break;
-        case 2:
-          this.color = "#008A33";
-          break;
-        case 3:
-          this.color = "#005B13";
-          break;
-        case 4:
-          this.color = "#DC2042";
-          break;
-        case 5:
-          this.color = "#C1002E";
-          break;
-        case 6:
-          this.color = "#E48B0E";
-          break;
-        case 7:
-          this.color = "#A66100";
-      }
+    if (this.chat.avatarLink) {
+      this.defaultAvatar = true;
+    } else {
+      this.defaultAvatar = false;
+    }
+    this.initials = this.getInitials(this.chat.name);
+
+    switch (this.chat.id % 8) {
+      case 0:
+        this.color = "#1D4D86";
+        break;
+      case 1:
+        this.color = "#00234F";
+        break;
+      case 2:
+        this.color = "#008A33";
+        break;
+      case 3:
+        this.color = "#005B13";
+        break;
+      case 4:
+        this.color = "#DC2042";
+        break;
+      case 5:
+        this.color = "#C1002E";
+        break;
+      case 6:
+        this.color = "#E48B0E";
+        break;
+      case 7:
+        this.color = "#A66100";
     }
   }
 
@@ -70,11 +77,11 @@ export class Avatar extends LitElement {
 
     return html`
       <div class="avatar">
-        ${this.bAvatar
-          ? html`<img src=${Immagine} />`
+        ${this.defaultAvatar
+          ? html`<img src=${this.chat.avatarLink} />`
           : html`<div
               id="avatar-default"
-              style="background-color: ${this.color}"
+              style="background-color:${this.color}"
             >
               ${this.initials}
             </div>`}

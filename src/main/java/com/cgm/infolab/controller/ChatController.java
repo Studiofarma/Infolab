@@ -1,5 +1,6 @@
 package com.cgm.infolab.controller;
 
+import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.Username;
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
+import java.sql.Timestamp;
 
 @Controller
 public class ChatController {
@@ -65,8 +67,8 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-       chatService.saveMessageInDb(message, Username.of(principal.getName()), RoomName.of("general"));
-        return message;
+        ChatMessageEntity messageEntity = chatService.saveMessageInDb(message, Username.of(principal.getName()), RoomName.of("general"));
+        return new ChatMessageDto(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender().getName().value());
     }
 
     @MessageMapping("/chat.send.{destinationUser}")

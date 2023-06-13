@@ -6,6 +6,8 @@ import Stomp from "stompjs";
 import { MarkdownService } from "../../services/markdown-services";
 import { MessagesService } from "../../services/messages-service";
 
+import { IconNames } from "../../enums/icon-names";
+
 import "../../components/button-icon";
 import "./input/input-controls.js";
 import "./sidebar/sidebar.js";
@@ -35,6 +37,10 @@ export class Chat extends LitElement {
     this.messages = [];
     this.message = "";
     this.nMessages = 0;
+    this.scrolledToBottom = true;
+    window.addEventListener("resize", () => {
+      this.scrollToBottom();
+    });
   }
 
   connectedCallback() {
@@ -55,7 +61,7 @@ export class Chat extends LitElement {
       left: 0;
       width: 100%;
       min-height: 100%;
-      background: #d3d3d3;
+      background: rgb(247, 247, 247);
     }
 
     input[type="text"] {
@@ -104,7 +110,7 @@ export class Chat extends LitElement {
       margin-top: auto;
     }
 
-    .messageBox {
+    .message-box {
       list-style-type: none;
       display: flex;
       flex-direction: column;
@@ -116,7 +122,7 @@ export class Chat extends LitElement {
       padding-top: 100px;
     }
 
-    .messageBox::-webkit-scrollbar {
+    .message-box::-webkit-scrollbar {
       width: 0px;
     }
 
@@ -124,26 +130,13 @@ export class Chat extends LitElement {
       list-style-position: inside;
     }
 
-    .messageBox > li {
+    .message-box > li {
       position: relative;
       min-width: 300px;
       max-width: 500px;
-      padding: 15px 8px;
-      background: #f2f4f7;
-      box-shadow: 0 0 10px #989a9d;
-    }
-
-    @keyframes rotationAnim {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    #settingsIcon:hover {
-      animation: rotationAnim 2s infinite linear;
+      padding: 8px 8px 6px 10px;
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      z-index: 3;
     }
 
     :not(.dropdown)::-webkit-scrollbar {
@@ -166,52 +159,95 @@ export class Chat extends LitElement {
     .sender {
       align-self: flex-end !important;
       border-radius: 10px 0 10px 10px;
+
+      color: white;
+      background-color: rgb(54, 123, 251);
     }
     .sender::after {
       content: "";
       position: absolute;
-      transform: translate(50%, -600%);
-      bottom: -15px;
-      right: -4px;
-      border-top: 10px solid #f2f4f7;
+      top: 0px;
+      right: -9px;
+      border-top: 10px solid rgb(54, 123, 251);
       border-left: 0px solid transparent;
       border-right: 10px solid transparent;
+      z-index: 3;
     }
     .sender::before {
       content: "";
       position: absolute;
-      transform: translate(-50%, -50%);
-      bottom: -13px;
-      right: -8px;
-      border-top: 10px solid #989a9d;
-      border-left: 10px solid transparent;
-      border-right: 0px solid transparent;
-      filter: blur(10px);
+      top: -1px;
+      right: -13px;
+      border-top: 11px solid rgb(209 209 209 / 34%);
+      border-left: 0px solid transparent;
+      border-right: 12px solid transparent;
+      filter: blur(0.8px);
+      z-index: 2;
     }
+
     .receiver {
       align-self: flex-start !important;
       border-radius: 0 10px 10px 10px;
+
+      color: black;
+      background-color: white;
     }
     .receiver::after {
       content: "";
       position: absolute;
-      transform: translate(50%, -600%);
-      bottom: -15px;
-      left: -15px;
-      border-top: 10px solid #f2f4f7;
+      top: 0px;
+      left: -9px;
+      border-top: 10px solid white;
       border-left: 10px solid transparent;
       border-right: 0px solid transparent;
+      z-index: 3;
     }
     .receiver::before {
       content: "";
       position: absolute;
-      transform: translate(-50%, -50%);
-      bottom: -13px;
-      right: -8px;
-      border-top: 10px solid #989a9d;
-      border-left: 10px solid transparent;
+      top: -1px;
+      left: -13px;
+      border-top: 11px solid rgb(209 209 209 / 34%);
       border-right: 0px solid transparent;
-      filter: blur(10px);
+      border-left: 12px solid transparent;
+      filter: blur(0.8px);
+      z-index: 2;
+    }
+    .receiver-name {
+      font-size: 13px;
+      color: blue;
+    }
+
+    .message {
+      overflow-wrap: break-word;
+    }
+
+    .sender .message-timestamp {
+      text-align: end;
+
+      font-size: 11px;
+      color: #e9e9e9;
+    }
+
+    .receiver .message-timestamp {
+      text-align: end;
+
+      font-size: 11px;
+      color: #8c8d8d;
+    }
+
+    .scroll-button {
+      z-index: 9999;
+      position: absolute;
+      right: 20px;
+      bottom: 130px;
+
+      border-radius: 5px;
+      padding: 2px;
+      background-color: rgb(8, 60, 114);
+      color: white;
+      opacity: 0;
+      transition: opacity 0.2s ease-in-out;
     }
   `;
 
@@ -222,7 +258,23 @@ export class Chat extends LitElement {
           <il-sidebar></il-sidebar>
           <div class="chat">
             <il-chat-header username=${this.login.username}></il-chat-header>
-            <ul class="messageBox">
+            <ul
+              @scroll="${(e) => {
+                if (this.checkScrolledToBottom()) {
+                  this.renderRoot.querySelector(
+                    ".scroll-button"
+                  ).style.opacity = "0";
+                } else if (
+                  this.renderRoot.querySelector(".scroll-button").style
+                    .opacity == 0
+                ) {
+                  this.renderRoot.querySelector(
+                    ".scroll-button"
+                  ).style.opacity = "1";
+                }
+              }}"
+              class="message-box"
+            >
               ${this.messages.map(
                 (item, _) =>
                   html`
@@ -231,13 +283,29 @@ export class Chat extends LitElement {
                         ? "sender"
                         : "receiver"}
                     >
-                      ${resolveMarkdown(
-                        MarkdownService.parseMarkdown(item.content)
-                      )}
+                      <p class="receiver-name">
+                        ${item.sender != this.login.username ? item.sender : ""}
+                      </p>
+                      <p class="message">
+                        ${resolveMarkdown(
+                          MarkdownService.parseMarkdown(item.content)
+                        )}
+                      </p>
+                      <p class="message-timestamp">
+                        ${new Date(item.timestamp).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
                     </li>
                   `
               )}
             </ul>
+            <il-button-icon
+              class="scroll-button"
+              @click="${this.scrollToBottom}"
+              content="${IconNames.scrollDownArrow}"
+            ></il-button-icon>
 
             <il-input-controls
               @send-message="${this.sendMessage}"
@@ -278,8 +346,19 @@ export class Chat extends LitElement {
     );
   }
 
+  checkScrolledToBottom() {
+    try {
+      let element = this.renderRoot.querySelector("ul.message-box");
+      return (
+        element.scrollHeight - element.offsetHeight <= element.scrollTop + 10
+      );
+    } catch (error) {
+      return false;
+    }
+  }
+
   scrollToBottom() {
-    let element = this.renderRoot.querySelector("ul.messageBox");
+    let element = this.renderRoot.querySelector("ul.message-box");
     element.scrollBy({ top: element.scrollHeight - element.offsetHeight });
   }
 
@@ -301,6 +380,12 @@ export class Chat extends LitElement {
     if (message.content) {
       this.messages.push(message);
       this.update();
+      this.updated();
+      this.scrollToBottom();
+      let sidebar = this.renderRoot.querySelector(
+        "main > section > il-sidebar"
+      );
+      sidebar.shadowRoot.querySelector("div > il-conversation-list").setList();
     }
   }
 

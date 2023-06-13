@@ -30,12 +30,13 @@ public class RoomApiController {
         List<RoomDto> roomDtos = new ArrayList<>();
         List<RoomEntity> roomEntities = roomService.getRooms(date, Username.of(principal.getName()));
 
+
         if (roomEntities.size() > 0) {
+
             roomDtos = roomEntities.stream().map(roomService::fromEntityToDto).toList();
         } else {
             log.info("Non sono state trovate room");
         }
-
         return roomDtos;
     }
 

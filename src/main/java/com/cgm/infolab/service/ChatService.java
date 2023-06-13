@@ -13,6 +13,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class ChatService {
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
     }
-    public void saveMessageInDb(ChatMessageDto message, Username username, RoomName roomName){
+    public ChatMessageEntity saveMessageInDb(ChatMessageDto message, Username username, RoomName roomName){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
@@ -53,6 +54,8 @@ public class ChatService {
         } catch (DuplicateKeyException e) {
             log.info(String.format("ChatMessageEntity id=\"%s\" già esistente nel database", messageEntity.getContent()));
         }
+
+        return messageEntity;
     }
 
     public ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
@@ -62,7 +65,7 @@ public class ChatService {
     }
 
     public LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
-        return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp());
+        return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender());
     }
 
     public List<ChatMessageEntity> getAllMessagesGeneral (int numberOfMessages, Username username) {

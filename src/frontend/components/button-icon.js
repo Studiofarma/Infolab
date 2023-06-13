@@ -11,26 +11,17 @@ export class ButtonIcon extends LitElement {
 
   static styles = css`
     :host {
-      display: inline;
+      display: flex;
       align-items: center;
     }
 
-    #button {
+    .icon-button {
       height: 100%;
       width: 100%;
+      display: flex;
       justify-content: center;
       align-items: center;
-      font-weight: normal;
-      font-style: normal;
-      font-family: "Material Icons";
-      font-size: 24px;
-      line-height: 1;
-      letter-spacing: normal;
-      text-transform: none;
-      display: flex;
-      white-space: nowrap;
-      word-wrap: normal;
-      direction: ltr;
+      font-size: 0px;
       -webkit-font-smoothing: antialiased;
       cursor: pointer;
       user-select: none;
@@ -38,7 +29,7 @@ export class ButtonIcon extends LitElement {
       min-width: 35px;
     }
 
-    #button:hover {
+    .icon-button:hover {
       background-color: rgba(152, 154, 157, 0.3);
       border-radius: 50%;
     }
@@ -46,7 +37,7 @@ export class ButtonIcon extends LitElement {
 
   render() {
     return html`
-      <div id="button">
+      <div class="icon-button">
         <il-icon name="${this.content}"></il-icon>
       </div>
     `;

@@ -1,4 +1,6 @@
 export const IconNames = {
+  scrollDownArrow: "mdiArrowDown",
+  settings: "mdiCog",
   eye: "mdiEye",
   eyeOff: "mdiEyeOff",
   close: "mdiClose",
@@ -22,6 +24,6 @@ export const IconNames = {
   numeric6: "mdiNumeric6Circle",
   numeric7: "mdiNumeric7Circle",
   numeric8: "mdiNumeric8Circle",
-  numeric9: "mdiNumeri19Circle",
+  numeric9: "mdiNumeric9Circle",
   numericPlus: "mdiNumeric9PlusCircle",
 };
