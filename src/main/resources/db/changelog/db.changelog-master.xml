@@ -47,6 +47,7 @@
             <column name="content" type="varchar(5000)" />
         </createTable>
     </changeSet>
+    
     <changeSet id="rooms_users_relation" author="Matei Ciofu">
         <createTable schemaName="infolab" tableName="rooms_subscriptions">
             <column name="room_id" type="bigint">
@@ -62,6 +63,21 @@
         <addColumn schemaName="infolab" tableName="rooms">
             <column name="visibility" type="char(20)"/>
         </addColumn>
+    </changeSet>
+    
+    <changeSet id="last_download_dates_table" author="Lorenzo Rinaldi">
+        <createTable schemaName="infolab" tableName="download_dates">
+            <column name="date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id">
+                <constraints foreignKeyName="fk_user_id" references="infolab.users(id)"/>
+            </column>
+            <column name="message_id">
+                <constraints foreignKeyName="fk_message_id" references="infolab.chatmessages(id)"/>
+            </column>
+        </createTable>
 
+        <addUniqueConstraint schemaName="infolab" tableName="read_dates" columnNames="date, user_id, message_id"/>
     </changeSet>
 </databaseChangeLog>
