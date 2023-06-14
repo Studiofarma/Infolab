@@ -12,6 +12,7 @@ import { CookieService } from "../../services/cookie-service";
 import { IconNames } from "../../enums/icon-names";
 
 import "../../components/button-icon";
+import "../../components/icon";
 import "../../components/forward-list";
 import "./input/input-controls.js";
 import "./sidebar/sidebar.js";
@@ -319,14 +320,18 @@ export class Chat extends LitElement {
 			padding: 5px;
 		}
 
-		.menu-options > p {
+		.menu-options-section {
 			cursor: pointer;
-			padding: 2px;
+			padding: 4px;
 			border-radius: 5px;
 			user-select: none;
+
+			display: flex;
+			align-items: center;
+			gap: 3px;
 		}
 
-		.menu-options > p:hover {
+		.menu-options-section:hover {
 			background-color: #f5f5f5;
 		}
 
@@ -407,37 +412,48 @@ export class Chat extends LitElement {
 												>
 												</il-button-icon>
 												<div class="menu-options">
-													<p
+													<div
+														class="menu-options-section"
 														@click=${() => {
 															this.copyToClipboard(item.content);
 														}}
 													>
+														<il-icon name=${IconNames.mdiContentCopy}></il-icon>
 														Copia
-													</p>
-													<p
+													</div>
+
+													<div
+														class="menu-options-section"
 														@click=${() => {
 															this.forwardMessage(item.content);
 														}}
 													>
+														<il-icon name=${IconNames.mdiShare}></il-icon>
 														Inoltra
-													</p>
+													</div>
+
 													${item.sender != this.login.username
-														? html`<p
+														? html`<div
+																class="menu-options-section"
 																@click=${() => {
 																	this.goToChat(item.sender);
 																}}
 														  >
+																<il-icon name=${IconNames.mdiMessage}></il-icon>
 																Scrivi in privato
-														  </p>`
+														  </div>`
 														: null}
-													<p
+
+													<div
+														class="menu-options-section"
 														@click=${() => {
 															this.deleteMessage(item);
 															this.update();
 														}}
 													>
+														<il-icon name=${IconNames.mdiDelete}></il-icon>
 														Elimina
-													</p>
+													</div>
 												</div>
 											</div>
 										</li>
