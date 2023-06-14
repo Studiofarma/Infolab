@@ -11,7 +11,6 @@ export class ButtonIcon extends LitElement {
 
   static styles = css`
     :host {
-      /* display: inline; */
       display: flex;
       align-items: center;
     }

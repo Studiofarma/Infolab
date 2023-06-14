@@ -65,6 +65,10 @@ class Conversation extends LitElement {
 			vertical-align: middle;
 			line-height: 1.5;
 		}
+
+		.unread {
+			color: rgb(58 179 255);
+		}
 	`;
 
 	render() {
@@ -73,13 +77,6 @@ class Conversation extends LitElement {
 		} else {
 			this.notificationOpacity = "block";
 		}
-
-		// let timestamp = this.chat.lastMessage.timestamp
-		// 	? new Date(this.chat.lastMessage.timestamp).toLocaleTimeString([], {
-		// 			hour: "2-digit",
-		// 			minute: "2-digit",
-		// 	  })
-		// 	: "";
 
 		return html`
 			<div class="chat-box">
@@ -99,8 +96,10 @@ class Conversation extends LitElement {
 				</div>
 				<div class="date-box">
 					<p
-						class="last-message-timestamp"
-						style="${this.chat.unread > 0 ? "color:rgb(58 179 255)" : ""}"
+						class="last-message-timestamp last-message-timestamp ${this.chat
+							.unread > 0
+							? "unread"
+							: ""}"
 					>
 						${this.compareMessageDate(this.chat.lastMessage.timestamp)}
 					</p>

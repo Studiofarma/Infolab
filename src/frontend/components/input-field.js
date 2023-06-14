@@ -33,7 +33,6 @@ export class InputField extends LitElement {
 			width: 100%;
 			height: 40px;
 			padding: 5px 10px;
-			/* border: solid 2px #5a9bfb; */
 			background-color: rgb(8, 60, 114);
 			color: white;
 			border: none;
@@ -59,8 +58,6 @@ export class InputField extends LitElement {
 			/>
 		`;
 	}
-	// @blur="${this.setBlur}"
-	// @focus="${this.setFocus}"
 
 	firstUpdated() {
 		this.renderRoot.querySelector("input").focus();
@@ -71,14 +68,6 @@ export class InputField extends LitElement {
 		this.selectionStart = e.target.selectionStart;
 		this.selectionEnd = e.target.selectionEnd;
 	}
-
-	// setFocus() {
-	// 	this.renderRoot.querySelector("input").style.border = "solid 2px #009C3E";
-	// }
-
-	// setBlur() {
-	// 	this.renderRoot.querySelector("input").style.border = "solid 2px #5A9BFB";
-	// }
 
 	clear() {
 		this.renderRoot.querySelector("input").value = "";
