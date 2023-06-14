@@ -21,7 +21,7 @@ public class DownloadDateRepository {
 
     private final String INSERT_WHERE_NOT_READ_YET_QUERY =
             "INSERT INTO infolab.download_dates( " +
-                "\"timestamp\", user_id, message_id) " +
+                "\"timestamp\", user_id, message_id) " +    // TODO: sistemare timestamp perché con pg ha bisogno delle virgolette, con h2 non funziona con le virgolette
                 "SELECT ?, ?, m.id message_id " +       // timestamp, user id
                     "FROM infolab.chatmessages m  " +
                     "LEFT JOIN infolab.rooms r " +

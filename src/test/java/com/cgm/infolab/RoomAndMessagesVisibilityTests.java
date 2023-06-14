@@ -41,24 +41,18 @@ public class RoomAndMessagesVisibilityTests {
                     UserEntity.of(Username.of("user1")),
                     UserEntity.of(Username.of("user2"))};
 
+    public UserEntity loggedInUser = users[0]; // user0
+
     public RoomEntity[] rooms =
             {RoomEntity.of(RoomName.of("general"), VisibilityEnum.PUBLIC)};
 
-    public ChatMessageEntity[] messageEntities =
-            {ChatMessageEntity.of(users[0], rooms[0], new Timestamp(System.currentTimeMillis()).toLocalDateTime(), "Hello general from user0"),
-                    ChatMessageEntity.of(users[1], RoomEntity.of(RoomName.of(users[0].getName(), users[1].getName()), VisibilityEnum.PRIVATE), new Timestamp(System.currentTimeMillis()).toLocalDateTime(), "Visible only to user0 and user1"),
-                    ChatMessageEntity.of(users[1], RoomEntity.of(RoomName.of(users[1].getName(), users[2].getName()), VisibilityEnum.PRIVATE), new Timestamp(System.currentTimeMillis()).toLocalDateTime(), "Visible only to user1 and user2"),
-                    ChatMessageEntity.of(users[2], RoomEntity.of(RoomName.of(users[0].getName(), users[2].getName()), VisibilityEnum.PRIVATE), new Timestamp(System.currentTimeMillis()).toLocalDateTime(), "Visible only to user0 and user2"),
-                    ChatMessageEntity.of(users[0], RoomEntity.of(RoomName.of(users[0].getName(), users[1].getName()), VisibilityEnum.PRIVATE), new Timestamp(System.currentTimeMillis()).toLocalDateTime(), "Visible only to user0 and user1"),
-                    ChatMessageEntity.of(users[2], RoomEntity.of(RoomName.of(users[0].getName(), users[2].getName()), VisibilityEnum.PRIVATE), new Timestamp(System.currentTimeMillis()).toLocalDateTime(), "Visible only to user1 and user2")};
-
     public ChatMessageDto[] messageDtos =
-            {new ChatMessageDto("Hello general from user0", users[0].getName().value()),
-                new ChatMessageDto("Visible only to user0 and user1", users[1].getName().value()),
-                new ChatMessageDto("Visible only to user1 and user2", users[1].getName().value()),
-                new ChatMessageDto("Visible only to user0 and user2", users[2].getName().value()),
-                new ChatMessageDto("Visible only to user0 and user1", users[0].getName().value()),
-                new ChatMessageDto("Visible only to user1 and user2", users[2].getName().value())};
+            {new ChatMessageDto("1 Hello general from user0", users[0].getName().value()),
+                new ChatMessageDto("2 Visible only to user0 and user1", users[1].getName().value()),
+                new ChatMessageDto("3 Visible only to user1 and user2", users[1].getName().value()),
+                new ChatMessageDto("4 Visible only to user0 and user2", users[2].getName().value()),
+                new ChatMessageDto("5 Visible only to user0 and user1", users[0].getName().value()),
+                new ChatMessageDto("6 Visible only to user1 and user2", users[2].getName().value())};
 
     @BeforeAll
     void setUpAll() {
@@ -83,25 +77,40 @@ public class RoomAndMessagesVisibilityTests {
 
         // Add some messages
         chatService.saveMessageInDb(messageDtos[0], users[0].getName(), RoomName.of("general"));
-        chatService.saveMessageInDb(messageDtos[1], users[1].getName(), RoomName.of("user0-user1"));
-        chatService.saveMessageInDb(messageDtos[2], users[1].getName(), RoomName.of("user1-user2"));
-        chatService.saveMessageInDb(messageDtos[3], users[2].getName(), RoomName.of("user0-user2"));
-        chatService.saveMessageInDb(messageDtos[4], users[0].getName(), RoomName.of("user0-user1"));
-        chatService.saveMessageInDb(messageDtos[5], users[2].getName(), RoomName.of("user0-user2"));
+        chatService.saveMessageInDb(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"));
+        chatService.saveMessageInDb(messageDtos[2], users[2].getName(), RoomName.of("user1-user2"));
+        chatService.saveMessageInDb(messageDtos[3], users[0].getName(), RoomName.of("user0-user2"));
+        chatService.saveMessageInDb(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"));
+        chatService.saveMessageInDb(messageDtos[5], users[1].getName(), RoomName.of("user1-user2"));
+
+        RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed(RoomName.of("user1-user2")).orElse(null);
+        System.out.println(room.getVisibility());
     }
 
     @Test
     void whenUser0QueriesForRooms_canSeeRooms_GeneralUser0w1User0w2() {
-        List<RoomEntity> roomEntities = new ArrayList<>();
-        roomEntities.add(roomRepository.getByRoomName(RoomName.of("general"), users[0].getName()).orElse(null));
-        roomEntities.add(roomRepository.getByRoomName(RoomName.of(users[0].getName(), users[1].getName()), users[0].getName()).orElse(null));
-        roomEntities.add(roomRepository.getByRoomName(RoomName.of(users[0].getName(), users[2].getName()), users[0].getName()).orElse(null));
-        roomEntities.add(roomRepository.getByRoomName(RoomName.of(users[1].getName(), users[2].getName()), users[0].getName()).orElse(null));
+        List<RoomEntity> roomsFromDb = new ArrayList<>();
+        roomsFromDb.add(roomRepository.getByRoomName(RoomName.of("general"), users[0].getName()).orElse(null));
+        roomsFromDb.add(roomRepository.getByRoomName(RoomName.of(users[0].getName(), users[1].getName()), users[0].getName()).orElse(null));
+        roomsFromDb.add(roomRepository.getByRoomName(RoomName.of(users[0].getName(), users[2].getName()), users[0].getName()).orElse(null));
+        roomsFromDb.add(roomRepository.getByRoomName(RoomName.of(users[1].getName(), users[2].getName()), users[0].getName()).orElse(null));
 
         // Removes null rooms
-        roomEntities.removeIf(Objects::isNull);
+        roomsFromDb.removeIf(Objects::isNull);
 
         // This because the last room that this test tries to get will return null if it does not exist.
-        Assertions.assertEquals(3, roomEntities.size());
+        Assertions.assertEquals(3, roomsFromDb.size());
+    }
+
+    @Test
+    void whenUser0QueriesForMessages_canSeeMessages_count4() {
+        List<ChatMessageEntity> messagesFromDb = new ArrayList<>();
+        messagesFromDb.addAll(chatMessageRepository.getByRoomName(RoomName.of("general"), loggedInUser.getName())); // Gets from room general
+        messagesFromDb.addAll(chatMessageRepository.getByRoomName(RoomName.of("user0-user1"), loggedInUser.getName())); // Gets from room user0-user1
+        messagesFromDb.addAll(chatMessageRepository.getByRoomName(RoomName.of("user0-user2"), loggedInUser.getName())); // Gets from room user0-user2
+
+        messagesFromDb.addAll(chatMessageRepository.getByRoomName(RoomName.of("user1-user2"), loggedInUser.getName())); // Gets from room user1-user2 (should return empty array)
+
+        Assertions.assertEquals(4, messagesFromDb.size());
     }
 }
