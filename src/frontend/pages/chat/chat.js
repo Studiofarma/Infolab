@@ -182,6 +182,18 @@ export class Chat extends LitElement {
 			z-index: 2;
 		}
 
+		.sender a:link {
+			color: black;
+		}
+
+		.sender a:visited {
+			color: black;
+		}
+
+		.sender a:hover {
+			color: white;
+		}
+
 		.receiver {
 			justify-self: flex-start;
 			border-radius: 0 10px 10px 10px;
