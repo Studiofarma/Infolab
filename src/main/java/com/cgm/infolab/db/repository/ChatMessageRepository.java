@@ -22,31 +22,19 @@ public class ChatMessageRepository {
     private final DataSource dataSource;
 
     private final String MESSAGES_BY_ROOM_QUERY =
-            "SELECT m.id message_id, u.id user_id, u.username, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content " +
-                    "FROM infolab.chatmessages m " +
-                    "LEFT JOIN infolab.rooms r " +
-                    "ON r.id = m.recipient_room_id " +
-                    "LEFT JOIN infolab.users u " +
-                    "ON u.id = m.sender_id " +
-                    "WHERE EXISTS (SELECT s.room_id FROM infolab.rooms_subscriptions s " +
-                        "RIGHT JOIN infolab.users u " +
-                        "ON s.user_id = u.id " +
-                        "WHERE (u.username = ? OR r.visibility = 'PUBLIC')) " +
-                    "AND r.roomname = ? " +
-                    "ORDER BY sent_at DESC ";
-
-    private final String MESSAGES_BY_ROOM_QUERY2 =
-            "SELECT m.id message_id, u.id user_id, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content " +
+            "SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content    " +
                     "FROM infolab.rooms r " +
                     "LEFT JOIN infolab.chatmessages m " +
                     "ON r.id = m.recipient_room_id " +
                     "LEFT JOIN infolab.rooms_subscriptions s " +
                     "ON r.id = s.room_id " +
-                    "LEFT JOIN infolab.users u " +
-                    "ON u.id = s.user_id " +
-                    "WHERE (u.username = ? OR r.visibility = 'PUBLIC') " +  // Username
+                    "LEFT JOIN infolab.users u_sub " +
+                    "ON u_sub.id = s.user_id " +
+                    "LEFT JOIN infolab.users u_mex " +
+                    "ON u_mex.id = m.sender_id " +
+                    "WHERE (u_sub.username = ? OR r.visibility = 'PUBLIC') " +
                     "AND r.roomname = ? " +
-                    "ORDER BY m.sent_at DESC ";  // Roomname
+                    "ORDER BY m.sent_at DESC ";
 
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
@@ -81,7 +69,7 @@ public class ChatMessageRepository {
      */
     public List<ChatMessageEntity> getByRoomName(RoomName roomName, Username username) {
         return queryMessages(
-                MESSAGES_BY_ROOM_QUERY2,
+                MESSAGES_BY_ROOM_QUERY,
                 username.value(),
                 roomName.value()
         );
@@ -94,7 +82,7 @@ public class ChatMessageRepository {
         }
 
         return queryMessages(
-            String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY2),
+            String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
                 username.value(),
                 roomName.value(),
                 numberOfMessages
@@ -111,8 +99,8 @@ public class ChatMessageRepository {
 
     public ChatMessageEntity mapToEntityOnlyForThisClassTemp(ResultSet rs, int rowNum) throws SQLException {
 
-        UserEntity user = UserEntity.of(rs.getLong("user_id"),
-                Username.of(rs.getString("sender_id")));
+        UserEntity user = UserEntity.of(rs.getLong("sender_id"),
+                Username.of(rs.getString("username")));
 
         RoomEntity room = RoomEntity.of(
                 rs.getLong("room_id"),
