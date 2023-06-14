@@ -71,11 +71,6 @@ export class Chat extends LitElement {
       background: rgb(247, 247, 247);
     }
 
-    input[type="text"] {
-      border: none;
-      outline: none;
-    }
-
     section {
       display: grid;
       grid-template-columns: 350px auto;
@@ -115,11 +110,7 @@ export class Chat extends LitElement {
       gap: 1em;
     }
 
-    il-input-controls {
-      margin-top: auto;
-    }
-
-    .message-box {
+    .messages-container {
       list-style-type: none;
       display: grid;
       grid-auto-rows: max-content;
@@ -129,6 +120,27 @@ export class Chat extends LitElement {
       overflow-y: auto;
       padding: 20px;
       margin-top: 71px;
+    }
+
+    .messages-container::-webkit-scrollbar {
+      width: 4px;
+      margin-right: 10px;
+    }
+
+    .messages-container::-webkit-scrollbar-track {
+      background-color: none;
+    }
+
+    .messages-container::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: rgb(54, 123, 251);
+      min-height: 40px;
+    }
+
+    .message {
+      display: grid;
+      flex-direction: column;
+      max-width: 100%;
     }
 
     .scroll-button {
@@ -144,27 +156,6 @@ export class Chat extends LitElement {
       opacity: 0;
       transition: opacity 0.2s ease-in-out;
     }
-
-    .message-box::-webkit-scrollbar {
-      width: 4px;
-      margin-right: 10px;
-    }
-
-    .message-box::-webkit-scrollbar-track {
-      background-color: none;
-    }
-
-    .message-box::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      background-color: rgb(54, 123, 251);
-      min-height: 40px;
-    }
-
-    .message-box > il-message {
-      display: grid;
-      flex-direction: column;
-      max-width: 100%;
-    }
   `;
 
   render() {
@@ -175,24 +166,28 @@ export class Chat extends LitElement {
             @update-message="${this.updateMessages}"
             .login=${this.login}
           ></il-sidebar>
+
           <div class="chat">
             <il-chat-header
               userName=${this.login.username}
               roomName=${this.activeChatNameFormatter(this.activeChatName)}
             ></il-chat-header>
+
             <ul
               @scroll="${this.manageScrollButtonVisility}"
-              class="message-box"
+              class="messages-container"
             >
               ${this.messages.map(
                 (message, index) =>
                   html` <il-message
+                    class="message"
                     .messages=${this.messages}
                     .message=${message}
                     .index=${index}
                   ></il-message>`
               )}
             </ul>
+
             <il-forward-list></il-forward-list>
 
             <il-button-icon
@@ -202,6 +197,7 @@ export class Chat extends LitElement {
             ></il-button-icon>
 
             <il-input-controls
+              class="input-controls"
               @send-message="${this.sendMessage}"
             ></il-input-controls>
           </div>
@@ -213,11 +209,9 @@ export class Chat extends LitElement {
   manageScrollButtonVisility() {
     if (this.checkScrolledToBottom()) {
       this.renderRoot.querySelector(".scroll-button").style.opacity = "0";
-    } else if (
-      this.renderRoot.querySelector(".scroll-button").style.opacity == 0
-    ) {
-      this.renderRoot.querySelector(".scroll-button").style.opacity = "1";
+      return;
     }
+    this.renderRoot.querySelector(".scroll-button").style.opacity = "1";
   }
 
   async firstUpdated() {
@@ -271,7 +265,7 @@ export class Chat extends LitElement {
 
   checkScrolledToBottom() {
     try {
-      let element = this.renderRoot.querySelector("ul.message-box");
+      let element = this.renderRoot.querySelector("ul.messages-container");
       return (
         element.scrollHeight - element.offsetHeight <= element.scrollTop + 10
       );
@@ -281,8 +275,8 @@ export class Chat extends LitElement {
   }
 
   scrollToBottom() {
-    let element = this.renderRoot.querySelector("ul.message-box");
-    element.scrollTo({ top: element.scrollHeight });
+    let element = this.renderRoot.querySelector("ul.messages-container");
+    element.scrollBy({ top: element.scrollHeight - element.offsetHeight });
   }
 
   onConnect() {
