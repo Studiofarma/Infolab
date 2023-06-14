@@ -149,7 +149,7 @@ export class ForwardList extends LitElement {
       </div>
       <div class="forward-list-scrollable">
         <div class="forward-list-section">
-          <div class="forward-list-section-title">Chat</div>								
+          <div class="forward-list-section-title">Chat</div>
           <div class="forward-list-body">${this.renderForwardList()}</div>
         </div>
       </div>
@@ -200,7 +200,6 @@ export class ForwardList extends LitElement {
   }
 
   fwdSearch() {
-    this.forwardList = [...this.tmpForwardList];
     let searchInput = this.shadowRoot.querySelector("input#fwdSearch");
 
     let value = searchInput.value.toLowerCase();

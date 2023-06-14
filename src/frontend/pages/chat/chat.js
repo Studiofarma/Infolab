@@ -181,20 +181,7 @@ export class Chat extends LitElement {
               roomName=${this.activeChatNameFormatter(this.activeChatName)}
             ></il-chat-header>
             <ul
-              @scroll="${(e) => {
-                if (this.checkScrolledToBottom()) {
-                  this.renderRoot.querySelector(
-                    ".scroll-button"
-                  ).style.opacity = "0";
-                } else if (
-                  this.renderRoot.querySelector(".scroll-button").style
-                    .opacity == 0
-                ) {
-                  this.renderRoot.querySelector(
-                    ".scroll-button"
-                  ).style.opacity = "1";
-                }
-              }}"
+              @scroll="${this.manageScrollButtonVisility}"
               class="message-box"
             >
               ${this.messages.map(
@@ -221,6 +208,16 @@ export class Chat extends LitElement {
         </section>
       </main>
     `;
+  }
+
+  manageScrollButtonVisility() {
+    if (this.checkScrolledToBottom()) {
+      this.renderRoot.querySelector(".scroll-button").style.opacity = "0";
+    } else if (
+      this.renderRoot.querySelector(".scroll-button").style.opacity == 0
+    ) {
+      this.renderRoot.querySelector(".scroll-button").style.opacity = "1";
+    }
   }
 
   async firstUpdated() {
