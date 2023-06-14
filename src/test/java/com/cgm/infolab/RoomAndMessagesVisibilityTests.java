@@ -165,7 +165,7 @@ public class RoomAndMessagesVisibilityTests {
                 "RIGHT JOIN infolab.download_dates d1 " +
                 "ON d1.user_id = u1.id " +
                 "WHERE (u1.username = ? AND m.id = d1.message_id))) " +     // username
-                "AND r.roomname = ?";   // roomid
+                "AND r.roomname = ?";   // roomname
 
         List<DownloadDateEntity> downloadDatesFromDb;
 

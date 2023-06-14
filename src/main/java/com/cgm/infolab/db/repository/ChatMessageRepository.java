@@ -35,6 +35,19 @@ public class ChatMessageRepository {
                     "AND r.roomname = ? " +
                     "ORDER BY sent_at DESC ";
 
+    private final String MESSAGES_BY_ROOM_QUERY2 =
+            "SELECT m.id message_id, u.id user_id, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content " +
+                    "FROM infolab.rooms r " +
+                    "LEFT JOIN infolab.chatmessages m " +
+                    "ON r.id = m.recipient_room_id " +
+                    "LEFT JOIN infolab.rooms_subscriptions s " +
+                    "ON r.id = s.room_id " +
+                    "LEFT JOIN infolab.users u " +
+                    "ON u.id = s.user_id " +
+                    "WHERE (u.username = ? OR r.visibility = 'PUBLIC') " +  // Username
+                    "AND r.roomname = ? " +
+                    "ORDER BY m.sent_at DESC ";  // Roomname
+
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
     public ChatMessageRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
@@ -68,7 +81,7 @@ public class ChatMessageRepository {
      */
     public List<ChatMessageEntity> getByRoomName(RoomName roomName, Username username) {
         return queryMessages(
-                MESSAGES_BY_ROOM_QUERY,
+                MESSAGES_BY_ROOM_QUERY2,
                 username.value(),
                 roomName.value()
         );
@@ -81,7 +94,7 @@ public class ChatMessageRepository {
         }
 
         return queryMessages(
-            String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
+            String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY2),
                 username.value(),
                 roomName.value(),
                 numberOfMessages
@@ -90,10 +103,29 @@ public class ChatMessageRepository {
 
     private List<ChatMessageEntity> queryMessages(String query, Object... queryParams) {
         try {
-            return jdbcTemplate.query(query, this::mapToEntity, queryParams);
+            return jdbcTemplate.query(query, this::mapToEntityOnlyForThisClassTemp, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
+    }
+
+    public ChatMessageEntity mapToEntityOnlyForThisClassTemp(ResultSet rs, int rowNum) throws SQLException {
+
+        UserEntity user = UserEntity.of(rs.getLong("user_id"),
+                Username.of(rs.getString("sender_id")));
+
+        RoomEntity room = RoomEntity.of(
+                rs.getLong("room_id"),
+                RoomName.of(rs.getString("roomname")),
+                VisibilityEnum.valueOf(rs.getString("visibility").trim())
+        );
+
+        return ChatMessageEntity
+                .of(rs.getLong("message_id"),
+                        user,
+                        room,
+                        resultSetToLocalDateTime(rs),
+                        rs.getString("content"));
     }
 
     public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
