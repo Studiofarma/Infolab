@@ -21,6 +21,10 @@ public class RoomEntity {
         return new RoomEntity(ID.None, name, visibility, null);
     }
 
+    public static RoomEntity general() {
+        return RoomEntity.of(RoomName.of("general"), VisibilityEnum.PUBLIC);
+    }
+
 
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility) {
