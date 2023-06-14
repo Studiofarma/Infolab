@@ -4,6 +4,7 @@ import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
+import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
 import com.cgm.infolab.service.RoomService;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.sql.Timestamp;
@@ -50,23 +52,42 @@ public class RoomAndMessagesVisibilityTests {
                     ChatMessageEntity.of(users[0], RoomEntity.of(RoomName.of(users[0].getName(), users[1].getName()), VisibilityEnum.PRIVATE), new Timestamp(System.currentTimeMillis()).toLocalDateTime(), "Visible only to user0 and user1"),
                     ChatMessageEntity.of(users[2], RoomEntity.of(RoomName.of(users[0].getName(), users[2].getName()), VisibilityEnum.PRIVATE), new Timestamp(System.currentTimeMillis()).toLocalDateTime(), "Visible only to user1 and user2")};
 
+    public ChatMessageDto[] messageDtos =
+            {new ChatMessageDto("Hello general from user0", users[0].getName().value()),
+                new ChatMessageDto("Visible only to user0 and user1", users[1].getName().value()),
+                new ChatMessageDto("Visible only to user1 and user2", users[1].getName().value()),
+                new ChatMessageDto("Visible only to user0 and user2", users[2].getName().value()),
+                new ChatMessageDto("Visible only to user0 and user1", users[0].getName().value()),
+                new ChatMessageDto("Visible only to user1 and user2", users[2].getName().value())};
+
     @BeforeAll
     void setUpAll() {
         // Add all users
         for (UserEntity user : users) {
-            userRepository.add(user);
+            try {
+                userRepository.add(user);
+            } catch (DuplicateKeyException e) {
+                System.out.printf("User username=\"%s\" già esistente nel database", user.getName().value());
+            }
         }
 
         // Create some rooms and subscribe users
-        roomRepository.add(rooms[0]);
+        try {
+            roomRepository.add(rooms[0]);
+        } catch (DuplicateKeyException e) {
+            System.out.printf("Room room=\"%s\" già esistente nel database%n", "general");
+        }
         roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[1].getName());
         roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[2].getName());
         roomService.createPrivateRoomAndSubscribeUsers(users[1].getName(), users[2].getName());
 
         // Add some messages
-        for (ChatMessageEntity message : messageEntities) {
-            chatMessageRepository.add(message);
-        }
+        chatService.saveMessageInDb(messageDtos[0], users[0].getName(), RoomName.of("general"));
+        chatService.saveMessageInDb(messageDtos[1], users[1].getName(), RoomName.of("user0-user1"));
+        chatService.saveMessageInDb(messageDtos[2], users[1].getName(), RoomName.of("user1-user2"));
+        chatService.saveMessageInDb(messageDtos[3], users[2].getName(), RoomName.of("user0-user2"));
+        chatService.saveMessageInDb(messageDtos[4], users[0].getName(), RoomName.of("user0-user1"));
+        chatService.saveMessageInDb(messageDtos[5], users[2].getName(), RoomName.of("user0-user2"));
     }
 
     @Test
@@ -80,6 +101,7 @@ public class RoomAndMessagesVisibilityTests {
         // Removes null rooms
         roomEntities.removeIf(Objects::isNull);
 
+        // This because the last room that this test tries to get will return null if it does not exist.
         Assertions.assertEquals(3, roomEntities.size());
     }
 }
