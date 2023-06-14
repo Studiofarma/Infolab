@@ -1,6 +1,4 @@
 import { LitElement, html, css } from "lit";
-
-import { resolveMarkdown } from "lit-markdown";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
