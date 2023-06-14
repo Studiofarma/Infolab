@@ -81,9 +81,9 @@ public class ChatMessageRepository {
             return getByRoomName(roomName, username);
         }
 
-        return queryMessages(
+        return queryMessages2(
             String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
-                username.value(),
+                username,
                 roomName.value(),
                 numberOfMessages
         );
@@ -92,6 +92,20 @@ public class ChatMessageRepository {
     private List<ChatMessageEntity> queryMessages(String query, Object... queryParams) {
         try {
             return jdbcTemplate.query(query, this::mapToEntityOnlyForThisClassTemp, queryParams);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    private List<ChatMessageEntity> queryMessages2(String query, Username username, Object... queryParams) {
+        try {
+            QueryHelper queryHelper = new QueryHelper(jdbcTemplate);
+            return queryHelper
+                .forUSer(username)
+                .query(
+                    query,
+                    this::mapToEntityOnlyForThisClassTemp,
+                    queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
