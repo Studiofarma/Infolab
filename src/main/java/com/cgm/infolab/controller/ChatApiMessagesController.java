@@ -44,9 +44,9 @@ public class ChatApiMessagesController {
             log.info("Non sono stati trovati messaggi nella room specificata");
         }
 
-        chatService.setAllMessagesAsDownloadedInRoom(
-                UserEntity.of(Username.of(principal.getName())),
-                RoomEntity.of(RoomName.of("general"), VisibilityEnum.PUBLIC)
+        chatService.updateReadTimestamp(
+                Username.of(principal.getName()),
+                RoomName.of("general")
         );
 
         return chatMessageDtos;

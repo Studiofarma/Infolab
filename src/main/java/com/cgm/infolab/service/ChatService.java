@@ -85,7 +85,7 @@ public class ChatService {
         return chatMessageEntities;
     }
 
-    public void setAllMessagesAsDownloadedInRoom(UserEntity user, RoomEntity room) {
+    public void updateReadTimestamp(Username user, RoomName room) {
         downloadDateRepository.addWhereNotDownloadedYetForUser(user, room);
     }
 }

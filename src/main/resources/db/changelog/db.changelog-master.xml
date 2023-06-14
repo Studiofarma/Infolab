@@ -65,7 +65,7 @@
     
     <changeSet id="last_download_dates_table" author="Lorenzo Rinaldi">
         <createTable schemaName="infolab" tableName="download_dates">
-            <column name="timestamp" type="timestamp">
+            <column name="download_timestamp" type="timestamp">
                 <constraints nullable="false"/>
             </column>
             <column name="user_id" type="bigint">
@@ -77,6 +77,6 @@
         </createTable>
         
         <addPrimaryKey schemaName="infolab" tableName="rooms_subscriptions" columnNames="room_id, user_id"/>
-        <addPrimaryKey schemaName="infolab" tableName="download_dates" columnNames="timestamp, user_id, message_id"/>
+        <addPrimaryKey schemaName="infolab" tableName="download_dates" columnNames="download_timestamp, user_id, message_id"/>
     </changeSet>
 </databaseChangeLog>

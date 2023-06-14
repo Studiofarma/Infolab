@@ -1,8 +1,6 @@
 package com.cgm.infolab.db.repository;
 
-import com.cgm.infolab.db.model.DownloadDateEntity;
-import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.model.UserEntity;
+import com.cgm.infolab.db.model.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -21,7 +19,7 @@ public class DownloadDateRepository {
 
     private final String INSERT_WHERE_NOT_READ_YET_QUERY =
             "INSERT INTO infolab.download_dates( " +
-                "\"timestamp\", user_id, message_id) " +    // TODO: sistemare timestamp perché con pg ha bisogno delle virgolette, con h2 non funziona con le virgolette
+                "download_timestamp, user_id, message_id) " +
                 "SELECT ?, ?, m.id message_id " +       // timestamp, user id
                     "FROM infolab.chatmessages m  " +
                     "LEFT JOIN infolab.rooms r " +
@@ -58,16 +56,16 @@ public class DownloadDateRepository {
         simpleJdbcInsert.execute(parameters);
     }
 
-    public void addWhereNotDownloadedYetForUser(UserEntity user, RoomEntity room) throws IllegalArgumentException {
+    public void addWhereNotDownloadedYetForUser(Username username, RoomName roomName) throws IllegalArgumentException {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        user = userRepository.getByUsername(user.getName()).orElseThrow(IllegalArgumentException::new);
+        UserEntity user = userRepository.getByUsername(username).orElseThrow(IllegalArgumentException::new);
 
         jdbcTemplate.update(INSERT_WHERE_NOT_READ_YET_QUERY,
                 timestamp,
                 user.getId(),
                 user.getName().value(),
                 user.getName().value(),
-                room.getName().value());
+                roomName.value());
     }
 }
