@@ -103,6 +103,24 @@ public class RoomAndMessagesVisibilityTests {
     }
 
     @Test
+    void whenUser0QueriesForRoomsAndLastMessages_canSee3RoomsInOrderWith1MessageEach() {
+        List<RoomEntity> roomsFromDb = new ArrayList<>(roomRepository.getAllWhereLastMessageNotNull(Username.of("user0")));
+
+        Assertions.assertEquals(3, roomsFromDb.size());
+
+        Assertions.assertEquals("general", roomsFromDb.get(0).getName().value());
+        Assertions.assertEquals("user0-user1", roomsFromDb.get(1).getName().value());
+        Assertions.assertEquals("user0-user2", roomsFromDb.get(2).getName().value());
+
+        // NOTE: these assertions are needed to check whether the last messages returned is correct.
+        //  For these to work the three previous assertions must be fulfilled.
+        //  Actually the order of the rooms is not relevant.
+        Assertions.assertEquals("1 Hello general from user0", roomsFromDb.get(0).getMessages().get(0).getContent());
+        Assertions.assertEquals("5 Visible only to user0 and user1", roomsFromDb.get(1).getMessages().get(0).getContent());
+        Assertions.assertEquals("4 Visible only to user0 and user2", roomsFromDb.get(2).getMessages().get(0).getContent());
+    }
+
+    @Test
     void whenUser0QueriesForMessages_canSeeMessages_count4() {
         List<ChatMessageEntity> messagesFromDb = new ArrayList<>();
         messagesFromDb.addAll(chatMessageRepository.getByRoomName(RoomName.of("general"), loggedInUser.getName())); // Gets from room general
