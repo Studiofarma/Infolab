@@ -1,7 +1,9 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, unsafeCSS } from "lit";
 
 import { CookieService } from "../../../services/cookie-service";
 import { UsersService } from "../../../services/users-service";
+
+import crossImage from "../../../assets/images/input-search-delete.png";
 
 import "../../../components/button-icon";
 import { IconNames } from "../../../enums/icon-names";
@@ -157,6 +159,16 @@ export class SearchChats extends LitElement {
 
 		.dropdown > div:hover {
 			background: lightgray;
+		}
+		.search-input::-webkit-search-cancel-button {
+			-webkit-appearance: none;
+			height: 13px;
+			width: 13px;
+
+			background-image: url(${unsafeCSS(crossImage)});
+			background-size: cover;
+
+			cursor: pointer;
 		}
 	`;
 
