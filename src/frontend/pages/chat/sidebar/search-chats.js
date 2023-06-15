@@ -172,72 +172,29 @@ export class SearchChats extends LitElement {
 				<div class="container-input">
 					<input
 						class="search-input"
-						type="text"
+						type="search"
 						placeholder="Cerca o inizia una nuova chat"
-						@input=${this.setFilter}
-						@click=${this.setFilter}
+						@input="${this.searchChat}"
 					/>
 					<il-button-icon
 						class="search-icon"
 						content=${IconNames.magnify}
 					></il-button-icon>
-
-					<div class="dropdown">${this.showTips()}</div>
 				</div>
 			</div>
 		`;
 	}
 
-	setFilter(event) {
-		this.query = event.target.value.toLowerCase();
-		this.pharmaciesList = [];
-		let temp = [];
-		let cookie = CookieService.getCookie();
-
-		if (this.query.length >= 1) {
-			UsersService.GetUsers(this.query, cookie.username, cookie.password).then(
-				(element) => {
-					element["data"].forEach((element) => {
-						if (element.name != cookie.username) {
-							temp.push(element);
-						}
-					});
-					this.pharmaciesList = temp;
-
-					this.populateConversationListWithUsers(this.pharmaciesList);
-				}
-			);
-		} else {
-			this.populateConversationListWithUsers([]);
-		}
-	}
-
-	populateConversationListWithUsers(pharmacyNames) {
-		let conversationList = document
-			.querySelector("body > il-app")
-			.shadowRoot.querySelector("il-chat")
-			.shadowRoot.querySelector("main > section > il-sidebar")
-			.shadowRoot.querySelector("div > il-conversation-list");
-
-		conversationList.setListSearched(pharmacyNames, this.query);
-	}
-
-	showTips() {
-		if (this.pharmaciesList.length > 0) {
-			return this.pharmaciesList.map(
-				(pharmacy) => html`
-					<div
-						@click=${() => {
-							this.loadChat(pharmacy.name);
-						}}
-					>
-						<p>${pharmacy.name}</p>
-					</div>
-				`
-			);
-		} else {
-			return html`<div><p class="nofound">Nessun risultato trovato</p></div>`;
-		}
+	searchChat(event) {
+		this.dispatchEvent(
+			new CustomEvent("search-chat", {
+				detail: {
+					query: event.target.value,
+				},
+				bubbles: true,
+				composed: true,
+			})
+		);
 	}
 
 	loadChat(selectedChatName) {

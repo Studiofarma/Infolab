@@ -93,6 +93,7 @@ export class Sidebar extends LitElement {
 					@load-chat=${(e) => {
 						this.loadChat(e);
 					}}
+					@search-chat="${this.searchChat}"
 				></il-search>
 				<il-conversation-list class="conversation-list"></il-conversation-list>
 				<div class="profile-box">
@@ -117,6 +118,18 @@ export class Sidebar extends LitElement {
 		this.shadowRoot
 			.querySelector("il-conversation-list")
 			.selectChat(e.detail.selectedChatName);
+	}
+
+	searchChat(event) {
+		let query = event.detail.query;
+
+		let il_conversation_list = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > il-sidebar")
+			.shadowRoot.querySelector("div > il-conversation-list");
+
+		il_conversation_list.searchChat(query);
 	}
 }
 

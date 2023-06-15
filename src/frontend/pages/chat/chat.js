@@ -450,7 +450,7 @@ export class Chat extends LitElement {
 
 	onMessage(payload) {
 		var message = JSON.parse(payload.body);
-
+		
 		if (message.content) {
 			if (this.activeChatName == message.roomName) {
 				this.messages.push(message);
@@ -461,7 +461,7 @@ export class Chat extends LitElement {
 			let sidebar = this.renderRoot.querySelector(
 				"main > section > il-sidebar"
 			);
-			sidebar.shadowRoot.querySelector("div > il-conversation-list").setList();
+			sidebar.shadowRoot.querySelector("div > il-conversation-list").setList(message);
 		}
 	}
 
