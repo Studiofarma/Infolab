@@ -75,7 +75,7 @@ class ConversationList extends LitElement {
 		}
 
 		.conversation-list-scrollable {
-			height: 800px;
+			height: calc(100vh - 135px);
 			overflow: auto;
 		}
 	`;
@@ -91,10 +91,6 @@ class ConversationList extends LitElement {
 		this.onLoad();
 
 		this.activeChatName = "general";
-
-		this.addEventListener("search-chat", (e) => {
-			console.log(e);
-		});
 	}
 
 	render() {
@@ -117,13 +113,15 @@ class ConversationList extends LitElement {
 	}
 
 	searchChat(query) {
-		// this.conversationList = this.tmpConversationList.filter((user) =>
-		// 	this.chatNameFormatter(user.roomName).includes(query)
-		// );
-		// this.conversationListSearched = this.tmpConversationListSearched.filter(
-		// 	(user) => this.chatNameFormatter(user.roomName).includes(query)
-		// );
-		// this.update();
+		this.query = query;
+		this.update();
+	}
+
+	scrollToTop() {
+		let element = this.renderRoot.querySelector(
+			"div.conversation-list-scrollable"
+		);
+		element.scrollTo({ top: 0 });
 	}
 
 	async onLoad() {
@@ -181,9 +179,9 @@ class ConversationList extends LitElement {
 			let conversation = this.convertMessageToConversation(message);
 
 			this.conversationList[conversationIndex] = conversation;
+			this.conversationList.sort(this.compareTimestamp);
 		}
 
-		this.conversationList.sort(this.compareTimestamp);
 		this.update();
 	}
 
@@ -235,7 +233,7 @@ class ConversationList extends LitElement {
 	}
 
 	renderConversationList() {
-		let conversationList = [...this.conversationList]; 
+		let conversationList = this.searchConversation([...this.conversationList]);
 
 		return conversationList.map((pharmacy, index) => {
 			let conversation = new ConversationDto(pharmacy);
@@ -266,26 +264,43 @@ class ConversationList extends LitElement {
 		});
 	}
 
-	renderConversationSearched() {
-		let cookie = CookieService.getCookie();
+	searchConversation(list) {
+		if (this.query) {
+			list = list.filter((conversation) =>
+				conversation.roomName.includes(this.query)
+			);
+		}
 
-		return this.conversationListSearched.map((pharmacy) => {
+		return list;
+	}
+
+	renderConversationSearched() {
+		let conversationListSearched = this.searchConversation([
+			...this.conversationListSearched,
+		]);
+
+		return conversationListSearched.map((pharmacy) => {
 			let conversation = new ConversationDto(pharmacy);
 			return html`<il-conversation
 				class=${"conversation new-conversation " +
 				(conversation.roomName == this.activeChatName ? "active" : "")}
 				.chat=${conversation}
 				@click=${() => {
-					this.updateListOnConversationClick(conversation);
 					this.activeChatName = conversation.roomName;
 					this.updateMessages(conversation.roomName);
-					this.setList(null);
-
 					this.cleanSearchInput();
 					this.update();
 				}}
 			></il-conversation>`;
 		});
+	}
+
+	onMessageInNewChat(conversation, message) {
+		if (this.updateListOnConversationClick(conversation)) {
+			this.scrollToTop();
+		}
+		this.setList(message);
+		this.update();
 	}
 
 	updateListOnConversationClick(conversation) {
@@ -295,11 +310,14 @@ class ConversationList extends LitElement {
 			(conversation) => conversation.roomName == roomFormatted.roomName
 		);
 
+		if (conversationIndex == -1) return false;
+
 		this.moveElementToList(
 			this.conversationList,
 			this.conversationListSearched,
 			conversationIndex
 		);
+		return true;
 	}
 
 	moveElementToList(targetList, sourceList, elementIndex) {

@@ -395,8 +395,10 @@ export class Chat extends LitElement {
 		this.activeChatName = e.detail.roomName;
 	}
 
-	updated() {
-		this.scrollToBottom();
+	async updated() {
+		await setTimeout(() => {
+			this.scrollToBottom();
+		}, 20);
 	}
 
 	createSocket() {
@@ -429,7 +431,7 @@ export class Chat extends LitElement {
 
 	scrollToBottom() {
 		let element = this.renderRoot.querySelector("ul.message-box");
-		element.scrollBy({ top: element.scrollHeight - element.offsetHeight });
+		element.scrollTo({ top: element.scrollHeight });
 	}
 
 	onConnect() {
@@ -461,7 +463,6 @@ export class Chat extends LitElement {
 				this.messages.push(message);
 				this.update();
 				this.updated();
-				this.scrollToBottom();
 			}
 			let sidebar = this.renderRoot.querySelector(
 				"main > section > il-sidebar"
@@ -469,6 +470,15 @@ export class Chat extends LitElement {
 			sidebar.shadowRoot
 				.querySelector("div > il-conversation-list")
 				.setList(message);
+
+			let conversationListElement = document
+				.querySelector("body > il-app")
+				.shadowRoot.querySelector("il-chat")
+				.shadowRoot.querySelector("main > section > il-sidebar")
+				.shadowRoot.querySelector("div > il-conversation-list");
+
+			let room = conversationListElement.convertUserToRoom(message.roomName);
+			conversationListElement.onMessageInNewChat(room, message);
 		}
 	}
 
@@ -505,6 +515,7 @@ export class Chat extends LitElement {
 		if (activeChatName.includes("-")) {
 			activeChatName = activeChatName.split("-");
 			activeChatName.splice(activeChatName.indexOf(cookie.username), 1);
+			return activeChatName[0];
 		}
 		return activeChatName;
 	}

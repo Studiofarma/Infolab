@@ -78,6 +78,7 @@ export class Sidebar extends LitElement {
 
 		.conversation-list {
 			flex: 1 0 auto;
+			margin-right: 5px;
 		}
 	`;
 
