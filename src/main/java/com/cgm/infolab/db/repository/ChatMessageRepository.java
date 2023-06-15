@@ -18,29 +18,20 @@ import java.util.*;
 
 @Component
 public class ChatMessageRepository {
-    private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
+    private final QueryHelper queryHelper;
 
-    private final String MESSAGES_BY_ROOM_QUERY =
-            "SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content    " +
-                    "FROM infolab.rooms r " +
-                    "LEFT JOIN infolab.chatmessages m " +
-                    "ON r.id = m.recipient_room_id " +
-                    "LEFT JOIN infolab.rooms_subscriptions s " +
-                    "ON r.id = s.room_id " +
-                    "LEFT JOIN infolab.users u_sub " +
-                    "ON u_sub.id = s.user_id " +
-                    "LEFT JOIN infolab.users u_mex " +
-                    "ON u_mex.id = m.sender_id " +
-                    "WHERE (u_sub.username = ? OR r.visibility = 'PUBLIC') " +
-                    "AND r.roomname = ? " +
-                    "ORDER BY m.sent_at DESC ";
+    private final String SELECT_QUERY = "SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content";
+    private final String JOIN_QUERY = "LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id";
+    private final String WHERE_QUERY = "r.roomname = :roomName";
+    private final String OTHER_ORDER_BY_QUERY = "ORDER BY m.sent_at DESC";
+    private final String OTHER_ORDER_BY_LIMIT_QUERY = OTHER_ORDER_BY_QUERY + " LIMIT :limit";
 
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
-    public ChatMessageRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
+    public ChatMessageRepository(DataSource dataSource, QueryHelper queryHelper) {
         this.dataSource = dataSource;
+        this.queryHelper = queryHelper;
     }
 
     /**
@@ -68,11 +59,10 @@ public class ChatMessageRepository {
      * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
      */
     public List<ChatMessageEntity> getByRoomName(RoomName roomName, Username username) {
-        return queryMessages(
-                MESSAGES_BY_ROOM_QUERY,
-                username.value(),
-                roomName.value()
-        );
+        Map<String, Object> map = new HashMap<>();
+        map.put("roomName", roomName.value());
+
+        return queryMessages2(SELECT_QUERY, JOIN_QUERY, WHERE_QUERY, OTHER_ORDER_BY_QUERY, username, map);
     }
 
     public List<ChatMessageEntity> getByRoomNameNumberOfMessages(RoomName roomName, int numberOfMessages, Username username) {
@@ -81,31 +71,26 @@ public class ChatMessageRepository {
             return getByRoomName(roomName, username);
         }
 
-        return queryMessages2(
-            String.format("%s LIMIT ?", MESSAGES_BY_ROOM_QUERY),
-                username,
-                roomName.value(),
-                numberOfMessages
-        );
+        Map<String, Object> map = new HashMap<>();
+        map.put("roomName", roomName.value());
+        map.put("limit", numberOfMessages);
+
+        return queryMessages2(SELECT_QUERY, JOIN_QUERY, WHERE_QUERY, OTHER_ORDER_BY_LIMIT_QUERY, username, map);
     }
 
-    private List<ChatMessageEntity> queryMessages(String query, Object... queryParams) {
+    private List<ChatMessageEntity> queryMessages2(String select, String join, String where, String other, Username username, Map<String, ?> queryParams) {
         try {
-            return jdbcTemplate.query(query, this::mapToEntityOnlyForThisClassTemp, queryParams);
-        } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
-        }
-    }
-
-    private List<ChatMessageEntity> queryMessages2(String query, Username username, Object... queryParams) {
-        try {
-            QueryHelper queryHelper = new QueryHelper(jdbcTemplate);
-            return queryHelper
-                .forUSer(username)
-                .query(
-                    query,
-                    this::mapToEntityOnlyForThisClassTemp,
-                    queryParams);
+            log.info(queryHelper.forUSer(username)
+                    .query(select)
+                    .join(join)
+                    .where(where)
+                    .other(other).query());
+            return queryHelper.forUSer(username)
+                    .query(select)
+                    .join(join)
+                    .where(where)
+                    .other(other)
+                    .execute(this::mapToEntityOnlyForThisClassTemp, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
@@ -113,8 +98,17 @@ public class ChatMessageRepository {
 
     public ChatMessageEntity mapToEntityOnlyForThisClassTemp(ResultSet rs, int rowNum) throws SQLException {
 
+        String username = rs.getString("username");
+        if (username == null) {
+            throw new EmptyResultDataAccessException(
+                    "This exception handles the case where there are no messages in a room." +
+                        " When trying to get them null will be returned instead of empty response. This is the empty response that will be handled.",
+                    0
+            );
+        }
+
         UserEntity user = UserEntity.of(rs.getLong("sender_id"),
-                Username.of(rs.getString("username")));
+                Username.of(username));
 
         RoomEntity room = RoomEntity.of(
                 rs.getLong("room_id"),
