@@ -3,13 +3,14 @@ package com.cgm.infolab.db.repository;
 import com.cgm.infolab.db.model.Username;
 
 public record UserQueryResult(
-    Username username,
     String query,
     String joinKey,
-    String conditions
+    String conditions,
+    String join,
+    String other
 ){
-    public UserQueryResult(Username username, String query) {
-        this(username, query, "", null);
+    public UserQueryResult(String query) {
+        this(query, "", null, "", "");
     }
 
     public UserQueryResult from(String table){
@@ -23,14 +24,23 @@ public record UserQueryResult(
             : foreignKeyColumn;
 
         return new UserQueryResult(
-            username,
             newQuery,
-            "on r.%s_id = x.id ".formatted(foreignKey),
-            conditions);
+            "on r.id = x.%s_id ".formatted(foreignKey),
+            conditions,
+            join,
+            other);
     }
 
     public UserQueryResult where(String conditions) {
-        return new UserQueryResult(username, query, joinKey, conditions);
+        return new UserQueryResult(query, joinKey, conditions, join, other);
+    }
+
+    public UserQueryResult join(String join) {
+        return new UserQueryResult(query, joinKey, conditions, join + " ", other);
+    }
+
+    public UserQueryResult other(String other) {
+        return new UserQueryResult(query, joinKey, conditions, join, " " + other);
     }
 
     @Override
@@ -38,10 +48,16 @@ public record UserQueryResult(
         return query + "infolab.rooms r %s".formatted(joinKey) +
             "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
             "left join infolab.users u on u.id = s.user_id " +
-            String.format("where (u.username = '%s' or r.visibility='PUBLIC')", username.value()) +
+            (join == null
+                ? ""
+                : join) +
+            "where (u.username = ? or r.visibility='PUBLIC')" +
             (conditions == null
                 ? ""
-                : " and (%s)".formatted(conditions))
+                : " and (%s)".formatted(conditions)) +
+            (other == null
+                ? ""
+                : other)
             ;
     }
 }

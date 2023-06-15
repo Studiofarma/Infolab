@@ -2,7 +2,9 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.Username;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
+@Component
 public class QueryHelper {
     private final JdbcTemplate jdbcTemplate;
 

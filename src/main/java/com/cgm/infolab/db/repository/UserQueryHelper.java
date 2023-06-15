@@ -21,6 +21,6 @@ public class UserQueryHelper {
 
     public UserQueryResult query(String initialQuery) {
         String query = "%s from ".formatted(initialQuery);
-        return new UserQueryResult(username, query);
+        return new UserQueryResult(query);
     }
 }
