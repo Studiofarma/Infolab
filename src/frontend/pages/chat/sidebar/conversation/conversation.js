@@ -82,33 +82,33 @@ class Conversation extends LitElement {
 			<div class="chat-box">
 				<il-avatar
 					.avatarLink=${this.chat.avatarLink}
-					.name=${this.chat.name}
+					.name=${this.chat.roomName}
 					.id=${this.chat.id}
 				></il-avatar>
 				<div class="name-box">
-					<p class="chat-name">${this.chatNameFormatter(this.chat.name)}</p>
+					<p class="chat-name">${this.chatNameFormatter(this.chat.roomName)}</p>
 					<p class="last-message">
 						${this.lastMessageTextFormatter(
 							this.chat.lastMessage.sender,
-							this.chat.lastMessage.preview
+							this.chat.lastMessage.content
 						)}
 					</p>
 				</div>
 				<div class="date-box">
 					<p
 						class="last-message-timestamp last-message-timestamp ${this.chat
-							.unread > 0
+							.unreadMessages > 0
 							? "unread"
 							: ""}"
 					>
 						${this.compareMessageDate(this.chat.lastMessage.timestamp)}
 					</p>
 					<p class="unread-counter">
-						${this.chat.unread > 0
+						${this.chat.unreadMessages > 0
 							? html`
 									<il-icon
 										style="display:${this.notificationOpacity};"
-										name="${this.getUnreadIconName(this.chat.unread)}"
+										name="${this.getUnreadIconName(this.chat.unreadMessages)}"
 									></il-icon>
 							  `
 							: html``}
@@ -168,7 +168,7 @@ class Conversation extends LitElement {
 		let cookie = CookieService.getCookie();
 		if (chatName.includes("-")) {
 			chatName = chatName.split("-");
-			chatName.splice(chatName.indexOf(cookie.username), 1);
+			chatName.splice(chatName.indexOf(cookie.username), 1)[0];
 		}
 		return chatName;
 	}

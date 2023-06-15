@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+
 import { resolveMarkdown } from "lit-markdown";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
@@ -375,6 +376,10 @@ export class Chat extends LitElement {
 			"general"
 		).then((messages) => {
 			this.messages = messages.data.reverse();
+
+			for (var i = 0; i < this.messages.length; i++) {
+				this.messages[i].index = i;
+			}
 		});
 	}
 
@@ -450,7 +455,7 @@ export class Chat extends LitElement {
 
 	onMessage(payload) {
 		var message = JSON.parse(payload.body);
-		
+
 		if (message.content) {
 			if (this.activeChatName == message.roomName) {
 				this.messages.push(message);
@@ -461,7 +466,9 @@ export class Chat extends LitElement {
 			let sidebar = this.renderRoot.querySelector(
 				"main > section > il-sidebar"
 			);
-			sidebar.shadowRoot.querySelector("div > il-conversation-list").setList(message);
+			sidebar.shadowRoot
+				.querySelector("div > il-conversation-list")
+				.setList(message);
 		}
 	}
 

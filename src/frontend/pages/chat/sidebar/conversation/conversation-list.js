@@ -126,9 +126,12 @@ class ConversationList extends LitElement {
 		// this.update();
 	}
 
-	onLoad() {
-		this.getAllRooms();
-		this.getAllUsers();
+	async onLoad() {
+		await this.getAllRooms().then(async () => {
+			await this.getAllUsers().then(() => {
+				this.update();
+			});
+		});
 	}
 
 	async getAllRooms() {
@@ -145,7 +148,6 @@ class ConversationList extends LitElement {
 			});
 
 			this.conversationList.sort(this.compareTimestamp);
-			this.update();
 		} catch (error) {
 			console.error(error);
 		}
@@ -165,8 +167,6 @@ class ConversationList extends LitElement {
 					}
 				});
 			});
-
-			this.update();
 		} catch (error) {
 			console.error(error);
 		}
@@ -178,23 +178,26 @@ class ConversationList extends LitElement {
 				(conversation) => conversation.roomName == message.roomName
 			);
 
-			let roomObject = {
-				avatarLink: null,
-				lastMessage: {
-					preview: message.content,
-					timestamp: message.timestamp,
-					sender: message.sender,
-				},
-				roomName: message.roomName,
-				unreadMessages: 0,
-			};
+			let conversation = this.convertMessageToConversation(message);
 
-			this.conversationList[conversationIndex] = roomObject;
+			this.conversationList[conversationIndex] = conversation;
 		}
 
 		this.conversationList.sort(this.compareTimestamp);
-		console.log("current", this.conversationList);
 		this.update();
+	}
+
+	convertMessageToConversation(message) {
+		return {
+			roomName: message.roomName,
+			avatarLink: null,
+			lastMessage: {
+				content: message.content,
+				timestamp: message.timestamp,
+				sender: message.sender,
+			},
+			unreadMessages: 0,
+		};
 	}
 
 	setUsersList(user) {
@@ -207,18 +210,22 @@ class ConversationList extends LitElement {
 		);
 
 		if (!isPresent) {
-			const roomFormat = {
-				avatarLink: null,
-				roomName: roomName,
-				unreadMessages: 0,
-				lastMessage: {
-					preview: null,
-					sender: null,
-					timestamp: null,
-				},
-			};
-			this.conversationListSearched.push(roomFormat);
+			const roomFormatted = this.convertUserToRoom(roomName);
+			this.conversationListSearched.push(roomFormatted);
 		}
+	}
+
+	convertUserToRoom(roomName) {
+		return {
+			roomName: roomName,
+			avatarLink: null,
+			unreadMessages: 0,
+			lastMessage: {
+				preview: null,
+				sender: null,
+				timestamp: null,
+			},
+		};
 	}
 
 	compareTimestamp(a, b) {
@@ -228,27 +235,33 @@ class ConversationList extends LitElement {
 	}
 
 	renderConversationList() {
-		return this.conversationList.map((pharmacy, index) => {
+		let conversationList = [...this.conversationList]; 
+
+		return conversationList.map((pharmacy, index) => {
 			let conversation = new ConversationDto(pharmacy);
 			if (
-				conversation.lastMessage.preview ||
-				conversation.name == this.activeChatName
+				conversation.lastMessage.content ||
+				conversation.roomName == this.activeChatName
 			) {
 				return html`<il-conversation
 					class=${"conversation " +
-					(conversation.name == this.activeChatName ? "active" : "")}
+					(conversation.roomName == this.activeChatName ? "active" : "")}
 					.chat=${conversation}
 					@click=${() => {
-						this.activeChatName = conversation.name;
-						this.updateMessages(conversation.name);
+						this.activeChatName = conversation.roomName;
+						this.updateMessages(conversation.roomName);
 
 						this.setList(null);
 						this.cleanSearchInput();
 					}}
 				></il-conversation>`;
 			} else {
-				let delChat = this.conversationList.splice(index, 1)[0];
+				let conversationIndex = this.conversationList.findIndex(
+					(obj) => obj.roomName == conversation.roomName
+				);
+				let delChat = this.conversationList.splice(conversationIndex, 1)[0];
 				this.conversationListSearched.unshift(delChat);
+				return null;
 			}
 		});
 	}
@@ -260,38 +273,38 @@ class ConversationList extends LitElement {
 			let conversation = new ConversationDto(pharmacy);
 			return html`<il-conversation
 				class=${"conversation new-conversation " +
-				(conversation.name == this.activeChatName ? "active" : "")}
+				(conversation.roomName == this.activeChatName ? "active" : "")}
 				.chat=${conversation}
 				@click=${() => {
-					// this.updateListOnConversationClick(conversation);
+					this.updateListOnConversationClick(conversation);
+					this.activeChatName = conversation.roomName;
+					this.updateMessages(conversation.roomName);
+					this.setList(null);
+
 					this.cleanSearchInput();
+					this.update();
 				}}
 			></il-conversation>`;
 		});
 	}
 
 	updateListOnConversationClick(conversation) {
-		const chatFormat = {
-			avatarLink: null,
-			roomName: conversation.name,
-			unreadMessages: 0,
-			lastMessage: {
-				preview: null,
-				sender: null,
-				timestamp: null,
-			},
-		};
+		const roomFormatted = new ConversationDto(conversation);
 
-		this.conversationList.unshift(chatFormat);
-
-		let posSearched = this.conversationListSearched.findIndex(
-			(obj) => obj.roomName == conversation.name
+		let conversationIndex = this.conversationListSearched.findIndex(
+			(conversation) => conversation.roomName == roomFormatted.roomName
 		);
 
-		this.conversationListSearched.splice(posSearched, 1);
+		this.moveElementToList(
+			this.conversationList,
+			this.conversationListSearched,
+			conversationIndex
+		);
+	}
 
-		this.activeChatName = conversation.name;
-		this.updateMessages(conversation.name);
+	moveElementToList(targetList, sourceList, elementIndex) {
+		const elementToMove = sourceList.splice(elementIndex, 1)[0];
+		targetList.unshift(elementToMove);
 	}
 
 	updateMessages(roomName) {
@@ -349,7 +362,7 @@ class ConversationList extends LitElement {
 			roomName: selectedChatName,
 			unreadMessages: 0,
 			lastMessage: {
-				preview: null,
+				content: null,
 				sender: null,
 				timestamp: null,
 			},
