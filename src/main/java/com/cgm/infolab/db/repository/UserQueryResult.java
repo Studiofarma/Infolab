@@ -1,16 +1,23 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.Username;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+import java.util.List;
 
 public record UserQueryResult(
+    JdbcTemplate jdbcTemplate,
+    Username username,
     String query,
     String joinKey,
     String conditions,
     String join,
     String other
 ){
-    public UserQueryResult(String query) {
-        this(query, "", null, "", "");
+    public UserQueryResult(JdbcTemplate jdbcTemplate, Username username, String query) {
+        this(jdbcTemplate, username, query, "", null, "", "");
     }
 
     public UserQueryResult from(String table){
@@ -24,6 +31,8 @@ public record UserQueryResult(
             : foreignKeyColumn;
 
         return new UserQueryResult(
+            jdbcTemplate,
+            username,
             newQuery,
             "on r.id = x.%s_id ".formatted(foreignKey),
             conditions,
@@ -32,15 +41,15 @@ public record UserQueryResult(
     }
 
     public UserQueryResult where(String conditions) {
-        return new UserQueryResult(query, joinKey, conditions, join, other);
+        return new UserQueryResult(jdbcTemplate, username, query, joinKey, conditions, join, other);
     }
 
     public UserQueryResult join(String join) {
-        return new UserQueryResult(query, joinKey, conditions, join + " ", other);
+        return new UserQueryResult(jdbcTemplate, username, query, joinKey, conditions, join + " ", other);
     }
 
     public UserQueryResult other(String other) {
-        return new UserQueryResult(query, joinKey, conditions, join, " " + other);
+        return new UserQueryResult(jdbcTemplate, username, query, joinKey, conditions, join, " " + other);
     }
 
     @Override
@@ -59,5 +68,9 @@ public record UserQueryResult(
                 ? ""
                 : other)
             ;
+    }
+
+    public <T> List<T> execute(RowMapper<T> rowMapper, Object ...queryParams) throws EmptyResultDataAccessException {
+        return jdbcTemplate.query(this.query(), rowMapper, queryParams);
     }
 }
