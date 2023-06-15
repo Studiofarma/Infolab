@@ -4,11 +4,14 @@ import com.cgm.infolab.db.model.Username;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 public record UserQueryResult(
-    JdbcTemplate jdbcTemplate,
+    NamedParameterJdbcTemplate namedJdbcTemplate,
     Username username,
     String query,
     String joinKey,
@@ -16,8 +19,8 @@ public record UserQueryResult(
     String join,
     String other
 ){
-    public UserQueryResult(JdbcTemplate jdbcTemplate, Username username, String query) {
-        this(jdbcTemplate, username, query, "", null, "", "");
+    public UserQueryResult(NamedParameterJdbcTemplate namedJdbcTemplate, Username username, String query) {
+        this(namedJdbcTemplate, username, query, "", null, "", "");
     }
 
     public UserQueryResult from(String table){
@@ -31,7 +34,7 @@ public record UserQueryResult(
             : foreignKeyColumn;
 
         return new UserQueryResult(
-            jdbcTemplate,
+            namedJdbcTemplate,
             username,
             newQuery,
             "on r.id = x.%s_id ".formatted(foreignKey),
@@ -41,15 +44,15 @@ public record UserQueryResult(
     }
 
     public UserQueryResult where(String conditions) {
-        return new UserQueryResult(jdbcTemplate, username, query, joinKey, conditions, join, other);
+        return new UserQueryResult(namedJdbcTemplate, username, query, joinKey, conditions, join, other);
     }
 
     public UserQueryResult join(String join) {
-        return new UserQueryResult(jdbcTemplate, username, query, joinKey, conditions, join + " ", other);
+        return new UserQueryResult(namedJdbcTemplate, username, query, joinKey, conditions, join + " ", other);
     }
 
     public UserQueryResult other(String other) {
-        return new UserQueryResult(jdbcTemplate, username, query, joinKey, conditions, join, " " + other);
+        return new UserQueryResult(namedJdbcTemplate, username, query, joinKey, conditions, join, " " + other);
     }
 
     @Override
@@ -60,7 +63,7 @@ public record UserQueryResult(
             (join == null
                 ? ""
                 : join) +
-            "where (u.username = ? or r.visibility='PUBLIC')" +
+            "where (u.username = :accessControlUsername or r.visibility='PUBLIC')" +
             (conditions == null
                 ? ""
                 : " and (%s)".formatted(conditions)) +
@@ -70,7 +73,21 @@ public record UserQueryResult(
             ;
     }
 
-    public <T> List<T> execute(RowMapper<T> rowMapper, Object ...queryParams) throws EmptyResultDataAccessException {
-        return jdbcTemplate.query(this.query(), rowMapper, queryParams);
+    public <T> List<T> execute(RowMapper<T> rowMapper, Map<String, ?> queryParams) throws InvalidUserKeyException, EmptyResultDataAccessException {
+
+        if (queryParams.containsKey("accessControlUsername"))
+            throw new InvalidUserKeyException();
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("accessControlUsername", username.value());
+        params.addValues(queryParams);
+
+        return namedJdbcTemplate.query(this.query(), params, rowMapper);
+    }
+
+    public class InvalidUserKeyException extends RuntimeException {
+        private InvalidUserKeyException() {
+            super("The key accessControlUsername cannot be used for queryParams");
+        }
     }
 }

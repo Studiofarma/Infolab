@@ -3,15 +3,16 @@ package com.cgm.infolab.db.repository;
 import com.cgm.infolab.db.model.Username;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.List;
 
 public class UserQueryHelper {
-    private final JdbcTemplate jdbcTemplate;
+    private final NamedParameterJdbcTemplate namedJdbcTemplate;
     private final Username username;
 
-    public UserQueryHelper(JdbcTemplate jdbcTemplate, Username username) {
-        this.jdbcTemplate = jdbcTemplate;
+    public UserQueryHelper(NamedParameterJdbcTemplate namedJdbcTemplate, Username username) {
+        this.namedJdbcTemplate = namedJdbcTemplate;
         this.username = username;
     }
 
@@ -21,6 +22,6 @@ public class UserQueryHelper {
 
     public UserQueryResult query(String initialQuery) {
         String query = "%s from ".formatted(initialQuery);
-        return new UserQueryResult(jdbcTemplate, username, query);
+        return new UserQueryResult(namedJdbcTemplate, username, query);
     }
 }
