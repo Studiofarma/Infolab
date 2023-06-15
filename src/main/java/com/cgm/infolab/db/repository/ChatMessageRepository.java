@@ -1,11 +1,11 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 

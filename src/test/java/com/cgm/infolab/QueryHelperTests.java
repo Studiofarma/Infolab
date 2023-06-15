@@ -1,16 +1,14 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
-import com.cgm.infolab.db.repository.QueryHelper;
-import com.cgm.infolab.db.repository.UserQueryResult;
+import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
+import com.cgm.infolab.db.repository.queryhelper.UserQueryResult;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class QueryHelperTests {
