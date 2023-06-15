@@ -10,11 +10,11 @@ import com.cgm.infolab.model.LastMessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +27,7 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
 
     private final RoomSubscriptionRepository roomSubscriptionRepository;
+    private final RoomService roomService;
 
     private final Logger log = LoggerFactory.getLogger(ChatService.class);
 
@@ -34,11 +35,13 @@ public class ChatService {
     public ChatService(UserRepository userRepository,
                        RoomRepository roomRepository,
                        ChatMessageRepository chatMessageRepository,
-                       RoomSubscriptionRepository roomSubscriptionRepository){
+                       RoomSubscriptionRepository roomSubscriptionRepository,
+                       @Lazy RoomService roomService){
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
         this.roomSubscriptionRepository = roomSubscriptionRepository;
+        this.roomService = roomService;
     }
     public ChatMessageEntity saveMessageInDbPublicRooms(ChatMessageDto message, Username username, RoomName roomName){
 
@@ -93,13 +96,16 @@ public class ChatService {
 
             String[] users = roomName.value().split("-");
 
-            Stream<UserEntity> usernames = Arrays.stream(users).map((user) ->
-                    userRepository.getByUsername(Username.of(user)).orElseThrow(() ->
-                            new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()))
-                    ));
+//            Stream<UserEntity> usernames = Arrays.stream(users).map((user) ->
+//                    userRepository.getByUsername(Username.of(user)).orElseThrow(() ->
+//                            new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()))
+//                    ));
+
+            roomService.createPrivateRoomAndSubscribeUsers(Username.of(users[0]), Username.of(users[1]));
 
             try {
-                return getRoomEntity(roomName, usernames);
+//                return getRoomEntity(roomName, usernames);
+                return roomRepository.getByRoomName(roomName, username).orElseThrow();
             } catch (Exception e) {
                 log.error("Room già esistente");
             }
@@ -108,18 +114,18 @@ public class ChatService {
         });
     }
 
-    private RoomEntity getRoomEntity(RoomName roomName, Stream<UserEntity> usernames) {
-        long newRoomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
-        RoomEntity newRoom = RoomEntity.of(newRoomId, roomName, VisibilityEnum.PRIVATE);
-
-        usernames.forEach( (userName) -> {
-            RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
-            roomSubscription.setRoomId(newRoom.getId());
-            roomSubscription.setUserId(userName.getId());
-            roomSubscriptionRepository.add(roomSubscription);
-        });
-        return newRoom;
-    }
+//    private RoomEntity getRoomEntity(RoomName roomName, Stream<UserEntity> usernames) {
+//        long newRoomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
+//        RoomEntity newRoom = RoomEntity.of(newRoomId, roomName, VisibilityEnum.PRIVATE);
+//
+//        usernames.forEach( (userName) -> {
+//            RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
+//            roomSubscription.setRoomId(newRoom.getId());
+//            roomSubscription.setUserId(userName.getId());
+//            roomSubscriptionRepository.add(roomSubscription);
+//        });
+//        return newRoom;
+//    }
 
     public ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
         return new ChatMessageDto(messageEntity.getContent(),
