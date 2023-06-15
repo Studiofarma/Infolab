@@ -1,4 +1,6 @@
 import { LitElement, html, css } from "lit";
+import { repeat } from "lit/directives/repeat.js";
+
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
@@ -173,20 +175,22 @@ export class Chat extends LitElement {
               roomName=${this.activeChatNameFormatter(this.activeChatName)}
             ></il-chat-header>
 
-            <ul
-              @scroll="${this.manageScrollButtonVisility}"
-              class="messages-container"
-            >
-              ${this.messages.map(
-                (message, index) =>
-                  html` <il-message
-                    class="message"
-                    .messages=${this.messages}
-                    .message=${message}
-                    .index=${index}
-                  ></il-message>`
-              )}
-            </ul>
+						<ul
+							@scroll="${this.manageScrollButtonVisility}"
+							class="messages-container"
+						>
+							${repeat(
+								this.messages,
+								(message) => message.index,
+								(message, index) =>
+									html` <il-message
+										class="message"
+										.messages=${this.messages}
+										.message=${message}
+										.index=${index}
+									></il-message>`
+							)}
+						</ul>
 
             <il-forward-list></il-forward-list>
 
@@ -196,6 +200,15 @@ export class Chat extends LitElement {
               content="${IconNames.scrollDownArrow}"
             ></il-button-icon>
 
+						<il-input-controls
+							class="input-controls"
+							@send-message="${this.sendMessage}"
+						></il-input-controls>
+					</div>
+				</section>
+			</main>
+		`;
+	}
             <il-input-controls
               class="input-controls"
               @send-message="${this.sendMessage}"
@@ -228,14 +241,18 @@ export class Chat extends LitElement {
     });
   }
 
-  async updateMessages(e) {
-    MessagesService.getMessagesById(
-      this.login.username,
-      this.login.password,
-      e.detail.roomName
-    ).then((messages) => {
-      this.messages = messages.data.reverse();
-    });
+	async updateMessages(e) {
+		MessagesService.getMessagesById(
+			this.login.username,
+			this.login.password,
+			e.detail.roomName
+		).then((messages) => {
+			this.messages = messages.data.reverse();
+
+			for (var i = 0; i < this.messages.length; i++) {
+				this.messages[i].index = i;
+			}
+		});
 
     this.activeChatName = e.detail.roomName;
   }
