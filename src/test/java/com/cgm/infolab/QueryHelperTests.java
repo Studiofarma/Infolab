@@ -204,7 +204,39 @@ public class QueryHelperTests {
                     .join("left join _another_table x on x._foreign_key_id = r.id")
                     .where("cool = true or t=?")
                     .other("order by foo desc limit 69")
-                    .execute((rs, rowNum) -> null, map);
+                    .executeForList((rs, rowNum) -> null, map);
         });
+    }
+
+    @Test
+    void queryMethodInQueryHelper_queryAndFromAndJoinAndWhereAndOther_buildsTheCorrectQuery() {
+        String queryResult = new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
+                .query("select *")
+                .from("bananas")
+                .join("left join eaters on eaters.banana_id = banana.id")
+                .where("banana.name = 'sus'")
+                .other("order by eaters.name desc")
+                .query();
+
+        String expectedQuery =
+                "select * from bananas left join eaters on eaters.banana_id = banana.id where banana.name = 'sus' order by eaters.name desc";
+
+        Assertions.assertEquals(expectedQuery, queryResult);
+    }
+
+    @Test
+    void queryMethodInQueryHelper_withAllNulls_buildsTheCorrectQuery() {
+        String queryResult = new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
+                .query("select *")
+                .from("bananas")
+                .join(null)
+                .where(null)
+                .other(null)
+                .query();
+
+        String expectedQuery =
+                "select * from bananas";
+
+        Assertions.assertEquals(expectedQuery, queryResult);
     }
 }

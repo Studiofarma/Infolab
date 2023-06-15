@@ -47,11 +47,17 @@ public record UserQueryResult(
     }
 
     public UserQueryResult join(String join) {
-        return new UserQueryResult(namedJdbcTemplate, username, query, joinKey, conditions, join + " ", other);
+        if (join == null)
+            return new UserQueryResult(namedJdbcTemplate, username, query, joinKey, conditions, join, other);
+        else
+            return new UserQueryResult(namedJdbcTemplate, username, query, joinKey, conditions, join + " ", other);
     }
 
     public UserQueryResult other(String other) {
-        return new UserQueryResult(namedJdbcTemplate, username, query, joinKey, conditions, join, " " + other);
+        if (other == null)
+            return new UserQueryResult(namedJdbcTemplate, username, query, joinKey, conditions, join, other);
+        else
+            return new UserQueryResult(namedJdbcTemplate, username, query, joinKey, conditions, join, " " + other);
     }
 
     @Override
@@ -72,7 +78,7 @@ public record UserQueryResult(
             ;
     }
 
-    public <T> List<T> execute(RowMapper<T> rowMapper, Map<String, ?> queryParams) throws InvalidUserKeyException, EmptyResultDataAccessException {
+    public <T> List<T> executeForList(RowMapper<T> rowMapper, Map<String, ?> queryParams) throws InvalidUserKeyException, EmptyResultDataAccessException {
 
         if (queryParams.containsKey("accessControlUsername"))
             throw new InvalidUserKeyException();
@@ -84,6 +90,17 @@ public record UserQueryResult(
         return namedJdbcTemplate.query(this.query(), params, rowMapper);
     }
 
+    public <T> T executeForObject(RowMapper<T> rowMapper, Map<String, ?> queryParams) throws InvalidUserKeyException, EmptyResultDataAccessException {
+
+        if (queryParams.containsKey("accessControlUsername"))
+            throw new InvalidUserKeyException();
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("accessControlUsername", username.value());
+        params.addValues(queryParams);
+
+        return namedJdbcTemplate.queryForObject(this.query(), params, rowMapper);
+    }
     public class InvalidUserKeyException extends RuntimeException {
         private InvalidUserKeyException() {
             super("The key accessControlUsername cannot be used for queryParams");

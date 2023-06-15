@@ -62,7 +62,7 @@ public class ChatMessageRepository {
         Map<String, Object> map = new HashMap<>();
         map.put("roomName", roomName.value());
 
-        return queryMessages2(SELECT_QUERY, JOIN_QUERY, WHERE_QUERY, OTHER_ORDER_BY_QUERY, username, map);
+        return queryMessages(SELECT_QUERY, JOIN_QUERY, WHERE_QUERY, OTHER_ORDER_BY_QUERY, username, map);
     }
 
     public List<ChatMessageEntity> getByRoomNameNumberOfMessages(RoomName roomName, int numberOfMessages, Username username) {
@@ -75,10 +75,10 @@ public class ChatMessageRepository {
         map.put("roomName", roomName.value());
         map.put("limit", numberOfMessages);
 
-        return queryMessages2(SELECT_QUERY, JOIN_QUERY, WHERE_QUERY, OTHER_ORDER_BY_LIMIT_QUERY, username, map);
+        return queryMessages(SELECT_QUERY, JOIN_QUERY, WHERE_QUERY, OTHER_ORDER_BY_LIMIT_QUERY, username, map);
     }
 
-    private List<ChatMessageEntity> queryMessages2(String select, String join, String where, String other, Username username, Map<String, ?> queryParams) {
+    private List<ChatMessageEntity> queryMessages(String select, String join, String where, String other, Username username, Map<String, ?> queryParams) {
         try {
             log.info(queryHelper.forUSer(username)
                     .query(select)
@@ -90,7 +90,7 @@ public class ChatMessageRepository {
                     .join(join)
                     .where(where)
                     .other(other)
-                    .execute(this::mapToEntityOnlyForThisClassTemp, queryParams);
+                    .executeForList(this::mapToEntityOnlyForThisClassTemp, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }

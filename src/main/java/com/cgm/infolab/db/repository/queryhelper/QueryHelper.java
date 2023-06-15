@@ -15,4 +15,9 @@ public class QueryHelper {
     public UserQueryHelper forUSer(Username username) {
         return new UserQueryHelper(namedJdbcTemplate, username);
     }
+
+    public QueryResult query(String initialQuery) {
+        String query = "%s from ".formatted(initialQuery);
+        return new QueryResult(namedJdbcTemplate, query);
+    }
 }
