@@ -2,6 +2,7 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
+import com.cgm.infolab.db.repository.queryhelper.UserQueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -20,12 +21,6 @@ import java.util.*;
 public class ChatMessageRepository {
     private final DataSource dataSource;
     private final QueryHelper queryHelper;
-
-    private final String SELECT_QUERY = "SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content";
-    private final String JOIN_QUERY = "LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id";
-    private final String WHERE_QUERY = "r.roomname = :roomName";
-    private final String OTHER_ORDER_BY_QUERY = "ORDER BY m.sent_at DESC";
-    private final String OTHER_ORDER_BY_LIMIT_QUERY = OTHER_ORDER_BY_QUERY + " LIMIT :limit";
 
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
@@ -53,16 +48,11 @@ public class ChatMessageRepository {
         return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
-    /**
-     * Metodo che ritorna tutti i messaggi mandati in una room.
-     * @param roomName da cui prendere i messaggi
-     * @return lista di messaggi trovati. Ritorna null se non è stato trovato nessun messaggio.
-     */
     public List<ChatMessageEntity> getByRoomName(RoomName roomName, Username username) {
         Map<String, Object> map = new HashMap<>();
         map.put("roomName", roomName.value());
 
-        return queryMessages(SELECT_QUERY, JOIN_QUERY, WHERE_QUERY, OTHER_ORDER_BY_QUERY, username, map);
+        return queryUserMessages("ORDER BY m.sent_at DESC", username, map);
     }
 
     public List<ChatMessageEntity> getByRoomNameNumberOfMessages(RoomName roomName, int numberOfMessages, Username username) {
@@ -75,25 +65,25 @@ public class ChatMessageRepository {
         map.put("roomName", roomName.value());
         map.put("limit", numberOfMessages);
 
-        return queryMessages(SELECT_QUERY, JOIN_QUERY, WHERE_QUERY, OTHER_ORDER_BY_LIMIT_QUERY, username, map);
+        return queryUserMessages("ORDER BY m.sent_at DESC LIMIT :limit", username, map);
     }
 
-    private List<ChatMessageEntity> queryMessages(String select, String join, String where, String other, Username username, Map<String, ?> queryParams) {
+    private List<ChatMessageEntity> queryUserMessages(String other, Username username, Map<String, ?> queryParams) {
         try {
-            log.info(queryHelper.forUSer(username)
-                    .query(select)
-                    .join(join)
-                    .where(where)
-                    .other(other).query());
-            return queryHelper.forUSer(username)
-                    .query(select)
-                    .join(join)
-                    .where(where)
+            return getMessagges(username)
                     .other(other)
                     .executeForList(this::mapToEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
+    }
+
+    private UserQueryResult getMessagges(Username username) {
+        return queryHelper
+                .forUSer(username)
+                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content")
+                .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id")
+                .where("r.roomname = :roomName");
     }
 
     public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
