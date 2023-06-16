@@ -3,7 +3,6 @@ package com.cgm.infolab.service;
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
-import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.LastMessageDto;
@@ -16,9 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 public class ChatService {
@@ -39,32 +36,8 @@ public class ChatService {
         this.chatMessageRepository = chatMessageRepository;
         this.roomService = roomService;
     }
-    public ChatMessageEntity saveMessageInDbPublicRooms(ChatMessageDto message, Username username, RoomName roomName){
 
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
-
-        UserEntity sender = userRepository.getByUsername(Username.of(message.getSender())).orElseGet(() -> {
-            log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
-            return null;
-        });
-
-        RoomEntity room = roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
-            log.info(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
-            return null;
-        });
-        ChatMessageEntity messageEntity =
-                ChatMessageEntity.of(sender, room, timestamp.toLocalDateTime(), message.getContent());
-
-        try {
-            chatMessageRepository.add(messageEntity);
-        } catch (DuplicateKeyException e) {
-            log.info(String.format("ChatMessageEntity id=\"%s\" già esistente nel database", messageEntity.getContent()));
-        }
-
-        return messageEntity;
-    }
-
-    public ChatMessageEntity saveMessageInDbPrivateRooms(ChatMessageDto message, Username username, RoomName roomName, Username destinationUser){
+    public ChatMessageEntity saveMessageInDb(ChatMessageDto message, Username username, RoomName roomName, Username destinationUser){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
@@ -85,7 +58,7 @@ public class ChatService {
 
         return messageEntity;
     }
-
+    
     private RoomEntity getOrCreateRoom(Username username, RoomName roomName, Username destinationUser) {
         return roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
             log.info(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
