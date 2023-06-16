@@ -15,17 +15,17 @@ import java.util.*;
 
 @Component
 public class UserRepository {
-    private final JdbcTemplate jdbcTemplate;
     private final QueryHelper queryHelper;
     private final DataSource dataSource;
     private final String USERS_SELECT = "SELECT *";
     private final String USERS_FROM = "infolab.users";
     private final String USERS_WHERE_ID = "id = :userId";
     private final String USERS_WHERE_USERNAME = "username = :username";
+    private final String USERS_WHERE_ILIKE = "username ILIKE :similarUsername || '%%'";
+    private final String USERS_OTHER = "ORDER BY username ASC";
 
 
-    public UserRepository(JdbcTemplate jdbcTemplate, QueryHelper queryHelper, DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
+    public UserRepository(QueryHelper queryHelper, DataSource dataSource) {
         this.queryHelper = queryHelper;
         this.dataSource = dataSource;
     }
@@ -55,24 +55,7 @@ public class UserRepository {
         Map<String, Object> map = new HashMap<>();
         map.put("username", username.value());
 
-        return queryUser2(USERS_SELECT, USERS_FROM, USERS_WHERE_USERNAME, map);
-    }
-
-    /**
-     * Metodo che risale all'id di un utente dal suo nome
-     * @param username da cui risalire agli users
-     * @return una lista di users.
-     */
-    public List<UserEntity> getByUsernameWithLike(String username) {
-        return queryUsers(String.format("%s WHERE username ILIKE ? || ?", USERS_QUERY) , username, "%");
-    }
-
-    private List<UserEntity> queryUsers(String query, String username, String wildCard) {
-        try {
-            return jdbcTemplate.query(query, this::mapToEntity, username, wildCard);
-        } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
-        }
+        return queryUser(USERS_SELECT, USERS_FROM, USERS_WHERE_USERNAME, map);
     }
 
     /**
@@ -84,20 +67,10 @@ public class UserRepository {
         Map<String, Object> map = new HashMap<>();
         map.put("userId", id);
 
-        return queryUser2(USERS_SELECT, USERS_FROM, USERS_WHERE_ID, map);
+        return queryUser(USERS_SELECT, USERS_FROM, USERS_WHERE_ID, map);
     }
 
-    private Optional<UserEntity> queryUser(String query, Object... objects) {
-        try {
-            return Optional.ofNullable(
-                    jdbcTemplate.queryForObject(query, this::mapToEntity, objects)
-            );
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-    }
-
-    private Optional<UserEntity> queryUser2(String select, String from, String where, Map<String, ?> queryParams) {
+    private Optional<UserEntity> queryUser(String select, String from, String where, Map<String, ?> queryParams) {
         try {
             return Optional.ofNullable(
                     queryHelper
@@ -108,6 +81,30 @@ public class UserRepository {
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
+        }
+    }
+
+    /**
+     * Metodo che risale all'id di un utente dal suo nome
+     * @param username da cui risalire agli users
+     * @return una lista di users.
+     */
+    public List<UserEntity> getByUsernameWithLike(Username username) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("similarUsername", username.value());
+        return queryUsers(USERS_SELECT, USERS_FROM, USERS_WHERE_ILIKE, USERS_OTHER, map);
+    }
+
+    private List<UserEntity> queryUsers(String select, String from, String where, String other, Map<String, ?> queryParams) {
+        try {
+            return queryHelper
+                    .query(select)
+                    .from(from)
+                    .where(where)
+                    .other(other)
+                    .executeForList(this::mapToEntity, queryParams);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
         }
     }
 

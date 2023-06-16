@@ -32,27 +32,7 @@ public class RoomRepository {
     private final String ROOMS_AND_LAST_MESSAGES_WHERE_AFTER_DATE = "m.sent_at > :date";
     private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
 
-    public RoomRepository(QueryHelper queryHelper, DataSource dataSource,
-
-    /*
-    SELECT r.roomname, u.username, c.content, c.sent_at
-FROM infolab.chatmessages c
-INNER JOIN infolab.users u ON c.sender_id = u.id
-INNER JOIN infolab.rooms r ON c.recipient_room_id = r.id
-WHERE c.sent_at in (
-	SELECT MAX(c.sent_at)
-	FROM infolab.chatmessages c
-	GROUP BY c.recipient_room_id
-) and
-c.recipient_room_id in (
-	SELECT r.id room_id
-	FROM infolab.rooms r, infolab.rooms_subscriptions s
-	WHERE s.user_id = 1 AND (r.visibility = 'PUBLIC' OR r.id = s.room_id)
-)
-
-     */
-    public RoomRepository(DataSource dataSource,
-                          ChatMessageRepository chatMessageRepository) {
+    public RoomRepository(QueryHelper queryHelper, DataSource dataSource, ChatMessageRepository chatMessageRepository) {
         this.queryHelper = queryHelper;
         this.dataSource = dataSource;
         this.chatMessageRepository = chatMessageRepository;

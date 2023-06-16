@@ -78,8 +78,8 @@ public class LastDownloadDateUpdateTests {
     @Order(1)
     void whenMessageIsDownloaded_lastDownloadDateExistsForUserThatDownloaded_doesNotForOthers() {
 
-        chatService.saveMessageInDb(messageDtos[0], loggedInUser.getName(), general.getName());
-        chatService.saveMessageInDb(messageDtos[3], users[2].getName(), RoomName.of("user1-user2"));
+        chatService.saveMessageInDbPublicRooms(messageDtos[0], loggedInUser.getName(), general.getName());
+        chatService.saveMessageInDbPrivateRooms(messageDtos[3], users[2].getName(), RoomName.of("user1-user2"));
 
         downloadDateRepository.addWhereNotDownloadedYetForUser(loggedInUser.getName(), general.getName());
 
@@ -108,7 +108,7 @@ public class LastDownloadDateUpdateTests {
     @Order(2)
     void whenOtherMessagesAreDownloaded_lastDownloadDateExistsForNewMessages_notUpdatedForPreviousMessages() {
 
-        chatService.saveMessageInDb(messageDtos[0], loggedInUser.getName(), general.getName());
+        chatService.saveMessageInDbPublicRooms(messageDtos[0], loggedInUser.getName(), general.getName());
 
         downloadDateRepository.addWhereNotDownloadedYetForUser(loggedInUser.getName(), general.getName());
 
@@ -120,7 +120,7 @@ public class LastDownloadDateUpdateTests {
         )
         .get(0);
 
-        chatService.saveMessageInDb(messageDtos[1], loggedInUser.getName(), general.getName());
+        chatService.saveMessageInDbPublicRooms(messageDtos[1], loggedInUser.getName(), general.getName());
 
         downloadDateRepository.addWhereNotDownloadedYetForUser(loggedInUser.getName(), general.getName());
 

@@ -1,6 +1,7 @@
 package com.cgm.infolab.controller;
 
 import com.cgm.infolab.db.model.UserEntity;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.UserDto;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ public class UserApiController {
     public List<UserDto> getUsername(@RequestParam("user") String user) {
 
         List<UserDto> UserDtos = new ArrayList<>();
-        List<UserEntity> userEntities = userRepository.getByUsernameWithLike(user);
+        List<UserEntity> userEntities = userRepository.getByUsernameWithLike(Username.of(user));
 
         if (userEntities.size() > 0) {
 
