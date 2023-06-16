@@ -3,13 +3,12 @@ package com.cgm.infolab.controller;
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.ChatMessageDto;
-import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.service.FromEntitiesToDtosService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -19,10 +18,12 @@ import java.util.List;
 @RestController
 public class ChatApiMessagesController {
     private final ChatService chatService;
+    private final FromEntitiesToDtosService fromEntitiesToDtosService;
     private final Logger log = LoggerFactory.getLogger(ChatApiMessagesController.class);
 
-    public ChatApiMessagesController(ChatService chatService) {
+    public ChatApiMessagesController(ChatService chatService, FromEntitiesToDtosService fromEntitiesToDtosService) {
         this.chatService = chatService;
+        this.fromEntitiesToDtosService = fromEntitiesToDtosService;
     }
 
     // Tutorial: https://www.baeldung.com/spring-controller-vs-restcontroller
@@ -42,7 +43,7 @@ public class ChatApiMessagesController {
                 chatService.getAllMessages(numberOfMessages, Username.of(principal.getName()), roomName);
 
         if (chatMessageEntities.size() > 0) {
-            chatMessageDtos = chatMessageEntities.stream().map(chatService::fromEntityToChatMessageDto).toList();
+            chatMessageDtos = chatMessageEntities.stream().map(fromEntitiesToDtosService::fromEntityToChatMessageDto).toList();
         } else {
             log.info("Non sono stati trovati messaggi nella room specificata");
         }

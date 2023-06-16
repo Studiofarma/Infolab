@@ -30,7 +30,7 @@ public class ChatService {
     public ChatService(UserRepository userRepository,
                        RoomRepository roomRepository,
                        ChatMessageRepository chatMessageRepository,
-                       @Lazy RoomService roomService){
+                       RoomService roomService){
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
@@ -58,7 +58,7 @@ public class ChatService {
 
         return messageEntity;
     }
-    
+
     private RoomEntity getOrCreateRoom(Username username, RoomName roomName, Username destinationUser) {
         return roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
             log.info(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
@@ -73,16 +73,6 @@ public class ChatService {
 
             return null;
         });
-    }
-
-    public ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
-        return new ChatMessageDto(messageEntity.getContent(),
-                messageEntity.getTimestamp(),
-                messageEntity.getSender().getName().value());
-    }
-
-    public LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
-        return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender());
     }
 
     public List<ChatMessageEntity> getAllMessages(int numberOfMessages, Username username, String roomName) {
