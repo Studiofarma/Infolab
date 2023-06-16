@@ -93,7 +93,7 @@ render() {
 > Anziché usare costrutti js si possono usare delle direttive built-in in Lit come ad esempio:
 >
 > - [`when`](https://lit.dev/docs/templates/directives/#when) &rarr; renderizza un template tra due sulla base di una condizione (come `if/else`)
-> - [`choose`](https://lit.dev/docs/templates/directives/#choose) &rarr; renderizza un template su molti basandosi su un valore (come `swithc/case`)
+> - [`choose`](https://lit.dev/docs/templates/directives/#choose) &rarr; renderizza un template su molti basandosi su un valore (come `switch/case`)
 > - [`map`](https://lit.dev/docs/templates/directives/#map) &rarr; Trasforma un iterabile con una funzione
 > - [`repeat`](https://lit.dev/docs/templates/directives/#repeat) &rarr; Renderizza i valori da un iterabile nel DOM, con codifica facoltativa per abilitare la differenza dei dati e la stabilità del DOM
 > - [`range`](https://lit.dev/docs/templates/directives/#range) &rarr; Crea un iterabile di numeri in una sequenza, utile per iterare un numero specifico di volte.
