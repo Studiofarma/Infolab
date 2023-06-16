@@ -2,30 +2,136 @@ import { LitElement, html, css } from "lit";
 
 import "./search-chats.js";
 import "./conversation/conversation-list.js";
+import "../../../components/avatar.js";
 
 export class Sidebar extends LitElement {
-  static styles = css`
-    div {
-      background: #083c72;
-      color: white;
-      padding-top: 10px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: rgb(0 0 0 / 40%) 0px 0px 11px 0.2px;
-      z-index: 1100;
-      position: fixed;
-      width: 350px;
-    }
-  `;
+	static properties = {
+		login: {
+			username: "",
+			password: "",
+			headerName: "",
+			token: "",
+		},
+	};
 
-  render() {
-    return html`
-      <div>
-        <il-search></il-search>
-        <il-conversation-list></il-conversation-list>
-      </div>
-    `;
-  }
+	static styles = css`
+		.side-bar {
+			background: #083c72;
+			color: white;
+
+			display: flex;
+			flex-direction: column;
+			height: 100vh;
+			width: 350px;
+			box-shadow: inset -1px 0px 0px 0px black;
+			z-index: 1100;
+		}
+
+		.search,
+		.profile-box {
+			flex: 0 0 auto;
+		}
+
+		.profile-box {
+			position: relative;
+			display: flex;
+			align-items: center;
+			gap: 20px;
+			cursor: pointer;
+			transition: transform 0.5s;
+		}
+
+		.profile-box:hover {
+			transform: translateY(-95px);
+		}
+
+		.profile-avatar {
+			transition: transform 0.5s;
+		}
+
+		.profile-box:hover .profile-avatar {
+			transform: scale(1.5);
+		}
+
+		.profile-tab-name {
+			transition: opacity 0.5s;
+		}
+
+		.profile-box:hover .profile-tab-name {
+			display: none;
+		}
+
+		.profile-username {
+			opacity: 0;
+		}
+
+		.profile-box:hover .profile-username {
+			opacity: 1;
+		}
+
+		.profile-info {
+			position: absolute;
+			background: #083c72;
+			width: 100%;
+			top: 70px;
+		}
+
+		.conversation-list {
+			flex: 1 0 auto;
+			margin-right: 5px;
+		}
+	`;
+
+	constructor() {
+		super();
+	}
+
+	render() {
+		return html`
+			<div class="side-bar">
+				<il-search
+					class="search"
+					@load-chat=${(e) => {
+						this.loadChat(e);
+					}}
+					@search-chat="${this.searchChat}"
+				></il-search>
+				<il-conversation-list class="conversation-list"></il-conversation-list>
+				<div class="profile-box">
+					<il-avatar
+						class="profile-avatar"
+						style="padding: 10px"
+						.avatarLink=${""}
+						.name=${this.login.username}
+						.id=${0}
+					></il-avatar>
+					<p class="profile-tab-name">Profile</p>
+					<p class="profile-username">${this.login.username}</p>
+					<div class="profile-info">
+						<h1>${this.login.username}</h1>
+					</div>
+				</div>
+			</div>
+		`;
+	}
+
+	loadChat(e) {
+		this.shadowRoot
+			.querySelector("il-conversation-list")
+			.selectChat(e.detail.selectedChatName);
+	}
+
+	searchChat(event) {
+		let query = event.detail.query;
+
+		let il_conversation_list = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > il-sidebar")
+			.shadowRoot.querySelector("div > il-conversation-list");
+
+		il_conversation_list.searchChat(query);
+	}
 }
 
 customElements.define("il-sidebar", Sidebar);

@@ -1,14 +1,14 @@
 const axios = require("axios").default;
 
 export class MessagesService {
-  static async getMessagesById(username, password) {
-    return axios({
-      url: `/api/messages/general`,
-      method: "get",
-      auth: {
-        username: username,
-        password: password,
-      },
-    });
-  }
+	static async getMessagesById(username, password, roomName) {
+		return axios({
+			url: `/api/messages/${roomName}`,
+			method: "get",
+			auth: {
+				username: username,
+				password: password,
+			},
+		});
+	}
 }

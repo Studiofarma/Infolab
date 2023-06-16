@@ -64,4 +64,9 @@
         </addColumn>
 
     </changeSet>
+    <changeSet id="users_description_field" author="Luca Minini">
+        <addColumn schemaName="infolab" tableName="users">
+            <column name="description" type="varchar(500)" />
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
