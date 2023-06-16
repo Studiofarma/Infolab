@@ -6,10 +6,6 @@ export class ButtonText extends LitElement {
 		styleProp: "",
 	};
 
-	constructor() {
-		super();
-	}
-
 	static styles = css`
 		button {
 			padding: 0px 24px;
