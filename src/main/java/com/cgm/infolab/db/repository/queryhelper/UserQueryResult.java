@@ -80,27 +80,42 @@ public record UserQueryResult(
 
     public <T> List<T> executeForList(RowMapper<T> rowMapper, Map<String, ?> queryParams) throws InvalidUserKeyException, EmptyResultDataAccessException {
 
-        if (queryParams.containsKey("accessControlUsername"))
-            throw new InvalidUserKeyException();
+        checkInputKeysAndThrow(queryParams);
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("accessControlUsername", username.value());
-        params.addValues(queryParams);
+        MapSqlParameterSource params = addAllParams(queryParams);
 
         return namedJdbcTemplate.query(this.query(), params, rowMapper);
     }
 
     public <T> T executeForObject(RowMapper<T> rowMapper, Map<String, ?> queryParams) throws InvalidUserKeyException, EmptyResultDataAccessException {
 
-        if (queryParams.containsKey("accessControlUsername"))
-            throw new InvalidUserKeyException();
+       checkInputKeysAndThrow(queryParams);
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("accessControlUsername", username.value());
-        params.addValues(queryParams);
+        MapSqlParameterSource params = addAllParams(queryParams);
 
         return namedJdbcTemplate.queryForObject(this.query(), params, rowMapper);
     }
+
+    public void update(Map<String, ?> queryParams) {
+        checkInputKeysAndThrow(queryParams);
+
+        MapSqlParameterSource params = addAllParams(queryParams);
+
+        namedJdbcTemplate.update(this.query(), params);
+    }
+
+    private void checkInputKeysAndThrow(Map<String, ?> queryParams) throws InvalidUserKeyException {
+        if (queryParams.containsKey("accessControlUsername"))
+            throw new InvalidUserKeyException();
+    }
+
+    private MapSqlParameterSource addAllParams(Map<String, ?> params) {
+        MapSqlParameterSource paramsMap = new MapSqlParameterSource();
+        paramsMap.addValue("accessControlUsername", username.value());
+        paramsMap.addValues(params);
+        return paramsMap;
+    }
+
     public class InvalidUserKeyException extends RuntimeException {
         private InvalidUserKeyException() {
             super("The key accessControlUsername cannot be used for queryParams");

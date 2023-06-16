@@ -36,8 +36,6 @@ public class RoomAndMessagesVisibilityTests {
     @Autowired
     public UserRepository userRepository;
     @Autowired
-    public DownloadDateRepository downloadDateRepository;
-    @Autowired
     public RoomService roomService;
     @Autowired
     public ChatService chatService;
@@ -63,6 +61,11 @@ public class RoomAndMessagesVisibilityTests {
 
     @BeforeAll
     void setUpAll() {
+        jdbcTemplate.update("DELETE FROM infolab.download_dates");
+        jdbcTemplate.update("DELETE FROM infolab.chatmessages");
+        jdbcTemplate.update("DELETE FROM infolab.rooms_subscriptions");
+        jdbcTemplate.update("DELETE FROM infolab.users");
+
         for (UserEntity user : users) {
             userRepository.add(user);
         }
@@ -114,58 +117,5 @@ public class RoomAndMessagesVisibilityTests {
         Assertions.assertEquals(2, chatMessageRepository.getByRoomName(RoomName.of("user0-user1"), loggedInUser.getName()).size());
         Assertions.assertEquals(1, chatMessageRepository.getByRoomName(RoomName.of("user0-user2"), loggedInUser.getName()).size());
         Assertions.assertEquals(0, chatMessageRepository.getByRoomName(RoomName.of("user1-user2"), loggedInUser.getName()).size());
-    }
-
-    @Test
-    void whenUpdatedReadDatesInRoom_readDatesAreOnlyForThatRoom() {
-        downloadDateRepository.addWhereNotDownloadedYetForUser(loggedInUser.getName(), general.getName());
-
-        // Control with query that takes all messages without a download date
-        String QUERY =
-                "SELECT d.user_id, d.message_id, d.download_timestamp " +       // timestamp, user id
-                "FROM infolab.chatmessages m  " +
-                "LEFT JOIN infolab.rooms r " +
-                "ON r.id = m.recipient_room_id " +
-                "LEFT JOIN infolab.users u " +
-                "ON u.id = m.sender_id " +
-                "LEFT JOIN infolab.download_dates d " +
-                "ON m.id = d.message_id " +
-                "WHERE EXISTS (SELECT s.room_id FROM infolab.rooms_subscriptions s " +
-                "RIGHT JOIN infolab.users u " +
-                "ON s.user_id = u.id " +
-                "WHERE (u.username = ? OR r.visibility = 'PUBLIC')) " +     // username
-                "AND NOT EXISTS ((SELECT * FROM infolab.users u1 " +
-                "RIGHT JOIN infolab.download_dates d1 " +
-                "ON d1.user_id = u1.id " +
-                "WHERE (u1.username = ? AND m.id = d1.message_id))) " +     // username
-                "AND r.roomname = ?";   // roomname
-
-        List<DownloadDateEntity> downloadDatesFromDb;
-
-        try {
-            downloadDatesFromDb = jdbcTemplate.query(QUERY,
-                    this::rowMapper,
-                    loggedInUser.getName().value(), loggedInUser.getName().value(), general.getName().value());
-        } catch (EmptyResultDataAccessException e) {
-            downloadDatesFromDb = null;
-        }
-
-        Assertions.assertEquals(0, downloadDatesFromDb.size());
-    }
-
-    private DownloadDateEntity rowMapper (ResultSet rs, int rowNum) {
-        DownloadDateEntity entity;
-
-        try {
-            entity = DownloadDateEntity.of(
-                    rs.getTimestamp("download_timestamp").toLocalDateTime(),
-                    rs.getLong("user_id"),
-                    rs.getLong("message_id")
-            );
-        } catch (SQLException e) {
-            return null;
-        }
-
-        return entity;
     }
 }

@@ -1,6 +1,7 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
@@ -12,36 +13,24 @@ import java.util.Map;
 
 @Component
 public class DownloadDateRepository {
-
-    private final JdbcTemplate jdbcTemplate;
+    private final QueryHelper queryHelper;
     private final DataSource dataSource;
-    private final UserRepository userRepository;
 
-    private final String INSERT_WHERE_NOT_READ_YET_QUERY =
-            "INSERT INTO infolab.download_dates( " +
-                "download_timestamp, user_id, message_id) " +
-                "SELECT ?, ?, m.id message_id " +       // timestamp, user id
-                    "FROM infolab.chatmessages m  " +
-                    "LEFT JOIN infolab.rooms r " +
-                    "ON r.id = m.recipient_room_id " +
-                    "LEFT JOIN infolab.users u " +
-                    "ON u.id = m.sender_id " +
+    private final String DOWNLOAD_DATES_INSERT_SELECT =
+            "INSERT INTO infolab.download_dates(download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id";
+    private final String DOWNLOAD_DATES_JOIN =
+            "LEFT JOIN infolab.chatmessages m " +
+                    "ON m.recipient_room_id = r.id " +
+                    "LEFT JOIN infolab.users u_logged " +
+                    "ON u_logged.username = :username " +
                     "LEFT JOIN infolab.download_dates d " +
-                    "ON m.id = d.message_id " +
-                    "WHERE EXISTS (SELECT s.room_id FROM infolab.rooms_subscriptions s " +
-                        "RIGHT JOIN infolab.users u " +
-                        "ON s.user_id = u.id " +
-                        "WHERE (u.username = ? OR r.visibility = 'PUBLIC')) " +     // username
-                    "AND NOT EXISTS ((SELECT * FROM infolab.users u1 " +
-                        "RIGHT JOIN infolab.download_dates d1 " +
-                        "ON d1.user_id = u1.id " +
-                        "WHERE (u1.username = ? AND m.id = d1.message_id))) " +     // username
-                    "AND r.roomname = ?";   // roomid
+                    "ON d.user_id = u_logged.id AND d.message_id = m.id";
+    private final String DOWNLOAD_DATES_WHERE_NOT_DOWNLOADED_AND_ROOMNAME =
+            "d.download_timestamp IS NULL AND r.roomname = :roomName";
 
-    public DownloadDateRepository(JdbcTemplate jdbcTemplate, DataSource dataSource, UserRepository userRepository) {
-        this.jdbcTemplate = jdbcTemplate;
+    public DownloadDateRepository(QueryHelper queryHelper, DataSource dataSource) {
+        this.queryHelper = queryHelper;
         this.dataSource = dataSource;
-        this.userRepository = userRepository;
     }
 
     public void add(DownloadDateEntity entity) {
@@ -59,13 +48,16 @@ public class DownloadDateRepository {
     public void addWhereNotDownloadedYetForUser(Username username, RoomName roomName) throws IllegalArgumentException {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        UserEntity user = userRepository.getByUsername(username).orElseThrow(IllegalArgumentException::new);
+        Map<String, Object> map = new HashMap<>();
+        map.put("timestamp", timestamp);
+        map.put("username", username.value());
+        map.put("roomName", roomName.value());
 
-        jdbcTemplate.update(INSERT_WHERE_NOT_READ_YET_QUERY,
-                timestamp,
-                user.getId(),
-                user.getName().value(),
-                user.getName().value(),
-                roomName.value());
+        queryHelper
+                .forUSer(username)
+                .query(DOWNLOAD_DATES_INSERT_SELECT)
+                .join(DOWNLOAD_DATES_JOIN)
+                .where(DOWNLOAD_DATES_WHERE_NOT_DOWNLOADED_AND_ROOMNAME)
+                .update(map);
     }
 }

@@ -206,6 +206,26 @@ public class QueryHelperTests {
                     .other("order by foo desc limit 69")
                     .executeForList((rs, rowNum) -> null, map);
         });
+
+        Assertions.assertThrows(UserQueryResult.InvalidUserKeyException.class, () -> {
+            new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
+                    .forUSer(Username.of(username))
+                    .query("Select *")
+                    .join("left join _another_table x on x._foreign_key_id = r.id")
+                    .where("cool = true or t=?")
+                    .other("order by foo desc limit 69")
+                    .executeForObject((rs, rowNum) -> null, map);
+        });
+
+        Assertions.assertThrows(UserQueryResult.InvalidUserKeyException.class, () -> {
+            new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
+                    .forUSer(Username.of(username))
+                    .query("Select *")
+                    .join("left join _another_table x on x._foreign_key_id = r.id")
+                    .where("cool = true or t=?")
+                    .other("order by foo desc limit 69")
+                    .update(map);
+        });
     }
 
     @Test
