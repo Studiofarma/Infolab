@@ -16,7 +16,6 @@ import java.util.*;
 
 @Component
 public class RoomRepository {
-    private final JdbcTemplate jdbcTemplate;
     private final QueryHelper queryHelper;
     private final DataSource dataSource;
     private final ChatMessageRepository chatMessageRepository;
@@ -27,16 +26,14 @@ public class RoomRepository {
     private final String ROOMS_WHERE_ROOMID = "AND r.id = :roomId";
 
     private final String ROOMS_AND_LAST_MESSAGES_SELECT =
-            "SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, r.visibility, u_mex.id user_id, u_mex.username username, m.id message_id, m.sent_at, m.content";
+            "SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, r.visibility, u_mex.id user_id, u_mex.username username, m.id message_id, m.sent_at, m.content, m.sender_id";
     private final String ROOMS_AND_LAST_MESSAGES_JOIN =
             "LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id";
     private final String ROOMS_AND_LAST_MESSAGES_WHERE_AFTER_DATE = "m.sent_at > :date";
     private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
 
-    public RoomRepository(JdbcTemplate jdbcTemplate,
-                          QueryHelper queryHelper, DataSource dataSource,
+    public RoomRepository(QueryHelper queryHelper, DataSource dataSource,
                           ChatMessageRepository chatMessageRepository) {
-        this.jdbcTemplate = jdbcTemplate;
         this.queryHelper = queryHelper;
         this.dataSource = dataSource;
         this.chatMessageRepository = chatMessageRepository;

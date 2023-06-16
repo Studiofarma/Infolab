@@ -90,13 +90,13 @@ public class ChatMessageRepository {
                     .join(join)
                     .where(where)
                     .other(other)
-                    .executeForList(this::mapToEntityOnlyForThisClassTemp, queryParams);
+                    .executeForList(this::mapToEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
     }
 
-    public ChatMessageEntity mapToEntityOnlyForThisClassTemp(ResultSet rs, int rowNum) throws SQLException {
+    public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
 
         String username = rs.getString("username");
         if (username == null) {
@@ -109,25 +109,6 @@ public class ChatMessageRepository {
 
         UserEntity user = UserEntity.of(rs.getLong("sender_id"),
                 Username.of(username));
-
-        RoomEntity room = RoomEntity.of(
-                rs.getLong("room_id"),
-                RoomName.of(rs.getString("roomname")),
-                VisibilityEnum.valueOf(rs.getString("visibility").trim())
-        );
-
-        return ChatMessageEntity
-                .of(rs.getLong("message_id"),
-                        user,
-                        room,
-                        resultSetToLocalDateTime(rs),
-                        rs.getString("content"));
-    }
-
-    public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-
-        UserEntity user = UserEntity.of(rs.getLong("user_id"),
-                Username.of(rs.getString("username")));
 
         RoomEntity room = RoomEntity.of(
                 rs.getLong("room_id"),
