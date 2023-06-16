@@ -81,8 +81,12 @@ public class ChatController {
             Principal principal){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         log.info(String.format("message from %s to %s", username, destinationUser));
-        ChatMessageEntity messageEntity = chatService.saveMessageInDbPrivateRooms(message, Username.of(principal.getName()),
-            RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)));
+        ChatMessageEntity messageEntity = chatService.saveMessageInDbPrivateRooms(
+                message, Username.of(principal.getName()),
+                RoomName.of(Username.of(principal.getName()),
+                Username.of(destinationUser)),
+                Username.of(destinationUser)
+        );
         return new ChatMessageDto(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender().getName().value(), RoomName.getRoomNameByUsers(Username.of(principal.getName()), Username.of(destinationUser)));
     }
 }

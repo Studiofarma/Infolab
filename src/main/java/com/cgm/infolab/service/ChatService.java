@@ -25,8 +25,6 @@ public class ChatService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final ChatMessageRepository chatMessageRepository;
-
-    private final RoomSubscriptionRepository roomSubscriptionRepository;
     private final RoomService roomService;
 
     private final Logger log = LoggerFactory.getLogger(ChatService.class);
@@ -35,12 +33,10 @@ public class ChatService {
     public ChatService(UserRepository userRepository,
                        RoomRepository roomRepository,
                        ChatMessageRepository chatMessageRepository,
-                       RoomSubscriptionRepository roomSubscriptionRepository,
                        @Lazy RoomService roomService){
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
-        this.roomSubscriptionRepository = roomSubscriptionRepository;
         this.roomService = roomService;
     }
     public ChatMessageEntity saveMessageInDbPublicRooms(ChatMessageDto message, Username username, RoomName roomName){
@@ -68,7 +64,7 @@ public class ChatService {
         return messageEntity;
     }
 
-    public ChatMessageEntity saveMessageInDbPrivateRooms(ChatMessageDto message, Username username, RoomName roomName){
+    public ChatMessageEntity saveMessageInDbPrivateRooms(ChatMessageDto message, Username username, RoomName roomName, Username destinationUser){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
@@ -77,7 +73,7 @@ public class ChatService {
             return null;
         });
 
-        RoomEntity room = getOrCreateRoom(username, roomName);
+        RoomEntity room = getOrCreateRoom(username, roomName, destinationUser);
         ChatMessageEntity messageEntity =
                 ChatMessageEntity.of(sender, room, timestamp.toLocalDateTime(), message.getContent());
 
@@ -90,21 +86,13 @@ public class ChatService {
         return messageEntity;
     }
 
-    private RoomEntity getOrCreateRoom(Username username, RoomName roomName) {
+    private RoomEntity getOrCreateRoom(Username username, RoomName roomName, Username destinationUser) {
         return roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
             log.info(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
 
-            String[] users = roomName.value().split("-");
-
-//            Stream<UserEntity> usernames = Arrays.stream(users).map((user) ->
-//                    userRepository.getByUsername(Username.of(user)).orElseThrow(() ->
-//                            new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()))
-//                    ));
-
-            roomService.createPrivateRoomAndSubscribeUsers(Username.of(users[0]), Username.of(users[1]));
+            roomService.createPrivateRoomAndSubscribeUsers(username, destinationUser);
 
             try {
-//                return getRoomEntity(roomName, usernames);
                 return roomRepository.getByRoomName(roomName, username).orElseThrow();
             } catch (Exception e) {
                 log.error("Room già esistente");
@@ -113,19 +101,6 @@ public class ChatService {
             return null;
         });
     }
-
-//    private RoomEntity getRoomEntity(RoomName roomName, Stream<UserEntity> usernames) {
-//        long newRoomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
-//        RoomEntity newRoom = RoomEntity.of(newRoomId, roomName, VisibilityEnum.PRIVATE);
-//
-//        usernames.forEach( (userName) -> {
-//            RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
-//            roomSubscription.setRoomId(newRoom.getId());
-//            roomSubscription.setUserId(userName.getId());
-//            roomSubscriptionRepository.add(roomSubscription);
-//        });
-//        return newRoom;
-//    }
 
     public ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
         return new ChatMessageDto(messageEntity.getContent(),
