@@ -12,7 +12,7 @@ public class QueryHelper {
         this.namedJdbcTemplate = namedJdbcTemplate;
     }
 
-    public UserQueryHelper forUSer(Username username) {
+    public UserQueryHelper forUser(Username username) {
         return new UserQueryHelper(namedJdbcTemplate, username);
     }
 

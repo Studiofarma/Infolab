@@ -17,7 +17,7 @@ public class QueryHelperTests {
     void withASimpleSelect_ItAddFilters_ForUser() {
         String username = "pippo";
         UserQueryResult query = new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-            .forUSer(Username.of(username))
+            .forUser(Username.of(username))
             .query("Select *");
 
         String expectedQuery = "Select * " +
@@ -33,7 +33,7 @@ public class QueryHelperTests {
     void withASelectAndAFrom_ItAddFilters_ForUser() {
         String username = "pippo";
         UserQueryResult query = new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-            .forUSer(Username.of(username))
+            .forUser(Username.of(username))
             .query("Select *")
             .from("_anotherTable", "banana");
 
@@ -51,7 +51,7 @@ public class QueryHelperTests {
     void withASelectAndAWhere_ItAddFilters_ForUser() {
         String username = "pippo";
         UserQueryResult query = new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-            .forUSer(Username.of(username))
+            .forUser(Username.of(username))
             .query("Select *")
             .where("x=? AND bla='foo'");
 
@@ -70,7 +70,7 @@ public class QueryHelperTests {
     void withASelectAndAFromAndAWhere_ItAddFilters_ForUser() {
         String username = "pippo";
         UserQueryResult query = new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-            .forUSer(Username.of(username))
+            .forUser(Username.of(username))
             .query("Select *")
             .from("_anotherTable")
             .where("x=? AND bla='foo'");
@@ -91,7 +91,7 @@ public class QueryHelperTests {
     void withASelectAndAJoin_ItAddFilters_ForUser() {
         String username = "pippo";
         UserQueryResult query = new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-                .forUSer(Username.of(username))
+                .forUser(Username.of(username))
                 .query("Select *")
                 .join("left join _another_table x on x._foreign_key_id = r.id");
 
@@ -110,7 +110,7 @@ public class QueryHelperTests {
     void withASelectAndAJoinAndWhere_ItAddFilters_ForUser() {
         String username = "pippo";
         UserQueryResult query = new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-                .forUSer(Username.of(username))
+                .forUser(Username.of(username))
                 .query("Select *")
                 .join("left join _another_table x on x._foreign_key_id = r.id")
                 .where("x=? and OwO = 'foo'");
@@ -131,7 +131,7 @@ public class QueryHelperTests {
     void withASelectAndOther_ItAddFilters_ForUser() {
         String username = "pippo";
         UserQueryResult query = new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-                .forUSer(Username.of(username))
+                .forUser(Username.of(username))
                 .query("Select *")
                 .other("order by foo desc limit 69");
 
@@ -150,7 +150,7 @@ public class QueryHelperTests {
     void withASelectAndJoinAndOther_ItAddFilters_ForUser() {
         String username = "pippo";
         UserQueryResult query = new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-                .forUSer(Username.of(username))
+                .forUser(Username.of(username))
                 .query("Select *")
                 .join("left join _another_table x on x._foreign_key_id = r.id")
                 .other("order by foo desc limit 69");
@@ -171,7 +171,7 @@ public class QueryHelperTests {
     void withASelectAndJoinAndWhereAndOther_ItAddFilters_ForUser() {
         String username = "pippo";
         UserQueryResult query = new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-                .forUSer(Username.of(username))
+                .forUser(Username.of(username))
                 .query("Select *")
                 .join("left join _another_table x on x._foreign_key_id = r.id")
                 .where("cool = true or t=?")
@@ -199,7 +199,7 @@ public class QueryHelperTests {
 
         Assertions.assertThrows(UserQueryResult.InvalidUserKeyException.class, () -> {
             new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-                    .forUSer(Username.of(username))
+                    .forUser(Username.of(username))
                     .query("Select *")
                     .join("left join _another_table x on x._foreign_key_id = r.id")
                     .where("cool = true or t=?")
@@ -209,7 +209,7 @@ public class QueryHelperTests {
 
         Assertions.assertThrows(UserQueryResult.InvalidUserKeyException.class, () -> {
             new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-                    .forUSer(Username.of(username))
+                    .forUser(Username.of(username))
                     .query("Select *")
                     .join("left join _another_table x on x._foreign_key_id = r.id")
                     .where("cool = true or t=?")
@@ -219,7 +219,7 @@ public class QueryHelperTests {
 
         Assertions.assertThrows(UserQueryResult.InvalidUserKeyException.class, () -> {
             new QueryHelper(new NamedParameterJdbcTemplate(new JdbcTemplate()))
-                    .forUSer(Username.of(username))
+                    .forUser(Username.of(username))
                     .query("Select *")
                     .join("left join _another_table x on x._foreign_key_id = r.id")
                     .where("cool = true or t=?")

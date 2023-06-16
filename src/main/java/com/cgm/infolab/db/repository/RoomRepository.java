@@ -4,7 +4,6 @@ import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
@@ -86,7 +85,7 @@ public class RoomRepository {
     private Optional<RoomEntity> queryRoom(String select, String where, Username username, Map<String, ?> queryParams) {
         try {
             return Optional.ofNullable(
-                    queryHelper.forUSer(username)
+                    queryHelper.forUser(username)
                             .query(select)
                             .where(where)
                             .executeForObject(this::mapToEntity, queryParams)
@@ -135,7 +134,7 @@ public class RoomRepository {
 
     private List<RoomEntity> queryRooms(String select, String join, String where, String other, Username username, Map<String, ?> queryParams) {
         try {
-            return queryHelper.forUSer(username)
+            return queryHelper.forUser(username)
                     .query(select)
                     .join(join)
                     .where(where)

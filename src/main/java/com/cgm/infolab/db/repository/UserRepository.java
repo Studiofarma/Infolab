@@ -3,8 +3,8 @@ package com.cgm.infolab.db.repository;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
+import com.cgm.infolab.db.repository.queryhelper.QueryResult;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
@@ -17,12 +17,6 @@ import java.util.*;
 public class UserRepository {
     private final QueryHelper queryHelper;
     private final DataSource dataSource;
-    private final String USERS_SELECT = "SELECT *";
-    private final String USERS_FROM = "infolab.users";
-    private final String USERS_WHERE_ID = "id = :userId";
-    private final String USERS_WHERE_USERNAME = "username = :username";
-    private final String USERS_WHERE_ILIKE = "username ILIKE :similarUsername || '%%'";
-    private final String USERS_OTHER = "ORDER BY username ASC";
 
 
     public UserRepository(QueryHelper queryHelper, DataSource dataSource) {
@@ -55,7 +49,7 @@ public class UserRepository {
         Map<String, Object> map = new HashMap<>();
         map.put("username", username.value());
 
-        return queryUser(USERS_SELECT, USERS_FROM, USERS_WHERE_USERNAME, map);
+        return queryUser("username = :username", map);
     }
 
     /**
@@ -67,15 +61,13 @@ public class UserRepository {
         Map<String, Object> map = new HashMap<>();
         map.put("userId", id);
 
-        return queryUser(USERS_SELECT, USERS_FROM, USERS_WHERE_ID, map);
+        return queryUser("id = :userId", map);
     }
 
-    private Optional<UserEntity> queryUser(String select, String from, String where, Map<String, ?> queryParams) {
+    private Optional<UserEntity> queryUser(String where, Map<String, ?> queryParams) {
         try {
             return Optional.ofNullable(
-                    queryHelper
-                            .query(select)
-                            .from(from)
+                    getUserOrUsers()
                             .where(where)
                             .executeForObject(this::mapToEntity, queryParams)
             );
@@ -92,20 +84,31 @@ public class UserRepository {
     public List<UserEntity> getByUsernameWithLike(Username username) {
         Map<String, Object> map = new HashMap<>();
         map.put("similarUsername", username.value());
-        return queryUsers(USERS_SELECT, USERS_FROM, USERS_WHERE_ILIKE, USERS_OTHER, map);
+        return queryUsers("username ILIKE :similarUsername || '%%'", "ORDER BY username ASC", map);
     }
 
-    private List<UserEntity> queryUsers(String select, String from, String where, String other, Map<String, ?> queryParams) {
+    private List<UserEntity> queryUsers(String where, String other, Map<String, ?> queryParams) {
         try {
-            return queryHelper
-                    .query(select)
-                    .from(from)
+//            return queryHelper
+//                    .query(select)
+//                    .from(from)
+//                    .where(where)
+//                    .other(other)
+//                    .executeForList(this::mapToEntity, queryParams);
+            return getUserOrUsers()
                     .where(where)
                     .other(other)
                     .executeForList(this::mapToEntity, queryParams);
+
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
+    }
+
+    private QueryResult getUserOrUsers() {
+        return queryHelper
+                .query("SELECT *")
+                .from("infolab.users");
     }
 
     /**

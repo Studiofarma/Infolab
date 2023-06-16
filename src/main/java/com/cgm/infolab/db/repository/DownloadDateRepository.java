@@ -2,7 +2,6 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
@@ -54,7 +53,7 @@ public class DownloadDateRepository {
         map.put("roomName", roomName.value());
 
         queryHelper
-                .forUSer(username)
+                .forUser(username)
                 .query(DOWNLOAD_DATES_INSERT_SELECT)
                 .join(DOWNLOAD_DATES_JOIN)
                 .where(DOWNLOAD_DATES_WHERE_NOT_DOWNLOADED_AND_ROOMNAME)
