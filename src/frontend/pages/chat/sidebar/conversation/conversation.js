@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
 
 import { MarkdownService } from "../../../../services/markdown-services";
+import { CookieService } from "../../../../services/cookie-service";
 
 import "../../../../components/icon";
 import { IconNames } from "../../../../enums/icon-names";
@@ -25,10 +26,6 @@ class Conversation extends LitElement {
 			padding: 12px 12px;
 			cursor: pointer;
 			transition: 0.5s;
-		}
-
-		.chat-box:hover {
-			background-color: #235188;
 		}
 
 		.date-box {
@@ -81,41 +78,37 @@ class Conversation extends LitElement {
 			this.notificationOpacity = "block";
 		}
 
-		let timestamp = new Date(
-			this.chat.lastMessage.timestamp
-		).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-
 		return html`
 			<div class="chat-box">
-				<il-avatar .chat=${this.chat}></il-avatar>
+				<il-avatar
+					.avatarLink=${this.chat.avatarLink}
+					.name=${this.chat.roomName}
+					.id=${this.chat.id}
+				></il-avatar>
 				<div class="name-box">
-					<p class="chat-name">${this.chat.name}</p>
+					<p class="chat-name">${this.chatNameFormatter(this.chat.roomName)}</p>
 					<p class="last-message">
-						${resolveMarkdown(
-							MarkdownService.parseMarkdown(
-								this.fixLastMessageLength(
-									this.chat.lastMessage.sender +
-										": " +
-										this.chat.lastMessage.preview
-								)
-							)
+						${this.lastMessageTextFormatter(
+							this.chat.lastMessage.sender,
+							this.chat.lastMessage.content
 						)}
 					</p>
 				</div>
 				<div class="date-box">
 					<p
-						class="last-message-timestamp ${this.chat.unread > 0
+						class="last-message-timestamp last-message-timestamp ${this.chat
+							.unreadMessages > 0
 							? "unread"
 							: ""}"
 					>
-						${timestamp}
+						${this.compareMessageDate(this.chat.lastMessage.timestamp)}
 					</p>
 					<p class="unread-counter">
-						${this.chat.unread > 0
+						${this.chat.unreadMessages > 0
 							? html`
 									<il-icon
 										style="display:${this.notificationOpacity};"
-										name="${this.getUnreadIconName(this.chat.unread)}"
+										name="${this.getUnreadIconName(this.chat.unreadMessages)}"
 									></il-icon>
 							  `
 							: html``}
@@ -123,6 +116,69 @@ class Conversation extends LitElement {
 				</div>
 			</div>
 		`;
+	}
+
+	compareMessageDate(messageDate) {
+		if (!messageDate) {
+			return "";
+		}
+
+		const today = new Date().toDateString();
+		const message = new Date(messageDate).toDateString();
+
+		if (today === message) {
+			const time = new Date(messageDate).toLocaleTimeString([], {
+				hour: "2-digit",
+				minute: "2-digit",
+			});
+			return time;
+		}
+
+		const yesterday = new Date();
+		yesterday.setDate(yesterday.getDate() - 1);
+
+		if (yesterday.toDateString() === message) {
+			return "Yesterday";
+		}
+
+		const messageYear = new Date(messageDate).getFullYear();
+		const currentYear = new Date().getFullYear();
+
+		if (messageYear === currentYear) {
+			const dayMonth = new Date(messageDate).toLocaleDateString("default", {
+				day: "2-digit",
+				month: "2-digit",
+			});
+			return dayMonth;
+		}
+
+		if (messageYear != currentYear) {
+			const fullDate = new Date(messageDate).toLocaleDateString("default", {
+				day: "2-digit",
+				month: "2-digit",
+				year: "numeric",
+			});
+			return fullDate;
+		}
+
+		return "Date not available";
+	}
+
+	chatNameFormatter(chatName) {
+		let cookie = CookieService.getCookie();
+		if (chatName.includes("-")) {
+			chatName = chatName.split("-");
+			chatName.splice(chatName.indexOf(cookie.username), 1)[0];
+		}
+		return chatName;
+	}
+
+	lastMessageTextFormatter(sender, message) {
+		return resolveMarkdown(
+			MarkdownService.parseMarkdown(
+				this.fixLastMessageLength(sender ? `${sender}: ${message}` : "New Chat")
+			)
+		);
 	}
 
 	fixLastMessageLength(message) {

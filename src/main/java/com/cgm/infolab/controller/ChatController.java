@@ -67,8 +67,8 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-        ChatMessageEntity messageEntity = chatService.saveMessageInDb(message, Username.of(principal.getName()), RoomName.of("general"));
-        return new ChatMessageDto(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender().getName().value());
+        ChatMessageEntity messageEntity = chatService.saveMessageInDbPublicRooms(message, Username.of(principal.getName()), RoomName.of("general"));
+        return new ChatMessageDto(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender().getName().value(), "general");
     }
 
     @MessageMapping("/chat.send.{destinationUser}")
@@ -81,9 +81,9 @@ public class ChatController {
             Principal principal){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         log.info(String.format("message from %s to %s", username, destinationUser));
-        chatService.saveMessageInDb(message, Username.of(principal.getName()),
+        ChatMessageEntity messageEntity = chatService.saveMessageInDbPrivateRooms(message, Username.of(principal.getName()),
             RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)));
-        return message;
+        return new ChatMessageDto(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender().getName().value(), RoomName.getRoomNameByUsers(Username.of(principal.getName()), Username.of(destinationUser)));
     }
 }
 

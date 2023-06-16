@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 
 public class LastMessageDto {
-    private String preview;
+    private String content;
     private LocalDateTime timestamp;
 
     private String sender;
@@ -14,8 +14,8 @@ public class LastMessageDto {
     private LastMessageDto() {
     }
 
-    private LastMessageDto(String preview, LocalDateTime timestamp, String sender) {
-        this.preview = preview;
+    private LastMessageDto(String content, LocalDateTime timestamp, String sender) {
+        this.content = content;
         this.timestamp = timestamp;
         this.sender = sender;
     }
@@ -28,12 +28,12 @@ public class LastMessageDto {
         return new LastMessageDto(null, null, null);
     }
 
-    public String getPreview() {
-        return preview;
+    public String getContent() {
+        return content;
     }
 
-    public void setPreview(String preview) {
-        this.preview = preview;
+    public void setContent(String content) {
+        this.content = content;
     }
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

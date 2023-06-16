@@ -6,6 +6,7 @@ import com.cgm.infolab.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,15 +29,15 @@ public class ChatApiMessagesController {
     // Esempi di messaggi HTTP https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages
     // Potete provare le chiamate all'API aprendo un browser all'indirizzo http://localhost:8081/api/messages/general (vi chiedera' username e password. user1 - password1)
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
-    @GetMapping("/api/messages/general")
-    public List<ChatMessageDto> getAllMessagesGeneral(@RequestParam(required = false) Integer numberOfMessages, Principal principal) {
+    @GetMapping("/api/messages/{roomName}")
+    public List<ChatMessageDto> getAllMessages(@PathVariable("roomName") String roomName, Integer numberOfMessages, Principal principal) {
         if (numberOfMessages == null) {
             numberOfMessages = -1;
         }
 
         List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
         List<ChatMessageEntity> chatMessageEntities =
-                chatService.getAllMessagesGeneral(numberOfMessages, Username.of(principal.getName()));
+                chatService.getAllMessages(numberOfMessages, Username.of(principal.getName()), roomName);
 
         if (chatMessageEntities.size() > 0) {
             chatMessageDtos = chatMessageEntities.stream().map(chatService::fromEntityToChatMessageDto).toList();

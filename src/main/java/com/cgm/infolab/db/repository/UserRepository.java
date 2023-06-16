@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 public class UserRepository {
@@ -61,6 +59,23 @@ public class UserRepository {
     }
 
     /**
+     * Metodo che risale all'id di un utente dal suo nome
+     * @param username da cui risalire agli users
+     * @return una lista di users.
+     */
+    public List<UserEntity> getByUsernameWithLike(String username) {
+        return queryUsers(String.format("%s WHERE username ILIKE ? || ?", USERS_QUERY) , username, "%");
+    }
+
+    private List<UserEntity> queryUsers(String query, String username, String wildCard) {
+        try {
+            return jdbcTemplate.query(query, this::mapToEntity, username, wildCard);
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    /**
      * Metodo che ritorna un utente dal database, ricavandolo dall'id
      * @param id da cui risalire all'utente
      * @return oggetto User con il nome preso dal db. Ritorna null se l'user non esiste.
@@ -101,6 +116,7 @@ public class UserRepository {
      */
     private UserEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
         return UserEntity.of(rs.getLong("id"),
-                Username.of(rs.getString("username")));
+                Username.of(rs.getString("username")),
+                rs.getString("description"));
     }
 }

@@ -79,4 +79,9 @@
         <addPrimaryKey schemaName="infolab" tableName="rooms_subscriptions" columnNames="room_id, user_id"/>
         <addPrimaryKey schemaName="infolab" tableName="download_dates" columnNames="download_timestamp, user_id, message_id"/>
     </changeSet>
+    <changeSet id="users_description_field" author="Luca Minini">
+        <addColumn schemaName="infolab" tableName="users">
+            <column name="description" type="varchar(500)" />
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

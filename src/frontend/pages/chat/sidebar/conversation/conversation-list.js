@@ -2,70 +2,411 @@ import { LitElement, html, css } from "lit";
 
 import { CookieService } from "../../../../services/cookie-service";
 import { OpenChatsService } from "../../../../services/open-chats-service";
+import { UsersService } from "../../../../services/users-service";
 
 import "../../../../components/avatar.js";
 import "./conversation.js";
 import { ConversationDto } from "../../../../models/conversation-dto.js";
 
 class ConversationList extends LitElement {
-  static properties = {
-    pharmaciesList: { state: true },
-  };
+	static properties = {
+		conversationList: { state: true },
+		activeChatName: { state: "general" },
+		conversationListSearched: [],
+	};
 
-  static styles = css`
-    * {
-      box-sizing: border-box;
-      padding: 0;
-      margin: 0;
-    }
+	static get properties() {
+		return {
+			conversationList: { type: {} },
+			conversationListSearched: { type: {} },
+		};
+	}
 
-    .pharmaciesList {
-      overflow-y: scroll;
-      display: flex;
-      height: auto;
-      flex-direction: column;
-      gap: 10px;
-      height: calc(100vh - 70px);
-    }
+	static styles = css`
+		* {
+			box-sizing: border-box;
+			padding: 0;
+			margin: 0;
+		}
 
-    ::-webkit-scrollbar {
-      width: 0px;
-    }
-  `;
+		.conversation-list {
+			overflow-y: scroll;
+			display: flex;
+			height: auto;
+			flex-direction: column;
+			gap: 10px;
+			margin-right: 3px;
+		}
 
-  constructor() {
-    super();
-    this.pharmaciesList = [];
-    this.setList();
-  }
+		::-webkit-scrollbar {
+			width: 4px;
+			margin-right: 10px;
+		}
 
-  render() {
-    return html` <div class="pharmaciesList">${this.renderList()}</div> `;
-  }
+		::-webkit-scrollbar-track {
+			background-color: none;
+		}
 
-  setList() {
-    let tmp = [];
-    let cookie = CookieService.getCookie();
+		::-webkit-scrollbar-thumb {
+			border-radius: 10px;
+			background-color: rgb(54, 123, 251);
+		}
 
-    OpenChatsService.getOpenChats(cookie.username, cookie.password)
-      .then((element) => {
-        element["data"].forEach((pharmacy) => {
-          tmp.push(pharmacy);
-        });
+		.conversation {
+			margin-right: 3px;
+			border-radius: 0px 7px 7px 0px;
+			transition: background-color 0.2s;
+		}
 
-        this.pharmaciesList = tmp;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+		.conversation:hover {
+			background-color: #1460b1;
+		}
 
-  renderList() {
-    return this.pharmaciesList.map((pharmacy) => {
-      let conversation = new ConversationDto(pharmacy);
-      return html`<il-conversation .chat=${conversation}></il-conversation>`;
-    });
-  }
+		.active {
+			background-color: #1460b1;
+		}
+
+		.separator {
+			position: sticky;
+			top: 0;
+			padding: 5px 0px 5px 10px;
+			color: #d6d6d6;
+			background: #083c72;
+		}
+
+		.conversation-list-scrollable {
+			height: calc(100vh - 135px);
+			overflow: auto;
+		}
+	`;
+
+	constructor() {
+		super();
+		this.query = "";
+		this.conversationList = [];
+		this.conversationListSearched = [];
+		this.usersList = [];
+		this.tmpConversationListSearched = [];
+		this.tmpConversationList = [];
+		this.onLoad();
+
+		this.activeChatName = "general";
+	}
+
+	render() {
+		return html`
+			<div class="conversation-list-scrollable">
+				<div>
+					<p class="separator">Chat</p>
+					<div class="conversation-list">${this.renderConversationList()}</div>
+				</div>
+				<div>
+					<p class="separator">
+						${this.conversationListSearched.length > 0 ? "New Chat" : ""}
+					</p>
+					<div class="conversation-list">
+						${this.renderConversationSearched()}
+					</div>
+				</div>
+			</div>
+		`;
+	}
+
+	searchChat(query) {
+		this.query = query;
+		this.update();
+	}
+
+	scrollToTop() {
+		let element = this.renderRoot.querySelector(
+			"div.conversation-list-scrollable"
+		);
+		element.scrollTo({ top: 0 });
+	}
+
+	async onLoad() {
+		await this.getAllRooms().then(async () => {
+			await this.getAllUsers().then(() => {
+				this.update();
+			});
+		});
+	}
+
+	async getAllRooms() {
+		let cookie = CookieService.getCookie();
+
+		try {
+			await OpenChatsService.getOpenChats(
+				cookie.username,
+				cookie.password
+			).then((rooms) => {
+				rooms["data"].forEach((room) => {
+					this.conversationList.push(room);
+				});
+			});
+
+			this.conversationList.sort(this.compareTimestamp);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	async getAllUsers() {
+		let cookie = CookieService.getCookie();
+		try {
+			await UsersService.GetUsers(
+				this.query,
+				cookie.username,
+				cookie.password
+			).then((users) => {
+				users["data"].forEach((user) => {
+					if (user.name != cookie.username) {
+						this.setUsersList(user);
+					}
+				});
+			});
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
+	setList(message) {
+		if (message) {
+			let conversationIndex = this.conversationList.findIndex(
+				(conversation) => conversation.roomName == message.roomName
+			);
+
+			let conversation = this.convertMessageToConversation(message);
+
+			this.conversationList[conversationIndex] = conversation;
+			this.conversationList.sort(this.compareTimestamp);
+		}
+
+		this.update();
+	}
+
+	convertMessageToConversation(message) {
+		return {
+			roomName: message.roomName,
+			avatarLink: null,
+			lastMessage: {
+				content: message.content,
+				timestamp: message.timestamp,
+				sender: message.sender,
+			},
+			unreadMessages: 0,
+		};
+	}
+
+	setUsersList(user) {
+		let cookie = CookieService.getCookie();
+
+		let roomName = this.chatNameRecomposer(cookie.username, user.name);
+
+		let isPresent = this.conversationList.some(
+			(obj) => obj.roomName === roomName
+		);
+
+		if (!isPresent) {
+			const roomFormatted = this.convertUserToRoom(roomName);
+			this.conversationListSearched.push(roomFormatted);
+		}
+	}
+
+	convertUserToRoom(roomName) {
+		return {
+			roomName: roomName,
+			avatarLink: null,
+			unreadMessages: 0,
+			lastMessage: {
+				preview: null,
+				sender: null,
+				timestamp: null,
+			},
+		};
+	}
+
+	compareTimestamp(a, b) {
+		var timestampA = Date.parse(a.lastMessage.timestamp);
+		var timestampB = Date.parse(b.lastMessage.timestamp);
+		return timestampB - timestampA;
+	}
+
+	renderConversationList() {
+		let conversationList = this.searchConversation([...this.conversationList]);
+
+		return conversationList.map((pharmacy, index) => {
+			let conversation = new ConversationDto(pharmacy);
+			if (
+				conversation.lastMessage.content ||
+				conversation.roomName == this.activeChatName
+			) {
+				return html`<il-conversation
+					class=${"conversation " +
+					(conversation.roomName == this.activeChatName ? "active" : "")}
+					.chat=${conversation}
+					@click=${() => {
+						this.activeChatName = conversation.roomName;
+						this.updateMessages(conversation.roomName);
+
+						this.setList(null);
+						this.cleanSearchInput();
+					}}
+				></il-conversation>`;
+			} else {
+				let conversationIndex = this.conversationList.findIndex(
+					(obj) => obj.roomName == conversation.roomName
+				);
+				let delChat = this.conversationList.splice(conversationIndex, 1)[0];
+				this.conversationListSearched.unshift(delChat);
+				return null;
+			}
+		});
+	}
+
+	searchConversation(list) {
+		if (this.query) {
+			list = list.filter((conversation) =>
+				conversation.roomName.includes(this.query)
+			);
+		}
+
+		return list;
+	}
+
+	renderConversationSearched() {
+		let conversationListSearched = this.searchConversation([
+			...this.conversationListSearched,
+		]);
+
+		return conversationListSearched.map((pharmacy) => {
+			let conversation = new ConversationDto(pharmacy);
+			return html`<il-conversation
+				class=${"conversation new-conversation " +
+				(conversation.roomName == this.activeChatName ? "active" : "")}
+				.chat=${conversation}
+				@click=${() => {
+					this.activeChatName = conversation.roomName;
+					this.updateMessages(conversation.roomName);
+					this.cleanSearchInput();
+					this.update();
+				}}
+			></il-conversation>`;
+		});
+	}
+
+	onMessageInNewChat(conversation, message) {
+		if (this.updateListOnConversationClick(conversation)) {
+			this.scrollToTop();
+		}
+		this.setList(message);
+		this.update();
+	}
+
+	updateListOnConversationClick(conversation) {
+		const roomFormatted = new ConversationDto(conversation);
+
+		let conversationIndex = this.conversationListSearched.findIndex(
+			(conversation) => conversation.roomName == roomFormatted.roomName
+		);
+
+		if (conversationIndex == -1) return false;
+
+		this.moveElementToList(
+			this.conversationList,
+			this.conversationListSearched,
+			conversationIndex
+		);
+		return true;
+	}
+
+	moveElementToList(targetList, sourceList, elementIndex) {
+		const elementToMove = sourceList.splice(elementIndex, 1)[0];
+		targetList.unshift(elementToMove);
+	}
+
+	updateMessages(roomName) {
+		this.dispatchEvent(
+			new CustomEvent("update-message", {
+				detail: {
+					roomName: roomName,
+				},
+				bubbles: true,
+				composed: true,
+			})
+		);
+
+		let messageInput = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > div > il-input-controls")
+			.shadowRoot.querySelector(
+				"#inputControls > div.container > div > il-input-field"
+			)
+			.shadowRoot.querySelector("#message-input");
+
+		messageInput.focus();
+	}
+
+	cleanSearchInput() {
+		let searchInput = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > il-sidebar")
+			.shadowRoot.querySelector("div > il-search")
+			.shadowRoot.querySelector("div > div > input");
+		searchInput.value = "";
+		this.searchChat(searchInput.value);
+	}
+
+	selectChat(selectedChatName) {
+		let cookie = CookieService.getCookie();
+
+		for (let conversation of this.conversationList) {
+			if (this.chatNameFormatter(conversation.roomName) == selectedChatName) {
+				this.activeChatName = conversation.roomName;
+				this.updateMessages(this.activeChatName);
+				return;
+			}
+		}
+
+		selectedChatName = this.chatNameFormatter(
+			selectedChatName,
+			cookie.username
+		);
+
+		this.conversationList.push({
+			avatarLink: null,
+			roomName: selectedChatName,
+			unreadMessages: 0,
+			lastMessage: {
+				content: null,
+				sender: null,
+				timestamp: null,
+			},
+		});
+
+		this.activeChatName = selectedChatName;
+		this.updateMessages(this.activeChatName);
+
+		this.update();
+	}
+
+	chatNameRecomposer(user1, user2) {
+		let array = [user1, user2].sort();
+
+		return array.join("-");
+	}
+
+	chatNameFormatter(chatName) {
+		let cookie = CookieService.getCookie();
+		if (chatName.includes("-")) {
+			chatName = chatName.split("-");
+			chatName.splice(chatName.indexOf(cookie.username), 1);
+			return chatName[0];
+		}
+		return chatName;
+	}
 }
 
 customElements.define("il-conversation-list", ConversationList);
