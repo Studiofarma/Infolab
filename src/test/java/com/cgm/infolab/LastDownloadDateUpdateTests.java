@@ -19,7 +19,6 @@ import java.util.List;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LastDownloadDateUpdateTests {
     @Autowired
     public ChatService chatService;
@@ -75,7 +74,6 @@ public class LastDownloadDateUpdateTests {
     }
 
     @Test
-    @Order(1)
     void whenMessageIsDownloaded_lastDownloadDateExistsForUserThatDownloaded_doesNotForOthers() {
 
         chatService.saveMessageInDbPublicRooms(messageDtos[0], loggedInUser.getName(), general.getName());
@@ -105,7 +103,6 @@ public class LastDownloadDateUpdateTests {
     }
 
     @Test
-    @Order(2)
     void whenOtherMessagesAreDownloaded_lastDownloadDateExistsForNewMessages_notUpdatedForPreviousMessages() {
 
         chatService.saveMessageInDbPublicRooms(messageDtos[0], loggedInUser.getName(), general.getName());

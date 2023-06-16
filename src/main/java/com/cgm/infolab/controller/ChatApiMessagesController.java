@@ -47,7 +47,7 @@ public class ChatApiMessagesController {
 
         chatService.updateReadTimestamp(
                 Username.of(principal.getName()),
-                RoomName.of("general")
+                RoomName.of(roomName)
         );
 
         return chatMessageDtos;
