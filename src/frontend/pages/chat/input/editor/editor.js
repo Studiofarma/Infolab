@@ -37,26 +37,70 @@ export class Editor extends LitElement {
 
 		.formatting-bar {
 			width: 100%;
-			background: #bcc7d9;
+			background: #0a478a;
 			display: flex;
 			align-items: center;
 			gap: 10px;
 			padding: 0px 10px;
+			border-top: 1px solid rgb(97, 104, 112);
+			border-right: 1px solid rgb(97, 104, 112);
+			border-left: 1px solid rgb(97, 104, 112);
+			border-radius: 6px 6px 0 0;
 		}
 
-		il-button-text {
-			margin-left: auto;
-		}
-
-		textarea {
+		.buttons-container {
 			width: 100%;
-			height: 150px;
-			border: none;
-			outline: none;
+			display: flex;
+			gap: 5px;
+			margin-top: 8px;
+		}
+
+		.textarea-container {
+			display: flex;
+			justify-content: center;
+			height: 69%;
+
+			background-color: rgb(8 60 114);
+			border: 1px solid #616870;
+			border-radius: 0 0 5px 5px;
+		}
+
+		.text-area,
+		.previewer {
+			width: 99%;
+			height: 91%;
+
 			padding: 5px;
+
+			border-radius: 5px;
+
 			resize: none;
 			overflow: auto;
+
 			font-family: inherit;
+			font-size: 12px;
+
+			background: rgb(6, 43, 82);
+			color: white;
+		}
+
+		.text-area {
+			margin-top: 7px;
+		}
+
+		.text-area::placeholder {
+			color: #ddd;
+		}
+
+		.previewer {
+			background: #083c72;
+			border: 1px solid transparent;
+			margin-top: 6px;
+		}
+
+		.previewer > p {
+			color: white;
+			font-size: 12px;
 		}
 
 		div[class*="select-"] {
@@ -109,13 +153,12 @@ export class Editor extends LitElement {
 			margin-left: 25px;
 		}
 
-		.previewer {
-			padding: 5px;
-			width: 100%;
-			height: calc(100% - 40px);
-			background: #ffffff;
-			overflow-y: auto;
-			cursor: default;
+		il-formatting-button {
+			color: #c2c0c0;
+		}
+
+		.button-text {
+			transform: translateY(1px);
 		}
 	`;
 
@@ -123,100 +166,90 @@ export class Editor extends LitElement {
 		return html`
 			<!-- diventerà un componente -->
 			<div class="formatting-bar">
-				<il-formatting-button
-					content=${IconNames.bold}
-					@click=${this.insertBold}
-				></il-formatting-button>
-				<il-formatting-button
-					content=${IconNames.italic}
-					@click=${this.insertItalic}
-				></il-formatting-button>
-				<il-formatting-button
-					content=${IconNames.strikethrough}
-					@click=${this.insertStrike}
-				></il-formatting-button>
-				<il-formatting-button
-					content=${IconNames.link}
-					@click=${this.insertLink}
-				></il-formatting-button>
-				<il-formatting-button
-					content=${IconNames.minus}
-					@click=${this.insertLine}
-				></il-formatting-button>
+				<div class="buttons-container">
+					<il-button-text
+            @click=${() => this.setPreviewer(false)}
+            class="button-text"
+						text="Write"
+            styleProp=${
+							this.openPreview
+								? "border: 1px solid transparent; background:none; transform: translateY(1px);"
+								: ""
+						}
+					></il-button-text>
+					<il-button-text
+            @click=${() => this.setPreviewer(true)}
+            class="button-text"
+						text="Preview"
+            styleProp=${
+							this.openPreview
+								? ""
+								: "border: 1px solid transparent; background: none; transform: translateY(1px);"
+						}
+					></il-button-text>
+       </div>
+						<il-formatting-button
+							content=${IconNames.bold}
+							@click=${this.insertBold}
+						></il-formatting-button>
 
-				<div class="select-list">
-					<il-formatting-button
-						content=${IconNames.listBulleted}
-						@click=${this.insertList}
-					></il-formatting-button>
-					<div class="dropdown">
-						<div class="option">
-							<label for="disc">
-								<ul>
-									<li>example</li>
-									<li>example</li>
-									<li>example</li>
-								</ul>
-							</label>
-							<input type="radio" name="forList" id="disc" checked />
-						</div>
+						<il-formatting-button
+							content=${IconNames.italic}
+							@click=${this.insertItalic}
+						></il-formatting-button>
 
-						<div class="option">
-							<label for="number">
-								<ol>
-									<li>example</li>
-									<li>example</li>
-									<li>example</li>
-								</ol>
-							</label>
-							<input type="radio" name="forList" id="number" />
-						</div>
+						<il-formatting-button
+							content=${IconNames.strikethrough}
+							@click=${this.insertStrike}
+						></il-formatting-button>
+
+						<il-formatting-button
+							content=${IconNames.link}
+							@click=${this.insertLink}
+						></il-formatting-button>
+
+						<il-formatting-button
+							content=${IconNames.minus}
+							@click=${this.insertLine}
+						></il-formatting-button>
+
+						<il-formatting-button
+								content=${IconNames.listBulleted}
+								@click=${this.insertListBulleted}
+						></il-formatting-button>
+
+							<il-formatting-button
+								content=${IconNames.listNumbered}
+								@click=${this.insertListNumbered}
+						></il-formatting-button>
+						
+            <il-formatting-button
+              content=${IconNames.title}
+              @click=${this.insertHeading}
+            ></il-formatting-button>
+
+						
 					</div>
+          <div class="textarea-container">
+					${
+						!this.openPreview
+							? html`<textarea
+									class="text-area"
+									placeholder="Scrivi un messaggio..."
+									@input=${this.onMessageInput}
+									@keydown=${this.checkList}
+									.value=${this.message}
+							  >
+							  </textarea>`
+							: html`<div class="previewer">
+									${resolveMarkdown(
+										MarkdownService.parseMarkdown(this.message)
+									)}
+							  </div>`
+					}
+          </div>
 				</div>
-
-				<div class="select-heading">
-					<il-formatting-button
-						content=${IconNames.title}
-						@click=${this.insertHeading}
-					></il-formatting-button>
-					<div class="dropdown">
-						<div class="option">
-							<label for="h1">
-								<h1>Titolo 1</h1>
-							</label>
-							<input type="radio" name="forHeading" id="h1" checked />
-						</div>
-						<div class="option">
-							<label for="h2">
-								<h1>Titolo 2</h1>
-							</label>
-							<input type="radio" name="forHeading" id="h2" />
-						</div>
-						<div class="option">
-							<label for="h3">
-								<h1>Titolo 3</h1>
-							</label>
-							<input type="radio" name="forHeading" id="h3" />
-						</div>
-					</div>
-				</div>
-
-				<il-button-text
-					@click=${this.togglePreviewer}
-					text=${this.openPreview ? "Chiudi preview" : "Apri preview "}
-				></il-button-text>
 			</div>
-			${!this.openPreview
-				? html`<textarea
-						placeholder="Scrivi un messaggio..."
-						@input=${this.onMessageInput}
-						@keydown=${this.checkList}
-						.value=${this.message}
-				  >
-				  </textarea>`
-				: html`<div class="previewer">
-						${resolveMarkdown(MarkdownService.parseMarkdown(this.message))}
-				  </div>`}
 		`;
 	}
 
@@ -225,8 +258,8 @@ export class Editor extends LitElement {
 		this.message = inputEl.value;
 	}
 
-	togglePreviewer() {
-		this.openPreview = !this.openPreview;
+	setPreviewer(opened) {
+		this.openPreview = opened;
 	}
 
 	checkList(event) {
@@ -331,46 +364,27 @@ export class Editor extends LitElement {
 		if (text.startsWith("[") && text.includes("](") && text.endsWith(")"))
 			this.insertInTextArea(text.replace(regEx, ""));
 		else this.insertInTextArea("[" + text + "](insert link)");
+
 	}
+
 
 	insertLine() {
 		this.insertInTextArea("\n - - - \n");
 	}
 
-	insertList() {
+	insertListBulleted() {
 		const text = this.getText("punto");
-		this.insertInTextArea(this.getTypeOfList(text));
+		this.insertInTextArea("* " + text);
+	}
+
+	insertListNumbered() {
+		const text = this.getText("punto");
+		this.insertInTextArea("1. " + text);
 	}
 
 	insertHeading() {
 		const text = this.getText("Titolo");
-		this.insertInTextArea(this.getTypeOfHeading(text));
-	}
-
-	getTypeOfList(text) {
-		const checkedList =
-			this.renderRoot.querySelector(`input[name="forList"]:checked`) ?? null;
-
-		switch (checkedList.id) {
-			case "disc":
-				return "* " + text;
-			case "number":
-				return "1. " + text;
-		}
-	}
-
-	getTypeOfHeading(text) {
-		const checkedHeading =
-			this.renderRoot.querySelector(`input[name="forHeading"]:checked`) ?? null;
-
-		switch (checkedHeading.id) {
-			case "h1":
-				return "# " + text;
-			case "h2":
-				return "## " + text;
-			case "h3":
-				return "### " + text;
-		}
+		this.insertInTextArea("### " + text);
 	}
 
 	getTextarea() {

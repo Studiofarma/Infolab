@@ -101,8 +101,8 @@ export class InputControls extends LitElement {
 		il-editor {
 			display: none;
 			transition: 0.5s;
-			height: 0px;
 			overflow-y: hidden;
+			border-radius: 6px;
 		}
 
 		il-input-field[type="text"].closed {

@@ -12,6 +12,8 @@ import { CookieService } from "../../services/cookie-service";
 import { IconNames } from "../../enums/icon-names";
 
 import "../../components/button-icon";
+import "../../components/icon";
+import "../../components/forward-list";
 import "./input/input-controls.js";
 import "./sidebar/sidebar.js";
 import "./header/chat-header.js";
@@ -42,6 +44,7 @@ export class Chat extends LitElement {
 		this.message = "";
 		this.nMessages = 0;
 		this.activeChatName = "general";
+		this.forwardListVisibility = false;
 		this.scrolledToBottom = false;
 		window.addEventListener("resize", () => {
 			this.scrollToBottom();
@@ -81,6 +84,8 @@ export class Chat extends LitElement {
 		}
 
 		.chat {
+			display: flex;
+			flex-direction: column;
 			position: relative;
 		}
 
@@ -121,14 +126,10 @@ export class Chat extends LitElement {
 			grid-auto-rows: max-content;
 			gap: 30px;
 			width: 100%;
-			height: calc(100vh - 70px);
+			height: calc(100vh - 141px);
 			overflow-y: auto;
 			padding: 20px;
-			padding-top: 100px;
-		}
-
-		.message-box::-webkit-scrollbar {
-			width: 0px;
+			margin-top: 71px;
 		}
 
 		li {
@@ -144,17 +145,9 @@ export class Chat extends LitElement {
 			z-index: 3;
 		}
 
-		:not(.dropdown)::-webkit-scrollbar {
-			background-color: #0074bc;
-			border-radius: 10px;
-			border: 5px solid #083c72;
-		}
-
-		:not(.dropdown)::-webkit-scrollbar-thumb {
-			background-color: #0da2ff;
-			border-radius: 10px;
-			width: 5px;
-			border: 3px solid #083c72;
+		.message-box .sender .message > p::selection {
+			color: black;
+			background-color: white;
 		}
 
 		input {
@@ -188,6 +181,18 @@ export class Chat extends LitElement {
 			border-right: 12px solid transparent;
 			filter: blur(0.8px);
 			z-index: 2;
+		}
+
+		.sender a:link {
+			color: black;
+		}
+
+		.sender a:visited {
+			color: black;
+		}
+
+		.sender a:hover {
+			color: white;
 		}
 
 		.receiver {
@@ -261,6 +266,82 @@ export class Chat extends LitElement {
 			border-radius: 6px;
 			background-color: rgb(221, 221, 221);
 		}
+
+		.message-box::-webkit-scrollbar {
+			width: 4px;
+			margin-right: 10px;
+		}
+
+		.message-box::-webkit-scrollbar-track {
+			background-color: none;
+		}
+
+		.message-box::-webkit-scrollbar-thumb {
+			border-radius: 10px;
+			background-color: rgb(54, 123, 251);
+			min-height: 40px;
+		}
+
+		.message-settings {
+			opacity: 0;
+			position: absolute;
+			top: 50%;
+			transform: translate(0, -50%);
+
+			background: white;
+			border-radius: 6px;
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+		}
+
+		.sender .message-settings {
+			color: black;
+			left: -40px;
+		}
+
+		.receiver .message-settings {
+			right: -40px;
+		}
+
+		.sender:hover .message-settings,
+		.receiver:hover .message-settings {
+			opacity: 1;
+		}
+
+		.message-settings:hover,
+		.menu-options:hover .message-settings {
+			opacity: 1;
+		}
+
+		.menu-options {
+			display: none;
+			top: -3px;
+			width: max-content;
+
+			padding: 5px;
+		}
+
+		.menu-options-section {
+			cursor: pointer;
+			padding: 4px;
+			border-radius: 5px;
+			user-select: none;
+
+			display: flex;
+			align-items: center;
+			gap: 3px;
+		}
+
+		.menu-options-section:hover {
+			background-color: #f5f5f5;
+		}
+
+		.message-settings:hover .menu-options {
+			display: block !important;
+		}
+
+		.message-settings:hover il-button-icon {
+			display: none !important;
+		}
 	`;
 
 	render() {
@@ -301,6 +382,7 @@ export class Chat extends LitElement {
 											this.messages[index - 1]?.timestamp,
 											item.timestamp
 										)}
+
 										<li
 											class=${item.sender == this.login.username
 												? "sender"
@@ -320,10 +402,66 @@ export class Chat extends LitElement {
 													minute: "2-digit",
 												})}
 											</p>
+											<div class="message-settings">
+												<il-button-icon
+													content="${IconNames.dotsHorizontal}"
+													@click=${() => {
+														console.log("Opzioni pressed");
+													}}
+													styleProp="color: black;"
+												>
+												</il-button-icon>
+												<div class="menu-options">
+													<div
+														class="menu-options-section"
+														@click=${() => {
+															this.copyToClipboard(item.content);
+														}}
+													>
+														<il-icon name=${IconNames.mdiContentCopy}></il-icon>
+														Copia
+													</div>
+
+													<div
+														class="menu-options-section"
+														@click=${() => {
+															this.forwardMessage(item.content);
+														}}
+													>
+														<il-icon name=${IconNames.mdiShare}></il-icon>
+														Inoltra
+													</div>
+
+													${item.sender != this.login.username
+														? html`<div
+																class="menu-options-section"
+																@click=${() => {
+																	this.goToChat(item.sender);
+																}}
+														  >
+																<il-icon name=${IconNames.mdiMessage}></il-icon>
+																Scrivi in privato
+														  </div>`
+														: null}
+
+													<div
+														class="menu-options-section"
+														@click=${() => {
+															this.deleteMessage(item);
+															this.update();
+														}}
+													>
+														<il-icon name=${IconNames.mdiDelete}></il-icon>
+														Elimina
+													</div>
+												</div>
+											</div>
 										</li>
 									`
 							)}
 						</ul>
+						<il-forward-list></il-forward-list>
+
 						<il-button-icon
 							class="scroll-button"
 							@click="${this.scrollToBottom}"
@@ -337,6 +475,36 @@ export class Chat extends LitElement {
 				</section>
 			</main>
 		`;
+	}
+
+	forwardMessage(message) {
+		let forwardListElement = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > div > il-forward-list");
+
+		let e = { message: message };
+
+		forwardListElement.forwardMessageHandler(e);
+	}
+
+	copyToClipboard(text) {
+		navigator.clipboard.writeText(text);
+	}
+
+	deleteMessage(message) {
+		console.log(message);
+		this.messages.splice(this.messages.indexOf(message), 1);
+	}
+
+	goToChat(roomName) {
+		let conversationList = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > il-sidebar")
+			.shadowRoot.querySelector("div > il-conversation-list");
+
+		conversationList.selectChat(roomName);
 	}
 
 	compareMessageDate(firstMessageDate, messageDate1, messageDate2) {
@@ -455,9 +623,48 @@ export class Chat extends LitElement {
 		);
 	}
 
-	onMessage(payload) {
-		var message = JSON.parse(payload.body);
+	messageNotification(message) {
+		if (!message.content || this.login.username === message.sender) {
+			return;
+		}
 
+		let conversationList = document
+			.querySelector("body > il-app")
+			.shadowRoot.querySelector("il-chat")
+			.shadowRoot.querySelector("main > section > il-sidebar")
+			.shadowRoot.querySelector("div > il-conversation-list");
+
+		let roomName = this.activeChatNameFormatter(message.roomName);
+
+		if (Notification.permission === "granted") {
+			let notification = new Notification(roomName, {
+				body: message.content,
+			});
+
+			notification.onclick = function () {
+				conversationList.selectChat(roomName);
+				window.focus("/");
+			};
+		} else if (Notification.permission !== "denied") {
+			Notification.requestPermission().then(function (permission) {
+				if (permission === "granted") {
+					let notification = new Notification(roomName, {
+						body: message.content,
+					});
+
+					notification.onclick = function () {
+						conversationList.selectChat(
+							this.activeChatNameFormatter(message.roomName)
+						);
+						window.focus("/");
+					};
+				}
+			});
+		}
+	}
+
+	onMessage(payload) {
+		let message = JSON.parse(payload.body);
 		if (message.content) {
 			if (this.activeChatName == message.roomName) {
 				this.messages.push(message);
@@ -480,6 +687,8 @@ export class Chat extends LitElement {
 			let room = conversationListElement.convertUserToRoom(message.roomName);
 			conversationListElement.onMessageInNewChat(room, message);
 		}
+
+		this.messageNotification(message);
 	}
 
 	sendMessage(e) {

@@ -30,12 +30,17 @@ class ConversationList extends LitElement {
 		}
 
 		.conversation-list {
-			overflow-y: scroll;
 			display: flex;
-			height: auto;
 			flex-direction: column;
 			gap: 10px;
 			margin-right: 3px;
+		}
+
+		.container {
+			max-height: 806px;
+			display: flex;
+			flex-direction: column;
+			overflow-y: scroll;
 		}
 
 		::-webkit-scrollbar {

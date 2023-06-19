@@ -114,7 +114,22 @@ public class SecurityConfiguration {
                 .password(String.format("{noop}%s", "password4"))
                 .roles("user")
                 .build();
-        return new InMemoryUserDetailsManager(user1, user2, user3, user4);
+        UserDetails user5 = User
+                .withUsername("davide.giudici")
+                .password(String.format("{noop}%s", "password"))
+                .roles("user")
+                .build();
+        UserDetails user6 = User
+                .withUsername("mattia.pedersoli")
+                .password(String.format("{noop}%s", "password"))
+                .roles("user")
+                .build();
+        UserDetails user7 = User
+                .withUsername("luca.minini")
+                .password(String.format("{noop}%s", "password"))
+                .roles("user")
+                .build();
+        return new InMemoryUserDetailsManager(user1, user2, user3, user4, user5, user6, user7);
     }
 
     private static void authInHeadersOrQueryString(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
