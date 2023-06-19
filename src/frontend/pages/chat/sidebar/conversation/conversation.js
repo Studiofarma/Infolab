@@ -181,7 +181,9 @@ class Conversation extends LitElement {
     }
     return resolveMarkdown(
       MarkdownService.parseMarkdown(
-        this.fixLastMessageLength(sender ? `${sender}: ${message}` : "New Chat")
+        this.fixLastMessageLength(
+          sender ? `${sender}: ${message}` : "Nuova Conversazione"
+        )
       )
     );
   }
