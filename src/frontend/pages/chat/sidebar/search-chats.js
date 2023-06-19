@@ -7,6 +7,7 @@ import crossImage from "../../../assets/images/input-search-delete.png";
 
 import "../../../components/button-icon";
 import { IconNames } from "../../../enums/icon-names";
+import { InputRicerca } from "../../../components/input-ricerca";
 
 export class SearchChats extends LitElement {
   static properties = {
@@ -170,6 +171,10 @@ export class SearchChats extends LitElement {
 
       cursor: pointer;
     }
+
+    il-input-ricerca {
+      width: 100%;
+    }
   `;
 
   constructor() {
@@ -182,12 +187,13 @@ export class SearchChats extends LitElement {
     return html`
       <div class="search-chats">
         <div class="container-input">
-          <input
+          <il-input-ricerca></il-input-ricerca>
+          <!--input
             class="search-input"
             type="search"
-            placeholder="Cerca o inizia una nuova conversazione"
+            placeholder="Cerca o inizia una nuova chat"
             @input="${this.searchChat}"
-          />
+          /-->
           <il-button-icon
             class="search-icon"
             content=${IconNames.magnify}
