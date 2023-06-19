@@ -89,14 +89,6 @@ public class ChatMessageRepository {
     public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
 
         String username = rs.getString("username");
-        if (username == null) {
-            throw new EmptyResultDataAccessException(
-                    "This exception handles the case where there are no messages in a room." +
-                        " When trying to get them null will be returned instead of empty response. This is the empty response that will be handled.",
-                    0
-            );
-        }
-
         UserEntity user = UserEntity.of(rs.getLong("sender_id"),
                 Username.of(username));
 

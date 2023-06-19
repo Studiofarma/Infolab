@@ -24,6 +24,8 @@ public class RoomRepository {
     private final String ROOMS_WHERE_ROOMNAME = "r.roomname = :roomName";
     private final String ROOMS_WHERE_ROOMID = "AND r.id = :roomId";
 
+    private final String ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS =
+            "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')";
     private final String ROOMS_AND_LAST_MESSAGES_WHERE_AFTER_DATE = "m.sent_at > :date";
     private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
 
@@ -114,20 +116,20 @@ public class RoomRepository {
                 .from("infolab.rooms r");
     }
 
-    public List<RoomEntity> getAllWhereLastMessageNotNull(Username username) {
-        return queryRooms(null, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
+    public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
+        return queryRooms(ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
     }
 
     public List<RoomEntity> getAfterDate(LocalDate dateLimit, Username username) {
         if (dateLimit == null) {
-            return getAllWhereLastMessageNotNull(username);
+            return getAllRoomsAndLastMessageEvenIfNullInPublicRooms(username);
         }
 
         Map<String, Object> map = new HashMap<>();
         map.put("date", dateLimit);
 
         return queryRooms(
-                ROOMS_AND_LAST_MESSAGES_WHERE_AFTER_DATE,
+                "%s AND %s".formatted(ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS, ROOMS_AND_LAST_MESSAGES_WHERE_AFTER_DATE),
                 ROOMS_AND_LAST_MESSAGES_OTHER,
                 username,
                 map
@@ -163,11 +165,20 @@ public class RoomRepository {
     }
 
     private RoomEntity mapToEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
-        ChatMessageEntity message = chatMessageRepository.mapToEntity(rs, rowNum);
-        return RoomEntity
-                .of(rs.getLong("room_id"),
-                        RoomName.of(rs.getString("roomname")),
-                        VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                        List.of(message));
+        if (rs.getString("content") != null) {
+            ChatMessageEntity message = chatMessageRepository.mapToEntity(rs, rowNum);
+
+            return RoomEntity
+                    .of(rs.getLong("room_id"),
+                            RoomName.of(rs.getString("roomname")),
+                            VisibilityEnum.valueOf(rs.getString("visibility").trim()),
+                            List.of(message));
+        } else {
+            return RoomEntity
+                    .of(rs.getLong("room_id"),
+                            RoomName.of(rs.getString("roomname")),
+                            VisibilityEnum.valueOf(rs.getString("visibility").trim()),
+                            new ArrayList<>());
+        }
     }
 }

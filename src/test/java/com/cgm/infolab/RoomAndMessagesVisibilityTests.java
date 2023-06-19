@@ -2,7 +2,6 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
-import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
@@ -14,16 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "local"})
@@ -45,11 +40,13 @@ public class RoomAndMessagesVisibilityTests {
     public UserEntity[] users =
         {UserEntity.of(Username.of("user0")),
         UserEntity.of(Username.of("user1")),
-        UserEntity.of(Username.of("user2"))};
+        UserEntity.of(Username.of("user2")),
+        UserEntity.of(Username.of("user3"))};
 
     public UserEntity loggedInUser = users[0]; // user0
 
     public RoomEntity general = RoomEntity.general();
+    public RoomEntity anotherPublic = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC);
 
     public ChatMessageDto[] messageDtos =
             {new ChatMessageDto("1 Hello general from user0", users[0].getName().value()),
@@ -70,11 +67,13 @@ public class RoomAndMessagesVisibilityTests {
             userRepository.add(user);
         }
 
+        roomRepository.add(anotherPublic);
         roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[1].getName());
         roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[2].getName());
         roomService.createPrivateRoomAndSubscribeUsers(users[1].getName(), users[2].getName());
+        roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[3].getName());
 
-        chatService.saveMessageInDbPublicRooms(messageDtos[0], users[0].getName(), RoomName.of("general"));
+        chatService.saveMessageInDbPublicRooms(messageDtos[0], users[0].getName(), general.getName());
         chatService.saveMessageInDbPrivateRooms(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"));
         chatService.saveMessageInDbPrivateRooms(messageDtos[2], users[2].getName(), RoomName.of("user1-user2"));
         chatService.saveMessageInDbPrivateRooms(messageDtos[3], users[0].getName(), RoomName.of("user0-user2"));
@@ -92,23 +91,25 @@ public class RoomAndMessagesVisibilityTests {
 
     @Test
     void whenUser0QueriesForRoomsAndLastMessages_canSee3RoomsInOrderWith1MessageEach() {
-        List<RoomEntity> roomsFromDb = new ArrayList<>(roomRepository.getAllWhereLastMessageNotNull(loggedInUser.getName()))
+        List<RoomEntity> roomsFromDb = new ArrayList<>(roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName()))
             .stream()
             .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
             .toList();
 
-        Assertions.assertEquals(3, roomsFromDb.size());
+        Assertions.assertEquals(4, roomsFromDb.size());
 
         Assertions.assertEquals(general.getName(), roomsFromDb.get(0).getName());
-        Assertions.assertEquals("user0-user1", roomsFromDb.get(1).getName().value());
-        Assertions.assertEquals("user0-user2", roomsFromDb.get(2).getName().value());
+        Assertions.assertEquals(anotherPublic.getName(), roomsFromDb.get(1).getName());
+        Assertions.assertEquals("user0-user1", roomsFromDb.get(2).getName().value());
+        Assertions.assertEquals("user0-user2", roomsFromDb.get(3).getName().value());
 
         // NOTE: these assertions are needed to check whether the last messages returned is correct.
         //  For these to work the three previous assertions must be fulfilled.
         //  Actually the order of the rooms is not relevant.
         Assertions.assertEquals(messageDtos[0].getContent(), roomsFromDb.get(0).getMessages().get(0).getContent());
-        Assertions.assertEquals(messageDtos[4].getContent(), roomsFromDb.get(1).getMessages().get(0).getContent());
-        Assertions.assertEquals(messageDtos[3].getContent(), roomsFromDb.get(2).getMessages().get(0).getContent());
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> roomsFromDb.get(1).getMessages().get(0));
+        Assertions.assertEquals(messageDtos[4].getContent(), roomsFromDb.get(2).getMessages().get(0).getContent());
+        Assertions.assertEquals(messageDtos[3].getContent(), roomsFromDb.get(3).getMessages().get(0).getContent());
     }
 
     @Test
