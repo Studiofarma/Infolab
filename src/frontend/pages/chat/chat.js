@@ -210,6 +210,7 @@ export class Chat extends LitElement {
 						<il-forward-list></il-forward-list>
 
 						<il-button-icon
+							style="bottom: 130px"
 							class="scroll-button"
 							@click="${this.scrollToBottom}"
 							content="${IconNames.scrollDownArrow}"
@@ -217,6 +218,7 @@ export class Chat extends LitElement {
 
 						<il-input-controls
 							@send-message="${this.sendMessage}"
+							@open-insertion-mode="${this.setScrollButtonY}"
 						></il-input-controls>
 					</div>
 				</section>
@@ -290,14 +292,25 @@ export class Chat extends LitElement {
 		element.scrollTo({ top: element.scrollHeight });
 	}
 
-	getScrollButtonOffset() {
-		let inputControls =
-			this.renderRoot
-				.querySelector("il-input-controls")
-				.shadowRoot.querySelector("#inputControls") ?? null;
+	setScrollButtonY(e) {
+		let buttonIcon = this.renderRoot.querySelector("il-button-icon");
 
-		console.log(inputControls);
-		return "700px";
+		if (e.detail.bEditor && !e.detail.bEmoji) {
+			buttonIcon.style.bottom = "295px";
+			return;
+		}
+
+		if (e.detail.bEmoji && !e.detail.bEditor) {
+			buttonIcon.style.bottom = "395px";
+			return;
+		}
+
+		if (e.detail.bEditor && e.detail.bEmoji) {
+			buttonIcon.style.bottom = "585px";
+			return;
+		}
+
+		buttonIcon.style.bottom = "130px";
 	}
 
 	onConnect() {

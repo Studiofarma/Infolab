@@ -187,12 +187,17 @@ export class InputControls extends LitElement {
 	}
 
 	openInsertionMode(e) {
-		const option = e.detail.opt;
-		if (option === IconNames.pencil) {
+
+		if (e.detail.bEditor) {
 			this.bEditor = !this.bEditor;
 			this.updateMessage();
 			this.getTextarea().value = this.message;
-		} else if (option == IconNames.emoticon) this.bEmoji = !this.bEmoji;
+		} else if (e.detail.bEmoji) this.bEmoji = !this.bEmoji;
+
+		this.dispatchEvent(new CustomEvent(e.type, {detail: {
+			bEditor: this.bEditor,
+			bEmoji: this.bEmoji
+		}}))
 	}
 
 	sendMessage() {
