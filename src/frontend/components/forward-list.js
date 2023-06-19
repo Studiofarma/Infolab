@@ -171,7 +171,7 @@ export class ForwardList extends LitElement {
           }}
         >
           <div class="forward-conversation">
-            <il-avatar .avatarLink="" .name=${roomName} .id=""></il-avatar>
+            <il-avatar avatarLink="" .name=${roomName} id=""></il-avatar>
             <p>${roomName}</p>
           </div>
         </div>

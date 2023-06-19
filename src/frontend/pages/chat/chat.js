@@ -209,15 +209,6 @@ export class Chat extends LitElement {
 			</main>
 		`;
 	}
-            <il-input-controls
-              class="input-controls"
-              @send-message="${this.sendMessage}"
-            ></il-input-controls>
-          </div>
-        </section>
-      </main>
-    `;
-  }
 
   manageScrollButtonVisility() {
     if (this.checkScrolledToBottom()) {
