@@ -10,35 +10,41 @@ public class RoomEntity {
     private long id;
     private RoomName name;
     private VisibilityEnum visibility;
+    private String description;
     private List<ChatMessageEntity> messages;
 
-    private RoomEntity(long id, RoomName name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
+    private RoomEntity(long id, RoomName name, VisibilityEnum visibility, String description, List<ChatMessageEntity> messages) {
         this.id = id;
         this.name = name;
         this.visibility = visibility;
+        this.description = description;
         this.messages = messages;
     }
 
     public static RoomEntity of(RoomName name, VisibilityEnum visibility) {
-        return new RoomEntity(ID.None, name, visibility, null);
+        return new RoomEntity(ID.None, name, visibility, "", null);
+    }
+
+    public static RoomEntity of(RoomName name, VisibilityEnum visibility, String description) {
+        return new RoomEntity(ID.None, name, visibility, description, null);
     }
 
     public static RoomEntity general() {
-        return RoomEntity.of(RoomName.of("general"), VisibilityEnum.PUBLIC);
+        return RoomEntity.of(RoomName.of("general"), VisibilityEnum.PUBLIC, "Generale");
     }
 
 
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility) {
-        return new RoomEntity(id, name, visibility, null);
+        return new RoomEntity(id, name, visibility, "", null);
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
-        return new RoomEntity(id, name, visibility, messages);
+        return new RoomEntity(id, name, visibility, "", messages);
     }
 
     public static RoomEntity empty() {
-        return new RoomEntity(ID.None, RoomName.empty(), null, new ArrayList<>());
+        return new RoomEntity(ID.None, RoomName.empty(), null, "", new ArrayList<>());
     }
 
     public long getId() {
@@ -71,6 +77,14 @@ public class RoomEntity {
 
     public void setVisibility(VisibilityEnum visibility) {
         this.visibility = visibility;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

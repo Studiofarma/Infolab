@@ -9,6 +9,7 @@ public class RoomDto {
     private String roomName;
     private URL avatarLink;
     private int unreadMessages;
+    private String description;
     private LastMessageDto lastMessage;
 
     private RoomDto() {
@@ -17,19 +18,25 @@ public class RoomDto {
     private RoomDto(String roomName,
                     URL avatarLink,
                     int unreadMessages,
+                    String description,
                     LastMessageDto lastMessage) {
         this.roomName = roomName;
         this.avatarLink = avatarLink;
         this.unreadMessages = unreadMessages;
+        this.description = description;
         this.lastMessage = lastMessage;
     }
 
-    public static RoomDto emptyRoom() {
-        return new RoomDto(null, null, 0, null);
+    public static RoomDto empty() {
+        return new RoomDto("", null, 0, "", LastMessageDto.empty());
     }
 
     public static RoomDto of(String roomName) {
-        return new RoomDto(roomName, null, 0, null);
+        return new RoomDto(roomName, null, 0, "", LastMessageDto.empty());
+    }
+
+    public static RoomDto of(String roomName, String description) {
+        return new RoomDto(roomName, null, 0, description, LastMessageDto.empty());
     }
 
     public String getRoomName() {
@@ -62,5 +69,13 @@ public class RoomDto {
 
     public void setLastMessage(LastMessageDto lastMessage) {
         this.lastMessage = lastMessage;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
