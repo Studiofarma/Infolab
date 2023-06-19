@@ -40,41 +40,9 @@ export class SearchChats extends LitElement {
       width: 30px;
     }
 
-    .search-input {
-      width: 100%;
-      height: 40px;
-      border-radius: 10px;
-      padding: 10px;
-      border: none;
-      outline: none;
-      color: white;
-      background-color: rgb(0, 38, 78);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .search-input::placeholder {
-      color: #b6b5b5;
-    }
-
     .search-icon {
       width: 30px;
       animation: showElement 0.5s forwards;
-    }
-
-    .search-input:focus {
-      width: 100%;
-      transition: width 0.5s;
-    }
-
-    .search-input:focus ~ .dropdown {
-      max-height: 325px;
-      margin-top: 3px;
-      overflow-y: auto;
-    }
-
-    .search-input:focus ~ .search-icon {
-      animation: hideElement 0.5s forwards;
     }
 
     @keyframes hideElement {
@@ -99,10 +67,6 @@ export class SearchChats extends LitElement {
         opacity: 1;
         width: 30px;
       }
-    }
-
-    .search-input {
-      font-family: inherit;
     }
 
     .dropdown {
@@ -161,16 +125,6 @@ export class SearchChats extends LitElement {
     .dropdown > div:hover {
       background: lightgray;
     }
-    .search-input::-webkit-search-cancel-button {
-      -webkit-appearance: none;
-      height: 13px;
-      width: 13px;
-
-      background-image: url(${unsafeCSS(crossImage)});
-      background-size: cover;
-
-      cursor: pointer;
-    }
 
     il-input-ricerca {
       width: 100%;
@@ -191,16 +145,6 @@ export class SearchChats extends LitElement {
             @search="${this.searchChat}"
             placeholder="Cerca o inizia una nuova conversazione"
           ></il-input-ricerca>
-          <!--input
-            class="search-input"
-            type="search"
-            placeholder="Cerca o inizia una nuova chat"
-            @input="${this.searchChat}"
-          /-->
-          <il-button-icon
-            class="search-icon"
-            content=${IconNames.magnify}
-          ></il-button-icon>
         </div>
       </div>
     `;
