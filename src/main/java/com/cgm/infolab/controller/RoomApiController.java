@@ -32,7 +32,6 @@ public class RoomApiController {
 
 
         if (roomEntities.size() > 0) {
-
             roomDtos = roomEntities.stream().map(roomService::fromEntityToDto).toList();
         } else {
             log.info("Non sono state trovate room");

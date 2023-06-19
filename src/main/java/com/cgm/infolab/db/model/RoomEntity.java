@@ -33,10 +33,12 @@ public class RoomEntity {
         return RoomEntity.of(RoomName.of("general"), VisibilityEnum.PUBLIC, "Generale");
     }
 
-
-
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility) {
         return new RoomEntity(id, name, visibility, "", null);
+    }
+
+    public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, String description) {
+        return new RoomEntity(id, name, visibility, description, null);
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {

@@ -22,6 +22,13 @@ public class RoomRepository {
     private final ChatMessageRepository chatMessageRepository;
 
     private final String ROOMS_WHERE_ROOMNAME = "r.roomname = :roomName";
+    private final String CASE_QUERY =
+            "CASE " +
+                "WHEN r.visibility = 'PUBLIC' THEN r.description " +
+                "ELSE u_other.username " +
+            "END AS description";
+    private final String JOIN = "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
+            "left join infolab.users u_other on u_other.id = s_other.user_id";
 
     private final String ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS =
             "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')";
@@ -42,6 +49,7 @@ public class RoomRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("roomname", room.getName().value());
         parameters.put("visibility", room.getVisibility().name());
+        parameters.put("description", room.getDescription());
         return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
@@ -93,7 +101,8 @@ public class RoomRepository {
     private UserQueryResult getRoom(Username username) {
         return queryHelper
                 .forUser(username)
-                .query("SELECT r.id room_id, r.roomname, r.visibility");
+                .query("SELECT r.id room_id, r.roomname, r.visibility, %s".formatted(CASE_QUERY))
+                .join(JOIN);
     }
 
     private Optional<RoomEntity> queryRoomNoUserRestriction(String where, Map<String, ?> queryParams) {
@@ -110,8 +119,9 @@ public class RoomRepository {
 
     private QueryResult getRoomNoUserRestriction() {
         return queryHelper
-                .query("SELECT r.id room_id, r.roomname, r.visibility")
-                .from("infolab.rooms r");
+                .query("SELECT r.id room_id, r.roomname, r.visibility, %s".formatted(CASE_QUERY))
+                .from("infolab.rooms r")
+                .join("left join infolab.rooms_subscriptions s on r.id = s.room_id %s".formatted(JOIN));
     }
 
     public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
@@ -159,7 +169,8 @@ public class RoomRepository {
         return RoomEntity
                 .of(rs.getLong("room_id"),
                         RoomName.of(rs.getString("roomname")),
-                        VisibilityEnum.valueOf(rs.getString("visibility").trim()));
+                        VisibilityEnum.valueOf(rs.getString("visibility").trim()),
+                        rs.getString("description"));
     }
 
     private RoomEntity mapToEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
