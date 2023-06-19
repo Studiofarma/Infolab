@@ -187,7 +187,10 @@ export class SearchChats extends LitElement {
     return html`
       <div class="search-chats">
         <div class="container-input">
-          <il-input-ricerca></il-input-ricerca>
+          <il-input-ricerca
+            @search="${this.searchChat}"
+            placeholder="Cerca o inizia una nuova conversazione"
+          ></il-input-ricerca>
           <!--input
             class="search-input"
             type="search"
@@ -207,7 +210,7 @@ export class SearchChats extends LitElement {
     this.dispatchEvent(
       new CustomEvent("search-chat", {
         detail: {
-          query: event.target.value,
+          query: event.detail.query,
         },
         bubbles: true,
         composed: true,

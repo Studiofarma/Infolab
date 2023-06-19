@@ -28,14 +28,13 @@ export class InputRicerca extends InputField {
   render() {
     return html` <input
       placeholder="${this.placeholder}"
-      @input=${this.setValue}
-      @input="${this.searchChat}"
+      @input="${this.search}"
     />`;
   }
 
-  searchChat(event) {
+  search(event) {
     this.dispatchEvent(
-      new CustomEvent("search-chat", {
+      new CustomEvent("search", {
         detail: {
           query: event.target.value,
         },
