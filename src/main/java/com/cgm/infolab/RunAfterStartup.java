@@ -7,14 +7,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
 
 @Component
 public class RunAfterStartup {
 
     public static final RoomEntity[] TEST_ROOMS =
-            {RoomEntity.of(RoomName.of("user1-user2"), VisibilityEnum.PRIVATE)};
+            {RoomEntity.of(RoomName.of("user1-user2"), VisibilityEnum.PRIVATE),
+            RoomEntity.of(RoomName.of("user1-user3"), VisibilityEnum.PRIVATE),
+            RoomEntity.of(RoomName.of("user3-user4"), VisibilityEnum.PRIVATE)};
     public static final UserEntity[] TEST_USERS =
             {UserEntity.of(Username.of("user1"), "Mario Rossi"),
             UserEntity.of(Username.of("user2"), "Fabrizio Bruno"),
@@ -27,12 +32,19 @@ public class RunAfterStartup {
 
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
+    private final Environment env;
 
     private final Logger log = LoggerFactory.getLogger(RunAfterStartup.class);
 
-    public RunAfterStartup(RoomRepository roomRepository, UserRepository userRepository) {
+    public RunAfterStartup(
+        RoomRepository roomRepository,
+        UserRepository userRepository,
+        Environment env
+        ) {
+
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
+        this.env = env;
     }
 
     /**
@@ -41,8 +53,12 @@ public class RunAfterStartup {
     @EventListener(ApplicationReadyEvent.class)
     public void addComponentsToDb() {
         saveRooms(ROOMS);
-        saveRooms(TEST_ROOMS);
-        saveUsers(TEST_USERS);
+
+        if(Arrays.asList(env.getActiveProfiles()).contains("dev")){
+            saveRooms(TEST_ROOMS);
+            saveUsers(TEST_USERS);
+        }
+
     }
 
     private void saveRooms(RoomEntity[] roomEntities) {

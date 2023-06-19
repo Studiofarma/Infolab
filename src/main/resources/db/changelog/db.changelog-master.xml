@@ -47,22 +47,37 @@
             <column name="content" type="varchar(5000)" />
         </createTable>
     </changeSet>
+    
     <changeSet id="rooms_users_relation" author="Matei Ciofu">
         <createTable schemaName="infolab" tableName="rooms_subscriptions">
             <column name="room_id" type="bigint">
-                <constraints foreignKeyName="fk_room_id" references="infolab.rooms(id)"/>
+                <constraints foreignKeyName="fk_room_id" references="infolab.rooms(id)" nullable="false"/>
             </column>
             <column name="user_id" type="bigint">
-                <constraints foreignKeyName="fk_user_id" references="infolab.users(id)"/>
+                <constraints foreignKeyName="fk_rooms_subscriptions_user_id" references="infolab.users(id)" nullable="false"/>
             </column>
         </createTable>
 
-        <addUniqueConstraint schemaName="infolab" tableName="rooms_subscriptions"
-                             columnNames="room_id, user_id"/>
         <addColumn schemaName="infolab" tableName="rooms">
             <column name="visibility" type="char(20)"/>
         </addColumn>
-
+    </changeSet>
+    
+    <changeSet id="last_download_dates_table" author="Lorenzo Rinaldi">
+        <createTable schemaName="infolab" tableName="download_dates">
+            <column name="download_timestamp" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints foreignKeyName="fk_download_dates_user_id" references="infolab.users(id)" nullable="false"/>
+            </column>
+            <column name="message_id" type="bigint">
+                <constraints foreignKeyName="fk_message_id" references="infolab.chatmessages(id)" nullable="false"/>
+            </column>
+        </createTable>
+        
+        <addPrimaryKey schemaName="infolab" tableName="rooms_subscriptions" columnNames="room_id, user_id"/>
+        <addPrimaryKey schemaName="infolab" tableName="download_dates" columnNames="download_timestamp, user_id, message_id"/>
     </changeSet>
     <changeSet id="users_description_field" author="Luca Minini">
         <addColumn schemaName="infolab" tableName="users">

@@ -2,7 +2,9 @@ package com.cgm.infolab.db.model;
 
 import com.cgm.infolab.db.ID;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RoomEntity {
     private long id;
@@ -21,6 +23,10 @@ public class RoomEntity {
         return new RoomEntity(ID.None, name, visibility, null);
     }
 
+    public static RoomEntity general() {
+        return RoomEntity.of(RoomName.of("general"), VisibilityEnum.PUBLIC);
+    }
+
 
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility) {
@@ -29,6 +35,10 @@ public class RoomEntity {
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
         return new RoomEntity(id, name, visibility, messages);
+    }
+
+    public static RoomEntity empty() {
+        return new RoomEntity(ID.None, RoomName.empty(), null, new ArrayList<>());
     }
 
     public long getId() {
@@ -61,5 +71,18 @@ public class RoomEntity {
 
     public void setVisibility(VisibilityEnum visibility) {
         this.visibility = visibility;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoomEntity room = (RoomEntity) o;
+        return id == room.id && Objects.equals(name, room.name) && visibility == room.visibility && Objects.equals(messages, room.messages);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, visibility, messages);
     }
 }
