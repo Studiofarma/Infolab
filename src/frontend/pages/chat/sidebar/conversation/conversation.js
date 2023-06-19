@@ -168,12 +168,17 @@ class Conversation extends LitElement {
 		let cookie = CookieService.getCookie();
 		if (chatName.includes("-")) {
 			chatName = chatName.split("-");
-			chatName.splice(chatName.indexOf(cookie.username), 1)[0];
+			chatName.splice(chatName.indexOf(cookie.username), 1);
+			return chatName[0];
 		}
 		return chatName;
 	}
 
 	lastMessageTextFormatter(sender, message) {
+		let cookie = CookieService.getCookie();
+		if (sender == cookie.username) {
+			sender = "tu";
+		}
 		return resolveMarkdown(
 			MarkdownService.parseMarkdown(
 				this.fixLastMessageLength(sender ? `${sender}: ${message}` : "New Chat")
