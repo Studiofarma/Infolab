@@ -218,7 +218,7 @@ export class Login extends LitElement {
         <div class="ring1"></div>
         <div class="ring2"></div>
 
-        <h1 class="title">WELCOME BACK</h1>
+        <h1 class="title">BENVENUTO</h1>
         <div id="input-container">
           <div class="text-container">
             <il-input-field
