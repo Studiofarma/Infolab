@@ -1,9 +1,7 @@
 package com.cgm.infolab.controller;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.model.ChatMessageDto;
-import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +41,10 @@ public class ChatApiMessagesController {
 
         if (chatMessageEntities.size() > 0) {
             chatMessageDtos = chatMessageEntities.stream().map(chatService::fromEntityToChatMessageDto).toList();
+            chatService.updateReadTimestamp(
+                    Username.of(principal.getName()),
+                    RoomName.of(roomName)
+            );
         } else {
             log.info("Non sono stati trovati messaggi nella room specificata");
         }

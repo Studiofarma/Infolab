@@ -1,9 +1,11 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
+import com.cgm.infolab.db.repository.queryhelper.QueryResult;
+import com.cgm.infolab.db.repository.queryhelper.UserQueryResult;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
@@ -15,53 +17,18 @@ import java.util.*;
 
 @Component
 public class RoomRepository {
-    private final JdbcTemplate jdbcTemplate;
+    private final QueryHelper queryHelper;
     private final DataSource dataSource;
     private final ChatMessageRepository chatMessageRepository;
 
-    private final String ROOMS_QUERY = "SELECT r.id room_id, r.roomname, r.visibility FROM infolab.rooms r ";
-    private final String ROOMS_QUERY_JOINED = ROOMS_QUERY + "LEFT JOIN infolab.rooms_subscriptions s " +
-                                                            "ON r.id = s.room_id " +
-                                                            "LEFT JOIN infolab.users u " +
-                                                            "ON u.id = s.user_id " +
-                                                            "WHERE (u.username = ? OR r.visibility = 'PUBLIC') %s ";
-    private final String ROOMS_DISTINCT_ON_QUERY =
-                    "SELECT DISTINCT ON (r.roomname) " +
-                            "r.id room_id, r.roomname, r.visibility, u.id user_id, u.username, " +
-                            "m.id message_id, m.sent_at, m.content " +
-                    "FROM infolab.rooms r " +
-                    "INNER JOIN infolab.chatmessages m ON m.recipient_room_id = r.id " +
-                    "LEFT JOIN infolab.rooms_subscriptions s ON s.room_id = r.id " +
-                    "LEFT JOIN infolab.users u ON m.sender_id = u.id " +
-                    "WHERE EXISTS " +
-                        "(SELECT * FROM infolab.rooms r2 " +
-                            "LEFT JOIN infolab.rooms_subscriptions s2 ON s2.room_id = r2.id " +
-                            "LEFT JOIN infolab.users u2 ON u2.id = s2.user_id " +
-                            "WHERE (u2.username = ? OR r2.visibility = 'PUBLIC') AND r2.id = r.id) %s " + // per aggiungere condizioni nel WHERE
-                    "ORDER BY r.roomname, m.sent_at DESC";
+    private final String ROOMS_WHERE_ROOMNAME = "r.roomname = :roomName";
 
+    private final String ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS =
+            "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')";
+    private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
 
-    /*
-    SELECT r.roomname, u.username, c.content, c.sent_at
-FROM infolab.chatmessages c
-INNER JOIN infolab.users u ON c.sender_id = u.id
-INNER JOIN infolab.rooms r ON c.recipient_room_id = r.id
-WHERE c.sent_at in (
-	SELECT MAX(c.sent_at)
-	FROM infolab.chatmessages c
-	GROUP BY c.recipient_room_id
-) and
-c.recipient_room_id in (
-	SELECT r.id room_id
-	FROM infolab.rooms r, infolab.rooms_subscriptions s
-	WHERE s.user_id = 1 AND (r.visibility = 'PUBLIC' OR r.id = s.room_id)
-)
-
-     */
-    public RoomRepository(JdbcTemplate jdbcTemplate,
-                          DataSource dataSource,
-                          ChatMessageRepository chatMessageRepository) {
-        this.jdbcTemplate = jdbcTemplate;
+    public RoomRepository(QueryHelper queryHelper, DataSource dataSource, ChatMessageRepository chatMessageRepository) {
+        this.queryHelper = queryHelper;
         this.dataSource = dataSource;
         this.chatMessageRepository = chatMessageRepository;
     }
@@ -84,7 +51,9 @@ c.recipient_room_id in (
      * @return id della room con il nome passato a parametro. -1 in caso la room non esista.
      */
     public Optional<RoomEntity> getByRoomName(RoomName roomName, Username username) {
-        return queryRoom(addConditionToRoomsQueryJoined(" AND r.roomname = ? "), username.value(), roomName.value());
+        Map<String, Object> map = new HashMap<>();
+        map.put("roomName", roomName.value());
+        return queryRoom(ROOMS_WHERE_ROOMNAME, username, map);
     }
 
     // Questo metodo è necessario perché altrimenti nella creazione della RoomSubscription in ChatController
@@ -93,7 +62,9 @@ c.recipient_room_id in (
     // ChatMessagesRepository è basata sul fatto che se non si ha accesso alla stanza allora non viene ritornato l'id
     // e viene lanciata un'eccezione
     public Optional<RoomEntity> getByRoomNameEvenIfNotSubscribed(RoomName roomName) {
-        return queryRoom(String.format("%s WHERE roomname = ?", ROOMS_QUERY), roomName.value());
+        Map<String, Object> map = new HashMap<>();
+        map.put("roomName", roomName.value());
+        return queryRoomNoUserRestriction(ROOMS_WHERE_ROOMNAME, map);
     }
 
     /**
@@ -102,37 +73,83 @@ c.recipient_room_id in (
      * @return oggetto Room con il nome preso dal db. Ritorna null se la room non esiste.
      */
     public Optional<RoomEntity> getById(long id, Username username) {
-        return queryRoom(addConditionToRoomsQueryJoined("AND r.id = ?"), username.value(), id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("roomId", id);
+        return  queryRoom("AND r.id = :roomId", username, map);
     }
 
-    private Optional<RoomEntity> queryRoom(String query, Object... queryParams) {
+    private Optional<RoomEntity> queryRoom(String where, Username username, Map<String, ?> queryParams) {
         try {
             return Optional.ofNullable(
-                    jdbcTemplate.queryForObject(query, this::mapToEntity, queryParams)
+                    getRoom(username)
+                            .where(where)
+                            .executeForObject(this::mapToEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    public List<RoomEntity> getAllWhereLastMessageNotNull(Username username) {
-        return queryRooms(addConditionToNewRoomsDistinctOnQuery(""), username.value());
+    private UserQueryResult getRoom(Username username) {
+        return queryHelper
+                .forUser(username)
+                .query("SELECT r.id room_id, r.roomname, r.visibility");
+    }
+
+    private Optional<RoomEntity> queryRoomNoUserRestriction(String where, Map<String, ?> queryParams) {
+        try {
+            return Optional.ofNullable(
+                    getRoomNoUserRestriction()
+                            .where(where)
+                            .executeForObject(this::mapToEntity, queryParams)
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    private QueryResult getRoomNoUserRestriction() {
+        return queryHelper
+                .query("SELECT r.id room_id, r.roomname, r.visibility")
+                .from("infolab.rooms r");
+    }
+
+    public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
+        return queryRooms(ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
     }
 
     public List<RoomEntity> getAfterDate(LocalDate dateLimit, Username username) {
         if (dateLimit == null) {
-            return getAllWhereLastMessageNotNull(username);
+            return getAllRoomsAndLastMessageEvenIfNullInPublicRooms(username);
         }
 
-        return queryRooms(addConditionToNewRoomsDistinctOnQuery("AND m.sent_at > ?"), username.value(), dateLimit);
+        Map<String, Object> map = new HashMap<>();
+        map.put("date", dateLimit);
+
+        return queryRooms(
+                "%s AND m.sent_at > :date".formatted(ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS),
+                ROOMS_AND_LAST_MESSAGES_OTHER,
+                username,
+                map
+        );
     }
 
-    private List<RoomEntity> queryRooms(String query, Object... queryParams) {
+    private List<RoomEntity> queryRooms(String where, String other, Username username, Map<String, ?> queryParams) {
         try {
-            return jdbcTemplate.query(query, this::mapToEntityWithMessages, queryParams);
+            return getRooms(username)
+                    .where(where)
+                    .other(other)
+                    .executeForList(this::mapToEntityWithMessages, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
+    }
+
+    private UserQueryResult getRooms(Username username) {
+        return queryHelper
+                .forUser(username)
+                .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, r.visibility, u_mex.id user_id, u_mex.username username, m.id message_id, m.sent_at, m.content, m.sender_id")
+                .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id");
     }
 
     /**
@@ -146,19 +163,20 @@ c.recipient_room_id in (
     }
 
     private RoomEntity mapToEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
-        ChatMessageEntity message = chatMessageRepository.mapToEntity(rs, rowNum);
-        return RoomEntity
-                .of(rs.getLong("room_id"),
-                        RoomName.of(rs.getString("roomname")),
-                        VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                        List.of(message));
-    }
+        if (rs.getString("content") != null) {
+            ChatMessageEntity message = chatMessageRepository.mapToEntity(rs, rowNum);
 
-    private String addConditionToNewRoomsDistinctOnQuery(String condition) {
-        return String.format(ROOMS_DISTINCT_ON_QUERY, condition);
-    }
-
-    private String addConditionToRoomsQueryJoined(String condition) {
-        return String.format(ROOMS_QUERY_JOINED, condition);
+            return RoomEntity
+                    .of(rs.getLong("room_id"),
+                            RoomName.of(rs.getString("roomname")),
+                            VisibilityEnum.valueOf(rs.getString("visibility").trim()),
+                            List.of(message));
+        } else {
+            return RoomEntity
+                    .of(rs.getLong("room_id"),
+                            RoomName.of(rs.getString("roomname")),
+                            VisibilityEnum.valueOf(rs.getString("visibility").trim()),
+                            List.of(ChatMessageEntity.empty()));
+        }
     }
 }
