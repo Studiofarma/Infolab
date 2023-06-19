@@ -1,6 +1,7 @@
 package com.cgm.infolab.db.model;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public record RoomName(String value) {
 
@@ -38,5 +39,18 @@ public record RoomName(String value) {
 
     public static RoomName empty() {
         return new RoomName("");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoomName roomName = (RoomName) o;
+        return Objects.equals(value, roomName.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }

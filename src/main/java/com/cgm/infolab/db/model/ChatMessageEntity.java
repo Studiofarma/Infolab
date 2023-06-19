@@ -88,12 +88,12 @@ public class ChatMessageEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ChatMessageEntity message = (ChatMessageEntity) o;
-        return id == message.id && Objects.equals(sender, message.sender) && Objects.equals(content, message.content);
+        ChatMessageEntity that = (ChatMessageEntity) o;
+        return id == that.id && Objects.equals(sender, that.sender) && Objects.equals(room, that.room) && Objects.equals(timestamp, that.timestamp) && Objects.equals(content, that.content);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sender, content);
+        return Objects.hash(id, sender, room, timestamp, content);
     }
 }

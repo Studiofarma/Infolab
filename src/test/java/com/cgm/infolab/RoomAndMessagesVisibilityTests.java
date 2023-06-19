@@ -107,7 +107,7 @@ public class RoomAndMessagesVisibilityTests {
         //  For these to work the three previous assertions must be fulfilled.
         //  Actually the order of the rooms is not relevant.
         Assertions.assertEquals(messageDtos[0].getContent(), roomsFromDb.get(0).getMessages().get(0).getContent());
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> roomsFromDb.get(1).getMessages().get(0));
+        Assertions.assertEquals(ChatMessageEntity.empty(), roomsFromDb.get(1).getMessages().get(0));
         Assertions.assertEquals(messageDtos[4].getContent(), roomsFromDb.get(2).getMessages().get(0).getContent());
         Assertions.assertEquals(messageDtos[3].getContent(), roomsFromDb.get(3).getMessages().get(0).getContent());
     }
