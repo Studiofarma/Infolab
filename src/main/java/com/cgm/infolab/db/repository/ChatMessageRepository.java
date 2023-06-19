@@ -83,7 +83,7 @@ public class ChatMessageRepository {
                 .forUser(username)
                 .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content")
                 .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id")
-                .where("r.roomname = :roomName");
+                .where("r.roomname = :roomName AND m.id IS NOT NULL");
     }
 
     public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {

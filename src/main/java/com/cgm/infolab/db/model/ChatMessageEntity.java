@@ -2,6 +2,7 @@ package com.cgm.infolab.db.model;
 
 import com.cgm.infolab.db.ID;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -29,7 +30,7 @@ public class ChatMessageEntity {
     }
 
     public static ChatMessageEntity empty() {
-        return new ChatMessageEntity(ID.None, null, null, null, null);
+        return new ChatMessageEntity(ID.None, UserEntity.empty(), RoomEntity.empty(), new Timestamp(0).toLocalDateTime(), "");
     }
 
     public long getId() {

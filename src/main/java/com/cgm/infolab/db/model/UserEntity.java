@@ -33,6 +33,10 @@ public class UserEntity {
         return new UserEntity(id, name, description);
     }
 
+    public static UserEntity empty() {
+        return new UserEntity(ID.None, Username.empty(), "");
+    }
+
     public long getId() {
         return id;
     }

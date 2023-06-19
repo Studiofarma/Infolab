@@ -41,14 +41,13 @@ public class ChatApiMessagesController {
 
         if (chatMessageEntities.size() > 0) {
             chatMessageDtos = chatMessageEntities.stream().map(chatService::fromEntityToChatMessageDto).toList();
+            chatService.updateReadTimestamp(
+                    Username.of(principal.getName()),
+                    RoomName.of(roomName)
+            );
         } else {
             log.info("Non sono stati trovati messaggi nella room specificata");
         }
-
-        chatService.updateReadTimestamp(
-                Username.of(principal.getName()),
-                RoomName.of(roomName)
-        );
 
         return chatMessageDtos;
     }

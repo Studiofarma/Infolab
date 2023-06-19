@@ -22,11 +22,9 @@ public class RoomRepository {
     private final ChatMessageRepository chatMessageRepository;
 
     private final String ROOMS_WHERE_ROOMNAME = "r.roomname = :roomName";
-    private final String ROOMS_WHERE_ROOMID = "AND r.id = :roomId";
 
     private final String ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS =
             "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')";
-    private final String ROOMS_AND_LAST_MESSAGES_WHERE_AFTER_DATE = "m.sent_at > :date";
     private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
 
     public RoomRepository(QueryHelper queryHelper, DataSource dataSource, ChatMessageRepository chatMessageRepository) {
@@ -77,7 +75,7 @@ public class RoomRepository {
     public Optional<RoomEntity> getById(long id, Username username) {
         Map<String, Object> map = new HashMap<>();
         map.put("roomId", id);
-        return  queryRoom(ROOMS_WHERE_ROOMID, username, map);
+        return  queryRoom("AND r.id = :roomId", username, map);
     }
 
     private Optional<RoomEntity> queryRoom(String where, Username username, Map<String, ?> queryParams) {
@@ -129,7 +127,7 @@ public class RoomRepository {
         map.put("date", dateLimit);
 
         return queryRooms(
-                "%s AND %s".formatted(ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS, ROOMS_AND_LAST_MESSAGES_WHERE_AFTER_DATE),
+                "%s AND m.sent_at > :date".formatted(ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS),
                 ROOMS_AND_LAST_MESSAGES_OTHER,
                 username,
                 map
@@ -178,7 +176,7 @@ public class RoomRepository {
                     .of(rs.getLong("room_id"),
                             RoomName.of(rs.getString("roomname")),
                             VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                            new ArrayList<>());
+                            List.of(ChatMessageEntity.empty()));
         }
     }
 }

@@ -35,4 +35,8 @@ public record RoomName(String value) {
 
         return RoomName.of(user1, user2); // Così avviene lo stesso il controllo della correttezza del nome.
     }
+
+    public static RoomName empty() {
+        return new RoomName("");
+    }
 }

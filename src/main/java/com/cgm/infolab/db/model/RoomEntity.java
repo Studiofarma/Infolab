@@ -2,6 +2,7 @@ package com.cgm.infolab.db.model;
 
 import com.cgm.infolab.db.ID;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RoomEntity {
@@ -33,6 +34,10 @@ public class RoomEntity {
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
         return new RoomEntity(id, name, visibility, messages);
+    }
+
+    public static RoomEntity empty() {
+        return new RoomEntity(ID.None, RoomName.empty(), null, new ArrayList<>());
     }
 
     public long getId() {
