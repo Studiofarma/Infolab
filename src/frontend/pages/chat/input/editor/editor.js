@@ -1,12 +1,11 @@
 import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
+import { MarkdownService } from "../../../../services/markdown-service";
+import { mdiFormatListText } from "@mdi/js";
 
 import "../../../../components/formatting-button";
 import "../../../../components/button-text";
 import "./editor-formatting-buttons";
-
-import { MarkdownService } from "../../../../services/markdown-service";
-import { mdiFormatListText } from "@mdi/js";
 
 export class Editor extends LitElement {
 	static properties = {
