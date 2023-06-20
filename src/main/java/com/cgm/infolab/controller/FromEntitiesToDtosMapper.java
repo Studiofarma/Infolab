@@ -1,4 +1,4 @@
-package com.cgm.infolab.service;
+package com.cgm.infolab.controller;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
@@ -9,19 +9,19 @@ import com.cgm.infolab.model.RoomDto;
 import com.cgm.infolab.model.UserDto;
 import org.springframework.stereotype.Service;
 
-@Service
-public class FromEntitiesToDtosService {
-    public ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
+public abstract class FromEntitiesToDtosMapper {
+
+    public static ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
         return new ChatMessageDto(messageEntity.getContent(),
                 messageEntity.getTimestamp(),
                 messageEntity.getSender().getName().value());
     }
 
-    public LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
+    public static LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
         return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender());
     }
 
-    public RoomDto fromEntityToDto(RoomEntity roomEntity) {
+    public static RoomDto fromEntityToDto(RoomEntity roomEntity) {
         RoomDto roomDto = RoomDto.of(roomEntity.getName().value());
 
         LastMessageDto lastMessage = fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
@@ -30,7 +30,7 @@ public class FromEntitiesToDtosService {
         return roomDto;
     }
 
-    public UserDto fromEntityToDto(UserEntity userEntity) {
+    public static UserDto fromEntityToDto(UserEntity userEntity) {
         return UserDto.of(userEntity.getName().value(), userEntity.getId(), userEntity.getDescription());
     }
 }

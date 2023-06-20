@@ -3,7 +3,6 @@ package com.cgm.infolab.controller;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.RoomDto;
-import com.cgm.infolab.service.FromEntitiesToDtosService;
 import com.cgm.infolab.service.RoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +16,12 @@ import java.util.List;
 @RestController
 public class RoomApiController {
     private final RoomService roomService;
-    private final FromEntitiesToDtosService fromEntitiesToDtosService;
     private final Logger log = LoggerFactory.getLogger(RoomApiController.class);
 
 
     @Autowired
-    public RoomApiController(RoomService roomService, FromEntitiesToDtosService fromEntitiesToDtosService) {
+    public RoomApiController(RoomService roomService) {
         this.roomService = roomService;
-        this.fromEntitiesToDtosService = fromEntitiesToDtosService;
     }
 
     @GetMapping("/api/rooms")
@@ -36,7 +33,7 @@ public class RoomApiController {
 
         if (roomEntities.size() > 0) {
 
-            roomDtos = roomEntities.stream().map(fromEntitiesToDtosService::fromEntityToDto).toList();
+            roomDtos = roomEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
         } else {
             log.info("Non sono state trovate room");
         }
