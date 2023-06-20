@@ -2,8 +2,9 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
+import com.cgm.infolab.db.repository.queryhelper.QueryResult;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
@@ -12,12 +13,12 @@ import java.util.*;
 
 @Component
 public class UserRepository {
-    private final JdbcTemplate jdbcTemplate;
+    private final QueryHelper queryHelper;
     private final DataSource dataSource;
-    private final String USERS_QUERY = "SELECT * FROM infolab.users";
 
-    public UserRepository(JdbcTemplate jdbcTemplate, DataSource dataSource) {
-        this.jdbcTemplate = jdbcTemplate;
+
+    public UserRepository(QueryHelper queryHelper, DataSource dataSource) {
+        this.queryHelper = queryHelper;
         this.dataSource = dataSource;
     }
 
@@ -43,24 +44,10 @@ public class UserRepository {
      * @return id dell'utente con il nome passato a parametro. -1 in caso l'utente non esista.
      */
     public Optional<UserEntity> getByUsername(Username username) {
-        return queryUser(String.format("%s WHERE username = ?", USERS_QUERY), username.value());
-    }
+        Map<String, Object> map = new HashMap<>();
+        map.put("username", username.value());
 
-    /**
-     * Metodo che risale all'id di un utente dal suo nome
-     * @param username da cui risalire agli users
-     * @return una lista di users.
-     */
-    public List<UserEntity> getByUsernameWithLike(String username) {
-        return queryUsers(String.format("%s WHERE username ILIKE ? || ?", USERS_QUERY) , username, "%");
-    }
-
-    private List<UserEntity> queryUsers(String query, String username, String wildCard) {
-        try {
-            return jdbcTemplate.query(query, RowMappers::mapToUserEntity, username, wildCard);
-        } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
-        }
+        return queryUser("username = :username", map);
     }
 
     /**
@@ -69,13 +56,18 @@ public class UserRepository {
      * @return oggetto User con il nome preso dal db. Ritorna null se l'user non esiste.
      */
     public Optional<UserEntity> getById(long id) {
-        return queryUser(String.format("%s WHERE id = ?", USERS_QUERY), id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", id);
+
+        return queryUser("id = :userId", map);
     }
 
-    private Optional<UserEntity> queryUser(String query, Object... objects) {
+    private Optional<UserEntity> queryUser(String where, Map<String, ?> queryParams) {
         try {
             return Optional.ofNullable(
-                    jdbcTemplate.queryForObject(query, RowMappers::mapToUserEntity, objects)
+                    getUserOrUsers()
+                            .where(where)
+                            .executeForObject(RowMappers::mapToEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -83,4 +75,32 @@ public class UserRepository {
     }
 
 
+    /**
+     * Metodo che risale all'id di un utente dal suo nome
+     * @param username da cui risalire agli users
+     * @return una lista di users.
+     */
+    public List<UserEntity> getByUsernameWithLike(Username username) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("similarUsername", username.value());
+        return queryUsers("username ILIKE :similarUsername || '%%'", "ORDER BY username ASC", map);
+    }
+
+    private List<UserEntity> queryUsers(String where, String other, Map<String, ?> queryParams) {
+        try {
+            return getUserOrUsers()
+                    .where(where)
+                    .other(other)
+                    .executeForList(this::mapToEntity, queryParams);
+
+        } catch (EmptyResultDataAccessException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    private QueryResult getUserOrUsers() {
+        return queryHelper
+                .query("SELECT *")
+                .from("infolab.users");
+    }
 }

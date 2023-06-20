@@ -2,6 +2,8 @@ package com.cgm.infolab.db.model;
 
 import com.cgm.infolab.db.ID;
 
+import java.util.Objects;
+
 public class UserEntity {
     private long id;
     private Username name;
@@ -33,6 +35,10 @@ public class UserEntity {
         return new UserEntity(id, name, description);
     }
 
+    public static UserEntity empty() {
+        return new UserEntity(ID.None, Username.empty(), "");
+    }
+
     public long getId() {
         return id;
     }
@@ -52,4 +58,17 @@ public class UserEntity {
     public String getDescription() {return description;}
 
     public void setDescription(String description) {this.description = description;}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserEntity user = (UserEntity) o;
+        return id == user.id && Objects.equals(name, user.name) && Objects.equals(description, user.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description);
+    }
 }

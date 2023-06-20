@@ -2,7 +2,9 @@ package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
+import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
+import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.LastMessageDto;
@@ -14,6 +16,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +25,9 @@ public class ChatService {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final DownloadDateRepository downloadDateRepository;
+
+    private final RoomSubscriptionRepository roomSubscriptionRepository;
     private final RoomService roomService;
 
     private final Logger log = LoggerFactory.getLogger(ChatService.class);
@@ -30,11 +36,15 @@ public class ChatService {
     public ChatService(UserRepository userRepository,
                        RoomRepository roomRepository,
                        ChatMessageRepository chatMessageRepository,
-                       RoomService roomService){
+                       RoomSubscriptionRepository roomSubscriptionRepository,
+                       RoomService roomService,
+                       DownloadDateRepository downloadDateRepository){
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
+        this.roomSubscriptionRepository = roomSubscriptionRepository;
         this.roomService = roomService;
+        this.downloadDateRepository = downloadDateRepository;
     }
 
     public ChatMessageEntity saveMessageInDb(ChatMessageDto message, Username username, RoomName roomName, Username destinationUser){
@@ -88,6 +98,10 @@ public class ChatService {
         }
 
         return chatMessageEntities;
+    }
+
+    public void updateReadTimestamp(Username user, RoomName room) {
+        downloadDateRepository.addWhereNotDownloadedYetForUser(user, room);
     }
 }
 
