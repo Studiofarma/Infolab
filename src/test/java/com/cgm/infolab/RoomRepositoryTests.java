@@ -46,6 +46,7 @@ public class RoomRepositoryTests {
     public UserEntity loggedInUser = users[0]; // user0
 
     public RoomEntity general = RoomEntity.general();
+    public String generalDesc = "Generale";
     public RoomEntity anotherPublic = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC);
 
     public ChatMessageDto[] messageDtos =
@@ -89,7 +90,7 @@ public class RoomRepositoryTests {
                 (rs, rowNum) -> rs.getString("description"),
                 general.getName().value());
 
-        Assertions.assertEquals("Generale", roomPublic.getDescription());
+        Assertions.assertEquals(generalDesc, roomPublic.getDescription());
         Assertions.assertEquals(descriptionPublic, roomPublic.getDescription());
 
         RoomEntity roomPrivate = roomRepository.getByRoomName(RoomName.of("user0-user1"), loggedInUser.getName()).orElse(null);
@@ -119,7 +120,7 @@ public class RoomRepositoryTests {
                 (rs, rowNum) -> rs.getString("description"),
                 general.getName().value());
 
-        Assertions.assertEquals("Generale", roomEntities.get(0).getDescription());
+        Assertions.assertEquals(generalDesc, roomEntities.get(0).getDescription());
         Assertions.assertEquals(descriptionGeneral, roomEntities.get(0).getDescription());
 
         String descriptionUser0User1 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
