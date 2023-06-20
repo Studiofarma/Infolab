@@ -287,69 +287,6 @@ export class Chat extends LitElement {
 		}
 	}
 
-	render() {
-		return html`
-			<main>
-				<section>
-					<il-sidebar
-						@update-message="${this.updateMessages}"
-						.login=${this.login}
-					></il-sidebar>
-					<div class="chat">
-						<il-chat-header
-							userName=${this.login.username}
-							roomName=${this.activeChatNameFormatter(
-								this.activeChatName
-							)}
-						></il-chat-header>
-						<ul
-							@scroll="${(e) => {
-								if (this.checkScrolledToBottom()) {
-									this.renderRoot.querySelector(
-										".scroll-button"
-									).style.opacity = "0";
-								} else if (
-									this.renderRoot.querySelector(
-										".scroll-button"
-									).style.opacity == 0
-								) {
-									this.renderRoot.querySelector(
-										".scroll-button"
-									).style.opacity = "1";
-								}
-							}}"
-							class="message-box"
-						>
-							${this.messages.map(
-								(message, index) =>
-									html` <il-message
-										.messages=${this.messages}
-										.message=${message}
-										.index=${index}
-									></il-message>`
-							)}
-						</ul>
-						<il-button-icon
-							style="bottom: 130px"
-							class="scroll-button"
-							@click="${this.scrollToBottom}"
-							content="${IconNames.scrollDownArrow}"
-						></il-button-icon>
-
-						<il-input-controls
-							@send-message="${this.sendMessage}"
-							@open-insertion-mode="${this.setScrollButtonY}"
-						></il-input-controls>
-					</div>
-				</section>
-			</main>
-		`;
-	}
-	scrollToBottom() {
-		let element = this.renderRoot.querySelector("ul.message-box");
-		element.scrollTo({ top: element.scrollHeight });
-	}
-
 	setScrollButtonY(e) {
 		let buttonIcon = this.renderRoot.querySelector("il-button-icon");
 
@@ -369,6 +306,10 @@ export class Chat extends LitElement {
 		}
 
 		buttonIcon.style.bottom = "130px";
+	}
+	scrollToBottom() {
+		let element = this.renderRoot.querySelector("ul.message-box");
+		element.scrollTo({ top: element.scrollHeight });
 	}
 
 	onConnect() {
