@@ -336,14 +336,14 @@ export class Message extends LitElement {
     }
 
     if (today === message) {
-      return html`<div class="message-date">Today</div>`;
+      return html`<div class="message-date">Oggi</div>`;
     }
 
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (yesterday.toDateString() === message) {
-      return html`<div class="message-date">Yesterday</div>`;
+      return html`<div class="message-date">Ieri</div>`;
     }
 
     const dayMonth = new Date(messageDate2).toLocaleDateString("default", {

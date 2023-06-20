@@ -19,12 +19,21 @@ public class RoomRepository {
     private final DataSource dataSource;
 
     private final String ROOMS_WHERE_ROOMNAME = "r.roomname = :roomName";
+    private final String CASE_QUERY =
+            "CASE " +
+                "WHEN r.visibility = 'PUBLIC' THEN r.description " +
+                "ELSE u_other.username " +
+            "END AS description";
+    private final String JOIN = "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
+            "left join infolab.users u_other on u_other.id = s_other.user_id";
 
+    private final String ROOMS_AND_LAST_MESSAGES_WHERE_MESSAGE_IS_NOT_NULL_OR_ROOM_PUBLIC =
+            "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')";
     private final String ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS =
             "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')";
     private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
 
-    public RoomRepository(QueryHelper queryHelper, DataSource dataSource, ChatMessageRepository chatMessageRepository) {
+    public RoomRepository(QueryHelper queryHelper, DataSource dataSource) {
         this.queryHelper = queryHelper;
         this.dataSource = dataSource;
     }
@@ -38,6 +47,7 @@ public class RoomRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("roomname", room.getName().value());
         parameters.put("visibility", room.getVisibility().name());
+        parameters.put("description", room.getDescription());
         return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
@@ -89,7 +99,8 @@ public class RoomRepository {
     private UserQueryResult getRoom(Username username) {
         return queryHelper
                 .forUser(username)
-                .query("SELECT r.id room_id, r.roomname, r.visibility");
+                .query("SELECT r.id room_id, r.roomname, r.visibility, %s".formatted(CASE_QUERY))
+                .join(JOIN);
     }
 
     private Optional<RoomEntity> queryRoomNoUserRestriction(String where, Map<String, ?> queryParams) {
@@ -106,8 +117,9 @@ public class RoomRepository {
 
     private QueryResult getRoomNoUserRestriction() {
         return queryHelper
-                .query("SELECT r.id room_id, r.roomname, r.visibility")
-                .from("infolab.rooms r");
+                .query("SELECT r.id room_id, r.roomname, r.visibility, %s".formatted(CASE_QUERY))
+                .from("infolab.rooms r")
+                .join("left join infolab.rooms_subscriptions s on r.id = s.room_id %s".formatted(JOIN));
     }
 
     public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
@@ -131,6 +143,7 @@ public class RoomRepository {
     }
 
     private List<RoomEntity> queryRooms(String where, String other, Username username, Map<String, ?> queryParams) {
+        where = (where.equals("") || where == null) ? "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')" : "(m.id IS NOT NULL OR r.visibility = 'PUBLIC') AND %s".formatted(where);
         try {
             return getRooms(username)
                     .where(where)
@@ -144,7 +157,10 @@ public class RoomRepository {
     private UserQueryResult getRooms(Username username) {
         return queryHelper
                 .forUser(username)
-                .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, r.visibility, u_mex.id user_id, u_mex.username username, m.id message_id, m.sent_at, m.content, m.sender_id")
-                .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id");
+                .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, " +
+                        "r.visibility, u_mex.id user_id, u_mex.username username, m.id message_id, m.sent_at, m.content, m.sender_id, %s".formatted(CASE_QUERY))
+                .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id " +
+                        "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
+                        "left join infolab.users u_other on u_other.id = s_other.user_id");
     }
 }

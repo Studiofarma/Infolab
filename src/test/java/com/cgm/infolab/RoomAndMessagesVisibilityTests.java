@@ -90,7 +90,7 @@ public class RoomAndMessagesVisibilityTests {
     }
 
     @Test
-    void whenUser0QueriesForRoomsAndLastMessages_canSee3RoomsInOrderWith1MessageEach() {
+    void whenUser0QueriesForRoomsAndLastMessages_canSee4Rooms_1MessageEachIfPrivate_0MessagesIfPublic() {
         List<RoomEntity> roomsFromDb = new ArrayList<>(roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName()))
             .stream()
             .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
