@@ -39,6 +39,10 @@ public class RoomDto {
         return new RoomDto(roomName, null, 0, description, LastMessageDto.empty());
     }
 
+    public static RoomDto of(String roomName, int unreadMessages, String description) {
+        return new RoomDto(roomName, null, unreadMessages, description, LastMessageDto.empty());
+    }
+
     public String getRoomName() {
         return roomName;
     }
