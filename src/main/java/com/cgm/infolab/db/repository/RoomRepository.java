@@ -79,7 +79,7 @@ public class RoomRepository {
             return Optional.ofNullable(
                     getRoom(username)
                             .where(where)
-                            .executeForObject(this::mapToEntity, queryParams)
+                            .executeForObject(RowMappers::mapToRoomEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -97,7 +97,7 @@ public class RoomRepository {
             return Optional.ofNullable(
                     getRoomNoUserRestriction()
                             .where(where)
-                            .executeForObject(RowMappers::mapToEntity, queryParams)
+                            .executeForObject(RowMappers::mapToRoomEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -135,7 +135,7 @@ public class RoomRepository {
             return getRooms(username)
                     .where(where)
                     .other(other)
-                    .executeForList(RowMappers::mapToEntityWithMessages, queryParams);
+                    .executeForList(RowMappers::mapToRoomEntityWithMessages, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
@@ -146,33 +146,5 @@ public class RoomRepository {
                 .forUser(username)
                 .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, r.visibility, u_mex.id user_id, u_mex.username username, m.id message_id, m.sent_at, m.content, m.sender_id")
                 .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id");
-    }
-
-    /**
-     * Rowmapper utilizzato nei metodi getByRoomName e getById
-     */
-    private RoomEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-        return RoomEntity
-                .of(rs.getLong("room_id"),
-                        RoomName.of(rs.getString("roomname")),
-                        VisibilityEnum.valueOf(rs.getString("visibility").trim()));
-    }
-
-    private RoomEntity mapToEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
-        if (rs.getString("content") != null) {
-            ChatMessageEntity message = chatMessageRepository.mapToEntity(rs, rowNum);
-
-            return RoomEntity
-                    .of(rs.getLong("room_id"),
-                            RoomName.of(rs.getString("roomname")),
-                            VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                            List.of(message));
-        } else {
-            return RoomEntity
-                    .of(rs.getLong("room_id"),
-                            RoomName.of(rs.getString("roomname")),
-                            VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                            List.of(ChatMessageEntity.empty()));
-        }
     }
 }

@@ -68,7 +68,7 @@ public class ChatMessageRepository {
         try {
             return getMessagges(username)
                     .other(other)
-                    .executeForList(RowMappers::mapToEntity, queryParams);
+                    .executeForList(RowMappers::mapToChatMessageEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }

@@ -67,7 +67,7 @@ public class UserRepository {
             return Optional.ofNullable(
                     getUserOrUsers()
                             .where(where)
-                            .executeForObject(RowMappers::mapToEntity, queryParams)
+                            .executeForObject(RowMappers::mapToUserEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -91,7 +91,7 @@ public class UserRepository {
             return getUserOrUsers()
                     .where(where)
                     .other(other)
-                    .executeForList(this::mapToEntity, queryParams);
+                    .executeForList(RowMappers::mapToUserEntity, queryParams);
 
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
