@@ -10,10 +10,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 @Component
@@ -90,36 +86,9 @@ public class ChatMessageRepository {
 
     private List<ChatMessageEntity> queryMessages(String query, Object... queryParams) {
         try {
-            return jdbcTemplate.query(query, this::mapToEntity, queryParams);
+            return jdbcTemplate.query(query, RowMappers::mapToChatMessageEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
-    }
-
-    public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-
-        UserEntity user = UserEntity.of(rs.getLong("user_id"),
-                Username.of(rs.getString("username")));
-
-        RoomEntity room = RoomEntity.of(
-                rs.getLong("room_id"),
-                RoomName.of(rs.getString("roomname")),
-                VisibilityEnum.valueOf(rs.getString("visibility").trim())
-        );
-
-        return ChatMessageEntity
-                .of(rs.getLong("message_id"),
-                        user,
-                        room,
-                        resultSetToLocalDateTime(rs),
-                        rs.getString("content"));
-    }
-
-    private static LocalDateTime resultSetToLocalDateTime(ResultSet rs) throws SQLException {
-        return rs
-            .getTimestamp("sent_at")
-            .toInstant()
-            .atZone(ZoneId.of("Europe/Rome"))
-            .toLocalDateTime();
     }
 }

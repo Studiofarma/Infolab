@@ -8,8 +8,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -17,7 +15,6 @@ import java.util.*;
 public class RoomRepository {
     private final JdbcTemplate jdbcTemplate;
     private final DataSource dataSource;
-    private final ChatMessageRepository chatMessageRepository;
 
     private final String ROOMS_QUERY = "SELECT r.id room_id, r.roomname, r.visibility FROM infolab.rooms r ";
     private final String ROOMS_QUERY_JOINED = ROOMS_QUERY + "LEFT JOIN infolab.rooms_subscriptions s " +
@@ -59,11 +56,9 @@ c.recipient_room_id in (
 
      */
     public RoomRepository(JdbcTemplate jdbcTemplate,
-                          DataSource dataSource,
-                          ChatMessageRepository chatMessageRepository) {
+                          DataSource dataSource) {
         this.jdbcTemplate = jdbcTemplate;
         this.dataSource = dataSource;
-        this.chatMessageRepository = chatMessageRepository;
     }
 
     public long add(RoomEntity room) throws DuplicateKeyException {
@@ -108,7 +103,7 @@ c.recipient_room_id in (
     private Optional<RoomEntity> queryRoom(String query, Object... queryParams) {
         try {
             return Optional.ofNullable(
-                    jdbcTemplate.queryForObject(query, this::mapToEntity, queryParams)
+                    jdbcTemplate.queryForObject(query, RowMappers::mapToRoomEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -129,29 +124,10 @@ c.recipient_room_id in (
 
     private List<RoomEntity> queryRooms(String query, Object... queryParams) {
         try {
-            return jdbcTemplate.query(query, this::mapToEntityWithMessages, queryParams);
+            return jdbcTemplate.query(query, RowMappers::mapToRoomEntityWithMessages, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
-    }
-
-    /**
-     * Rowmapper utilizzato nei metodi getByRoomName e getById
-     */
-    private RoomEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-        return RoomEntity
-                .of(rs.getLong("room_id"),
-                        RoomName.of(rs.getString("roomname")),
-                        VisibilityEnum.valueOf(rs.getString("visibility").trim()));
-    }
-
-    private RoomEntity mapToEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
-        ChatMessageEntity message = chatMessageRepository.mapToEntity(rs, rowNum);
-        return RoomEntity
-                .of(rs.getLong("room_id"),
-                        RoomName.of(rs.getString("roomname")),
-                        VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                        List.of(message));
     }
 
     private String addConditionToNewRoomsDistinctOnQuery(String condition) {

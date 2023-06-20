@@ -8,8 +8,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 @Component
@@ -59,7 +57,7 @@ public class UserRepository {
 
     private List<UserEntity> queryUsers(String query, String username, String wildCard) {
         try {
-            return jdbcTemplate.query(query, this::mapToEntity, username, wildCard);
+            return jdbcTemplate.query(query, RowMappers::mapToUserEntity, username, wildCard);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
@@ -77,19 +75,12 @@ public class UserRepository {
     private Optional<UserEntity> queryUser(String query, Object... objects) {
         try {
             return Optional.ofNullable(
-                    jdbcTemplate.queryForObject(query, this::mapToEntity, objects)
+                    jdbcTemplate.queryForObject(query, RowMappers::mapToUserEntity, objects)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
-    /**
-     * Rowmapper utilizzato nei metodi getByUsername e getById
-     */
-    private UserEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-        return UserEntity.of(rs.getLong("id"),
-                Username.of(rs.getString("username")),
-                rs.getString("description"));
-    }
+
 }
