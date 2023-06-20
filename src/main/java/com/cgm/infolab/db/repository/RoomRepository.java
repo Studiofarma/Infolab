@@ -13,6 +13,8 @@ import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.util.*;
 
+import static com.cgm.infolab.db.repository.DownloadDateRepository.*;
+
 @Component
 public class RoomRepository {
     private final QueryHelper queryHelper;
@@ -119,7 +121,12 @@ public class RoomRepository {
     }
 
     public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
-        return queryRooms(null, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
+        List<RoomEntity> rooms = queryRooms(null, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
+        List<RoomIdNotDownloadedCount> notDownloadedCountsList = getNotDownloadedYetNumberByRoomName(username);
+
+        rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
+
+        return rooms;
     }
 
     public List<RoomEntity> getAfterDate(LocalDate dateLimit, Username username) {
@@ -130,12 +137,36 @@ public class RoomRepository {
         Map<String, Object> map = new HashMap<>();
         map.put("date", dateLimit);
 
-        return queryRooms(
+        List<RoomEntity> rooms = queryRooms(
                 "AND m.sent_at > :date",
                 ROOMS_AND_LAST_MESSAGES_OTHER,
                 username,
                 map
         );
+
+        List<RoomIdNotDownloadedCount> notDownloadedCountsList = getNotDownloadedYetNumberByRoomName(username);
+
+        rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
+
+        return rooms;
+    }
+
+    private List<RoomEntity> mergeRoomsAndNotDownloadedCount(List<RoomEntity> rooms, List<RoomIdNotDownloadedCount> notDownloadedCountsList) {
+        rooms.forEach(room -> {
+            int count = notDownloadedCountsList
+                            .stream()
+                            .filter(notDownloadedCount ->
+                                    notDownloadedCount.getRoomId() == room.getId())
+                            .findFirst()
+                            .orElse(RoomIdNotDownloadedCount.of(room.getId(), 0))
+                            .getNotDownloadedCount();
+
+            room.setNotDownloadedMessagesCount(count);
+
+            rooms.set(rooms.indexOf(room), room);
+        });
+
+        return rooms;
     }
 
     private List<RoomEntity> queryRooms(String where, String other, Username username, Map<String, ?> queryParams) {
@@ -158,5 +189,19 @@ public class RoomRepository {
                 .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id " +
                         "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
                         "left join infolab.users u_other on u_other.id = s_other.user_id");
+    }
+
+    public List<RoomIdNotDownloadedCount> getNotDownloadedYetNumberByRoomName(Username username) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("username", username.value());
+
+        return queryHelper
+                .forUser(username)
+                .query("SELECT COUNT(*) not_downloaded_count, r.id")
+                .join(DOWNLOAD_DATES_JOIN)
+                .where(DOWNLOAD_DATES_WHERE_NULL)
+                .other("GROUP BY r.id")
+                .executeForList(RowMappers::mapNotDownloadedMessagesCount, map);
     }
 }

@@ -110,10 +110,6 @@ public class RoomRepositoryTests {
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
 
-        for (RoomEntity entity : roomEntities) {
-            System.out.println(entity.getName());
-        }
-
         Assertions.assertEquals(3, roomEntities.size());
 
         String descriptionGeneral = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",

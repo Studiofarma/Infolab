@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Map;
 
 public abstract class RowMappers {
 
@@ -69,5 +70,9 @@ public abstract class RowMappers {
         return UserEntity.of(rs.getLong("id"),
                 Username.of(rs.getString("username")),
                 rs.getString("description"));
+    }
+
+    public static RoomIdNotDownloadedCount mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
+        return RoomIdNotDownloadedCount.of(rs.getLong("id"), rs.getInt("not_downloaded_count"));
     }
 }
