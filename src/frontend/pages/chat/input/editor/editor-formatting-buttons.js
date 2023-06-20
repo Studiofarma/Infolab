@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 
 import "../../../../components/formatting-button";
 
-import { MarkdownService } from "../../../../services/markdown-services";
+import { MarkdownService } from "../../../../services/markdown-service";
 import { IconNames } from "../../../../enums/icon-names";
 
 export class EditorFormattingButtons extends LitElement {

@@ -5,7 +5,7 @@ import "../../../../components/formatting-button";
 import "../../../../components/button-text";
 import "./editor-formatting-buttons";
 
-import { MarkdownService } from "../../../../services/markdown-services";
+import { MarkdownService } from "../../../../services/markdown-service";
 import { mdiFormatListText } from "@mdi/js";
 
 export class Editor extends LitElement {
