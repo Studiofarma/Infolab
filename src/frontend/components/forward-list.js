@@ -166,6 +166,7 @@ export class ForwardList extends LitElement {
           @click=${() => {
             this.setForwardListVisibility(false);
             this.forwardMessage(roomName);
+            this.clearSearchInput();
           }}
         >
           <div class="forward-conversation">
@@ -175,6 +176,11 @@ export class ForwardList extends LitElement {
         </div>
       `;
     });
+  }
+
+  clearSearchInput() {
+    let input = this.shadowRoot.querySelector("il-input-ricerca");
+    input.clear();
   }
 
   forwardMessageHandler(e) {
