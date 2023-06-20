@@ -66,7 +66,7 @@ public class ChatMessageRepository {
 
     private List<ChatMessageEntity> queryUserMessages(String other, Username username, Map<String, ?> queryParams) {
         try {
-            return getMessagges(username)
+            return getMessages(username)
                     .other(other)
                     .executeForList(RowMappers::mapToChatMessageEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
@@ -74,7 +74,7 @@ public class ChatMessageRepository {
         }
     }
 
-    private UserQueryResult getMessagges(Username username) {
+    private UserQueryResult getMessages(Username username) {
         return queryHelper
                 .forUser(username)
                 .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content")
