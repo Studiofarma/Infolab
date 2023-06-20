@@ -1,7 +1,6 @@
 import { LitElement, html, css } from "lit";
 
 import "../../../components/button-icon";
-import "../../../components/avatar";
 import { IconNames } from "../../../enums/icon-names";
 
 export class ChatHeader extends LitElement {
