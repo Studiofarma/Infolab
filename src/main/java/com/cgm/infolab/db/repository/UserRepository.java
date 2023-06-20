@@ -35,6 +35,7 @@ public class UserRepository {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("username", user.getName().value());
+        parameters.put("description", user.getDescription());
         return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
