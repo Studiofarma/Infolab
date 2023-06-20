@@ -1,12 +1,12 @@
 import { LitElement, html, css } from "lit";
 import { ConversationDto } from "../models/conversation-dto.js";
 import { CookieService } from "../services/cookie-service";
+import { Picker } from "emoji-picker-element";
 
 export class ForwardList extends LitElement {
 	static get properties() {
 		return {
 			forwardList: [],
-			forwardListVisibility: false,
 		};
 	}
 
@@ -14,25 +14,23 @@ export class ForwardList extends LitElement {
 		super();
 		this.forwardList = [];
 		this.messageToForward = "";
-		this.forwardListVisibility = false;
 	}
 
 	static styles = css`
-		/* dialog {
-			background: white;
+		dialog {
+			width: 400px;
+			position: absolute;
+			transform: translateY(-50%);
+			top: 50%;
+			z-index: 5000;
+			border: none;
 			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 			border-radius: 6px;
 			padding: 8px;
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			width: 300px;
-			z-index: 1000;
-		} */
+		}
 
 		dialog::backdrop {
-			background: #00000037;
+			background-color: #00000037;
 		}
 
 		.forward-list-header {
@@ -120,11 +118,8 @@ export class ForwardList extends LitElement {
 
 	render() {
 		return html`
-   
-    <dialog open>
-
-
-    <div class="forward-list-header">
+			<dialog @click=${(e) => this.closeForwardList(e,"")}>
+				<div class="forward-list-header">
         <p>Inoltra messaggio</p>
         <div class="forward-list-search">
           <input placeholder="Cerca" type="search" id="fwdSearch" @input="${
@@ -139,15 +134,8 @@ export class ForwardList extends LitElement {
         </div>
       </div>
     </div>
-
-
-
-    </dialog>
-
-      
-
-    
-  `;
+			</dialog>
+		`;
 	}
 
 	renderForwardList() {
@@ -156,12 +144,7 @@ export class ForwardList extends LitElement {
 			let roomName = this.activeChatNameFormatter(conversation.roomName);
 
 			return html`
-				<div
-					@click=${() => {
-						this.setForwardListVisibility(false);
-						this.forwardMessage(roomName);
-					}}
-				>
+				<div @click=${(e) => this.closeForwardList(e,roomName)}>
 					<div class="forward-conversation">
 						<il-avatar avatarLink="" .name=${roomName} id=""></il-avatar>
 						<p>${roomName}</p>
@@ -174,7 +157,22 @@ export class ForwardList extends LitElement {
 	forwardMessageHandler(e) {
 		this.messageToForward = e.message;
 		this.updateForwardList();
-		this.setForwardListVisibility(true);
+
+		// opening the modal
+		let dialog = this.renderRoot.querySelector("dialog");
+		dialog.showModal();
+	}
+
+	closeForwardList(e, roomName) {
+		let dialog = this.renderRoot.querySelector("dialog");
+		dialog.close();
+
+		if(roomName === "") {
+			e.stopPropagation();
+			return;
+		}
+
+		this.forwardMessage(roomName);
 	}
 
 	forwardMessage(roomName) {
