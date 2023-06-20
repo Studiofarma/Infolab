@@ -2,9 +2,18 @@ import { LitElement, html, css } from "lit";
 
 import { IconNames } from "../enums/icon-names";
 import { InputField } from "./input-field";
-import { Icon } from "./icon";
+import { ButtonIcon } from "./button-icon";
 
 export class InputRicerca extends InputField {
+  static properties = {
+    isFocus: { type: Boolean },
+  };
+
+  constructor() {
+    super();
+    this.isFocus = false;
+  }
+
   static styles = [
     css`
       div {
@@ -12,6 +21,7 @@ export class InputRicerca extends InputField {
         display: flex;
         background-color: rgb(0, 38, 78);
         border-radius: 10px;
+        color: white;
       }
 
       input {
@@ -26,7 +36,7 @@ export class InputRicerca extends InputField {
         overflow: hidden;
       }
 
-      il-icon {
+      il-button-icon {
         padding: 5px;
       }
     `,
@@ -35,22 +45,39 @@ export class InputRicerca extends InputField {
   render() {
     return html`
       <div>
-        <input placeholder="${this.placeholder}" @input="${this.search}" />
-        <il-icon name=${IconNames.magnify}></il-icon>
+        <input
+          placeholder="${this.placeholder}"
+          @input="${this.search}"
+          @focus="${this.toggleFocus}"
+          @blur=${this.toggleFocus}
+        />
+        <il-button-icon
+          @click=${() => {
+            this.clear();
+            this.search();
+          }}
+          content=${this.isFocus == true ? IconNames.close : IconNames.magnify}
+        ></il-button-icon>
       </div>
     `;
   }
 
   search(event) {
+    let input = this.renderRoot.querySelector("div input");
     this.dispatchEvent(
       new CustomEvent("search", {
         detail: {
-          query: event.target.value,
+          query: input.value,
         },
         bubbles: true,
         composed: true,
       })
     );
+    input.focus();
+  }
+
+  toggleFocus() {
+    this.isFocus = !this.isFocus;
   }
 }
 
