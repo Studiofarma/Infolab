@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 
 import "../../../components/button-icon";
+import "../../../components/avatar";
 import { IconNames } from "../../../enums/icon-names";
 
 export class ChatHeader extends LitElement {
@@ -26,43 +27,37 @@ export class ChatHeader extends LitElement {
       z-index: 1000;
     }
 
-    .chatHeader .settings {
-      order: 2;
-      display: flex;
-    }
-
     .chatHeader .contact {
       order: 1;
       display: flex;
       gap: 1em;
     }
 
-    .settings {
-      transition: 1s;
-    }
-
-    .settings:hover {
-      transform: rotate(180deg);
-    }
-
     .contact {
-      width: 95%;
+      width: 100%;
       display: flex;
       justify-content: space-between;
+    }
+
+    #profileContainer {
+      display: flex;
+    }
+
+    #profileContainer il-avatar {
+      vertical-align: center;
+      padding: 15px;
     }
   `;
 
   render() {
     return html`
       <div class="chatHeader">
-        <div class="settings">
-          <il-button-icon content=${IconNames.settings}></il-button-icon>
-        </div>
-
         <div class="contact">
           <h2>${this.roomName}</h2>
-          <!-- Username will not be here, need to be removed, only for debug -->
-          <h2>Nome utente: ${this.userName}</h2>
+          <div id="profileContainer">
+            <il-avatar name=${this.userName}></il-avatar>
+            <h2>${this.userName}</h2>
+          </div>
         </div>
       </div>
     `;
