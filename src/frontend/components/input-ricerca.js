@@ -47,7 +47,10 @@ export class InputRicerca extends InputField {
       <div>
         <input
           placeholder="${this.placeholder}"
-          @input="${this.search}"
+          @input="${() => {
+            this.search();
+            this.setValue();
+          }}"
           @focus="${this.toggleFocus}"
           @blur=${this.toggleFocus}
         />

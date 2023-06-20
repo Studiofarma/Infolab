@@ -2,6 +2,8 @@ import { LitElement, html, css } from "lit";
 import { ConversationDto } from "../models/conversation-dto.js";
 import { CookieService } from "../services/cookie-service";
 
+import "./input-ricerca.js";
+
 export class ForwardList extends LitElement {
   static get properties() {
     return {
@@ -60,15 +62,10 @@ export class ForwardList extends LitElement {
       align-items: center;
     }
 
-    .forward-list-search > input {
+    .forward-list-search > il-input-ricerca {
       margin: 5px 0;
       padding: 8px;
       width: 100%;
-
-      border: none;
-      outline: none;
-      border-radius: 6px;
-      background-color: rgb(242 242 242);
     }
 
     .forward-list-scrollable {
@@ -78,7 +75,6 @@ export class ForwardList extends LitElement {
 
     .forward-list-section-title {
       background: white;
-
       padding: 5px 0px;
       position: sticky;
       top: -3px;
@@ -86,9 +82,7 @@ export class ForwardList extends LitElement {
 
     .forward-list-body {
       z-index: 1000;
-
       width: 99%;
-
       display: flex;
       flex-direction: column;
       gap: 5px;
@@ -127,35 +121,45 @@ export class ForwardList extends LitElement {
 
   render() {
     return html`
-    <div class="forward-list-backdrop" style="${
-      this.forwardListVisibility ? "z-index: 500" : ""
-    }" @click="${() => {
-      this.setForwardListVisibility(false);
-    }}">
-    <div
-      class="forward-list-container"
-      @click="${(e) => {
-        e.stopPropagation();
-      }}"
-      style="${this.forwardListVisibility ? "" : "display: none;"}"
-    >
-      <div class="forward-list-header">
-        <p>Inoltra messaggio</p>
-        <div class="forward-list-search">
-          <input placeholder="Cerca" type="search" id="fwdSearch" @input="${
-            this.fwdSearch
-          }"></input>
+      <div
+        class="forward-list-backdrop"
+        style="${this.forwardListVisibility ? "z-index: 500" : ""}"
+        @click="${() => {
+          this.setForwardListVisibility(false);
+        }}"
+      >
+        <div
+          class="forward-list-container"
+          @click="${(e) => {
+            e.stopPropagation();
+          }}"
+          style="${this.forwardListVisibility ? "" : "display: none;"}"
+        >
+          <div class="forward-list-header">
+            <p>Inoltra messaggio</p>
+            <div class="forward-list-search">
+              <!--input
+                placeholder="Cerca"
+                type="search"
+                id="fwdSearch"
+                @input="${this.fwdSearch}"
+              /-->
+              <il-input-ricerca
+                placeholder="Cerca"
+                id="fwdSearch"
+                @search=${this.fwdSearch}
+              ></il-input-ricerca>
+            </div>
+          </div>
+          <div class="forward-list-scrollable">
+            <div class="forward-list-section">
+              <div class="forward-list-section-title">Chat</div>
+              <div class="forward-list-body">${this.renderForwardList()}</div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="forward-list-scrollable">
-        <div class="forward-list-section">
-          <div class="forward-list-section-title">Chat</div>								
-          <div class="forward-list-body">${this.renderForwardList()}</div>
-        </div>
-      </div>
-    </div>
-        </div>
-  `;
+    `;
   }
 
   renderForwardList() {
@@ -199,11 +203,13 @@ export class ForwardList extends LitElement {
     chatElement.sendMessage({ detail: { message: this.messageToForward } });
   }
 
-  fwdSearch() {
+  fwdSearch(event) {
     this.forwardList = [...this.tmpForwardList];
-    let searchInput = this.shadowRoot.querySelector("input#fwdSearch");
+    let searchInput = this.shadowRoot.querySelector(
+      "il-input-ricerca#fwdSearch"
+    );
 
-    let value = searchInput.value.toLowerCase();
+    let value = event.detail.query.toLowerCase();
 
     this.forwardList = this.tmpForwardList.filter((user) =>
       user.roomName.toLowerCase().includes(value)
