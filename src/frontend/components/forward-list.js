@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 import { ConversationDto } from "../models/conversation-dto.js";
 import { CookieService } from "../services/cookie-service";
 
-import "./input-ricerca.js";
+import "./input-ricerca";
 
 export class ForwardList extends LitElement {
   static get properties() {
