@@ -104,16 +104,6 @@ public class SecurityConfiguration {
                 .password(String.format("{noop}%s", "password2"))
                 .roles("user")
                 .build();
-        UserDetails user3 = User
-                .withUsername("user3")
-                .password(String.format("{noop}%s", "password3"))
-                .roles("user")
-                .build();
-        UserDetails user4 = User
-                .withUsername("user4")
-                .password(String.format("{noop}%s", "password4"))
-                .roles("user")
-                .build();
         UserDetails user5 = User
                 .withUsername("davide.giudici")
                 .password(String.format("{noop}%s", "password"))
@@ -129,7 +119,27 @@ public class SecurityConfiguration {
                 .password(String.format("{noop}%s", "password"))
                 .roles("user")
                 .build();
-        return new InMemoryUserDetailsManager(user1, user2, user3, user4, user5, user6, user7);
+        UserDetails user8 = User
+                .withUsername("Lorenzo")
+                .password(String.format("{noop}%s", "password"))
+                .roles("user")
+                .build();
+        UserDetails user9 = User
+                .withUsername("Daniele")
+                .password(String.format("{noop}%s", "password"))
+                .roles("user")
+                .build();
+        UserDetails user10 = User
+                .withUsername("Davide")
+                .password(String.format("{noop}%s", "password"))
+                .roles("user")
+                .build();
+        UserDetails user11 = User
+                .withUsername("Mirko")
+                .password(String.format("{noop}%s", "password"))
+                .roles("user")
+                .build();
+        return new InMemoryUserDetailsManager(user1, user2, user5, user6, user7, user8, user9, user10, user11);
     }
 
     private static void authInHeadersOrQueryString(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
