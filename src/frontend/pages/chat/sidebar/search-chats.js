@@ -1,6 +1,5 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
 
-import "../../../components/button-icon";
 import "../../../components/input-ricerca";
 
 export class SearchChats extends LitElement {

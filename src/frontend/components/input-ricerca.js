@@ -59,7 +59,9 @@ export class InputRicerca extends InputField {
             this.clear();
             this.search();
           }}
-          content=${this.isFocus == true && this.value == ""
+          content=${this.isFocus == true &&
+          this.value != null &&
+          this.value != ""
             ? IconNames.close
             : IconNames.magnify}
         ></il-button-icon>
