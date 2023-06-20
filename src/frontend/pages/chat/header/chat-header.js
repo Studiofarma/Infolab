@@ -4,69 +4,63 @@ import "../../../components/button-icon";
 import { IconNames } from "../../../enums/icon-names";
 
 export class ChatHeader extends LitElement {
-	static get properties() {
-		return {
-			userName: "",
-			roomName: "",
-		};
-	}
+  static get properties() {
+    return {
+      userName: "",
+      roomName: "",
+    };
+  }
 
-	static styles = css`
-		.chatHeader {
-			background: #083c72;
-			height: 40px;
-			padding: 15px 30px;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			color: white;
-			position: fixed;
-			width: calc(100vw - 400px);
-			border-bottom: 1px solid black;
-			z-index: 1000;
-		}
+  static styles = css`
+    .chatHeader {
+      background: #083c72;
+      height: 40px;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      position: fixed;
+      width: calc(100vw - 400px);
+      border-bottom: 1px solid black;
+      z-index: 1000;
+    }
 
-		.chatHeader .settings {
-			order: 2;
-			display: flex;
-		}
+    .chatHeader .contact {
+      order: 1;
+      display: flex;
+      gap: 1em;
+    }
 
-		.chatHeader .contact {
-			order: 1;
-			display: flex;
-			gap: 1em;
-		}
+    .contact {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
 
-		.settings {
-			transition: 1s;
-		}
+    #profileContainer {
+      display: flex;
+    }
 
-		.settings:hover {
-			transform: rotate(180deg);
-		}
+    #profileContainer il-avatar {
+      vertical-align: center;
+      padding: 15px;
+    }
+  `;
 
-		.contact {
-			width: 95%;
-			display: flex;
-			justify-content: space-between;
-		}
-	`;
-
-	render() {
-		return html`
-			<div class="chatHeader">
-				<div class="settings">
-					<il-button-icon content=${IconNames.settings}></il-button-icon>
-				</div>
-
-				<div class="contact">
-					<h2>${this.roomName}</h2>
-					<!-- Username will not be here, need to be removed, only for debug -->
-					<h2>UserName: ${this.userName}</h2>
-				</div>
-			</div>
-		`;
-	}
+  render() {
+    return html`
+      <div class="chatHeader">
+        <div class="contact">
+          <h2>${this.roomName}</h2>
+          <div id="profileContainer">
+            <h2>${this.userName}</h2>
+            <il-avatar name=${this.userName}></il-avatar>
+          </div>
+        </div>
+      </div>
+    `;
+  }
 }
 
 customElements.define("il-chat-header", ChatHeader);

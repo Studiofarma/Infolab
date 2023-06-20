@@ -9,8 +9,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.*;
 
 @Component
@@ -69,12 +67,13 @@ public class UserRepository {
             return Optional.ofNullable(
                     getUserOrUsers()
                             .where(where)
-                            .executeForObject(this::mapToEntity, queryParams)
+                            .executeForObject(RowMappers::mapToUserEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
+
 
     /**
      * Metodo che risale all'id di un utente dal suo nome
@@ -89,16 +88,10 @@ public class UserRepository {
 
     private List<UserEntity> queryUsers(String where, String other, Map<String, ?> queryParams) {
         try {
-//            return queryHelper
-//                    .query(select)
-//                    .from(from)
-//                    .where(where)
-//                    .other(other)
-//                    .executeForList(this::mapToEntity, queryParams);
             return getUserOrUsers()
                     .where(where)
                     .other(other)
-                    .executeForList(this::mapToEntity, queryParams);
+                    .executeForList(RowMappers::mapToUserEntity, queryParams);
 
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
@@ -109,14 +102,5 @@ public class UserRepository {
         return queryHelper
                 .query("SELECT *")
                 .from("infolab.users");
-    }
-
-    /**
-     * Rowmapper utilizzato nei metodi getByUsername e getById
-     */
-    private UserEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-        return UserEntity.of(rs.getLong("id"),
-                Username.of(rs.getString("username")),
-                rs.getString("description"));
     }
 }

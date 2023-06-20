@@ -84,4 +84,10 @@
             <column name="description" type="varchar(500)" />
         </addColumn>
     </changeSet>
+
+    <changeSet id="room_description" author="Lorenzo Rinaldi">
+        <addColumn schemaName="infolab" tableName="rooms">
+            <column name="description" type="varchar(500)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

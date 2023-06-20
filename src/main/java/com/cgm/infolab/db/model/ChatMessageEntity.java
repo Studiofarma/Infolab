@@ -30,7 +30,7 @@ public class ChatMessageEntity {
     }
 
     public static ChatMessageEntity empty() {
-        return new ChatMessageEntity(ID.None, UserEntity.empty(), RoomEntity.empty(), new Timestamp(0).toLocalDateTime(), "");
+        return new ChatMessageEntity(ID.None, UserEntity.empty(), RoomEntity.empty(), null, "");
     }
 
     public long getId() {

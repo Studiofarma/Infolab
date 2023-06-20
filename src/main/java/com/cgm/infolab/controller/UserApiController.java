@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import java.util.List;
 public class UserApiController {
 
     private final UserRepository userRepository;
-
     private final Logger log = LoggerFactory.getLogger(UserApiController.class);
 
 
@@ -33,16 +31,10 @@ public class UserApiController {
         List<UserEntity> userEntities = userRepository.getByUsernameWithLike(Username.of(user));
 
         if (userEntities.size() > 0) {
-
-            UserDtos = userEntities.stream().map(this::fromEntityToDto).toList();
+            UserDtos = userEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
         } else {
             log.info("Non sono stati trovati users");
         }
         return UserDtos;
-    }
-
-    public UserDto fromEntityToDto(UserEntity userEntity) {
-        UserDto userDto = UserDto.of(userEntity.getName().value(), userEntity.getId(), userEntity.getDescription());
-        return userDto;
     }
 }

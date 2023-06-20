@@ -1,7 +1,6 @@
 package com.cgm.infolab.controller;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.UserRepository;
@@ -10,7 +9,6 @@ import com.cgm.infolab.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -22,7 +20,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
-import java.sql.Timestamp;
 
 @Controller
 public class ChatController {
@@ -67,7 +64,7 @@ public class ChatController {
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-        ChatMessageEntity messageEntity = chatService.saveMessageInDbPublicRooms(message, Username.of(principal.getName()), RoomName.of("general"));
+        ChatMessageEntity messageEntity = chatService.saveMessageInDb(message, Username.of(principal.getName()), RoomName.of("general"), null);
         return new ChatMessageDto(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender().getName().value(), "general");
     }
 
@@ -81,8 +78,12 @@ public class ChatController {
             Principal principal){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         log.info(String.format("message from %s to %s", username, destinationUser));
-        ChatMessageEntity messageEntity = chatService.saveMessageInDbPrivateRooms(message, Username.of(principal.getName()),
-            RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)));
+        ChatMessageEntity messageEntity = chatService.saveMessageInDb(
+                message, Username.of(principal.getName()),
+                RoomName.of(Username.of(principal.getName()),
+                Username.of(destinationUser)),
+                Username.of(destinationUser)
+        );
         return new ChatMessageDto(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender().getName().value(), RoomName.getRoomNameByUsers(Username.of(principal.getName()), Username.of(destinationUser)));
     }
 }

@@ -172,14 +172,14 @@ export class Editor extends LitElement {
 					<il-button-text
             @click=${() => this.setPreviewer(false)}
             class="button-text"
-						text="Write"
+						text="Scrivi"
             toggleClass=${this.openPreview ? "active-button-text" : "" }
 					></il-button-text>
 
 					<il-button-text
             @click=${() => this.setPreviewer(true)}
             class="button-text"
-						text="Preview"
+						text="Anteprima"
             toggleClass=${this.openPreview ? "" : "active-button-text" }
 					></il-button-text>
 
