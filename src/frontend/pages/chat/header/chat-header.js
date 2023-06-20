@@ -62,7 +62,7 @@ export class ChatHeader extends LitElement {
         <div class="contact">
           <h2>${this.roomName}</h2>
           <!-- Username will not be here, need to be removed, only for debug -->
-          <h2>Nome Utente: ${this.userName}</h2>
+          <h2>Nome utente: ${this.userName}</h2>
         </div>
       </div>
     `;

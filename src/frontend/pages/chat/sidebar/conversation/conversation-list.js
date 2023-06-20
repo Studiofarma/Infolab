@@ -15,57 +15,46 @@ class ConversationList extends LitElement {
     conversationListSearched: [],
   };
 
-  static get properties() {
-    return {
-      conversationList: { type: {} },
-      conversationListSearched: { type: {} },
-    };
-  }
-
   static styles = css`
     * {
       box-sizing: border-box;
       padding: 0;
       margin: 0;
     }
-
     .conversation-list {
-      overflow-y: scroll;
       display: flex;
-      height: auto;
       flex-direction: column;
       gap: 10px;
       margin-right: 3px;
     }
-
+    .container {
+      max-height: 806px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: scroll;
+    }
     ::-webkit-scrollbar {
       width: 4px;
       margin-right: 10px;
     }
-
     ::-webkit-scrollbar-track {
       background-color: none;
     }
-
     ::-webkit-scrollbar-thumb {
       border-radius: 10px;
       background-color: rgb(54, 123, 251);
     }
-
     .conversation {
       margin-right: 3px;
       border-radius: 0px 7px 7px 0px;
       transition: background-color 0.2s;
     }
-
     .conversation:hover {
       background-color: #1460b1;
     }
-
     .active {
       background-color: #1460b1;
     }
-
     .separator {
       position: sticky;
       top: 0;
@@ -73,7 +62,6 @@ class ConversationList extends LitElement {
       color: #d6d6d6;
       background: #083c72;
     }
-
     .conversation-list-scrollable {
       height: calc(100vh - 135px);
       overflow: auto;
@@ -103,7 +91,7 @@ class ConversationList extends LitElement {
         <div>
           <p class="separator">
             ${this.conversationListSearched.length > 0
-              ? "Nuove Conversazioni"
+              ? "Nuove conversazioni"
               : ""}
           </p>
           <div class="conversation-list">

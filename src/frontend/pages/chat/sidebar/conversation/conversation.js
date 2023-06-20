@@ -177,12 +177,12 @@ class Conversation extends LitElement {
   lastMessageTextFormatter(sender, message) {
     let cookie = CookieService.getCookie();
     if (sender == cookie.username) {
-      sender = "tu";
+      sender = "Tu";
     }
     return resolveMarkdown(
       MarkdownService.parseMarkdown(
         this.fixLastMessageLength(
-          sender ? `${sender}: ${message}` : "Nuova Conversazione"
+          sender ? `${sender}: ${message}` : "Nuova conversazione"
         )
       )
     );
