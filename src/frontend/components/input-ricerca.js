@@ -47,9 +47,9 @@ export class InputRicerca extends InputField {
       <div>
         <input
           placeholder="${this.placeholder}"
-          @input="${() => {
+          @input="${(e) => {
             this.search();
-            this.setValue();
+            this.setValue(e);
           }}"
           @focus="${this.toggleFocus}"
           @blur=${this.toggleFocus}
@@ -59,7 +59,9 @@ export class InputRicerca extends InputField {
             this.clear();
             this.search();
           }}
-          content=${this.isFocus == true ? IconNames.close : IconNames.magnify}
+          content=${this.isFocus == true && this.value == ""
+            ? IconNames.close
+            : IconNames.magnify}
         ></il-button-icon>
       </div>
     `;
