@@ -55,8 +55,8 @@ export class ChatHeader extends LitElement {
         <div class="contact">
           <h2>${this.roomName}</h2>
           <div id="profileContainer">
-            <il-avatar name=${this.userName}></il-avatar>
             <h2>${this.userName}</h2>
+            <il-avatar name=${this.userName}></il-avatar>
           </div>
         </div>
       </div>
