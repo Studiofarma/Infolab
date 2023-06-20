@@ -28,7 +28,7 @@ public class RunAfterStartup {
             UserEntity.of(Username.of("davide.giudici"), "WARDEN OF GIT"),
             UserEntity.of(Username.of("mattia.pedersoli"), "Amante delle bambine"),
             UserEntity.of(Username.of("luca.minini"), "Dispenser di bambine")};
-    public static final RoomEntity[] ROOMS = {RoomEntity.of(RoomName.of("general"), VisibilityEnum.PUBLIC)};
+    public static final RoomEntity[] ROOMS = {RoomEntity.general()};
 
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
