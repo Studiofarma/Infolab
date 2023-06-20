@@ -138,7 +138,7 @@ class Conversation extends LitElement {
     yesterday.setDate(yesterday.getDate() - 1);
 
     if (yesterday.toDateString() === message) {
-      return "Yesterday";
+      return "Ieri";
     }
 
     const messageYear = new Date(messageDate).getFullYear();

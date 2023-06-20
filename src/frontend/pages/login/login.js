@@ -227,8 +227,8 @@ export class Login extends LitElement {
               type="text"
               @input=${this.onUsernameInput}
               @keydown=${this.checkEnterKey}
-              placeholder="Inserisci lo username"
-              title="Username"
+              placeholder="Inserisci il nome utente"
+              title="Nome utente"
             ></il-input-field>
           </div>
 
