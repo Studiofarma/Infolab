@@ -12,10 +12,6 @@ export class EditorFormattingButtons extends LitElement {
 		}
 	`;
 
-	constructor() {
-		super();
-	}
-
 	render() {
 		return html`
 			<il-formatting-button
