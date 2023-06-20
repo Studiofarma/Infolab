@@ -138,12 +138,6 @@ export class ForwardList extends LitElement {
           <div class="forward-list-header">
             <p>Inoltra messaggio</p>
             <div class="forward-list-search">
-              <!--input
-                placeholder="Cerca"
-                type="search"
-                id="fwdSearch"
-                @input="${this.fwdSearch}"
-              /-->
               <il-input-ricerca
                 placeholder="Cerca"
                 id="fwdSearch"
@@ -175,7 +169,7 @@ export class ForwardList extends LitElement {
           }}
         >
           <div class="forward-conversation">
-            <il-avatar .avatarLink="" .name=${roomName} .id=""></il-avatar>
+            <il-avatar .name=${roomName}></il-avatar>
             <p>${roomName}</p>
           </div>
         </div>
@@ -205,9 +199,6 @@ export class ForwardList extends LitElement {
 
   fwdSearch(event) {
     this.forwardList = [...this.tmpForwardList];
-    let searchInput = this.shadowRoot.querySelector(
-      "il-input-ricerca#fwdSearch"
-    );
 
     let value = event.detail.query.toLowerCase();
 
