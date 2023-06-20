@@ -30,6 +30,8 @@ public class RoomRepository {
     private final String JOIN = "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
             "left join infolab.users u_other on u_other.id = s_other.user_id";
 
+    private final String ROOMS_AND_LAST_MESSAGES_WHERE_MESSAGE_IS_NOT_NULL_OR_ROOM_PUBLIC =
+            "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')";
     private final String ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS =
             "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')";
     private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
@@ -145,6 +147,7 @@ public class RoomRepository {
     }
 
     private List<RoomEntity> queryRooms(String where, String other, Username username, Map<String, ?> queryParams) {
+        where = (where.equals("") || where == null) ? "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')" : "(m.id IS NOT NULL OR r.visibility = 'PUBLIC') AND %s".formatted(where);
         try {
             return getRooms(username)
                     .where(where)
@@ -158,8 +161,11 @@ public class RoomRepository {
     private UserQueryResult getRooms(Username username) {
         return queryHelper
                 .forUser(username)
-                .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, r.visibility, u_mex.id user_id, u_mex.username username, m.id message_id, m.sent_at, m.content, m.sender_id")
-                .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id");
+                .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, " +
+                        "r.visibility, u_mex.id user_id, u_mex.username username, m.id message_id, m.sent_at, m.content, m.sender_id, %s".formatted(CASE_QUERY))
+                .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id " +
+                        "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
+                        "left join infolab.users u_other on u_other.id = s_other.user_id");
     }
 
     /**
@@ -181,12 +187,14 @@ public class RoomRepository {
                     .of(rs.getLong("room_id"),
                             RoomName.of(rs.getString("roomname")),
                             VisibilityEnum.valueOf(rs.getString("visibility").trim()),
+                            rs.getString("description"),
                             List.of(message));
         } else {
             return RoomEntity
                     .of(rs.getLong("room_id"),
                             RoomName.of(rs.getString("roomname")),
                             VisibilityEnum.valueOf(rs.getString("visibility").trim()),
+                            rs.getString("description"),
                             List.of(ChatMessageEntity.empty()));
         }
     }

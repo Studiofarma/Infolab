@@ -45,6 +45,10 @@ public class RoomEntity {
         return new RoomEntity(id, name, visibility, "", messages);
     }
 
+    public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, String description, List<ChatMessageEntity> messages) {
+        return new RoomEntity(id, name, visibility, description, messages);
+    }
+
     public static RoomEntity empty() {
         return new RoomEntity(ID.None, RoomName.empty(), null, "", new ArrayList<>());
     }

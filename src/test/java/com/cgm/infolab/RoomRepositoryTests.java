@@ -16,6 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Comparator;
+import java.util.List;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "local"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -59,6 +62,7 @@ public class RoomRepositoryTests {
         jdbcTemplate.update("DELETE FROM infolab.chatmessages");
         jdbcTemplate.update("DELETE FROM infolab.rooms_subscriptions");
         jdbcTemplate.update("DELETE FROM infolab.users");
+        jdbcTemplate.update("DELETE FROM infolab.rooms WHERE roomname <> 'general'");
 
         for (UserEntity user : users) {
             userRepository.add(user);
@@ -78,7 +82,7 @@ public class RoomRepositoryTests {
     }
 
     @Test
-    void whenFetchingPublicRoom_descriptionIsFromDescriptionFieldInDb() {
+    void whenFetchingARoom_forPublicDescriptionIsFromTheDb_forPrivateTheDescriptionIsTheOtherUserOfTheRoom() {
         RoomEntity roomPublic = roomRepository.getByRoomName(general.getName(), loggedInUser.getName()).orElse(null);
 
         String descriptionPublic = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
@@ -96,5 +100,40 @@ public class RoomRepositoryTests {
 
         Assertions.assertNotEquals(descriptionPrivate, roomPrivate.getDescription());
         Assertions.assertEquals("user1", roomPrivate.getDescription());
+    }
+
+    @Test
+    void whenFetchingAllRooms_forPublicDescriptionIsFromTheDb_forPrivateTheDescriptionIsTheOtherUserOfTheRoom() {
+        List<RoomEntity> roomEntities = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        for (RoomEntity entity : roomEntities) {
+            System.out.println(entity.getName());
+        }
+
+        Assertions.assertEquals(3, roomEntities.size());
+
+        String descriptionGeneral = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                (rs, rowNum) -> rs.getString("description"),
+                general.getName().value());
+
+        Assertions.assertEquals("Generale", roomEntities.get(0).getDescription());
+        Assertions.assertEquals(descriptionGeneral, roomEntities.get(0).getDescription());
+
+        String descriptionUser0User1 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                (rs, rowNum) -> rs.getString("description"),
+                "user0-user1");
+
+        Assertions.assertNotEquals(descriptionUser0User1, roomEntities.get(1).getDescription());
+        Assertions.assertEquals("user1", roomEntities.get(1).getDescription());
+
+        String descriptionUser0User2 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                (rs, rowNum) -> rs.getString("description"),
+                "user0-user2");
+
+        Assertions.assertNotEquals(descriptionUser0User2, roomEntities.get(2).getDescription());
+        Assertions.assertEquals("user2", roomEntities.get(2).getDescription());
     }
 }
