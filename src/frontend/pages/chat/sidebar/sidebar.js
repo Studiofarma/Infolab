@@ -2,7 +2,6 @@ import { LitElement, html, css } from "lit";
 
 import "./search-chats.js";
 import "./conversation/conversation-list.js";
-import "../../../components/avatar.js";
 
 export class Sidebar extends LitElement {
   static properties = {
