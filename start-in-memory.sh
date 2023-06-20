@@ -1,1 +1,1 @@
-./mvnw spring-boot:run -Dspring-boot.run.profiles=inmemory
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev,inmemory
