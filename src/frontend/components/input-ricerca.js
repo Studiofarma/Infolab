@@ -1,8 +1,8 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 
 import { IconNames } from "../enums/icon-names";
 import { InputField } from "./input-field";
-import { ButtonIcon } from "./button-icon";
+import "./button-icon";
 
 export class InputRicerca extends InputField {
   static properties = {

@@ -1,13 +1,7 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
 
-import { CookieService } from "../../../services/cookie-service";
-import { UsersService } from "../../../services/users-service";
-
-import crossImage from "../../../assets/images/input-search-delete.png";
-
 import "../../../components/button-icon";
-import { IconNames } from "../../../enums/icon-names";
-import { InputRicerca } from "../../../components/input-ricerca";
+import "../../../components/input-ricerca";
 
 export class SearchChats extends LitElement {
   static properties = {
