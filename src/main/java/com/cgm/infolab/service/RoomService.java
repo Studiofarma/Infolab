@@ -14,12 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class RoomService {
-    private final ChatService chatService;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final RoomSubscriptionRepository roomSubscriptionRepository;
@@ -27,23 +25,12 @@ public class RoomService {
     private final Logger log = LoggerFactory.getLogger(RoomService.class);
 
     @Autowired
-    public RoomService(ChatService chatService,
-                       UserRepository userRepository,
+    public RoomService(UserRepository userRepository,
                        RoomRepository roomRepository,
                        RoomSubscriptionRepository roomSubscriptionRepository) {
-        this.chatService = chatService;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.roomSubscriptionRepository = roomSubscriptionRepository;
-    }
-
-    public RoomDto fromEntityToDto(RoomEntity roomEntity) {
-        RoomDto roomDto = RoomDto.of(roomEntity.getName().value(), roomEntity.getDescription());
-
-        LastMessageDto lastMessage = chatService.fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
-        roomDto.setLastMessage(lastMessage);
-
-        return roomDto;
     }
 
     public List<RoomEntity> getRooms(String date, Username username) {

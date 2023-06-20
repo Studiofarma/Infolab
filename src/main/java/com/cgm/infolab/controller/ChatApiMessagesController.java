@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -40,7 +39,7 @@ public class ChatApiMessagesController {
                 chatService.getAllMessages(numberOfMessages, Username.of(principal.getName()), roomName);
 
         if (chatMessageEntities.size() > 0) {
-            chatMessageDtos = chatMessageEntities.stream().map(chatService::fromEntityToChatMessageDto).toList();
+            chatMessageDtos = chatMessageEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToChatMessageDto).toList();
             chatService.updateReadTimestamp(
                     Username.of(principal.getName()),
                     RoomName.of(roomName)

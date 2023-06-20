@@ -10,8 +10,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -19,7 +17,6 @@ import java.util.*;
 public class RoomRepository {
     private final QueryHelper queryHelper;
     private final DataSource dataSource;
-    private final ChatMessageRepository chatMessageRepository;
 
     private final String ROOMS_WHERE_ROOMNAME = "r.roomname = :roomName";
     private final String CASE_QUERY =
@@ -30,16 +27,11 @@ public class RoomRepository {
     private final String JOIN = "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
             "left join infolab.users u_other on u_other.id = s_other.user_id";
 
-    private final String ROOMS_AND_LAST_MESSAGES_WHERE_MESSAGE_IS_NOT_NULL_OR_ROOM_PUBLIC =
-            "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')";
-    private final String ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS =
-            "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')";
     private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
 
-    public RoomRepository(QueryHelper queryHelper, DataSource dataSource, ChatMessageRepository chatMessageRepository) {
+    public RoomRepository(QueryHelper queryHelper, DataSource dataSource) {
         this.queryHelper = queryHelper;
         this.dataSource = dataSource;
-        this.chatMessageRepository = chatMessageRepository;
     }
 
     public long add(RoomEntity room) throws DuplicateKeyException {
@@ -93,7 +85,7 @@ public class RoomRepository {
             return Optional.ofNullable(
                     getRoom(username)
                             .where(where)
-                            .executeForObject(this::mapToEntity, queryParams)
+                            .executeForObject(RowMappers::mapToRoomEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -112,7 +104,7 @@ public class RoomRepository {
             return Optional.ofNullable(
                     getRoomNoUserRestriction()
                             .where(where)
-                            .executeForObject(this::mapToEntity, queryParams)
+                            .executeForObject(RowMappers::mapToRoomEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -127,7 +119,7 @@ public class RoomRepository {
     }
 
     public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
-        return queryRooms(ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
+        return queryRooms(null, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
     }
 
     public List<RoomEntity> getAfterDate(LocalDate dateLimit, Username username) {
@@ -139,7 +131,7 @@ public class RoomRepository {
         map.put("date", dateLimit);
 
         return queryRooms(
-                "%s AND m.sent_at > :date".formatted(ROOMS_AND_LAST_MESSAGES_WHERE_LAST_MESSAGE_NOT_NULL_FOR_PRIVATE_ROOMS),
+                "AND m.sent_at > :date",
                 ROOMS_AND_LAST_MESSAGES_OTHER,
                 username,
                 map
@@ -147,12 +139,12 @@ public class RoomRepository {
     }
 
     private List<RoomEntity> queryRooms(String where, String other, Username username, Map<String, ?> queryParams) {
-        where = (where.equals("") || where == null) ? "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')" : "(m.id IS NOT NULL OR r.visibility = 'PUBLIC') AND %s".formatted(where);
+        where = (where == null || where.equals("")) ? "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')" : "(m.id IS NOT NULL OR r.visibility = 'PUBLIC') AND %s".formatted(where);
         try {
             return getRooms(username)
                     .where(where)
                     .other(other)
-                    .executeForList(this::mapToEntityWithMessages, queryParams);
+                    .executeForList(RowMappers::mapToRoomEntityWithMessages, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
@@ -166,36 +158,5 @@ public class RoomRepository {
                 .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id " +
                         "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
                         "left join infolab.users u_other on u_other.id = s_other.user_id");
-    }
-
-    /**
-     * Rowmapper utilizzato nei metodi getByRoomName e getById
-     */
-    private RoomEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-        return RoomEntity
-                .of(rs.getLong("room_id"),
-                        RoomName.of(rs.getString("roomname")),
-                        VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                        rs.getString("description"));
-    }
-
-    private RoomEntity mapToEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
-        if (rs.getString("content") != null) {
-            ChatMessageEntity message = chatMessageRepository.mapToEntity(rs, rowNum);
-
-            return RoomEntity
-                    .of(rs.getLong("room_id"),
-                            RoomName.of(rs.getString("roomname")),
-                            VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                            rs.getString("description"),
-                            List.of(message));
-        } else {
-            return RoomEntity
-                    .of(rs.getLong("room_id"),
-                            RoomName.of(rs.getString("roomname")),
-                            VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                            rs.getString("description"),
-                            List.of(ChatMessageEntity.empty()));
-        }
     }
 }

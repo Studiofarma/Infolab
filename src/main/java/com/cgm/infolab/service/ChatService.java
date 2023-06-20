@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 public class ChatService {
@@ -39,7 +37,7 @@ public class ChatService {
                        RoomRepository roomRepository,
                        ChatMessageRepository chatMessageRepository,
                        RoomSubscriptionRepository roomSubscriptionRepository,
-                       @Lazy RoomService roomService,
+                       RoomService roomService,
                        DownloadDateRepository downloadDateRepository){
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
@@ -48,7 +46,8 @@ public class ChatService {
         this.roomService = roomService;
         this.downloadDateRepository = downloadDateRepository;
     }
-    public ChatMessageEntity saveMessageInDbPublicRooms(ChatMessageDto message, Username username, RoomName roomName){
+
+    public ChatMessageEntity saveMessageInDb(ChatMessageDto message, Username username, RoomName roomName, Username destinationUser){
 
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
 
@@ -57,10 +56,7 @@ public class ChatService {
             return null;
         });
 
-        RoomEntity room = roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
-            log.info(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
-            return null;
-        });
+        RoomEntity room = getOrCreateRoom(username, roomName, destinationUser);
         ChatMessageEntity messageEntity =
                 ChatMessageEntity.of(sender, room, timestamp.toLocalDateTime(), message.getContent());
 
@@ -73,43 +69,13 @@ public class ChatService {
         return messageEntity;
     }
 
-    public ChatMessageEntity saveMessageInDbPrivateRooms(ChatMessageDto message, Username username, RoomName roomName){
-
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
-
-        UserEntity sender = userRepository.getByUsername(Username.of(message.getSender())).orElseGet(() -> {
-            log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
-            return null;
-        });
-
-        RoomEntity room = getOrCreateRoom(username, roomName);
-        ChatMessageEntity messageEntity =
-                ChatMessageEntity.of(sender, room, timestamp.toLocalDateTime(), message.getContent());
-
-        try {
-            chatMessageRepository.add(messageEntity);
-        } catch (DuplicateKeyException e) {
-            log.info(String.format("ChatMessageEntity id=\"%s\" già esistente nel database", messageEntity.getContent()));
-        }
-
-        return messageEntity;
-    }
-
-    private RoomEntity getOrCreateRoom(Username username, RoomName roomName) {
+    private RoomEntity getOrCreateRoom(Username username, RoomName roomName, Username destinationUser) {
         return roomRepository.getByRoomName(roomName, username).orElseGet(() -> {
             log.info(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
 
-            String[] users = roomName.value().split("-");
-
-//            Stream<UserEntity> usernames = Arrays.stream(users).map((user) ->
-//                    userRepository.getByUsername(Username.of(user)).orElseThrow(() ->
-//                            new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()))
-//                    ));
-
-            roomService.createPrivateRoomAndSubscribeUsers(Username.of(users[0]), Username.of(users[1]));
+            roomService.createPrivateRoomAndSubscribeUsers(username, destinationUser);
 
             try {
-//                return getRoomEntity(roomName, usernames);
                 return roomRepository.getByRoomName(roomName, username).orElseThrow();
             } catch (Exception e) {
                 log.error("Room già esistente");
@@ -117,29 +83,6 @@ public class ChatService {
 
             return null;
         });
-    }
-
-//    private RoomEntity getRoomEntity(RoomName roomName, Stream<UserEntity> usernames) {
-//        long newRoomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
-//        RoomEntity newRoom = RoomEntity.of(newRoomId, roomName, VisibilityEnum.PRIVATE);
-//
-//        usernames.forEach( (userName) -> {
-//            RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
-//            roomSubscription.setRoomId(newRoom.getId());
-//            roomSubscription.setUserId(userName.getId());
-//            roomSubscriptionRepository.add(roomSubscription);
-//        });
-//        return newRoom;
-//    }
-
-    public ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
-        return new ChatMessageDto(messageEntity.getContent(),
-                messageEntity.getTimestamp(),
-                messageEntity.getSender().getName().value());
-    }
-
-    public LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
-        return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender());
     }
 
     public List<ChatMessageEntity> getAllMessages(int numberOfMessages, Username username, String roomName) {

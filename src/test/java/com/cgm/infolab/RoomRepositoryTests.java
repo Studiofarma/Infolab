@@ -74,12 +74,12 @@ public class RoomRepositoryTests {
         roomService.createPrivateRoomAndSubscribeUsers(users[1].getName(), users[2].getName());
         roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[3].getName());
 
-        chatService.saveMessageInDbPublicRooms(messageDtos[0], users[0].getName(), general.getName());
-        chatService.saveMessageInDbPrivateRooms(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"));
-        chatService.saveMessageInDbPrivateRooms(messageDtos[2], users[2].getName(), RoomName.of("user1-user2"));
-        chatService.saveMessageInDbPrivateRooms(messageDtos[3], users[0].getName(), RoomName.of("user0-user2"));
-        chatService.saveMessageInDbPrivateRooms(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"));
-        chatService.saveMessageInDbPrivateRooms(messageDtos[5], users[1].getName(), RoomName.of("user1-user2"));
+        chatService.saveMessageInDb(messageDtos[0], users[0].getName(), general.getName(), null);
+        chatService.saveMessageInDb(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"), users[0].getName());
+        chatService.saveMessageInDb(messageDtos[2], users[2].getName(), RoomName.of("user1-user2"), users[2].getName());
+        chatService.saveMessageInDb(messageDtos[3], users[0].getName(), RoomName.of("user0-user2"), users[0].getName());
+        chatService.saveMessageInDb(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"), users[1].getName());
+        chatService.saveMessageInDb(messageDtos[5], users[1].getName(), RoomName.of("user1-user2"), users[1].getName());
     }
 
     @Test

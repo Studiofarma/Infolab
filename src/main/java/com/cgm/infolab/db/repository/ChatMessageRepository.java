@@ -11,10 +11,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 @Component
@@ -72,7 +68,7 @@ public class ChatMessageRepository {
         try {
             return getMessagges(username)
                     .other(other)
-                    .executeForList(this::mapToEntity, queryParams);
+                    .executeForList(RowMappers::mapToChatMessageEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
@@ -84,33 +80,5 @@ public class ChatMessageRepository {
                 .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content")
                 .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id")
                 .where("r.roomname = :roomName AND m.id IS NOT NULL");
-    }
-
-    public ChatMessageEntity mapToEntity(ResultSet rs, int rowNum) throws SQLException {
-
-        String username = rs.getString("username");
-        UserEntity user = UserEntity.of(rs.getLong("sender_id"),
-                Username.of(username));
-
-        RoomEntity room = RoomEntity.of(
-                rs.getLong("room_id"),
-                RoomName.of(rs.getString("roomname")),
-                VisibilityEnum.valueOf(rs.getString("visibility").trim())
-        );
-
-        return ChatMessageEntity
-                .of(rs.getLong("message_id"),
-                        user,
-                        room,
-                        resultSetToLocalDateTime(rs),
-                        rs.getString("content"));
-    }
-
-    private static LocalDateTime resultSetToLocalDateTime(ResultSet rs) throws SQLException {
-        return rs
-            .getTimestamp("sent_at")
-            .toInstant()
-            .atZone(ZoneId.of("Europe/Rome"))
-            .toLocalDateTime();
     }
 }
