@@ -1,7 +1,8 @@
 import { LitElement, html, css } from "lit";
 import { ConversationDto } from "../models/conversation-dto.js";
 import { CookieService } from "../services/cookie-service";
-import { Picker } from "emoji-picker-element";
+
+import "./input-ricerca";
 
 export class ForwardList extends LitElement {
 	static get properties() {
@@ -74,25 +75,22 @@ export class ForwardList extends LitElement {
 			overflow-y: scroll;
 		}
 
-		.forward-list-section-title {
-			background: white;
+    .forward-list-section-title {
+      background: white;
+      padding: 5px 0px;
+      position: sticky;
+      top: -3px;
+    }
 
-			padding: 5px 0px;
-			position: sticky;
-			top: -3px;
-		}
-
-		.forward-list-body {
-			z-index: 1000;
-
-			width: 99%;
-
-			display: flex;
-			flex-direction: column;
-			gap: 5px;
-			padding: 5px 0;
-			cursor: pointer;
-		}
+    .forward-list-body {
+      z-index: 1000;
+      width: 99%;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 5px 0;
+      cursor: pointer;
+    }
 
 		.forward-list-scrollable::-webkit-scrollbar {
 			border-radius: 10px;
@@ -129,9 +127,11 @@ export class ForwardList extends LitElement {
 				<div class="forward-list-header">
         <p>Inoltra messaggio</p>
         <div class="forward-list-search">
-          <input placeholder="Cerca" type="search" id="fwdSearch" @input="${
-						this.fwdSearch
-					}"></input>
+				<il-input-ricerca
+                placeholder="Cerca"
+                id="fwdSearch"
+                @search=${this.fwdSearch}
+              ></il-input-ricerca>
         </div>
       </div>
       <div class="forward-list-scrollable">
@@ -182,15 +182,15 @@ export class ForwardList extends LitElement {
 		this.forwardMessage(roomName);
 	}
 
-	forwardMessage(roomName) {
-		this.goToChat(roomName);
+  forwardMessage(roomName) {
+    this.goToChat(roomName);
 
-		let chatElement = document
-			.querySelector("body > il-app")
-			.shadowRoot.querySelector("il-chat");
+    let chatElement = document
+      .querySelector("body > il-app")
+      .shadowRoot.querySelector("il-chat");
 
-		chatElement.sendMessage({ detail: { message: this.messageToForward } });
-	}
+    chatElement.sendMessage({ detail: { message: this.messageToForward } });
+  }
 
 	fwdSearch() {
 		let searchInput = this.shadowRoot.querySelector("input#fwdSearch");

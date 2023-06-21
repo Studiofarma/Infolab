@@ -1,12 +1,11 @@
 import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
+import { MarkdownService } from "../../../../services/markdown-service";
+import { mdiFormatListText } from "@mdi/js";
 
 import "../../../../components/formatting-button";
 import "../../../../components/button-text";
-
-import { IconNames } from "../../../../enums/icon-names";
-import { MarkdownService } from "../../../../services/markdown-services";
-import { mdiFormatListText } from "@mdi/js";
+import "./editor-formatting-buttons";
 
 export class Editor extends LitElement {
 	static properties = {
@@ -155,6 +154,7 @@ export class Editor extends LitElement {
 
 		il-formatting-button {
 			color: #c2c0c0;
+			display: flex;
 		}
 
 		.button-text {
@@ -185,46 +185,7 @@ export class Editor extends LitElement {
 
 
        </div>
-						<il-formatting-button
-							content=${IconNames.bold}
-							@click=${this.insertBold}
-						></il-formatting-button>
-
-						<il-formatting-button
-							content=${IconNames.italic}
-							@click=${this.insertItalic}
-						></il-formatting-button>
-
-						<il-formatting-button
-							content=${IconNames.strikethrough}
-							@click=${this.insertStrike}
-						></il-formatting-button>
-
-						<il-formatting-button
-							content=${IconNames.link}
-							@click=${this.insertLink}
-						></il-formatting-button>
-
-						<il-formatting-button
-							content=${IconNames.minus}
-							@click=${this.insertLine}
-						></il-formatting-button>
-
-						<il-formatting-button
-								content=${IconNames.listBulleted}
-								@click=${this.insertListBulleted}
-						></il-formatting-button>
-
-							<il-formatting-button
-								content=${IconNames.listNumbered}
-								@click=${this.insertListNumbered}
-						></il-formatting-button>
-						
-            <il-formatting-button
-              content=${IconNames.title}
-              @click=${this.insertHeading}
-            ></il-formatting-button>
-
+						<il-editor-formatting-buttons></il-editor-formatting-buttons>
 						
 					</div>
           <div class="textarea-container">
@@ -294,96 +255,21 @@ export class Editor extends LitElement {
 
 	applyMarkdown(lastKeyPressed, currentKeyPressed) {
 		if (lastKeyPressed === this.Alt && currentKeyPressed === "b") {
-			this.insertBold();
+			MarkdownService.insertBold();
 			return;
 		}
 		if (lastKeyPressed === this.Alt && currentKeyPressed === "i") {
-			this.insertItalic();
+			MarkdownService.insertItalic();
 			return;
 		}
 		if (lastKeyPressed === this.Alt && currentKeyPressed === "s") {
-			this.insertStrike();
+			MarkdownService.insertStrike();
 			return;
 		}
 		if (lastKeyPressed === this.Alt && currentKeyPressed === "l") {
-			this.insertLink();
+			MarkdownService.insertLink();
 			return;
 		}
-	}
-
-	insertInTextArea(str) {
-		let textarea = this.getTextarea();
-		let start = textarea.selectionStart;
-		let finish = textarea.selectionEnd;
-
-		this.message =
-			textarea.value.slice(0, start) + str + textarea.value.slice(finish);
-		textarea.value = this.message;
-	}
-
-	//funzioni per formatting-buttons
-
-	getText(text) {
-		let sel = window.getSelection();
-		const t = sel ? sel.toString() : "";
-		if (t !== "") sel.deleteFromDocument();
-		else t = text;
-		return t;
-	}
-
-	insertBold() {
-		const text = this.getText("grassetto");
-		let regEx = /[*]{2}/g;
-		if (text.startsWith("**") && text.endsWith("**"))
-			this.insertInTextArea(text.replace(regEx, ""));
-		else this.insertInTextArea("**" + text + "**");
-	}
-
-	insertItalic() {
-		const text = this.getText("italic");
-		let regEx = /[*]{1}/g;
-		if (text.startsWith("*") && text.endsWith("*"))
-			this.insertInTextArea(text.replace(regEx, ""));
-		else this.insertInTextArea("*" + text + "*");
-	}
-
-	insertStrike() {
-		const text = this.getText("barrato");
-		let regEx = /[~]{2}/g;
-		if (text.startsWith("~~") && text.endsWith("~~"))
-			this.insertInTextArea(text.replace(regEx, ""));
-		else this.insertInTextArea("~~" + text + "~~");
-	}
-
-	insertLink() {
-		const text = this.getText("testo");
-		let regEx = /[\[\]]+|(\(.*\))/g;
-		if (text.startsWith("[") && text.includes("](") && text.endsWith(")"))
-			this.insertInTextArea(text.replace(regEx, ""));
-		else this.insertInTextArea("[" + text + "](insert link)");
-	}
-
-	insertLine() {
-		this.insertInTextArea("\n - - - \n");
-	}
-
-	insertListBulleted() {
-		const text = this.getText("punto");
-		this.insertInTextArea("* " + text);
-	}
-
-	insertListNumbered() {
-		const text = this.getText("punto");
-		this.insertInTextArea("1. " + text);
-	}
-
-	insertHeading() {
-		const text = this.getText("Titolo");
-		this.insertInTextArea("### " + text);
-	}
-
-	getTextarea() {
-		return this.renderRoot.querySelector("textarea") ?? null;
 	}
 
 	updated(changed) {
@@ -391,8 +277,8 @@ export class Editor extends LitElement {
 			this.dispatchEvent(
 				new CustomEvent("typing-text", { detail: { content: this.message } })
 			);
-			this.getTextarea().focus();
+			MarkdownService.getTextarea().focus();
 		}
 	}
-}
+}	
 customElements.define("il-editor", Editor);
