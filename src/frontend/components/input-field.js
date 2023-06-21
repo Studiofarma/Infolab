@@ -71,6 +71,7 @@ export class InputField extends LitElement {
 
 	clear() {
 		this.renderRoot.querySelector("input").value = "";
+		this.value = "";
 	}
 }
 
