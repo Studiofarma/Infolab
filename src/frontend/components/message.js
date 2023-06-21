@@ -11,6 +11,7 @@ export class Message extends LitElement {
   static properties = {
     messages: { type: Array },
     message: { type: String },
+    activeChatName: { type: String },
     index: { type: Number },
   };
 
@@ -219,11 +220,14 @@ export class Message extends LitElement {
           ? "sender"
           : "receiver"}
       >
-        <p class="receiver-name">
-          ${this.message.sender != this.cookie.username
-            ? this.message.sender
-            : ""}
-        </p>
+        ${this.activeChatName !== this.message.sender
+          ? html` <p class="receiver-name">
+              ${this.message.sender != this.cookie.username
+                ? this.message.sender
+                : ""}
+            </p>`
+          : html``}
+
         <p class="message">
           ${resolveMarkdown(
             MarkdownService.parseMarkdown(this.message.content)

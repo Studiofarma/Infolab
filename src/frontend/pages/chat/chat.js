@@ -204,6 +204,7 @@ export class Chat extends LitElement {
                         html` <il-message
                           .messages=${this.messages}
                           .message=${message}
+                          .activeChatName=${this.activeChatName.split("-")[0]}
                           .index=${index}
                         ></il-message>`
                     )}
