@@ -10,9 +10,9 @@ import { mdiFormatListText } from "@mdi/js";
 
 export class Editor extends LitElement {
 	static properties = {
-		message: "",
-		openPreview: mdiFormatListText,
-		lastKeyPressed: "",
+		message: {type: String},
+		openPreview: {type: Boolean},
+		lastKeyPressed: {type: String},
 	};
 
 	constructor() {
@@ -173,14 +173,14 @@ export class Editor extends LitElement {
             @click=${() => this.setPreviewer(false)}
             class="button-text"
 						text="Scrivi"
-            toggleClass=${this.openPreview ? "active-button-text" : "" }
+						?isactive=${this.openPreview}
 					></il-button-text>
 
 					<il-button-text
             @click=${() => this.setPreviewer(true)}
             class="button-text"
 						text="Anteprima"
-            toggleClass=${this.openPreview ? "" : "active-button-text" }
+						?isactive=${!this.openPreview}
 					></il-button-text>
 
 

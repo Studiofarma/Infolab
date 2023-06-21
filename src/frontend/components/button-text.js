@@ -1,10 +1,13 @@
 import { LitElement, html, css } from "lit";
 
 export class ButtonText extends LitElement {
-	static properties = {
-		text: "",
-		toggleClass: "",
-	};
+ 
+	static get properties() {
+    return {
+			text: {type: String},
+			isActive:  {type: Boolean}
+    };
+  }
 
 	static styles = css`
 		button {
@@ -24,7 +27,7 @@ export class ButtonText extends LitElement {
 			color: white;
 		}
 
-		.active-button-text {
+		.active {
 			border: 1px solid transparent;
 			background: none;
 			transform: translateY(1px);
@@ -32,7 +35,7 @@ export class ButtonText extends LitElement {
 	`;
 
 	render() {
-		return html` <button class="${this.toggleClass}">${this.text}</button> `;
+		return html` <button class="${this.isActive ? "active" : ""}">${this.text}</button> `;
 	}
 }
 
