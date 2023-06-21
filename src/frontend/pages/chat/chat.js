@@ -137,8 +137,6 @@ export class Chat extends LitElement {
       z-index: 9999;
       position: absolute;
       right: 20px;
-      bottom: 130px;
-
       border-radius: 5px;
       padding: 2px;
       background-color: rgb(8, 60, 114);
@@ -168,7 +166,6 @@ export class Chat extends LitElement {
       max-width: 100%;
     }
   `;
-
   render() {
     return html`
       <main>
@@ -260,7 +257,7 @@ export class Chat extends LitElement {
 
   async updated() {
     await setTimeout(() => {
-      if (this.activeChatName !== "") this.scrollToBottom();
+      this.scrollToBottom();
     }, 20);
   }
 
@@ -292,7 +289,29 @@ export class Chat extends LitElement {
     }
   }
 
+  setScrollButtonY(e) {
+    let buttonIcon = this.renderRoot.querySelector("il-button-icon");
+
+    if (e.detail.bEditor && !e.detail.bEmoji) {
+      buttonIcon.style.bottom = "265px";
+      return;
+    }
+
+    if (e.detail.bEmoji && !e.detail.bEditor) {
+      buttonIcon.style.bottom = "391px";
+      return;
+    }
+
+    if (e.detail.bEditor && e.detail.bEmoji) {
+      buttonIcon.style.bottom = "575px";
+      return;
+    }
+
+    buttonIcon.style.bottom = "81px";
+  }
   scrollToBottom() {
+    if (this.activeChatName === "") return;
+
     let element = this.renderRoot.querySelector("ul.message-box");
     element.scrollTo({ top: element.scrollHeight });
   }
