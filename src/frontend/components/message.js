@@ -5,7 +5,10 @@ import { MarkdownService } from "../services/markdown-services";
 
 import { CookieService } from "../services/cookie-service";
 
+import { IconNames } from "../enums/icon-names";
+
 import "./message-settings.js";
+import { Picker } from 'emoji-picker-element';
 
 export class Message extends LitElement {
 	static properties = {
@@ -23,6 +26,26 @@ export class Message extends LitElement {
 		* {
 			margin: 0;
 			padding: 0;
+		}
+
+		.message-body:has(.sender) {
+			justify-self: flex-end;
+			display: flex;
+			flex-direction: row-reverse;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.message-body:has(.receiver) {
+			justify-self: flex-start;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.message-body:has(.receiver) {
+			justify-self: flex-start;
 		}
 
 		.sender,
@@ -46,11 +69,9 @@ export class Message extends LitElement {
 		}
 
 		.sender {
-			justify-self: flex-end;
 			border-radius: 10px 0 10px 10px;
 			color: white;
 			background-color: rgb(54, 123, 251);
-			justify-self: flex-end;
 		}
 		.sender::after {
 			content: "";
@@ -87,9 +108,7 @@ export class Message extends LitElement {
 		}
 
 		.receiver {
-			justify-self: flex-start;
 			border-radius: 0 10px 10px 10px;
-
 			color: black;
 			background-color: white;
 		}
@@ -123,34 +142,41 @@ export class Message extends LitElement {
 			overflow-wrap: break-word;
 		}
 
+		.settings-container {
+			position: relative;
+			background: white;
+			border-radius: 6px;
+			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+			opacity: 0;
+			transition: opacity 0.5s;
+		}
+
+		.message-body:hover .settings-container {
+			opacity: 1;
+		}
+
 		.sender .message-timestamp {
 			text-align: end;
 			font-size: 11px;
 			color: #e9e9e9;
 		}
 
+		.sender ~ .settings-container il-message-settings {
+			position: absolute;
+			top: 0px;
+			left: -144px;
+		}
+
+		.receiver ~ .settings-container il-message-settings {
+			position: absolute;
+			top: 0px;
+			right: -144px;
+		}
+
 		.receiver .message-timestamp {
 			text-align: end;
-
 			font-size: 11px;
 			color: #8c8d8d;
-		}
-
-		.sender il-message-settings {
-			left: -40px;
-		}
-
-		.receiver il-message-settings {
-			right: -40px;
-		}
-
-		il-message-settings {
-			opacity: 0;
-			transition:  opacity 0.5s;
-		}
-
-		div:hover il-message-settings {
-			opacity: 1;
 		}
 
 		.message-date {
@@ -168,39 +194,69 @@ export class Message extends LitElement {
 				this.message.timestamp
 			)}
 
-			<div
-				class=${
-					this.message.sender == this.cookie.username
-						? "sender container"
-						: "receiver container" //la classe container è solo un riferimento per il-message-settings
-				}
-			>
-				<p class="receiver-name">
-					${this.message.sender != this.cookie.username
-						? this.message.sender
-						: ""}
-				</p>
-				<p class="message">
-					${resolveMarkdown(
-						MarkdownService.parseMarkdown(this.message.content)
-					)}
-				</p>
-				<p class="message-timestamp">
-					${new Date(this.message.timestamp).toLocaleTimeString([], {
-						hour: "2-digit",
-						minute: "2-digit",
-					})}
-				</p>
+			<!-- da refactorizzare in una storia apposita -->
 
-				<il-message-settings
-					.message=${this.message}
-					.cookie=${this.cookie}
-					.index=${this.index}
+			<div class="message-body">
+				<!--  message content -->
+				<div
+					class=${this.message.sender == this.cookie.username
+						? "sender"
+						: "receiver"}
 				>
-				</il-message-settings>
+					<p class="receiver-name">
+						${this.message.sender != this.cookie.username
+							? this.message.sender
+							: ""}
+					</p>
+					<p class="message">
+						${resolveMarkdown(
+							MarkdownService.parseMarkdown(this.message.content)
+						)}
+					</p>
+					<p class="message-timestamp">
+						${new Date(this.message.timestamp).toLocaleTimeString([], {
+							hour: "2-digit",
+							minute: "2-digit",
+						})}
+					</p>
+				</div>
+
+				<!-- end -->
+				<!-- menu icon -->
+
+				<div class="settings-container">
+					<il-button-icon
+						@click=${this.toggleSettings}
+						content="${IconNames.dotsHorizontal}"
+						color="black"
+					>
+					</il-button-icon>
+
+					<il-message-settings
+						.message=${this.message}
+						.cookie=${this.cookie}
+						.index=${this.index}
+					>
+					</il-message-settings>
+				</div>
+
+				<!-- end -->
 			</div>
 		`;
 	}
+
+	toggleSettings() {
+		let settings = this.renderRoot.querySelector("il-message-settings");
+
+		settings.openDialog();
+	}
+
+	closeSettings() {
+		let settings = this.renderRoot.querySelector("il-message-settings");
+
+		settings.closeDialog();
+	}
+
 
 	compareMessageDate(messageDate1, messageDate2) {
 		const today = new Date().toDateString();

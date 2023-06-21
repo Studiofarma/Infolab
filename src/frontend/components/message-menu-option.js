@@ -14,6 +14,7 @@ export class MessageMenuOption extends LitElement {
 		div {
 			padding: 2px 0px;
 			cursor: pointer;
+			white-space: nowrap;
 		}
 	`;
 
