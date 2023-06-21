@@ -4,57 +4,52 @@ const HEADER_COOKIE_NAME = "header";
 const TOKEN_COOKIE_NAME = "token";
 
 export class CookieService {
-	static COOKIE_NAMES = {
-		USERNAME: "username",
-		PASSWORD: "password",
-		HEADER: "header",
-		TOKEN: "token",
-		LAST_CHAT: "last-chat",
-	};
+  static Keys = {
+    username: "username",
+    password: "password",
+    header: "header",
+    token: "token",
+    lastChat: "last-chat",
+  };
 
-	static getCookieByKey(name) {
-		const result = document.cookie
-			.split("; ")
-			.find((row) => row.startsWith(`${name}=`))
-			?.split("=")[1];
+  static getCookieByKey(name) {
+    const result = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(`${name}=`))
+      ?.split("=")[1];
 
-		return result;
-	}
-	static getLoginCookies() {
-		let isValid = true;
-		const user = CookieService.getCookieByKey(
-			CookieService.COOKIE_NAMES.USERNAME
-		);
-		if (!user) isValid = false;
+    return result;
+  }
+  static getCookie() {
+    let isValid = true;
+    const username = CookieService.getCookieByKey(CookieService.Keys.username);
+    if (!username) isValid = false;
 
-		const pass = CookieService.getCookieByKey(
-			CookieService.COOKIE_NAMES.PASSWORD
-		);
-		if (!pass) isValid = false;
+    const password = CookieService.getCookieByKey(CookieService.Keys.password);
+    if (!password) isValid = false;
 
-		const header = CookieService.getCookieByKey(
-			CookieService.COOKIE_NAMES.HEADER
-		);
-		if (!header) isValid = false;
+    const header = CookieService.getCookieByKey(CookieService.Keys.header);
+    if (!header) isValid = false;
 
-		const token = CookieService.getCookieByKey(
-			CookieService.COOKIE_NAMES.TOKEN
-		);
-		if (!token) isValid = false;
+    const token = CookieService.getCookieByKey(CookieService.Keys.token);
+    if (!token) isValid = false;
 
-		let cookie = {
-			username: user,
-			password: pass,
-			token: token,
-			header: header,
-			isValid: isValid,
-		};
+    const lastChat = CookieService.getCookieByKey(CookieService.Keys.lastChat);
 
-		return cookie;
-	}
-	static setCookieByKey(key, value) {
-		let expires = new Date(Date.now());
-		expires.setDate(expires.getDate() + 1);
-		document.cookie = `${key}=${value}; expires=${expires}; `;
-	}
+    let cookie = {
+      username: username,
+      password: password,
+      header: header,
+      token: token,
+      lastChat: lastChat,
+      isValid: isValid,
+    };
+
+    return cookie;
+  }
+  static setCookieByKey(key, value) {
+    let expires = new Date(Date.now());
+    expires.setDate(expires.getDate() + 1);
+    document.cookie = `${key}=${value}; expires=${expires}; `;
+  }
 }

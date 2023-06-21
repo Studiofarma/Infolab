@@ -10,412 +10,416 @@ import { ConversationDto } from "../../../../models/conversation-dto.js";
 import { MessagesService } from "../../../../services/messages-service";
 
 class ConversationList extends LitElement {
-	static properties = {
-		conversationList: { state: true },
-		activeChatName: { state: "general" },
-		conversationListSearched: [],
-	};
+  static properties = {
+    conversationList: { state: true },
+    activeChatName: { state: "general" },
+    conversationListSearched: [],
+  };
 
-	static styles = css`
-		* {
-			box-sizing: border-box;
-			padding: 0;
-			margin: 0;
-		}
+  static styles = css`
+    * {
+      box-sizing: border-box;
+      padding: 0;
+      margin: 0;
+    }
 
-		.conversation-list {
-			display: flex;
-			flex-direction: column;
-			gap: 10px;
-			margin-right: 3px;
-		}
+    .conversation-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-right: 3px;
+    }
 
-		.container {
-			max-height: 806px;
-			display: flex;
-			flex-direction: column;
-			overflow-y: scroll;
-		}
+    .container {
+      max-height: 806px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: scroll;
+    }
 
-		::-webkit-scrollbar {
-			width: 4px;
-			margin-right: 10px;
-		}
+    ::-webkit-scrollbar {
+      width: 4px;
+      margin-right: 10px;
+    }
 
-		::-webkit-scrollbar-track {
-			background-color: none;
-		}
+    ::-webkit-scrollbar-track {
+      background-color: none;
+    }
 
-		::-webkit-scrollbar-thumb {
-			border-radius: 10px;
-			background-color: rgb(54, 123, 251);
-		}
+    ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: rgb(54, 123, 251);
+    }
 
-		.conversation {
-			margin-right: 3px;
-			border-radius: 0px 7px 7px 0px;
-			transition: background-color 0.2s;
-		}
+    .conversation {
+      margin-right: 3px;
+      border-radius: 0px 7px 7px 0px;
+      transition: background-color 0.2s;
+    }
 
-		.conversation:hover {
-			background-color: #1460b1;
-		}
+    .conversation:hover {
+      background-color: #1460b1;
+    }
 
-		.active {
-			background-color: #1460b1;
-		}
+    .active {
+      background-color: #1460b1;
+    }
 
-		.separator {
-			position: sticky;
-			top: 0;
-			padding: 5px 0px 5px 10px;
-			color: #d6d6d6;
-			background: #083c72;
-		}
+    .separator {
+      position: sticky;
+      top: 0;
+      padding: 5px 0px 5px 10px;
+      color: #d6d6d6;
+      background: #083c72;
+    }
 
-		.conversation-list-scrollable {
-			height: calc(100vh - 135px);
-			overflow: auto;
-		}
-	`;
+    .conversation-list-scrollable {
+      height: calc(100vh - 135px);
+      overflow: auto;
+    }
+  `;
 
-	constructor() {
-		super();
-		this.query = "";
-		this.conversationList = [];
-		this.conversationListSearched = [];
-		this.usersList = [];
-		this.tmpConversationListSearched = [];
-		this.tmpConversationList = [];
-		this.onLoad();
+  constructor() {
+    super();
+    this.query = "";
+    this.conversationList = [];
+    this.conversationListSearched = [];
+    this.usersList = [];
+    this.tmpConversationListSearched = [];
+    this.tmpConversationList = [];
+    this.onLoad();
 
-		this.activeChatName =
-			CookieService.getCookieByKey(CookieService.COOKIE_NAMES.LAST_CHAT) || "";
-	}
+    this.activeChatName =
+      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
+  }
 
-	render() {
-		return html`
-			<div class="conversation-list-scrollable">
-				<div>
-					<p class="separator">Conversazioni</p>
-					<div class="conversation-list">${this.renderConversationList()}</div>
-				</div>
-				<div>
-					<p class="separator">
-						${this.conversationListSearched.length > 0
-							? "Nuove conversazioni"
-							: ""}
-					</p>
-					<div class="conversation-list">
-						${this.renderConversationSearched()}
-					</div>
-				</div>
-			</div>
-		`;
-	}
+  render() {
+    return html`
+      <div class="conversation-list-scrollable">
+        <div>
+          <p class="separator">Conversazioni</p>
+          <div class="conversation-list">${this.renderConversationList()}</div>
+        </div>
+        <div>
+          <p class="separator">
+            ${this.conversationListSearched.length > 0
+              ? "Nuove conversazioni"
+              : ""}
+          </p>
+          <div class="conversation-list">
+            ${this.renderConversationSearched()}
+          </div>
+        </div>
+      </div>
+    `;
+  }
 
-	searchChat(query) {
-		this.query = query;
-		this.update();
-	}
+  searchChat(query) {
+    this.query = query;
+    this.update();
+  }
 
-	scrollToTop() {
-		let element = this.renderRoot.querySelector(
-			"div.conversation-list-scrollable"
-		);
-		element.scrollTo({ top: 0 });
-	}
+  scrollToTop() {
+    let element = this.renderRoot.querySelector(
+      "div.conversation-list-scrollable"
+    );
+    element.scrollTo({ top: 0 });
+  }
 
-	async onLoad() {
-		await this.getAllRooms().then(async () => {
-			await this.getAllUsers().then(() => {
-				this.update();
-			});
-		});
-	}
+  async onLoad() {
+    await this.getAllRooms().then(async () => {
+      await this.getAllUsers().then(() => {
+        this.update();
+      });
+    });
+  }
 
-	async getAllRooms() {
-		let cookie = CookieService.getLoginCookies();
+  async getAllRooms() {
+    let cookie = CookieService.getCookie();
 
-		try {
-			await OpenChatsService.getOpenChats(
-				cookie.username,
-				cookie.password
-			).then((rooms) => {
-				rooms["data"].forEach((room) => {
-					this.conversationList.push(room);
-				});
-			});
+    try {
+      await OpenChatsService.getOpenChats(
+        cookie.username,
+        cookie.password
+      ).then((rooms) => {
+        rooms["data"].forEach((room) => {
+          this.conversationList.push(room);
+        });
+      });
 
-			this.conversationList.sort(this.compareTimestamp);
-		} catch (error) {
-			console.error(error);
-		}
-	}
+      this.conversationList.sort(this.compareTimestamp);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-	async getAllUsers() {
-		let cookie = CookieService.getLoginCookies();
-		try {
-			await UsersService.GetUsers(
-				this.query,
-				cookie.username,
-				cookie.password
-			).then((users) => {
-				users["data"].forEach((user) => {
-					if (user.name != cookie.username) {
-						this.setUsersList(user);
-					}
-				});
-			});
-		} catch (error) {
-			console.error(error);
-		}
-	}
+  async getAllUsers() {
+    let cookie = CookieService.getCookie();
+    try {
+      await UsersService.GetUsers(
+        this.query,
+        cookie.username,
+        cookie.password
+      ).then((users) => {
+        users["data"].forEach((user) => {
+          if (user.name != cookie.username) {
+            this.setUsersList(user);
+          }
+        });
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
-	setList(message) {
-		if (message) {
-			let conversationIndex = this.conversationList.findIndex(
-				(conversation) => conversation.roomName == message.roomName
-			);
+  setList(message) {
+    if (message) {
+      let conversationIndex = this.conversationList.findIndex(
+        (conversation) => conversation.roomName == message.roomName
+      );
 
-			let conversation = this.convertMessageToConversation(message);
+      let conversation = this.convertMessageToConversation(message);
 
-			this.conversationList[conversationIndex] = conversation;
-			this.conversationList.sort(this.compareTimestamp);
-		}
+      this.conversationList[conversationIndex] = conversation;
+      this.conversationList.sort(this.compareTimestamp);
+    }
 
-		this.update();
-	}
+    this.update();
+  }
 
-	convertMessageToConversation(message) {
-		return {
-			roomName: message.roomName,
-			avatarLink: null,
-			lastMessage: {
-				content: message.content,
-				timestamp: message.timestamp,
-				sender: message.sender,
-			},
-			unreadMessages: 0,
-		};
-	}
+  convertMessageToConversation(message) {
+    return {
+      roomName: message.roomName,
+      avatarLink: null,
+      lastMessage: {
+        content: message.content,
+        timestamp: message.timestamp,
+        sender: message.sender,
+      },
+      unreadMessages: 0,
+    };
+  }
 
-	setUsersList(user) {
-		let cookie = CookieService.getLoginCookies();
+  setUsersList(user) {
+    let cookie = CookieService.getCookie();
 
-		let roomName = this.chatNameRecomposer(cookie.username, user.name);
+    let roomName = this.chatNameRecomposer(cookie.username, user.name);
 
-		let isPresent = this.conversationList.some(
-			(obj) => obj.roomName === roomName
-		);
+    let isPresent = this.conversationList.some(
+      (obj) => obj.roomName === roomName
+    );
 
-		if (!isPresent) {
-			const roomFormatted = this.convertUserToRoom(roomName);
-			this.conversationListSearched.push(roomFormatted);
-		}
-	}
+    if (!isPresent) {
+      const roomFormatted = this.convertUserToRoom(roomName);
+      this.conversationListSearched.push(roomFormatted);
+    }
+  }
 
-	convertUserToRoom(roomName) {
-		return {
-			roomName: roomName,
-			avatarLink: null,
-			unreadMessages: 0,
-			lastMessage: {
-				preview: null,
-				sender: null,
-				timestamp: null,
-			},
-		};
-	}
+  convertUserToRoom(roomName) {
+    return {
+      roomName: roomName,
+      avatarLink: null,
+      unreadMessages: 0,
+      lastMessage: {
+        preview: null,
+        sender: null,
+        timestamp: null,
+      },
+    };
+  }
 
-	compareTimestamp(a, b) {
-		var timestampA = Date.parse(a.lastMessage.timestamp);
-		var timestampB = Date.parse(b.lastMessage.timestamp);
-		return timestampB - timestampA;
-	}
+  compareTimestamp(a, b) {
+    var timestampA = Date.parse(a.lastMessage.timestamp);
+    var timestampB = Date.parse(b.lastMessage.timestamp);
+    return timestampB - timestampA;
+  }
 
-	renderConversationList() {
-		let conversationList = this.searchConversation([...this.conversationList]);
+  renderConversationList() {
+    let conversationList = this.searchConversation([...this.conversationList]);
 
-		return conversationList.map((pharmacy, index) => {
-			let conversation = new ConversationDto(pharmacy);
-			if (
-				conversation.lastMessage.content ||
-				conversation.roomName == this.activeChatName
-			) {
-				return html`<il-conversation
-					class=${"conversation " +
-					(conversation.roomName == this.activeChatName ? "active" : "")}
-					.chat=${conversation}
-					@click=${() => {
-						this.activeChatName = conversation.roomName;
-						this.updateMessages(conversation.roomName);
-						CookieService.setCookieByKey(
-							CookieService.COOKIE_NAMES.LAST_CHAT,
-							conversation.roomName
-						);
-						this.setList(null);
-						this.cleanSearchInput();
-					}}
-				></il-conversation>`;
-			} else {
-				let conversationIndex = this.conversationList.findIndex(
-					(obj) => obj.roomName == conversation.roomName
-				);
-				let delChat = this.conversationList.splice(conversationIndex, 1)[0];
-				this.conversationListSearched.unshift(delChat);
-				return null;
-			}
-		});
-	}
+    return conversationList.map((pharmacy, index) => {
+      let conversation = new ConversationDto(pharmacy);
+      if (
+        conversation.lastMessage.content ||
+        conversation.roomName == this.activeChatName
+      ) {
+        return html`<il-conversation
+          class=${"conversation " +
+          (conversation.roomName == this.activeChatName ? "active" : "")}
+          .chat=${conversation}
+          @click=${() => {
+            this.activeChatName = conversation.roomName;
+            this.updateMessages(conversation.roomName);
 
-	searchConversation(list) {
-		if (this.query) {
-			list = list.filter((conversation) =>
-				conversation.roomName.includes(this.query)
-			);
-		}
+            CookieService.setCookieByKey(
+              CookieService.Keys.lastChatName,
+              conversation.roomName
+            );
 
-		return list;
-	}
+            this.setList(null);
+            this.cleanSearchInput();
+          }}
+        ></il-conversation>`;
+      } else {
+        let conversationIndex = this.conversationList.findIndex(
+          (obj) => obj.roomName == conversation.roomName
+        );
+        let delChat = this.conversationList.splice(conversationIndex, 1)[0];
+        this.conversationListSearched.unshift(delChat);
+        return null;
+      }
+    });
+  }
 
-	renderConversationSearched() {
-		let conversationListSearched = this.searchConversation([
-			...this.conversationListSearched,
-		]);
+  searchConversation(list) {
+    if (this.query) {
+      list = list.filter((conversation) =>
+        conversation.roomName.includes(this.query)
+      );
+    }
 
-		return conversationListSearched.map((pharmacy) => {
-			let conversation = new ConversationDto(pharmacy);
-			return html`<il-conversation
-				class=${"conversation new-conversation " +
-				(conversation.roomName == this.activeChatName ? "active" : "")}
-				.chat=${conversation}
-				@click=${() => {
-					this.activeChatName = conversation.roomName;
-					this.updateMessages(conversation.roomName);
-					CookieService.setCookieByKey(
-						CookieService.COOKIE_NAMES.LAST_CHAT,
-						conversation.roomName
-					);
-					this.cleanSearchInput();
-					this.update();
-				}}
-			></il-conversation>`;
-		});
-	}
+    return list;
+  }
 
-	onMessageInNewChat(conversation, message) {
-		if (this.updateListOnConversationClick(conversation)) {
-			this.scrollToTop();
-		}
-		this.setList(message);
-		this.update();
-	}
+  renderConversationSearched() {
+    let conversationListSearched = this.searchConversation([
+      ...this.conversationListSearched,
+    ]);
 
-	updateListOnConversationClick(conversation) {
-		const roomFormatted = new ConversationDto(conversation);
+    return conversationListSearched.map((pharmacy) => {
+      let conversation = new ConversationDto(pharmacy);
+      return html`<il-conversation
+        class=${"conversation new-conversation " +
+        (conversation.roomName == this.activeChatName ? "active" : "")}
+        .chat=${conversation}
+        @click=${() => {
+          this.activeChatName = conversation.roomName;
+          this.updateMessages(conversation.roomName);
 
-		let conversationIndex = this.conversationListSearched.findIndex(
-			(conversation) => conversation.roomName == roomFormatted.roomName
-		);
+          CookieService.setCookieByKey(
+            CookieService.Keys.lastChatName,
+            conversation.roomName
+          );
 
-		if (conversationIndex == -1) return false;
+          this.cleanSearchInput();
+          this.update();
+        }}
+      ></il-conversation>`;
+    });
+  }
 
-		this.moveElementToList(
-			this.conversationList,
-			this.conversationListSearched,
-			conversationIndex
-		);
-		return true;
-	}
+  onMessageInNewChat(conversation, message) {
+    if (this.updateListOnConversationClick(conversation)) {
+      this.scrollToTop();
+    }
+    this.setList(message);
+    this.update();
+  }
 
-	moveElementToList(targetList, sourceList, elementIndex) {
-		const elementToMove = sourceList.splice(elementIndex, 1)[0];
-		targetList.unshift(elementToMove);
-	}
+  updateListOnConversationClick(conversation) {
+    const roomFormatted = new ConversationDto(conversation);
 
-	updateMessages(roomName) {
-		this.dispatchEvent(
-			new CustomEvent("update-message", {
-				detail: {
-					roomName: roomName,
-				},
-				bubbles: true,
-				composed: true,
-			})
-		);
+    let conversationIndex = this.conversationListSearched.findIndex(
+      (conversation) => conversation.roomName == roomFormatted.roomName
+    );
 
-		let messageInput = document
-			.querySelector("body > il-app")
-			.shadowRoot.querySelector("il-chat")
-			.shadowRoot.querySelector("main > section > div > il-input-controls")
-			?.shadowRoot.querySelector(
-				"#inputControls > div.container > div > il-input-field"
-			)
-			.shadowRoot.querySelector("#message-input");
+    if (conversationIndex == -1) return false;
 
-		messageInput?.focus();
-	}
+    this.moveElementToList(
+      this.conversationList,
+      this.conversationListSearched,
+      conversationIndex
+    );
+    return true;
+  }
 
-	cleanSearchInput() {
-		let searchInput = document
-			.querySelector("body > il-app")
-			.shadowRoot.querySelector("il-chat")
-			.shadowRoot.querySelector("main > section > il-sidebar")
-			.shadowRoot.querySelector("div > il-search")
-			.shadowRoot.querySelector("div > div > input");
-		searchInput.value = "";
-		this.searchChat(searchInput.value);
-	}
+  moveElementToList(targetList, sourceList, elementIndex) {
+    const elementToMove = sourceList.splice(elementIndex, 1)[0];
+    targetList.unshift(elementToMove);
+  }
 
-	selectChat(selectedChatName) {
-		let cookie = CookieService.getLoginCookies();
+  updateMessages(roomName) {
+    this.dispatchEvent(
+      new CustomEvent("update-message", {
+        detail: {
+          roomName: roomName,
+        },
+        bubbles: true,
+        composed: true,
+      })
+    );
 
-		for (let conversation of this.conversationList) {
-			if (this.chatNameFormatter(conversation.roomName) == selectedChatName) {
-				this.activeChatName = conversation.roomName;
-				this.updateMessages(this.activeChatName);
-				return;
-			}
-		}
+    let messageInput = document
+      .querySelector("body > il-app")
+      .shadowRoot.querySelector("il-chat")
+      .shadowRoot.querySelector("main > section > div > il-input-controls")
+      ?.shadowRoot.querySelector(
+        "#inputControls > div.container > div > il-input-field"
+      )
+      .shadowRoot.querySelector("#message-input");
 
-		selectedChatName = this.chatNameFormatter(
-			selectedChatName,
-			cookie.username
-		);
+    messageInput?.focus();
+  }
 
-		this.conversationList.push({
-			avatarLink: null,
-			roomName: selectedChatName,
-			unreadMessages: 0,
-			lastMessage: {
-				content: null,
-				sender: null,
-				timestamp: null,
-			},
-		});
+  cleanSearchInput() {
+    let searchInput = document
+      .querySelector("body > il-app")
+      .shadowRoot.querySelector("il-chat")
+      .shadowRoot.querySelector("main > section > il-sidebar")
+      .shadowRoot.querySelector("div > il-search")
+      .shadowRoot.querySelector("div > div > input");
+    searchInput.value = "";
+    this.searchChat(searchInput.value);
+  }
 
-		this.activeChatName = selectedChatName;
-		this.updateMessages(this.activeChatName);
+  selectChat(selectedChatName) {
+    let cookie = CookieService.getCookie();
 
-		this.update();
-	}
+    for (let conversation of this.conversationList) {
+      if (this.chatNameFormatter(conversation.roomName) == selectedChatName) {
+        this.activeChatName = conversation.roomName;
+        this.updateMessages(this.activeChatName);
+        return;
+      }
+    }
 
-	chatNameRecomposer(user1, user2) {
-		let array = [user1, user2].sort();
+    selectedChatName = this.chatNameFormatter(
+      selectedChatName,
+      cookie.username
+    );
 
-		return array.join("-");
-	}
+    this.conversationList.push({
+      avatarLink: null,
+      roomName: selectedChatName,
+      unreadMessages: 0,
+      lastMessage: {
+        content: null,
+        sender: null,
+        timestamp: null,
+      },
+    });
 
-	chatNameFormatter(chatName) {
-		let cookie = CookieService.getLoginCookies();
-		if (chatName.includes("-")) {
-			chatName = chatName.split("-");
-			chatName.splice(chatName.indexOf(cookie.username), 1);
-			return chatName[0];
-		}
-		return chatName;
-	}
+    this.activeChatName = selectedChatName;
+    this.updateMessages(this.activeChatName);
+
+    this.update();
+  }
+
+  chatNameRecomposer(user1, user2) {
+    let array = [user1, user2].sort();
+
+    return array.join("-");
+  }
+
+  chatNameFormatter(chatName) {
+    let cookie = CookieService.getCookie();
+    if (chatName.includes("-")) {
+      chatName = chatName.split("-");
+      chatName.splice(chatName.indexOf(cookie.username), 1);
+      return chatName[0];
+    }
+    return chatName;
+  }
 }
 
 customElements.define("il-conversation-list", ConversationList);
