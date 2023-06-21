@@ -6,6 +6,7 @@ import { UsersService } from "../../../../services/users-service";
 
 import "../../../../components/avatar.js";
 import "./conversation.js";
+import "../search-chats";
 import { ConversationDto } from "../../../../models/conversation-dto.js";
 
 class ConversationList extends LitElement {
@@ -91,6 +92,7 @@ class ConversationList extends LitElement {
 
   render() {
     return html`
+      <il-search @search-chat=${this.searchChat}></il-search>
       <div class="conversation-list-scrollable">
         <div>
           <p class="separator">Conversazioni</p>
@@ -108,8 +110,8 @@ class ConversationList extends LitElement {
     `;
   }
 
-  searchChat(query) {
-    this.query = query;
+  searchChat(event) {
+    this.query = event.detail.query;
     this.update();
   }
 
@@ -349,14 +351,13 @@ class ConversationList extends LitElement {
   }
 
   cleanSearchInput() {
-    let searchInput = document
-      .querySelector("body > il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("main > section > il-sidebar")
-      .shadowRoot.querySelector("div > il-search")
-      .shadowRoot.querySelector("div > div > il-input-ricerca");
+    let searchInput = this.shadowRoot
+      .querySelector("il-search")
+      .shadowRoot.querySelector("il-input-ricerca");
     searchInput.clear();
-    this.searchChat(searchInput.value);
+
+    this.query = searchInput.value;
+    this.update();
   }
 
   selectChat(selectedChatName) {
