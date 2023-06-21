@@ -252,7 +252,7 @@ class ConversationList extends LitElement {
             this.updateMessages(conversation.roomName);
 
             CookieService.setCookieByKey(
-              CookieService.Keys.lastChatName,
+              CookieService.Keys.lastChat,
               conversation.roomName
             );
 
@@ -297,7 +297,7 @@ class ConversationList extends LitElement {
           this.updateMessages(conversation.roomName);
 
           CookieService.setCookieByKey(
-            CookieService.Keys.lastChatName,
+            CookieService.Keys.lastChat,
             conversation.roomName
           );
 
@@ -367,9 +367,9 @@ class ConversationList extends LitElement {
       .shadowRoot.querySelector("il-chat")
       .shadowRoot.querySelector("main > section > il-sidebar")
       .shadowRoot.querySelector("div > il-search")
-      .shadowRoot.querySelector("div > div > input");
-    searchInput.value = "";
-    this.searchChat(searchInput.value);
+      ?.shadowRoot.querySelector("div > div > input");
+    if (searchInput) searchInput.value = "";
+    this.searchChat(searchInput?.value);
   }
 
   selectChat(selectedChatName) {

@@ -1,8 +1,3 @@
-const USERNAME_COOKIE_NAME = "username";
-const PASSWORD_COOKIE_NAME = "password";
-const HEADER_COOKIE_NAME = "header";
-const TOKEN_COOKIE_NAME = "token";
-
 export class CookieService {
   static Keys = {
     username: "username",
