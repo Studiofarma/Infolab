@@ -42,7 +42,11 @@ export class InputControls extends LitElement {
 
     emoji-picker {
       --emoji-size: 15pt;
-      --background: rgb(50, 50, 50);
+      --background: #f8f8f8;
+      --border-size: 2px;
+      --input-font-color: black;
+      --input-placeholder-color: black;
+      --outline-color: black;
       border-radius: 5px;
       position: absolute;
       bottom: 80px;
