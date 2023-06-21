@@ -23,7 +23,8 @@ class ConversationList extends LitElement {
     this.newConversationList = [];
     this.usersList = [];
     this.onLoad();
-    this.activeChatName = "general";
+    this.activeChatName =
+      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
   }
 
   static styles = css`
@@ -88,20 +89,6 @@ class ConversationList extends LitElement {
       overflow: auto;
     }
   `;
-
-  constructor() {
-    super();
-    this.query = "";
-    this.conversationList = [];
-    this.conversationListSearched = [];
-    this.usersList = [];
-    this.tmpConversationListSearched = [];
-    this.tmpConversationList = [];
-    this.onLoad();
-
-    this.activeChatName =
-      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
-  }
 
   render() {
     return html`
