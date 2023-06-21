@@ -7,6 +7,7 @@ import { UsersService } from "../../../../services/users-service";
 import "../../../../components/avatar.js";
 import "./conversation.js";
 import { ConversationDto } from "../../../../models/conversation-dto.js";
+import { MessagesService } from "../../../../services/messages-service";
 
 class ConversationList extends LitElement {
   static properties = {
@@ -88,7 +89,8 @@ class ConversationList extends LitElement {
     this.tmpConversationList = [];
     this.onLoad();
 
-    this.activeChatName = "general";
+    this.activeChatName =
+      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
   }
 
   render() {
@@ -249,6 +251,11 @@ class ConversationList extends LitElement {
             this.activeChatName = conversation.roomName;
             this.updateMessages(conversation.roomName);
 
+            CookieService.setCookieByKey(
+              CookieService.Keys.lastChat,
+              conversation.roomName
+            );
+
             this.setList(null);
             this.cleanSearchInput();
           }}
@@ -288,6 +295,12 @@ class ConversationList extends LitElement {
         @click=${() => {
           this.activeChatName = conversation.roomName;
           this.updateMessages(conversation.roomName);
+
+          CookieService.setCookieByKey(
+            CookieService.Keys.lastChat,
+            conversation.roomName
+          );
+
           this.cleanSearchInput();
           this.update();
         }}
@@ -340,12 +353,12 @@ class ConversationList extends LitElement {
       .querySelector("body > il-app")
       .shadowRoot.querySelector("il-chat")
       .shadowRoot.querySelector("main > section > div > il-input-controls")
-      .shadowRoot.querySelector(
+      ?.shadowRoot.querySelector(
         "#inputControls > div.container > div > il-input-field"
       )
       .shadowRoot.querySelector("#message-input");
 
-    messageInput.focus();
+    messageInput?.focus();
   }
 
   cleanSearchInput() {
@@ -354,9 +367,9 @@ class ConversationList extends LitElement {
       .shadowRoot.querySelector("il-chat")
       .shadowRoot.querySelector("main > section > il-sidebar")
       .shadowRoot.querySelector("div > il-search")
-      .shadowRoot.querySelector("div > div > input");
-    searchInput.value = "";
-    this.searchChat(searchInput.value);
+      ?.shadowRoot.querySelector("div > div > input");
+    if (searchInput) searchInput.value = "";
+    this.searchChat(searchInput?.value);
   }
 
   selectChat(selectedChatName) {
