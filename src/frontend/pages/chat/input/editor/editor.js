@@ -152,8 +152,7 @@ export class Editor extends LitElement {
 			margin-left: 25px;
 		}
 
-		il-formatting-button {
-			color: #c2c0c0;
+		il-editor-formatting-buttons {
 			display: flex;
 		}
 

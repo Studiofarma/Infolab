@@ -59,7 +59,7 @@ export class ForwardList extends LitElement {
 			align-items: center;
 		}
 
-		.forward-list-search > input {
+    .forward-list-search > il-input-ricerca {
 			margin: 5px 0;
 			padding: 8px;
 			width: 100%;
@@ -151,15 +151,25 @@ export class ForwardList extends LitElement {
 			let roomName = this.activeChatNameFormatter(conversation.roomName);
 
 			return html`
-				<div @click=${(e) => this.closeForwardList(e,roomName)}>
+        <div
+          @click=${() => {
+            this.forwardMessage(roomName);
+            this.clearSearchInput();
+          }}
+        >
 					<div class="forward-conversation">
-						<il-avatar avatarLink="" .name=${roomName} id=""></il-avatar>
+            <il-avatar .name=${roomName}></il-avatar>
 						<p>${roomName}</p>
 					</div>
 				</div>
 			`;
 		});
 	}
+
+  clearSearchInput() {
+    let input = this.shadowRoot.querySelector("il-input-ricerca");
+    input.clear();
+  }
 
 	forwardMessageHandler(e) {
 		this.messageToForward = e.message;
@@ -192,10 +202,10 @@ export class ForwardList extends LitElement {
     chatElement.sendMessage({ detail: { message: this.messageToForward } });
   }
 
-	fwdSearch() {
-		let searchInput = this.shadowRoot.querySelector("input#fwdSearch");
+	fwdSearch(event) {
+    this.forwardList = [...this.tmpForwardList];
 
-		let value = searchInput.value.toLowerCase();
+    let value = event.detail.query.toLowerCase();
 
 		this.forwardList = this.tmpForwardList.filter((user) =>
 			user.roomName.toLowerCase().includes(value)
