@@ -210,7 +210,7 @@ export class Chat extends LitElement {
 						<il-forward-list></il-forward-list>
 
 						<il-button-icon
-							style="bottom: 130px"
+							style="bottom: 81px"
 							class="scroll-button"
 							@click="${this.scrollToBottom}"
 							content="${IconNames.scrollDownArrow}"
@@ -291,21 +291,21 @@ export class Chat extends LitElement {
 		let buttonIcon = this.renderRoot.querySelector("il-button-icon");
 
 		if (e.detail.bEditor && !e.detail.bEmoji) {
-			buttonIcon.style.bottom = "295px";
+			buttonIcon.style.bottom = "265px";
 			return;
 		}
 
 		if (e.detail.bEmoji && !e.detail.bEditor) {
-			buttonIcon.style.bottom = "395px";
+			buttonIcon.style.bottom = "391px";
 			return;
 		}
 
 		if (e.detail.bEditor && e.detail.bEmoji) {
-			buttonIcon.style.bottom = "585px";
+			buttonIcon.style.bottom = "575px";
 			return;
 		}
 
-		buttonIcon.style.bottom = "130px";
+		buttonIcon.style.bottom = "81px";
 	}
 	scrollToBottom() {
 		let element = this.renderRoot.querySelector("ul.message-box");
