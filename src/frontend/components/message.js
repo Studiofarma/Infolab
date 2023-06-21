@@ -169,7 +169,7 @@ export class Message extends LitElement {
 		.receiver ~ .settings-container il-message-settings {
 			position: absolute;
 			top: 0px;
-			right: -144px;
+			right: 33px;
 		}
 
 		.receiver .message-timestamp {
