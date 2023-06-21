@@ -38,11 +38,11 @@ export class ChatHeader extends LitElement {
       justify-content: space-between;
     }
 
-    #profileContainer {
+    .profileContainer {
       display: flex;
     }
 
-    #profileContainer il-avatar {
+    .profileContainer il-avatar {
       vertical-align: center;
       padding: 15px;
     }
@@ -52,8 +52,12 @@ export class ChatHeader extends LitElement {
     return html`
       <div class="chatHeader">
         <div class="contact">
-          <h2>${this.roomName}</h2>
-          <div id="profileContainer">
+          <div class="profileContainer">
+            <il-avatar name=${this.roomName}></il-avatar>
+            <h2>${this.roomName}</h2>
+          </div>
+
+          <div class="profileContainer">
             <h2>${this.userName}</h2>
             <il-avatar name=${this.userName}></il-avatar>
           </div>
