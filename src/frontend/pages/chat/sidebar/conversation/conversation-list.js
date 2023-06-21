@@ -7,7 +7,6 @@ import { UsersService } from "../../../../services/users-service";
 import "../../../../components/avatar.js";
 import "./conversation.js";
 import { ConversationDto } from "../../../../models/conversation-dto.js";
-import { MessagesService } from "../../../../services/messages-service";
 
 class ConversationList extends LitElement {
   static properties = {
