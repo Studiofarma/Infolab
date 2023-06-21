@@ -47,10 +47,13 @@ export class InputControls extends LitElement {
       --input-font-color: black;
       --input-placeholder-color: black;
       --outline-color: black;
-      border-radius: 5px;
       position: absolute;
       bottom: 80px;
       left: 10px;
+    }
+
+    .emoji-picker-editor-opened {
+      bottom: 265px;
     }
 
     #inputControls {
@@ -154,6 +157,7 @@ export class InputControls extends LitElement {
             ?hidden=${!this.bEmoji}
             .i18n=${it}
             locale="it"
+            class=${this.bEditor ? "emoji-picker-editor-opened" : ""}
           ></emoji-picker>
         </div>
 
