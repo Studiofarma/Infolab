@@ -294,10 +294,7 @@ export class Message extends LitElement {
     `;
   }
 
-  willUpdate() {
-    console.log(this.activeChatName)
-  }
-
+	
   copyToClipboard(text) {
     navigator.clipboard.writeText(text);
   }
