@@ -60,7 +60,7 @@ export class MessageSettings extends LitElement {
 					iconName=${IconNames.mdiDelete}
 					text="Elimina"
 					@click=${() => {
-						this.deleteMessage(this.message);
+						this.deleteMessage();
 						this.update();
 					}}
 				>
@@ -104,7 +104,7 @@ export class MessageSettings extends LitElement {
 		conversationList.selectChat(sender);
 	}
 
-	deleteMessage(message) {
+	deleteMessage() {
 		let chatElement = document
 			.querySelector("body > il-app")
 			.shadowRoot.querySelector("il-chat");
