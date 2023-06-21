@@ -225,7 +225,7 @@ export class Message extends LitElement {
 
 				<div class="settings-container">
 					<il-button-icon
-						@click=${this.toggleSettings}
+						@click=${this.openSettings}
 						content="${IconNames.dotsHorizontal}"
 						color="black"
 					>
@@ -247,7 +247,7 @@ export class Message extends LitElement {
 		`;
 	}
 
-	toggleSettings() {
+	openSettings() {
 		let settings = this.renderRoot.querySelector("il-message-settings");
 
 		settings.openDialog();
