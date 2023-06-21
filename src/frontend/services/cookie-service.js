@@ -3,28 +3,43 @@ const PASSWORD_COOKIE_NAME = "password";
 const HEADER_COOKIE_NAME = "header";
 const TOKEN_COOKIE_NAME = "token";
 
-function getCookiePropertyByName(name) {
-	const result = document.cookie
-		.split("; ")
-		.find((row) => row.startsWith(`${name}=`))
-		?.split("=")[1];
-
-	return result;
-}
-
 export class CookieService {
-	static getCookie() {
+	static COOKIE_NAMES = {
+		USERNAME: "username",
+		PASSWORD: "password",
+		HEADER: "header",
+		TOKEN: "token",
+		LAST_CHAT: "last-chat",
+	};
+
+	static getCookieByKey(name) {
+		const result = document.cookie
+			.split("; ")
+			.find((row) => row.startsWith(`${name}=`))
+			?.split("=")[1];
+
+		return result;
+	}
+	static getLoginCookies() {
 		let isValid = true;
-		const user = getCookiePropertyByName(USERNAME_COOKIE_NAME);
+		const user = CookieService.getCookieByKey(
+			CookieService.COOKIE_NAMES.USERNAME
+		);
 		if (!user) isValid = false;
 
-		const pass = getCookiePropertyByName(PASSWORD_COOKIE_NAME);
+		const pass = CookieService.getCookieByKey(
+			CookieService.COOKIE_NAMES.PASSWORD
+		);
 		if (!pass) isValid = false;
 
-		const header = getCookiePropertyByName(HEADER_COOKIE_NAME);
+		const header = CookieService.getCookieByKey(
+			CookieService.COOKIE_NAMES.HEADER
+		);
 		if (!header) isValid = false;
 
-		const token = getCookiePropertyByName(TOKEN_COOKIE_NAME);
+		const token = CookieService.getCookieByKey(
+			CookieService.COOKIE_NAMES.TOKEN
+		);
 		if (!token) isValid = false;
 
 		let cookie = {

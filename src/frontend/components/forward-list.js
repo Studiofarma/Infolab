@@ -233,7 +233,7 @@ export class ForwardList extends LitElement {
   }
 
   activeChatNameFormatter(activeChatName) {
-    let cookie = CookieService.getCookie();
+    let cookie = CookieService.getLoginCookies();
     if (activeChatName.includes("-")) {
       activeChatName = activeChatName.split("-");
       activeChatName.splice(activeChatName.indexOf(cookie.username), 1);

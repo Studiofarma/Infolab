@@ -9,11 +9,6 @@ import "../../components/button-text";
 import "../../components/input-field";
 import "../../components/input-password";
 
-const USERNAME_COOKIE_NAME = "username";
-const PASSWORD_COOKIE_NAME = "password";
-const HEADER_COOKIE_NAME = "header";
-const TOKEN_COOKIE_NAME = "token";
-
 export class Login extends LitElement {
 	static properties = {
 		username: "",
@@ -35,7 +30,7 @@ export class Login extends LitElement {
 		this.emptyPasswordField = false;
 		this.header = "";
 		this.token = "";
-		this.cookie = CookieService.getCookie();
+		this.cookie = CookieService.getLoginCookies();
 		if (this.cookie.isValid) this.loginConfirm();
 	}
 
@@ -204,10 +199,19 @@ export class Login extends LitElement {
 	`;
 
 	setCookie() {
-		CookieService.setCookieByKey(USERNAME_COOKIE_NAME, this.username);
-		CookieService.setCookieByKey(PASSWORD_COOKIE_NAME, this.password);
-		CookieService.setCookieByKey(HEADER_COOKIE_NAME, this.header);
-		CookieService.setCookieByKey(TOKEN_COOKIE_NAME, this.token);
+		CookieService.setCookieByKey(
+			CookieService.COOKIE_NAMES.USERNAME,
+			this.username
+		);
+		CookieService.setCookieByKey(
+			CookieService.COOKIE_NAMES.PASSWORD,
+			this.password
+		);
+		CookieService.setCookieByKey(
+			CookieService.COOKIE_NAMES.HEADER,
+			this.header
+		);
+		CookieService.setCookieByKey(CookieService.COOKIE_NAMES.TOKEN, this.token);
 	}
 
 	render() {
