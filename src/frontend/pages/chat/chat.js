@@ -256,11 +256,13 @@ export class Chat extends LitElement {
 
 		this.activeChatName = e.detail.roomName;
 	}
+	
 	async updated() {
 		await setTimeout(() => {
 			if (this.activeChatName !== "") this.scrollToBottom();
 		}, 20);
 	}
+	
 	createSocket() {
 		let basicAuth = window.btoa(
 			this.login.username + ":" + this.login.password
