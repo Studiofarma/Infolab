@@ -8,7 +8,6 @@ import { CookieService } from "../services/cookie-service";
 import { IconNames } from "../enums/icon-names";
 
 import "./message-settings.js";
-import { Picker } from 'emoji-picker-element';
 
 export class Message extends LitElement {
 	static properties = {
@@ -164,7 +163,7 @@ export class Message extends LitElement {
 		.sender ~ .settings-container il-message-settings {
 			position: absolute;
 			top: 0px;
-			left: -144px;
+			left: -89px;
 		}
 
 		.receiver ~ .settings-container il-message-settings {
@@ -236,6 +235,9 @@ export class Message extends LitElement {
 						.message=${this.message}
 						.cookie=${this.cookie}
 						.index=${this.index}
+						.type=${this.message.sender == this.cookie.username
+							? "sender"
+							: "receiver"}
 					>
 					</il-message-settings>
 				</div>
@@ -256,7 +258,6 @@ export class Message extends LitElement {
 
 		settings.closeDialog();
 	}
-
 
 	compareMessageDate(messageDate1, messageDate2) {
 		const today = new Date().toDateString();

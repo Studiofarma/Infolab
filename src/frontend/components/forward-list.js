@@ -19,18 +19,25 @@ export class ForwardList extends LitElement {
 	static styles = css`
 		dialog {
 			width: 400px;
-			position: absolute;
-			transform: translateY(-50%);
-			top: 50%;
 			z-index: 5000;
 			border: none;
 			box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 			border-radius: 6px;
 			padding: 8px;
+			transition: animation 0.5s;
 		}
 
 		dialog::backdrop {
 			background-color: #00000037;
+		}
+
+		dialog[open] {
+			animation: opening 0.5s ease-out;
+		}
+
+		@keyframes opening {
+			from { transform: scale(0%)}
+			to {transform: scale(100%)}
 		}
 
 		.forward-list-header {
@@ -212,7 +219,7 @@ export class ForwardList extends LitElement {
 			.querySelector("body > il-app")
 			.shadowRoot.querySelector("il-chat")
 			.shadowRoot.querySelector("main > section > il-sidebar")
-			.shadowRoot.querySelector("div > il-conversation-list");
+			.shadowRoot.querySelector("il-conversation-list");
 		this.tmpForwardList = [...convList.conversationList];
 		this.forwardList = [...convList.conversationList];
 	}

@@ -7,9 +7,16 @@ import "./icon.js";
 import "./message-menu-option.js";
 
 export class MessageSettings extends LitElement {
+	static get properties() {
+		return {
+			message: { type: Object },
+			cookie: { type: Object },
+			type: { type: String },
+			index: { type: Number },
+		};
+	}
 
 	static styles = css`
-	
 		dialog {
 			width: fit-content;
 			border: none;
@@ -21,25 +28,42 @@ export class MessageSettings extends LitElement {
 		dialog::backdrop {
 			background-color: transparent;
 		}
-	`
-
+	`;
 
 	render() {
 		return html`
 			<dialog @click=${this.closeDialog} @mouseleave=${this.closeDialog}>
-				<message-menu-option iconName=${IconNames.mdiContentCopy} text="Copia">
-				</message-menu-option>
-
-				<message-menu-option iconName=${IconNames.mdiShare} text="Inoltra">
-				</message-menu-option>
-
 				<message-menu-option
-					iconName=${IconNames.mdiMessage}
-					text="Scrivi in privato"
+					iconName=${IconNames.mdiContentCopy}
+					text="Copia"
+					@click=${() => this.copyToClipboard(this.message.content)}
 				>
 				</message-menu-option>
 
-				<message-menu-option iconName=${IconNames.mdiDelete} text="Elimina">
+				<message-menu-option
+					iconName=${IconNames.mdiShare}
+					text="Inoltra"
+					@click=${() => this.forwardMessage(this.message.content)}
+				>
+				</message-menu-option>
+
+				${this.type === "receiver"
+					? html` <message-menu-option
+							iconName=${IconNames.mdiMessage}
+							text="Scrivi in privato"
+							@click=${() => this.goToChat(this.message.sender)}
+					  >
+					  </message-menu-option>`
+					: html``}
+
+				<message-menu-option
+					iconName=${IconNames.mdiDelete}
+					text="Elimina"
+					@click=${() => {
+						this.deleteMessage(this.message);
+						this.update();
+					}}
+				>
 				</message-menu-option>
 			</dialog>
 		`;
@@ -52,32 +76,32 @@ export class MessageSettings extends LitElement {
 
 	closeDialog() {
 		let dialog = this.renderRoot.querySelector("dialog");
-		dialog.close()
+		dialog.close();
 	}
 
 	copyToClipboard(text) {
 		navigator.clipboard.writeText(text);
 	}
 
-	forwardMessage(message) {
+	forwardMessage(text) {
 		let forwardListElement = document
 			.querySelector("body > il-app")
 			.shadowRoot.querySelector("il-chat")
-			.shadowRoot.querySelector("main > section > div > il-forward-list");
+			.shadowRoot.querySelector("il-forward-list");
 
-		let e = { message: message };
+		let e = { message: text };
 
 		forwardListElement.forwardMessageHandler(e);
 	}
 
-	goToChat(roomName) {
+	goToChat(sender) {
 		let conversationList = document
 			.querySelector("body > il-app")
 			.shadowRoot.querySelector("il-chat")
 			.shadowRoot.querySelector("main > section > il-sidebar")
 			.shadowRoot.querySelector("div > il-conversation-list");
 
-		conversationList.selectChat(roomName);
+		conversationList.selectChat(sender);
 	}
 
 	deleteMessage(message) {
@@ -85,7 +109,7 @@ export class MessageSettings extends LitElement {
 			.querySelector("body > il-app")
 			.shadowRoot.querySelector("il-chat");
 
-		chatElement.messages.splice(this.messages.indexOf(message), 1);
+		chatElement.messages.splice(this.index, 1);
 		chatElement.update();
 	}
 }
