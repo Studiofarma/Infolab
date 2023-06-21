@@ -14,64 +14,66 @@ import "../../components/message";
 import "../../components/button-icon";
 import "../../components/icon";
 import "../../components/forward-list";
-import "./input/input-controls.js";
-import "./sidebar/sidebar.js";
-import "./header/chat-header.js";
+import "./input/input-controls";
+import "./sidebar/sidebar";
+import "./header/chat-header";
+import "./empty-chat";
 
 export class Chat extends LitElement {
-	static properties = {
-		stompClient: {},
-		messages: [],
-		message: "",
-		nMessages: 0,
-	};
+  static properties = {
+    stompClient: {},
+    messages: [],
+    message: "",
+    nMessages: 0,
+  };
 
-	static get properties() {
-		return {
-			login: {
-				username: "",
-				password: "",
-				headerName: "",
-				token: "",
-			},
-			activeChatName: "",
-			messages: [],
-		};
-	}
+  static get properties() {
+    return {
+      login: {
+        username: "",
+        password: "",
+        headerName: "",
+        token: "",
+      },
+      activeChatName: "",
+      messages: [],
+    };
+  }
 
-	constructor() {
-		super();
-		this.messages = [];
-		this.message = "";
-		this.nMessages = 0;
-		this.activeChatName = "general";
-		this.forwardListVisibility = false;
-		this.scrolledToBottom = false;
-		window.addEventListener("resize", () => {
-			this.scrollToBottom();
-		});
-	}
+  constructor() {
+    super();
+    this.messages = [];
+    this.message = "";
+    this.nMessages = 0;
+    this.activeChatName =
+      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
+    this.forwardListVisibility = false;
+    this.scrolledToBottom = false;
+    window.addEventListener("resize", () => {
+      this.scrollToBottom();
+    });
+  }
 
-	connectedCallback() {
-		super.connectedCallback();
-		this.createSocket();
-	}
+  connectedCallback() {
+    super.connectedCallback();
+    this.createSocket();
+  }
 
-	static styles = css`
-		* {
-			box-sizing: border-box;
-			margin: 0;
-			padding: 0;
-		}
+  static styles = css`
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-		main {
-			position: absolute;
-			top: 0;
-			left: 0;
-			width: 100%;
-			min-height: 100%;
-			background: rgb(247, 247, 247);
-		}
+    main {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      min-height: 100%;
+      background: rgb(247, 247, 247);
+    }
 
     section {
       display: grid;
@@ -79,40 +81,44 @@ export class Chat extends LitElement {
       min-height: 100vh;
     }
 
-		.chat {
-			display: flex;
-			flex-direction: column;
-			position: relative;
-		}
+    .chat {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
 
-		.chatHeader {
-			position: fixed;
-			top: 0px;
-			left: 350px;
-			background: #083c72;
-			box-shadow: 0px 1px 5px black;
-			width: calc(100% - 350px);
-			min-height: 50px;
-			padding: 15px 30px;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			color: white;
-			z-index: 1000;
-		}
+    .chatHeader {
+      position: fixed;
+      top: 0px;
+      left: 350px;
+      background: #083c72;
+      box-shadow: 0px 1px 5px black;
+      width: calc(100% - 350px);
+      min-height: 50px;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: white;
+      z-index: 1000;
+    }
 
-		.chatHeader .settings {
-			order: 2;
-			display: flex;
-		}
+    .chatHeader .settings {
+      order: 2;
+      display: flex;
+    }
 
-		.chatHeader .contact {
-			order: 1;
-			display: flex;
-			gap: 1em;
-		}
+    .chatHeader .contact {
+      order: 1;
+      display: flex;
+      gap: 1em;
+    }
 
-    .messages-container {
+    il-input-controls {
+      margin-top: auto;
+    }
+
+    .message-box {
       list-style-type: none;
       display: grid;
       grid-auto-rows: max-content;
@@ -124,33 +130,10 @@ export class Chat extends LitElement {
       margin-top: 71px;
     }
 
-    .messages-container::-webkit-scrollbar {
-      width: 4px;
-      margin-right: 10px;
-    }
-
-    .messages-container::-webkit-scrollbar-track {
-      background-color: none;
-    }
-
-    .messages-container::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      background-color: rgb(54, 123, 251);
-      min-height: 40px;
-    }
-
-    .message {
-      display: grid;
-      flex-direction: column;
-      max-width: 100%;
-    }
-
     .scroll-button {
       z-index: 9999;
       position: absolute;
       right: 20px;
-      bottom: 130px;
-
       border-radius: 5px;
       padding: 2px;
       background-color: rgb(8, 60, 114);
@@ -158,8 +141,28 @@ export class Chat extends LitElement {
       opacity: 0;
       transition: opacity 0.2s ease-in-out;
     }
-  `;
 
+    .message-box::-webkit-scrollbar {
+      width: 4px;
+      margin-right: 10px;
+    }
+
+    .message-box::-webkit-scrollbar-track {
+      background-color: none;
+    }
+
+    .message-box::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: rgb(54, 123, 251);
+      min-height: 40px;
+    }
+
+    .message-box > il-message {
+      display: grid;
+      flex-direction: column;
+      max-width: 100%;
+    }
+  `;
   render() {
     return html`
       <main>
@@ -168,62 +171,69 @@ export class Chat extends LitElement {
             @update-message="${this.updateMessages}"
             .login=${this.login}
           ></il-sidebar>
-
           <div class="chat">
             <il-chat-header
               userName=${this.login.username}
               roomName=${this.activeChatNameFormatter(this.activeChatName)}
             ></il-chat-header>
 
-						<ul
-							@scroll="${this.manageScrollButtonVisility}"
-							class="messages-container"
-						>
-							${repeat(
-								this.messages,
-								(message) => message.index,
-								(message, index) =>
-									html` <il-message
-										class="message"
-										.messages=${this.messages}
-										.message=${message}
-										.index=${index}
-									></il-message>`
-							)}
-						</ul>
+					${
+						this.activeChatName !== "" ? html`	<ul
+						@scroll="${this.manageScrollButtonVisility}"
+						class="message-box"
+					>
+						${repeat(
+							this.messages,
+							(message) => message.index,
+							(message, index) =>
+								html` <il-message
+									.messages=${this.messages}
+									.message=${message}
+									.index=${index}
+								></il-message>`
+						)}
+					</ul>
 
-            <il-forward-list></il-forward-list>
+					<il-forward-list></il-forward-list>
 
-            <il-button-icon
-							style="bottom: 81px"
-							class="scroll-button"
-							@click="${this.scrollToBottom}"
-							content="${IconNames.scrollDownArrow}"
-						></il-button-icon>
+					<il-button-icon
+						style="bottom: 81px"
+						class="scroll-button"
+						@click="${this.scrollToBottom}"
+						content="${IconNames.scrollDownArrow}"
+					></il-button-icon>
 
-						<il-input-controls
-							@send-message="${this.sendMessage}"
-							@open-insertion-mode="${this.setScrollButtonY}"
-						></il-input-controls>
-					</div>
-				</section>
-			</main>
-		`;
-	}
+								<il-input-controls
+									@send-message="${this.sendMessage}"
+									@open-insertion-mode=${this.setScrollButtonY}
+								></il-input-controls>` : html`<il-empty-chat></il-empty-chat>`
+					}
 
-	async firstUpdated() {
-		MessagesService.getMessagesById(
-			this.login.username,
-			this.login.password,
-			"general"
-		).then((messages) => {
-			this.messages = messages.data.reverse();
+					
+  
 
-			for (var i = 0; i < this.messages.length; i++) {
-				this.messages[i].index = i;
-			}
-		});
-	}
+          </div>
+        </section>
+      </main>
+    `;
+  }
+
+  async firstUpdated() {
+    if (this.activeChatName === "") return;
+
+    MessagesService.getMessagesById(
+      this.login.username,
+      this.login.password,
+      this.activeChatName
+    ).then((messages) => {
+      this.messages = messages.data.reverse();
+				})
+
+      for (var i = 0; i < this.messages.length; i++) {
+        this.messages[i].index = i;
+      }
+		    }
+	
 
 	async updateMessages(e) {
 		MessagesService.getMessagesById(
@@ -240,40 +250,28 @@ export class Chat extends LitElement {
 		this.activeChatName = e.detail.roomName;
 	}
 
-	async updated() {
-		await setTimeout(() => {
-			this.scrollToBottom();
-		}, 20);
-	}
+  async updated() {
+    await setTimeout(() => {
+      this.scrollToBottom();
+    }, 20);
+  }
 
-	createSocket() {
-		let basicAuth = window.btoa(
-			this.login.username + ":" + this.login.password
-		);
+  createSocket() {
+    let basicAuth = window.btoa(
+      this.login.username + ":" + this.login.password
+    );
 
-		const socket = new SockJS("chat?access_token=" + basicAuth.toString());
-		this.stompClient = Stomp.over(socket);
+    const socket = new SockJS("chat?access_token=" + basicAuth.toString());
+    this.stompClient = Stomp.over(socket);
 
-		let headers = {};
-		headers[this.login.headerName] = this.login.token;
-		this.stompClient.connect(
-			headers,
-			() => this.onConnect(),
-			() => this.onError()
-		);
-	}
-
-	checkScrolledToBottom() {
-		try {
-			let element = this.renderRoot.querySelector("ul.message-box");
-			return (
-				element.scrollHeight - element.offsetHeight <=
-				element.scrollTop + 10
-			);
-		} catch (error) {
-			return false;
-		}
-	}
+    let headers = {};
+    headers[this.login.headerName] = this.login.token;
+    this.stompClient.connect(
+      headers,
+      () => this.onConnect(),
+      () => this.onError()
+    );
+  }
 
   manageScrollButtonVisility() {
     if (this.checkScrolledToBottom()) {
@@ -285,7 +283,7 @@ export class Chat extends LitElement {
 
   checkScrolledToBottom() {
     try {
-      let element = this.renderRoot.querySelector("ul.messages-container");
+      let element = this.renderRoot.querySelector("ul.message-box");
       return (
         element.scrollHeight - element.offsetHeight <= element.scrollTop + 10
       );
@@ -294,165 +292,159 @@ export class Chat extends LitElement {
     }
   }
 
-  scrollToBottom() {
-    let element = this.renderRoot.querySelector("ul.messages-container");
-    element.scrollBy({ top: element.scrollHeight - element.offsetHeight });
+  setScrollButtonY(e) {
+    let buttonIcon = this.renderRoot.querySelector("il-button-icon");
+
+    if (e.detail.bEditor && !e.detail.bEmoji) {
+      buttonIcon.style.bottom = "265px";
+      return;
+    }
+
+    if (e.detail.bEmoji && !e.detail.bEditor) {
+      buttonIcon.style.bottom = "391px";
+      return;
+    }
+
+    if (e.detail.bEditor && e.detail.bEmoji) {
+      buttonIcon.style.bottom = "575px";
+      return;
+    }
+
+    buttonIcon.style.bottom = "81px";
   }
-	setScrollButtonY(e) {
-		let buttonIcon = this.renderRoot.querySelector("il-button-icon");
+  scrollToBottom() {
+    if (this.activeChatName === "") return;
 
-		if (e.detail.bEditor && !e.detail.bEmoji) {
-			buttonIcon.style.bottom = "265px";
-			return;
-		}
+    let element = this.renderRoot.querySelector("ul.message-box");
+    element.scrollTo({ top: element.scrollHeight });
+  }
 
-		if (e.detail.bEmoji && !e.detail.bEditor) {
-			buttonIcon.style.bottom = "391px";
-			return;
-		}
+  onConnect() {
+    this.stompClient.subscribe("/topic/public", (payload) =>
+      this.onMessage(payload)
+    );
 
-		if (e.detail.bEditor && e.detail.bEmoji) {
-			buttonIcon.style.bottom = "575px";
-			return;
-		}
+    // fixare questo
+    this.stompClient.subscribe("/user/topic/me", (payload) =>
+      this.onMessage(payload)
+    );
 
-		buttonIcon.style.bottom = "81px";
-	}
-	scrollToBottom() {
-		let element = this.renderRoot.querySelector("ul.message-box");
-		element.scrollTo({ top: element.scrollHeight });
-	}
+    this.stompClient.subscribe(`/queue/${this.login.username}`, (payload) =>
+      this.onMessage(payload)
+    );
 
-	onConnect() {
-		this.stompClient.subscribe("/topic/public", (payload) =>
-			this.onMessage(payload)
-		);
+    this.stompClient.send(
+      "/app/chat.register",
+      {},
+      JSON.stringify({ sender: this.login.username, type: "JOIN" })
+    );
+  }
 
-		// fixare questo
-		this.stompClient.subscribe("/user/topic/me", (payload) =>
-			this.onMessage(payload)
-		);
+  messageNotification(message) {
+    if (!message.content || this.login.username === message.sender) {
+      return;
+    }
 
-		this.stompClient.subscribe(`/queue/${this.login.username}`, (payload) =>
-			this.onMessage(payload)
-		);
+    let conversationList = document
+      .querySelector("body > il-app")
+      .shadowRoot.querySelector("il-chat")
+      .shadowRoot.querySelector("main > section > il-sidebar")
+      .shadowRoot.querySelector("div > il-conversation-list");
 
-		this.stompClient.send(
-			"/app/chat.register",
-			{},
-			JSON.stringify({ sender: this.login.username, type: "JOIN" })
-		);
-	}
+    let roomName = this.activeChatNameFormatter(message.roomName);
 
-	messageNotification(message) {
-		if (!message.content || this.login.username === message.sender) {
-			return;
-		}
+    if (Notification.permission === "granted") {
+      let notification = new Notification(roomName, {
+        body: message.content,
+      });
 
-		let conversationList = document
-			.querySelector("body > il-app")
-			.shadowRoot.querySelector("il-chat")
-			.shadowRoot.querySelector("main > section > il-sidebar")
-			.shadowRoot.querySelector("div > il-conversation-list");
+      notification.onclick = function () {
+        conversationList.selectChat(roomName);
+        window.focus("/");
+      };
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then(function (permission) {
+        if (permission === "granted") {
+          let notification = new Notification(roomName, {
+            body: message.content,
+          });
 
-		let roomName = this.activeChatNameFormatter(message.roomName);
+          notification.onclick = function () {
+            conversationList.selectChat(
+              this.activeChatNameFormatter(message.roomName)
+            );
+            window.focus("/");
+          };
+        }
+      });
+    }
+  }
 
-		if (Notification.permission === "granted") {
-			let notification = new Notification(roomName, {
-				body: message.content,
-			});
+  onMessage(payload) {
+    let message = JSON.parse(payload.body);
+    if (message.content) {
+      if (this.activeChatName == message.roomName) {
+        this.messages.push(message);
+        this.update();
+        this.updated();
+      }
+      let sidebar = this.renderRoot.querySelector(
+        "main > section > il-sidebar"
+      );
+      sidebar.shadowRoot
+        .querySelector("div > il-conversation-list")
+        .setList(message);
 
-			notification.onclick = function () {
-				conversationList.selectChat(roomName);
-				window.focus("/");
-			};
-		} else if (Notification.permission !== "denied") {
-			Notification.requestPermission().then(function (permission) {
-				if (permission === "granted") {
-					let notification = new Notification(roomName, {
-						body: message.content,
-					});
+      let conversationListElement = document
+        .querySelector("body > il-app")
+        .shadowRoot.querySelector("il-chat")
+        .shadowRoot.querySelector("main > section > il-sidebar")
+        .shadowRoot.querySelector("div > il-conversation-list");
 
-					notification.onclick = function () {
-						conversationList.selectChat(
-							this.activeChatNameFormatter(message.roomName)
-						);
-						window.focus("/");
-					};
-				}
-			});
-		}
-	}
+      let room = conversationListElement.convertUserToRoom(message.roomName);
+      conversationListElement.onMessageInNewChat(room, message);
+    }
 
-	onMessage(payload) {
-		let message = JSON.parse(payload.body);
-		if (message.content) {
-			if (this.activeChatName == message.roomName) {
-				this.messages.push(message);
-				this.update();
-				this.updated();
-			}
-			let sidebar = this.renderRoot.querySelector(
-				"main > section > il-sidebar"
-			);
-			sidebar.shadowRoot
-				.querySelector("div > il-conversation-list")
-				.setList(message);
+    this.messageNotification(message);
+  }
 
-			let conversationListElement = document
-				.querySelector("body > il-app")
-				.shadowRoot.querySelector("il-chat")
-				.shadowRoot.querySelector("main > section > il-sidebar")
-				.shadowRoot.querySelector("div > il-conversation-list");
+  sendMessage(e) {
+    this.message = e.detail.message;
 
-			let room = conversationListElement.convertUserToRoom(
-				message.roomName
-			);
-			conversationListElement.onMessageInNewChat(room, message);
-		}
+    let messageContent = this.message.trim();
 
-		this.messageNotification(message);
-	}
+    if (messageContent && this.stompClient) {
+      const chatMessage = {
+        sender: this.login.username,
+        content: messageContent,
+        type: "CHAT",
+      };
 
-	sendMessage(e) {
-		this.message = e.detail.message;
+      let activeChatName = this.activeChatNameFormatter(this.activeChatName);
 
-		let messageContent = this.message.trim();
+      this.stompClient.send(
+        `/app/chat.send${
+          activeChatName != "general" ? `.${activeChatName}` : ""
+        }`,
+        {},
+        JSON.stringify(chatMessage)
+      );
+    }
+  }
 
-		if (messageContent && this.stompClient) {
-			const chatMessage = {
-				sender: this.login.username,
-				content: messageContent,
-				type: "CHAT",
-			};
+  onError(error) {
+    console.log(error);
+  }
 
-			let activeChatName = this.activeChatNameFormatter(
-				this.activeChatName
-			);
-
-			this.stompClient.send(
-				`/app/chat.send${
-					activeChatName != "general" ? `.${activeChatName}` : ""
-				}`,
-				{},
-				JSON.stringify(chatMessage)
-			);
-		}
-	}
-
-	onError(error) {
-		console.log(error);
-	}
-
-	activeChatNameFormatter(activeChatName) {
-		let cookie = CookieService.getCookie();
-		if (activeChatName.includes("-")) {
-			activeChatName = activeChatName.split("-");
-			activeChatName.splice(activeChatName.indexOf(cookie.username), 1);
-			return activeChatName[0];
-		}
-		return activeChatName;
-	}
+  activeChatNameFormatter(activeChatName) {
+    let cookie = CookieService.getCookie();
+    if (activeChatName.includes("-")) {
+      activeChatName = activeChatName.split("-");
+      activeChatName.splice(activeChatName.indexOf(cookie.username), 1);
+      return activeChatName[0];
+    }
+    return activeChatName;
+  }
 }
 
 customElements.define("il-chat", Chat);
