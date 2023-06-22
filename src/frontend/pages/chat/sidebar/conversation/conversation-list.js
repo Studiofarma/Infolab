@@ -122,40 +122,37 @@ class ConversationList extends LitElement {
   }
 
   async onLoad() {
-    await this.getAllUsers().then(async () => {
-      await this.getAllRooms().then(() => {
-        this.setNewConversationList();
-        this.update();
-      });
-    });
+    await this.getAllUsers();
+    await this.getAllRooms();
+    this.setNewConversationList();
+    this.update();
   }
 
   async getAllRooms() {
     let cookie = CookieService.getCookie();
 
     try {
-      await OpenChatsService.getOpenChats(
+      let rooms = await OpenChatsService.getOpenChats(
         cookie.username,
         cookie.password
-      ).then((rooms) => {
-        rooms["data"].forEach((room) => {
-          let userIndex = this.usersList.findIndex(
-            (user) => user.name == room.description
-          );
-          if (userIndex == -1) {
-            this.conversationList.push(room);
-          } else {
-            let conversation = {
-              roomName: room.roomName,
-              avatarLink: room.avatarlink,
-              unreadMessages: room.unreadMessages,
-              description: room.description,
-              lastMessage: room.lastMessage,
-              id: this.usersList[userIndex].id,
-            };
-            this.conversationList.push(conversation);
-          }
-        });
+      );
+      rooms["data"].forEach((room) => {
+        let userIndex = this.usersList.findIndex(
+          (user) => user.name == room.description
+        );
+        if (userIndex == -1) {
+          this.conversationList.push(room);
+        } else {
+          let conversation = {
+            roomName: room.roomName,
+            avatarLink: room.avatarlink,
+            unreadMessages: room.unreadMessages,
+            description: room.description,
+            lastMessage: room.lastMessage,
+            id: this.usersList[userIndex].id,
+          };
+          this.conversationList.push(conversation);
+        }
       });
 
       this.conversationList.sort(this.compareTimestamp);
@@ -167,13 +164,12 @@ class ConversationList extends LitElement {
   async getAllUsers() {
     let cookie = CookieService.getCookie();
     try {
-      await UsersService.GetUsers(
+      let users = await UsersService.GetUsers(
         this.query,
         cookie.username,
         cookie.password
-      ).then((users) => {
-        this.usersList = users["data"];
-      });
+      );
+      this.usersList = users["data"];
     } catch (error) {
       console.error(error);
     }
