@@ -12,7 +12,7 @@ import "./message-settings.js";
 export class Message extends LitElement {
   static properties = {
     messages: { type: Array },
-    message: { type: String },
+		message: { type: Object },
     index: { type: Number },
     activeChatName: { type: String },
   };
