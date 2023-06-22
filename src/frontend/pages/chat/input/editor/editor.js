@@ -1,5 +1,4 @@
 import { LitElement, html, css } from "lit";
-import { resolveMarkdown } from "lit-markdown";
 import { MarkdownService } from "../../../../services/markdown-service";
 
 import "../../../../components/button-text";
@@ -7,28 +6,47 @@ import "../../../../components/button-text";
 export class Editor extends LitElement {
   static properties = {
     message: { type: String },
+    rows: { type: Number },
     openPreview: { type: Boolean },
-    lastKeyPressed: { type: String },
+    altPressed: { type: Boolean },
+    shiftPressed: { type: Boolean },
   };
 
   constructor() {
     super();
     this.lastKeyPressed = "";
-    this.alt = "Alt";
-    this.shift = "Shift";
+    this.rows = 1;
+    this.altPressed = false;
+    this.shiftPressed = false;
+    this.message = "";
   }
 
   static styles = css`
     textarea {
       width: 100%;
       resize: none;
-      font-size: x-large;
-      padding: 5px;
-      border-radius: 5px;
+      font-size: 20px;
       outline: none;
-      background: #003366;
+      background: none;
       color: white;
-      font-family: Inter;
+      border: 0;
+      font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      border-left: 3px solid white;
+      padding-left: 10px;
+      line-height: 20px;
+    }
+    textarea::placeholder {
+      color: lightgray;
+    }
+    textarea::-webkit-scrollbar {
+      background: lightgray;
+      width: 5px;
+      border-top: 2px solid gray;
+      border-bottom: 2px solid gray;
+    }
+
+    textarea::-webkit-scrollbar-thumb {
+      background: gray;
     }
     @font-face {
       font-family: "Inter";
@@ -39,20 +57,63 @@ export class Editor extends LitElement {
   render() {
     return html`
       <textarea
-        rows="1"
+        rows=${this.rows <= 5 ? this.rows : 5}
+				max
         @input=${this.onInput}
         @keydown=${this.onKeyDown}
+        @keyup=${this.onKeyUp}
+        @select=${this.onSelect}
+        placeholder="Scrivi un messaggio..."
       ></textarea>
     `;
   }
 
   onInput(event) {
-    this.message = event.target.value.replaceAll("\n", "\\");
+    this.message = event.target.value;
+    this.rows = event.target.value.split("\n").length;
+    this.textChanged();
+  }
+
+  textChanged() {
+    this.shadowRoot.querySelector("textarea").value = this.message;
+    this.dispatchEvent(
+      new CustomEvent("text-changed", {
+        detail: { content: this.message.trimEnd().replaceAll("\n", "\\\n") },
+      })
+    );
+  }
+
+  getSelection() {
+    const textarea = this.shadowRoot.querySelector("textarea");
+    return {
+      start: textarea.selectionStart,
+      end: textarea.selectionEnd,
+      direction: textarea.selectionDirection,
+    };
   }
 
   onKeyDown(event) {
-    this.applyMarkdown(this.lastKeyPressed, event.key);
+    if (event.key == "Shift") this.shiftPressed = true;
+    if (event.key == "Alt") this.altPressed = true;
+
+    if (!this.shiftPressed && event.key == "Enter") {
+      this.dispatchEvent(new CustomEvent("enter-key-pressed"));
+      event.preventDefault();
+    }
+
+    this.checkMarkdownKeys(event.key);
     this.lastKeyPressed = event.key;
+  }
+
+  clearMessage() {
+    this.message = "";
+    this.rows = 1;
+    this.shadowRoot.querySelector("textarea").value = "";
+  }
+
+  onKeyUp(event) {
+    if (event.key == "Shift") this.shiftPressed = false;
+    if (event.key == "Alt") this.altPressed = false;
   }
 
   checkList(event) {
@@ -82,20 +143,20 @@ export class Editor extends LitElement {
     }
   }
 
-  applyMarkdown(lastKeyPressed, currentKeyPressed) {
-    if (lastKeyPressed === this.alt && currentKeyPressed === "b") {
+  checkMarkdownKeys(currentKeyPressed) {
+    if (this.altPressed && currentKeyPressed === "b") {
       MarkdownService.insertBold();
       return;
     }
-    if (lastKeyPressed === this.alt && currentKeyPressed === "i") {
+    if (this.altPressed && currentKeyPressed === "i") {
       MarkdownService.insertItalic();
       return;
     }
-    if (lastKeyPressed === this.alt && currentKeyPressed === "s") {
+    if (this.altPressed && currentKeyPressed === "s") {
       MarkdownService.insertStrike();
       return;
     }
-    if (lastKeyPressed === this.alt && currentKeyPressed === "l") {
+    if (this.altPressed && currentKeyPressed === "l") {
       MarkdownService.insertLink();
       return;
     }

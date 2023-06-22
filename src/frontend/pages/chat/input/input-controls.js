@@ -79,19 +79,6 @@ export class InputControls extends LitElement {
       flex-direction: column;
     }
 
-    #submitContainer il-button-icon {
-      width: 50px;
-      height: 50px;
-      margin-top: 0px;
-      border: none;
-      color: white !important;
-      font-size: 20px;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
     il-editor {
       width: 100%;
     }
@@ -103,25 +90,21 @@ export class InputControls extends LitElement {
         <!-- .container is for emoji picker -->
         <div class="container">
           <div class="inputContainer">
+            <il-editor
+              @enter-key-pressed=${this.sendMessage}
+              @text-changed=${this.updateMessage}
+            ></il-editor>
             <il-insertion-bar
               @open-insertion-mode=${this.openInsertionMode}
               @click=${this.prova}
+              @send-message=${this.sendMessage}
             >
             </il-insertion-bar>
-
-            <il-editor></il-editor>
           </div>
           <emoji-picker
             @emoji-click=${this.insertEmoji}
             ?hidden=${!this.bEmoji}
           ></emoji-picker>
-        </div>
-
-        <div id="submitContainer">
-          <il-button-icon
-            @click=${this.sendMessage}
-            content=${IconNames.send}
-          ></il-button-icon>
         </div>
       </div>
     `;
@@ -144,7 +127,6 @@ export class InputControls extends LitElement {
   }
 
   sendMessage() {
-    this.updateMessage();
     this.dispatchEvent(
       new CustomEvent("send-message", {
         detail: {
@@ -152,16 +134,11 @@ export class InputControls extends LitElement {
         },
       })
     );
-
-    this.renderRoot.querySelector("il-input-field").value = "";
     this.message = "";
-    if (this.bEditor) {
-      this.getTextarea().value = "";
-      this.bEditor = false;
-    }
+		this.shadowRoot.querySelector("il-editor").clearMessage();
   }
-  updateMessage() {
-    this.message = this.renderRoot.querySelector("il-input-field").value;
+  updateMessage(event) {
+    this.message = event.detail.content;
   }
 }
 

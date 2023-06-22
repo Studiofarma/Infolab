@@ -177,41 +177,37 @@ export class Chat extends LitElement {
               roomName=${this.activeChatNameFormatter(this.activeChatName)}
             ></il-chat-header>
 
-					${
-						this.activeChatName !== "" ? html`	<ul
-						@scroll="${this.manageScrollButtonVisility}"
-						class="message-box"
-					>
-						${repeat(
-							this.messages,
-							(message) => message.index,
-							(message, index) =>
-								html` <il-message
-									.messages=${this.messages}
-									.message=${message}
-									.index=${index}
-								></il-message>`
-						)}
-					</ul>
+            ${this.activeChatName !== ""
+              ? html` <ul
+                    @scroll="${this.manageScrollButtonVisility}"
+                    class="message-box"
+                  >
+                    ${repeat(
+                      this.messages,
+                      (message) => message.index,
+                      (message, index) =>
+                        html` <il-message
+                          .messages=${this.messages}
+                          .message=${message}
+                          .index=${index}
+                        ></il-message>`
+                    )}
+                  </ul>
 
-					<il-forward-list></il-forward-list>
+                  <il-forward-list></il-forward-list>
 
-					<il-button-icon
-						style="bottom: 81px"
-						class="scroll-button"
-						@click="${this.scrollToBottom}"
-						content="${IconNames.scrollDownArrow}"
-					></il-button-icon>
+                  <il-button-icon
+                    style="bottom: 81px"
+                    class="scroll-button"
+                    @click="${this.scrollToBottom}"
+                    content="${IconNames.scrollDownArrow}"
+                  ></il-button-icon>
 
-								<il-input-controls
-									@send-message="${this.sendMessage}"
-									@open-insertion-mode=${this.setScrollButtonY}
-								></il-input-controls>` : html`<il-empty-chat></il-empty-chat>`
-					}
-
-					
-  
-
+                  <il-input-controls
+                    @send-message="${this.sendMessage}"
+                    @open-insertion-mode=${this.setScrollButtonY}
+                  ></il-input-controls>`
+              : html`<il-empty-chat></il-empty-chat>`}
           </div>
         </section>
       </main>
@@ -227,28 +223,27 @@ export class Chat extends LitElement {
       this.activeChatName
     ).then((messages) => {
       this.messages = messages.data.reverse();
-				})
+    });
+
+    for (var i = 0; i < this.messages.length; i++) {
+      this.messages[i].index = i;
+    }
+  }
+
+  async updateMessages(e) {
+    MessagesService.getMessagesById(
+      this.login.username,
+      this.login.password,
+      e.detail.roomName
+    ).then((messages) => {
+      this.messages = messages.data.reverse();
 
       for (var i = 0; i < this.messages.length; i++) {
         this.messages[i].index = i;
       }
-		    }
-	
-
-	async updateMessages(e) {
-		MessagesService.getMessagesById(
-			this.login.username,
-			this.login.password,
-			e.detail.roomName
-		).then((messages) => {
-			this.messages = messages.data.reverse();
-
-			for (var i = 0; i < this.messages.length; i++) {
-				this.messages[i].index = i;
-			}
-		});
-		this.activeChatName = e.detail.roomName;
-	}
+    });
+    this.activeChatName = e.detail.roomName;
+  }
 
   async updated() {
     await setTimeout(() => {

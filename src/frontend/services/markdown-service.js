@@ -10,31 +10,24 @@ export class MarkdownService {
     return output;
   }
 
-  static insertInTextArea(str) {
-    let textarea = MarkdownService.getTextarea();
-    let start = textarea.selectionStart;
-    let finish = textarea.selectionEnd;
+  static insertInTextArea(text) {
+    const editor = MarkdownService.getEditor();
+    const textarea = editor.shadowRoot.querySelector("textarea");
+    const selection = editor.getSelection();
 
-    let message = document
-      .querySelector("il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("il-input-controls")
-      .shadowRoot.querySelector("il-editor").message;
-    message =
-      textarea.value.slice(0, start) + str + textarea.value.slice(finish);
-    document
-      .querySelector("il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("il-input-controls")
-      .shadowRoot.querySelector("il-editor").message = message;
+    editor.message =
+      textarea.value.slice(0, selection.start) +
+      text +
+      textarea.value.slice(selection.end);
+    editor.textChanged();
   }
 
   static getText(text) {
-    let sel = window.getSelection();
-    let t = sel ? sel.toString() : "";
-    if (t !== "") sel.deleteFromDocument();
-    else t = text;
-    return t;
+    const editor = MarkdownService.getEditor();
+    const textarea = editor.shadowRoot.querySelector("textarea");
+    const selection = editor.getSelection();
+
+    return textarea.value.slice(selection.start, selection.end);
   }
 
   static insertBold() {
@@ -88,14 +81,13 @@ export class MarkdownService {
     MarkdownService.insertInTextArea("### " + text);
   }
 
-  static getTextarea() {
+  static getEditor() {
     return (
       document
         .querySelector("il-app")
         .shadowRoot.querySelector("il-chat")
         .shadowRoot.querySelector("il-input-controls")
-        .shadowRoot.querySelector("il-editor")
-        .shadowRoot.querySelector("textarea") ?? null
+        .shadowRoot.querySelector("il-editor") ?? null
     );
   }
 }
