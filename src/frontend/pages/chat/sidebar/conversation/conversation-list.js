@@ -351,13 +351,14 @@ class ConversationList extends LitElement {
   }
 
   cleanSearchInput() {
-    let searchInput = this.shadowRoot
-      .querySelector("il-search")
-      .shadowRoot.querySelector("il-input-ricerca");
-    searchInput.clear();
-
-    this.query = searchInput.value;
-    this.update();
+    let searchInput = document
+      .querySelector("body > il-app")
+      .shadowRoot.querySelector("il-chat")
+      .shadowRoot.querySelector("main > section > il-sidebar")
+      .shadowRoot.querySelector("div > il-search")
+      ?.shadowRoot.querySelector("div > div > input");
+    if (searchInput) searchInput.value = "";
+    this.searchChat(searchInput?.value);
   }
 
   selectChat(selectedChatName) {
