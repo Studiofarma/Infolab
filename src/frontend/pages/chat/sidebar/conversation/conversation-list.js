@@ -4,10 +4,10 @@ import { CookieService } from "../../../../services/cookie-service";
 import { OpenChatsService } from "../../../../services/open-chats-service";
 import { UsersService } from "../../../../services/users-service";
 
-import "../../../../components/avatar.js";
-import "./conversation.js";
+import "../../../../components/avatar";
+import "./conversation";
 import "../search-chats";
-import { ConversationDto } from "../../../../models/conversation-dto.js";
+import { ConversationDto } from "../../../../models/conversation-dto";
 
 class ConversationList extends LitElement {
   static properties = {
