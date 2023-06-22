@@ -71,7 +71,9 @@ export class ForwardList extends LitElement {
   render() {
     return html`
       <dialog @click=${(e) => this.closeForwardList(e, "")}>
-        <il-conversation-list></il-conversation-list>
+        <il-conversation-list
+          @chat-clicked=${(e) => this.closeForwardList(e, e.detail.roomName)}
+        ></il-conversation-list>
       </dialog>
     `;
   }
@@ -103,7 +105,7 @@ export class ForwardList extends LitElement {
 
     if (
       dialog.contains(e.target) && //controlla se clicchi un elemento dentro dialog
-      e.target.closest(".forward-conversation") === null && // controlla che l'elemento cliccato sia diverso dal componente conversation
+      e.target.closest("il-conversation-list") === null && // controlla che l'elemento cliccato sia diverso dal componente conversation
       !this.checkIfClickIsOuter(e) // controlla se si sta cliccando nel backdrop
     ) {
       e.stopPropagation();

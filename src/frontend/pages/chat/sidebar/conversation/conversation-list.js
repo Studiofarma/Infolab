@@ -267,8 +267,8 @@ class ConversationList extends LitElement {
               CookieService.Keys.lastChat,
               conversation.roomName
             );
-
-            this.setList(null);
+            this.chatClicked(conversation.roomName);
+            this.update();
             this.cleanSearchInput();
           }}
         ></il-conversation>`;
@@ -306,11 +306,17 @@ class ConversationList extends LitElement {
             CookieService.Keys.lastChat,
             conversation.roomName
           );
-
+          this.chatClicked(conversation.roomName);
           this.cleanSearchInput();
         }}
       ></il-conversation>`;
     });
+  }
+
+  chatClicked(chatName) {
+    this.dispatchEvent(
+      new CustomEvent("chat-clicked", { detail: { roomName: chatName } })
+    );
   }
 
   onMessageInNewChat(conversation, message) {
@@ -386,7 +392,7 @@ class ConversationList extends LitElement {
       }
     }
 
-    selectedChatName = this.chatNameFormatter(
+    selectedChatName = this.chatNameRecomposer(
       selectedChatName,
       cookie.username
     );
@@ -395,6 +401,7 @@ class ConversationList extends LitElement {
       avatarLink: null,
       roomName: selectedChatName,
       unreadMessages: 0,
+      id: 0,
       lastMessage: {
         content: null,
         sender: null,
