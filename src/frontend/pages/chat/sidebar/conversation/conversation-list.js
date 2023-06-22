@@ -83,7 +83,7 @@ class ConversationList extends LitElement {
     }
 
     .conversation-list-scrollable {
-      height: calc(100% - 135px);
+      height: calc(100% - 240px);
       overflow: auto;
     }
   `;
