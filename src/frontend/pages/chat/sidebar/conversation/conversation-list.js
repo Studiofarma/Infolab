@@ -269,6 +269,7 @@ class ConversationList extends LitElement {
               conversation.roomName
             );
 
+            this.changeDescription()
             this.setList(null);
             this.cleanSearchInput();
           }}
@@ -282,6 +283,37 @@ class ConversationList extends LitElement {
         return null;
       }
     });
+  }
+
+  changeDescription() {
+    let description = this.passDescription();
+
+    CookieService.setCookieByKey(
+      CookieService.Keys.lastDescription,
+      description
+    );
+  }
+
+  passDescription() {
+    let index = this.conversationList.findIndex(
+      (conversation) => conversation.roomName === this.activeChatName
+    );
+
+    let description =
+      this.conversationList[index].description ??
+      this.chatNameFormatter(this.conversationList[index].roomName);
+
+    this.dispatchEvent(
+      new CustomEvent("onChangeConversation", {
+        detail: {
+          description: description,
+        },
+        bubbles: true,
+        composed: true,
+      })
+    );
+
+    return description;
   }
 
   searchConversation(list) {
@@ -306,6 +338,13 @@ class ConversationList extends LitElement {
           CookieService.setCookieByKey(
             CookieService.Keys.lastChat,
             conversation.roomName
+          );
+
+          let description = this.passConversationSelected();
+
+          CookieService.setCookieByKey(
+            CookieService.Keys.lastDescription,
+            description
           );
 
           this.cleanSearchInput();

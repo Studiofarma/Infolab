@@ -47,6 +47,7 @@ export class Chat extends LitElement {
     this.nMessages = 0;
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
+    this.activeDescription = CookieService.getCookieByKey(CookieService.Keys.lastDescription);
     this.forwardListVisibility = false;
     this.scrolledToBottom = false;
     window.addEventListener("resize", () => {
@@ -164,70 +165,66 @@ export class Chat extends LitElement {
     }
   `;
 
-
-
   render() {
-
     return html`
       <main>
         <section>
           <il-sidebar
             @update-message="${this.updateMessages}"
             .login=${this.login}
+            @onChangeConversation=${this.setDescription}
           ></il-sidebar>
 
           <div class="chat">
-
             <il-chat-header
               userName=${this.login.username}
-              roomName=${this.activeChatNameFormatter(this.activeChatName)}
+              activeDescription=${this.activeDescription ?? ""}
             ></il-chat-header>
 
-                  	${
-						this.activeChatName !== "" ? html`	<ul
-						@scroll="${this.manageScrollButtonVisility}"
-						class="message-box"
-					>
-						${repeat(
-							this.messages,
-							(message) => message.index,
-							(message, index) =>
-								html` <il-message
-									.messages=${this.messages}
-									.message=${message}
-									.index=${index}
-                  .activeChatName=${this.activeChatName}
-								></il-message>`
-						)}
-					</ul>
-				
+            ${this.activeChatName !== ""
+              ? html` <ul
+                    @scroll="${this.manageScrollButtonVisility}"
+                    class="message-box"
+                  >
+                    ${repeat(
+                      this.messages,
+                      (message) => message.index,
+                      (message, index) =>
+                        html` <il-message
+                          .messages=${this.messages}
+                          .message=${message}
+                          .index=${index}
+                          .activeChatName=${this.activeChatName}
+                        ></il-message>`
+                    )}
+                  </ul>
 
-					<il-forward-list></il-forward-list>
+                  <il-forward-list></il-forward-list>
 
-					<il-button-icon
-						style="bottom: 81px"
-						class="scroll-button"
-						@click="${this.scrollToBottom}"
-						content="${IconNames.scrollDownArrow}"
-					></il-button-icon>
+                  <il-button-icon
+                    style="bottom: 81px"
+                    class="scroll-button"
+                    @click="${this.scrollToBottom}"
+                    content="${IconNames.scrollDownArrow}"
+                  ></il-button-icon>
 
-								<il-input-controls
-									@send-message="${this.sendMessage}"
-									@open-insertion-mode=${this.setScrollButtonY}
-								></il-input-controls>` : html`<il-empty-chat></il-empty-chat>`
-
-					}
-
-
-  
+                  <il-input-controls
+                    @send-message="${this.sendMessage}"
+                    @open-insertion-mode=${this.setScrollButtonY}
+                  ></il-input-controls>`
+              : html`<il-empty-chat></il-empty-chat>`}
           </div>
         </section>
       </main>
-    `
+    `;
   }
 
   async firstUpdated() {
     if (this.activeChatName === "") return;
+
+    if(this.activeDescription === "") {
+      this.activeDescription = this.activeChatNameFormatter(this.activeChatName);
+    }
 
     MessagesService.getMessagesById(
       this.login.username,
@@ -235,28 +232,27 @@ export class Chat extends LitElement {
       this.activeChatName
     ).then((messages) => {
       this.messages = messages.data.reverse();
-				})
+    });
+
+    for (var i = 0; i < this.messages.length; i++) {
+      this.messages[i].index = i;
+    }
+  }
+
+  async updateMessages(e) {
+    MessagesService.getMessagesById(
+      this.login.username,
+      this.login.password,
+      e.detail.roomName
+    ).then((messages) => {
+      this.messages = messages.data.reverse();
 
       for (var i = 0; i < this.messages.length; i++) {
         this.messages[i].index = i;
       }
-		    }
-	
-
-	async updateMessages(e) {
-		MessagesService.getMessagesById(
-			this.login.username,
-			this.login.password,
-			e.detail.roomName
-		).then((messages) => {
-			this.messages = messages.data.reverse();
-
-			for (var i = 0; i < this.messages.length; i++) {
-				this.messages[i].index = i;
-			}
-		});
-		this.activeChatName = e.detail.roomName;
-	}
+    });
+    this.activeChatName = e.detail.roomName;
+  }
 
   async updated() {
     await setTimeout(() => {
@@ -442,6 +438,10 @@ export class Chat extends LitElement {
 
   onError(error) {
     console.log(error);
+  }
+
+  setDescription(event) {
+    this.activeDescription = event.detail.description;
   }
 
   activeChatNameFormatter(activeChatName) {

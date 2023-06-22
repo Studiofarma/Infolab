@@ -8,7 +8,7 @@ export class ChatHeader extends LitElement {
   static get properties() {
     return {
       userName: "",
-      roomName: "",
+      activeDescription: "",
       usersList: [],
     };
   }
@@ -61,11 +61,13 @@ export class ChatHeader extends LitElement {
       <div class="chatHeader">
         <div class="contact">
           <div class="profileContainer">
-            <il-avatar
-              name=${this.roomName}
-              .id=${this.getUserId(this.roomName)}
-            ></il-avatar>
-            <h2>${this.roomName}</h2>
+            ${this.activeDescription !== ""
+              ? html` <il-avatar
+                    name=${this.activeDescription}
+                    .id=${this.getUserId(this.activeDescription)}
+                  ></il-avatar>
+                  <h2>${this.activeDescription}</h2>`
+              : html``}
           </div>
 
           <div class="profileContainer">

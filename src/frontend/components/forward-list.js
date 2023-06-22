@@ -249,6 +249,7 @@ export class ForwardList extends LitElement {
       .shadowRoot.querySelector("div > il-conversation-list");
 
     conversationList.selectChat(roomName);
+    conversationList.changeDescription()
   }
 
   updateForwardList() {
