@@ -10,11 +10,12 @@ import { IconNames } from "../enums/icon-names";
 import "./message-settings.js";
 
 export class Message extends LitElement {
-	static properties = {
-		messages: { type: Array },
+  static properties = {
+    messages: { type: Array },
 		message: { type: Object },
-		index: { type: Number },
-	};
+    index: { type: Number },
+    activeChatName: { type: String },
+  };
 
 	constructor() {
 		super();
@@ -202,11 +203,13 @@ export class Message extends LitElement {
 						? "sender"
 						: "receiver"}
 				>
-					<p class="receiver-name">
-						${this.message.sender != this.cookie.username
-							? this.message.sender
-							: ""}
-					</p>
+				${this.activeChatName.indexOf(this.cookie.username) === -1
+          ? html` <p class="receiver-name">
+              ${this.message.sender != this.cookie.username
+                ? this.message.sender
+                : ""}
+            </p>`
+          : html``}
 					<p class="message">
 						${resolveMarkdown(
 							MarkdownService.parseMarkdown(this.message.content)
