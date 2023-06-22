@@ -1,14 +1,22 @@
 import { LitElement, html, css } from "lit";
 
 import "../../../components/button-icon";
-import { IconNames } from "../../../enums/icon-names";
+import { UsersService } from "../../../services/users-service";
+import { CookieService } from "../../../services/cookie-service";
 
 export class ChatHeader extends LitElement {
   static get properties() {
     return {
       userName: "",
       roomName: "",
+      usersList: [],
     };
+  }
+
+  constructor() {
+    super();
+    this.getAllUsers();
+    this.usersList = [];
   }
 
   static styles = css`
@@ -53,17 +61,43 @@ export class ChatHeader extends LitElement {
       <div class="chatHeader">
         <div class="contact">
           <div class="profileContainer">
-            <il-avatar name=${this.roomName}></il-avatar>
+            <il-avatar
+              name=${this.roomName}
+              .id=${this.getUserId(this.roomName)}
+            ></il-avatar>
             <h2>${this.roomName}</h2>
           </div>
 
           <div class="profileContainer">
             <h2>${this.userName}</h2>
-            <il-avatar name=${this.userName}></il-avatar>
+            <il-avatar
+              name=${this.userName}
+              .id="${this.getUserId(this.userName)}"
+            ></il-avatar>
           </div>
         </div>
       </div>
     `;
+  }
+
+  getUserId(userName) {
+    let userIndex = this.usersList.findIndex((user) => user.name == userName);
+    if (userIndex < 0) return;
+    let user = this.usersList[userIndex];
+    return user.id;
+  }
+
+  async getAllUsers() {
+    let cookie = CookieService.getCookie();
+    try {
+      await UsersService.GetUsers("", cookie.username, cookie.password).then(
+        (users) => {
+          this.usersList = users["data"];
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
