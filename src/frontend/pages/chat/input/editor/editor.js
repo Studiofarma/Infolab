@@ -6,7 +6,6 @@ import "../../../../components/button-text";
 export class Editor extends LitElement {
   static properties = {
     message: { type: String },
-    rows: { type: Number },
     openPreview: { type: Boolean },
     altPressed: { type: Boolean },
     shiftPressed: { type: Boolean },
@@ -15,7 +14,6 @@ export class Editor extends LitElement {
   constructor() {
     super();
     this.lastKeyPressed = "";
-    this.rows = 1;
     this.altPressed = false;
     this.shiftPressed = false;
     this.message = "";
@@ -25,7 +23,7 @@ export class Editor extends LitElement {
     textarea {
       width: 100%;
       resize: none;
-      font-size: 20px;
+      font-size: 21px;
       outline: none;
       background: none;
       color: white;
@@ -34,6 +32,8 @@ export class Editor extends LitElement {
       border-left: 3px solid white;
       padding-left: 10px;
       line-height: 20px;
+      max-height: 100px;
+      height: 20px;
     }
     textarea::placeholder {
       color: lightgray;
@@ -57,8 +57,6 @@ export class Editor extends LitElement {
   render() {
     return html`
       <textarea
-        rows=${this.rows <= 5 ? this.rows : 5}
-				max
         @input=${this.onInput}
         @keydown=${this.onKeyDown}
         @keyup=${this.onKeyUp}
@@ -70,7 +68,6 @@ export class Editor extends LitElement {
 
   onInput(event) {
     this.message = event.target.value;
-    this.rows = event.target.value.split("\n").length;
     this.textChanged();
   }
 
@@ -102,18 +99,21 @@ export class Editor extends LitElement {
     }
 
     this.checkMarkdownKeys(event.key);
-    this.lastKeyPressed = event.key;
   }
 
   clearMessage() {
     this.message = "";
-    this.rows = 1;
     this.shadowRoot.querySelector("textarea").value = "";
   }
 
   onKeyUp(event) {
     if (event.key == "Shift") this.shiftPressed = false;
     if (event.key == "Alt") this.altPressed = false;
+
+    const textarea = this.shadowRoot.querySelector("textarea");
+    textarea.style.height = "20px";
+    const scrollHeight = textarea.scrollHeight;
+    textarea.style.height = `${scrollHeight}px`;
   }
 
   checkList(event) {
