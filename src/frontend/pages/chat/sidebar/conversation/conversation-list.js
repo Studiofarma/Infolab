@@ -13,6 +13,7 @@ class ConversationList extends LitElement {
     conversationList: { state: true },
     activeChatName: { state: "general" },
     newConversationList: [],
+    users: [],
   };
 
   constructor() {
@@ -121,8 +122,9 @@ class ConversationList extends LitElement {
   }
 
   async onLoad() {
-    await this.getAllRooms().then(async () => {
-      await this.getAllUsers().then(() => {
+    await this.getAllUsers().then(async () => {
+      await this.getAllRooms().then(() => {
+        this.setNewConversationList();
         this.update();
       });
     });
@@ -137,7 +139,22 @@ class ConversationList extends LitElement {
         cookie.password
       ).then((rooms) => {
         rooms["data"].forEach((room) => {
-          this.conversationList.push(room);
+          let userIndex = this.usersList.findIndex(
+            (user) => user.name == room.description
+          );
+          if (userIndex == -1) {
+            this.conversationList.push(room);
+          } else {
+            let conversation = {
+              roomName: room.roomName,
+              avatarLink: room.avatarlink,
+              unreadMessages: room.unreadMessages,
+              description: room.description,
+              lastMessage: room.lastMessage,
+              id: this.usersList[userIndex].id,
+            };
+            this.conversationList.push(conversation);
+          }
         });
       });
 
@@ -155,15 +172,20 @@ class ConversationList extends LitElement {
         cookie.username,
         cookie.password
       ).then((users) => {
-        users["data"].forEach((user) => {
-          if (user.name != cookie.username) {
-            this.setUsersList(user);
-          }
-        });
+        this.usersList = users["data"];
       });
     } catch (error) {
       console.error(error);
     }
+  }
+
+  setNewConversationList() {
+    let cookie = CookieService.getCookie();
+    this.usersList.forEach((user) => {
+      if (user.name != cookie.username) {
+        this.setUsersList(user);
+      }
+    });
   }
 
   setList(message) {
