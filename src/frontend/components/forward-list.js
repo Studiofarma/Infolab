@@ -8,7 +8,6 @@ export class ForwardList extends LitElement {
   static get properties() {
     return {
       forwardList: [],
-      forwardListVisibility: false,
     };
   }
 
@@ -16,32 +15,34 @@ export class ForwardList extends LitElement {
     super();
     this.forwardList = [];
     this.messageToForward = "";
-    this.forwardListVisibility = false;
   }
 
   static styles = css`
-    .forward-list-backdrop {
-      position: absolute;
-      top: 0;
-      width: 100%;
-      height: 100%;
-
-      background: #00000037;
-      z-index: -20;
-    }
-
-    .forward-list-container {
-      background: white;
+    dialog {
+      width: 400px;
+      z-index: 5000;
+      border: none;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
       border-radius: 6px;
       padding: 8px;
+      transition: animation 0.5s;
+    }
 
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 300px;
-      z-index: 1000;
+    dialog::backdrop {
+      background-color: #00000037;
+    }
+
+    dialog[open] {
+      animation: opening 0.5s ease-out;
+    }
+
+    @keyframes opening {
+      from {
+        transform: scale(0%);
+      }
+      to {
+        transform: scale(100%);
+      }
     }
 
     .forward-list-header {
@@ -66,6 +67,11 @@ export class ForwardList extends LitElement {
       margin: 5px 0;
       padding: 8px;
       width: 100%;
+
+      border: none;
+      outline: none;
+      border-radius: 6px;
+      background-color: rgb(242 242 242);
     }
 
     .forward-list-scrollable {
@@ -121,39 +127,26 @@ export class ForwardList extends LitElement {
 
   render() {
     return html`
-      <div
-        class="forward-list-backdrop"
-        style="${this.forwardListVisibility ? "z-index: 500" : ""}"
-        @click="${() => {
-          this.setForwardListVisibility(false);
-        }}"
-      >
-        <div
-          class="forward-list-container"
-          @click="${(e) => {
-            e.stopPropagation();
-          }}"
-          style="${this.forwardListVisibility ? "" : "display: none;"}"
-        >
-          <div class="forward-list-header">
-            <p>Inoltra messaggio</p>
-            <div class="forward-list-search">
-              <il-input-ricerca
+			<dialog @click=${(e) => this.closeForwardList(e, "")}>
+				<div class="forward-list-header">
+        <p>Inoltra messaggio</p>
+        <div class="forward-list-search">
+				<il-input-ricerca
                 placeholder="Cerca"
                 id="fwdSearch"
                 @search=${this.fwdSearch}
               ></il-input-ricerca>
-            </div>
-          </div>
-          <div class="forward-list-scrollable">
-            <div class="forward-list-section">
-              <div class="forward-list-section-title">Chat</div>
-              <div class="forward-list-body">${this.renderForwardList()}</div>
-            </div>
-          </div>
         </div>
       </div>
-    `;
+      <div class="forward-list-scrollable">
+        <div class="forward-list-section">
+          <div class="forward-list-section-title">Chat</div>
+          <div class="forward-list-body">${this.renderForwardList()}</div>
+        </div>
+      </div>
+    </div>
+			</dialog>
+		`;
   }
 
   renderForwardList() {
@@ -164,7 +157,6 @@ export class ForwardList extends LitElement {
       return html`
         <div
           @click=${() => {
-            this.setForwardListVisibility(false);
             this.forwardMessage(roomName);
             this.clearSearchInput();
           }}
@@ -186,11 +178,45 @@ export class ForwardList extends LitElement {
   forwardMessageHandler(e) {
     this.messageToForward = e.message;
     this.updateForwardList();
-    this.setForwardListVisibility(true);
+
+    // opening the modal
+    let dialog = this.renderRoot.querySelector("dialog");
+    dialog.showModal();
   }
 
-  setForwardListVisibility(forwardListVisibility) {
-    this.forwardListVisibility = forwardListVisibility;
+  checkIfClickIsOuter(e) {
+    let dialog = this.renderRoot.querySelector("dialog");
+
+    return (
+      e.offsetX < 0 ||
+      e.offsetX > dialog.offsetWidth ||
+      e.offsetY < 0 ||
+      e.offsetY > dialog.offsetHeight
+    );
+  }
+
+  closeForwardList(e, roomName) {
+    let dialog = this.renderRoot.querySelector("dialog");
+
+    //controllo se viene cliccato un elemento interno al dialog; in quel caso fermo la chiusura
+
+    if (
+      dialog.contains(e.target) && //controlla se clicchi un elemento dentro dialog
+      e.target.closest(".forward-conversation") === null && // controlla che l'elemento cliccato sia diverso dal componente conversation
+			!this.checkIfClickIsOuter(e) // controlla se si sta cliccando nel backdrop
+    ) {
+      e.stopPropagation();
+      return;
+    }
+
+    dialog.close();
+
+    if (roomName === "") {
+      e.stopPropagation();
+      return;
+    }
+
+    this.forwardMessage(roomName);
   }
 
   forwardMessage(roomName) {
@@ -230,7 +256,7 @@ export class ForwardList extends LitElement {
       .querySelector("body > il-app")
       .shadowRoot.querySelector("il-chat")
       .shadowRoot.querySelector("main > section > il-sidebar")
-      .shadowRoot.querySelector("div > il-conversation-list");
+      .shadowRoot.querySelector("il-conversation-list");
     this.tmpForwardList = [...convList.conversationList];
     this.forwardList = [...convList.conversationList];
   }
