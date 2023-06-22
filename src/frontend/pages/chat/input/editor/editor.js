@@ -1,17 +1,15 @@
 import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
 import { MarkdownService } from "../../../../services/markdown-service";
-import { mdiFormatListText } from "@mdi/js";
 
-import "../../../../components/formatting-button";
 import "../../../../components/button-text";
 import "./editor-formatting-buttons";
 
 export class Editor extends LitElement {
 	static properties = {
-		message: "",
-		openPreview: mdiFormatListText,
-		lastKeyPressed: "",
+		message: {type: String},
+		openPreview: {type: Boolean},
+		lastKeyPressed: {type: String},
 	};
 
 	constructor() {
@@ -159,6 +157,7 @@ export class Editor extends LitElement {
 		.button-text {
 			transform: translateY(1px);
 		}
+
 	`;
 
 	render() {
@@ -166,26 +165,22 @@ export class Editor extends LitElement {
 			<!-- diventerà un componente -->
 			<div class="formatting-bar">
 				<div class="buttons-container">
+
 					<il-button-text
             @click=${() => this.setPreviewer(false)}
             class="button-text"
 						text="Scrivi"
-            styleProp=${
-							this.openPreview
-								? "border: 1px solid transparent; background:none; transform: translateY(1px);"
-								: ""
-						}
+						?isactive=${this.openPreview}
 					></il-button-text>
+
 					<il-button-text
             @click=${() => this.setPreviewer(true)}
             class="button-text"
 						text="Anteprima"
-            styleProp=${
-							this.openPreview
-								? ""
-								: "border: 1px solid transparent; background: none; transform: translateY(1px);"
-						}
+						?isactive=${!this.openPreview}
 					></il-button-text>
+
+
        </div>
 						<il-editor-formatting-buttons></il-editor-formatting-buttons>
 						
@@ -282,5 +277,5 @@ export class Editor extends LitElement {
 			MarkdownService.getTextarea().focus();
 		}
 	}
-}
+}	
 customElements.define("il-editor", Editor);

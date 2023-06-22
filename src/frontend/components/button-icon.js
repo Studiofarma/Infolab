@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, unsafeCSS } from "lit";
 
 import "./icon";
 
@@ -6,7 +6,7 @@ export class ButtonIcon extends LitElement {
 	static get properties() {
 		return {
 			content: "",
-			styleProp: "",
+			color: "",
 		};
 	}
 
@@ -36,11 +36,8 @@ export class ButtonIcon extends LitElement {
 
 	render() {
 		return html`
-			<div class="icon-button">
-				<il-icon
-					name="${this.content}"
-					style="${this.styleProp ? this.styleProp : ""}"
-				></il-icon>
+			<div class="icon-button" .style="color: ${unsafeCSS(this.color)}">
+				<il-icon name="${this.content}"></il-icon>
 			</div>
 		`;
 	}
