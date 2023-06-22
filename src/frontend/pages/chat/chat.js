@@ -163,7 +163,11 @@ export class Chat extends LitElement {
       max-width: 100%;
     }
   `;
+
+
+
   render() {
+
     return html`
       <main>
         <section>
@@ -171,13 +175,15 @@ export class Chat extends LitElement {
             @update-message="${this.updateMessages}"
             .login=${this.login}
           ></il-sidebar>
+
           <div class="chat">
+
             <il-chat-header
               userName=${this.login.username}
               roomName=${this.activeChatNameFormatter(this.activeChatName)}
             ></il-chat-header>
 
-					${
+                  	${
 						this.activeChatName !== "" ? html`	<ul
 						@scroll="${this.manageScrollButtonVisility}"
 						class="message-box"
@@ -190,9 +196,11 @@ export class Chat extends LitElement {
 									.messages=${this.messages}
 									.message=${message}
 									.index=${index}
+                  .activeChatName=${this.activeChatName}
 								></il-message>`
 						)}
 					</ul>
+				
 
 					<il-forward-list></il-forward-list>
 
@@ -207,15 +215,15 @@ export class Chat extends LitElement {
 									@send-message="${this.sendMessage}"
 									@open-insertion-mode=${this.setScrollButtonY}
 								></il-input-controls>` : html`<il-empty-chat></il-empty-chat>`
+
 					}
 
-					
-  
 
+  
           </div>
         </section>
       </main>
-    `;
+    `
   }
 
   async firstUpdated() {
