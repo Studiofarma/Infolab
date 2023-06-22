@@ -319,14 +319,6 @@ class ConversationList extends LitElement {
     );
   }
 
-  onMessageInNewChat(conversation, message) {
-    if (this.updateListOnConversationClick(conversation)) {
-      this.scrollToTop();
-    }
-    this.setList(message);
-    this.update();
-  }
-
   updateListOnConversationClick(conversation) {
     const roomFormatted = new ConversationDto(conversation);
 
