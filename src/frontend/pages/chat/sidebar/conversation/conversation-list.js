@@ -7,14 +7,24 @@ import { UsersService } from "../../../../services/users-service";
 import "../../../../components/avatar.js";
 import "./conversation.js";
 import { ConversationDto } from "../../../../models/conversation-dto.js";
-import { MessagesService } from "../../../../services/messages-service";
 
 class ConversationList extends LitElement {
   static properties = {
     conversationList: { state: true },
     activeChatName: { state: "general" },
-    conversationListSearched: [],
+    newConversationList: [],
   };
+
+  constructor() {
+    super();
+    this.query = "";
+    this.conversationList = [];
+    this.newConversationList = [];
+    this.usersList = [];
+    this.onLoad();
+    this.activeChatName =
+      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
+  }
 
   static styles = css`
     * {
@@ -79,20 +89,6 @@ class ConversationList extends LitElement {
     }
   `;
 
-  constructor() {
-    super();
-    this.query = "";
-    this.conversationList = [];
-    this.conversationListSearched = [];
-    this.usersList = [];
-    this.tmpConversationListSearched = [];
-    this.tmpConversationList = [];
-    this.onLoad();
-
-    this.activeChatName =
-      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
-  }
-
   render() {
     return html`
       <div class="conversation-list-scrollable">
@@ -102,12 +98,10 @@ class ConversationList extends LitElement {
         </div>
         <div>
           <p class="separator">
-            ${this.conversationListSearched.length > 0
-              ? "Nuove conversazioni"
-              : ""}
+            ${this.newConversationList.length > 0 ? "Nuove conversazioni" : ""}
           </p>
           <div class="conversation-list">
-            ${this.renderConversationSearched()}
+            ${this.renderNewConversationList()}
           </div>
         </div>
       </div>
@@ -211,7 +205,7 @@ class ConversationList extends LitElement {
 
     if (!isPresent) {
       const roomFormatted = this.convertUserToRoom(roomName);
-      this.conversationListSearched.push(roomFormatted);
+      this.newConversationList.push(roomFormatted);
     }
   }
 
@@ -235,7 +229,7 @@ class ConversationList extends LitElement {
   }
 
   renderConversationList() {
-    let conversationList = this.searchConversation([...this.conversationList]);
+    let conversationList = this.searchConversation(this.conversationList);
 
     return conversationList.map((pharmacy, index) => {
       let conversation = new ConversationDto(pharmacy);
@@ -265,28 +259,22 @@ class ConversationList extends LitElement {
           (obj) => obj.roomName == conversation.roomName
         );
         let delChat = this.conversationList.splice(conversationIndex, 1)[0];
-        this.conversationListSearched.unshift(delChat);
+        this.newConversationList.unshift(delChat);
         return null;
       }
     });
   }
 
   searchConversation(list) {
-    if (this.query) {
-      list = list.filter((conversation) =>
-        conversation.roomName.includes(this.query)
-      );
-    }
-
-    return list;
+    return list.filter((conversation) =>
+      conversation.roomName.includes(this.query)
+    );
   }
 
-  renderConversationSearched() {
-    let conversationListSearched = this.searchConversation([
-      ...this.conversationListSearched,
-    ]);
+  renderNewConversationList() {
+    let newConversationList = this.searchConversation(this.newConversationList);
 
-    return conversationListSearched.map((pharmacy) => {
+    return newConversationList.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
       return html`<il-conversation
         class=${"conversation new-conversation " +
@@ -302,7 +290,6 @@ class ConversationList extends LitElement {
           );
 
           this.cleanSearchInput();
-          this.update();
         }}
       ></il-conversation>`;
     });
@@ -319,7 +306,7 @@ class ConversationList extends LitElement {
   updateListOnConversationClick(conversation) {
     const roomFormatted = new ConversationDto(conversation);
 
-    let conversationIndex = this.conversationListSearched.findIndex(
+    let conversationIndex = this.newConversationList.findIndex(
       (conversation) => conversation.roomName == roomFormatted.roomName
     );
 
@@ -327,7 +314,7 @@ class ConversationList extends LitElement {
 
     this.moveElementToList(
       this.conversationList,
-      this.conversationListSearched,
+      this.newConversationList,
       conversationIndex
     );
     return true;
@@ -367,9 +354,9 @@ class ConversationList extends LitElement {
       .shadowRoot.querySelector("il-chat")
       .shadowRoot.querySelector("main > section > il-sidebar")
       .shadowRoot.querySelector("div > il-search")
-      ?.shadowRoot.querySelector("div > div > input");
-    if (searchInput) searchInput.value = "";
-    this.searchChat(searchInput?.value);
+      .shadowRoot.querySelector("div > div > il-input-ricerca");
+    searchInput.clear();
+    this.searchChat(searchInput.value);
   }
 
   selectChat(selectedChatName) {
