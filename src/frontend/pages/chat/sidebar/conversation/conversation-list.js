@@ -204,12 +204,12 @@ class ConversationList extends LitElement {
     );
 
     if (!isPresent) {
-      const roomFormatted = this.convertUserToRoom(roomName);
+      const roomFormatted = this.convertUserToRoom(roomName, user);
       this.newConversationList.push(roomFormatted);
     }
   }
 
-  convertUserToRoom(roomName) {
+  convertUserToRoom(roomName, user) {
     return {
       roomName: roomName,
       avatarLink: null,
@@ -219,6 +219,7 @@ class ConversationList extends LitElement {
         sender: null,
         timestamp: null,
       },
+      id: user.id,
     };
   }
 
