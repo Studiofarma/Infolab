@@ -385,7 +385,7 @@ class ConversationList extends LitElement {
     let cookie = CookieService.getCookie();
 
     for (let conversation of this.conversationList) {
-      if (this.chatNameFormatter(conversation.roomName) == selectedChatName) {
+      if (this.chatNameFormatter(conversation.roomName) === selectedChatName) {
         this.activeChatName = conversation.roomName;
         this.updateMessages(this.activeChatName);
         return;
@@ -393,7 +393,7 @@ class ConversationList extends LitElement {
     }
 
     selectedChatName = this.chatNameRecomposer(
-      selectedChatName,
+      this.chatNameFormatter(selectedChatName),
       cookie.username
     );
 
