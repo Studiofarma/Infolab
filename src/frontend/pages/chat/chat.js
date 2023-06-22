@@ -205,6 +205,7 @@ export class Chat extends LitElement {
                           .messages=${this.messages}
                           .message=${message}
                           .index=${index}
+                          .activeChatName=${this.activeChatName}
                         ></il-message>`
                     )}
                   </ul>

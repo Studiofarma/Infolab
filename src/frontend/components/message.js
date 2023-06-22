@@ -12,6 +12,7 @@ export class Message extends LitElement {
     messages: { type: Array },
     message: { type: String },
     index: { type: Number },
+    activeChatName: { type: String },
   };
 
   constructor() {
@@ -219,11 +220,14 @@ export class Message extends LitElement {
           ? "sender"
           : "receiver"}
       >
-        <p class="receiver-name">
-          ${this.message.sender != this.cookie.username
-            ? this.message.sender
-            : ""}
-        </p>
+        ${this.activeChatName.indexOf(this.cookie.username) === -1
+          ? html` <p class="receiver-name">
+              ${this.message.sender != this.cookie.username
+                ? this.message.sender
+                : ""}
+            </p>`
+          : html``}
+
         <p class="message">
           ${resolveMarkdown(
             MarkdownService.parseMarkdown(this.message.content)
