@@ -397,18 +397,6 @@ class ConversationList extends LitElement {
       cookie.username
     );
 
-    this.conversationList.push({
-      avatarLink: null,
-      roomName: selectedChatName,
-      unreadMessages: 0,
-      id: 0,
-      lastMessage: {
-        content: null,
-        sender: null,
-        timestamp: null,
-      },
-    });
-
     this.activeChatName = selectedChatName;
     this.updateMessages(this.activeChatName);
 

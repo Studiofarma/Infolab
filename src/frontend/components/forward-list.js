@@ -104,8 +104,7 @@ export class ForwardList extends LitElement {
     //controllo se viene cliccato un elemento interno al dialog; in quel caso fermo la chiusura
 
     if (
-      dialog.contains(e.target) && //controlla se clicchi un elemento dentro dialog
-      e.target.closest("il-conversation-list") === null && // controlla che l'elemento cliccato sia diverso dal componente conversation
+      e.detail.roomName == null && // controlla che l'elemento cliccato sia diverso dal componente conversation
       !this.checkIfClickIsOuter(e) // controlla se si sta cliccando nel backdrop
     ) {
       e.stopPropagation();
