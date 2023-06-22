@@ -1,17 +1,19 @@
 import { LitElement, html, css } from "lit";
 
 export class ButtonText extends LitElement {
-	static properties = {
-		text: "",
-		styleProp: "",
-	};
+ 
+	static get properties() {
+    return {
+			text: {type: String},
+			isActive:  {type: Boolean}
+    };
+  }
 
 	static styles = css`
 		button {
 			padding: 0px 24px;
 			font-family: inherit;
 			border-radius: 10px 10px 0 0;
-
 			background: rgb(8, 60, 114);
 			text-align: center;
 			border: 1px solid #616870;
@@ -24,10 +26,16 @@ export class ButtonText extends LitElement {
 		button:hover {
 			color: white;
 		}
+
+		.active {
+			border: 1px solid transparent;
+			background: none;
+			transform: translateY(1px);
+		}
 	`;
 
 	render() {
-		return html` <button style="${this.styleProp}">${this.text}</button> `;
+		return html` <button class="${this.isActive ? "active" : ""}">${this.text}</button> `;
 	}
 }
 

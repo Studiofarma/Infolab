@@ -1,4 +1,6 @@
 import { LitElement, html, css } from "lit";
+import { repeat } from "lit/directives/repeat.js";
+
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
@@ -71,11 +73,6 @@ export class Chat extends LitElement {
       width: 100%;
       min-height: 100%;
       background: rgb(247, 247, 247);
-    }
-
-    input[type="text"] {
-      border: none;
-      outline: none;
     }
 
     section {
@@ -166,7 +163,11 @@ export class Chat extends LitElement {
       max-width: 100%;
     }
   `;
+
+
+
   render() {
+
     return html`
       <main>
         <section>
@@ -174,58 +175,54 @@ export class Chat extends LitElement {
             @update-message="${this.updateMessages}"
             .login=${this.login}
           ></il-sidebar>
+
           <div class="chat">
+
             <il-chat-header
               userName=${this.login.username}
               roomName=${this.activeChatNameFormatter(this.activeChatName)}
             ></il-chat-header>
 
-            ${this.activeChatName !== ""
-              ? html`
-                  <ul
-                    @scroll="${(e) => {
-                      if (this.checkScrolledToBottom()) {
-                        this.renderRoot.querySelector(
-                          ".scroll-button"
-                        ).style.opacity = "0";
-                      } else if (
-                        this.renderRoot.querySelector(".scroll-button").style
-                          .opacity == 0
-                      ) {
-                        this.renderRoot.querySelector(
-                          ".scroll-button"
-                        ).style.opacity = "1";
-                      }
-                    }}"
-                    class="message-box"
-                  >
-                    ${this.messages.map(
-                      (message, index) =>
-                        html` <il-message
-                          .messages=${this.messages}
-                          .message=${message}
-                          .index=${index}
-                          .activeChatName=${this.activeChatName}
-                        ></il-message>`
-                    )}
-                  </ul>
-                  <il-forward-list></il-forward-list>
+                  	${
+						this.activeChatName !== "" ? html`	<ul
+						@scroll="${this.manageScrollButtonVisility}"
+						class="message-box"
+					>
+						${repeat(
+							this.messages,
+							(message) => message.index,
+							(message, index) =>
+								html` <il-message
+									.messages=${this.messages}
+									.message=${message}
+									.index=${index}
+								></il-message>`
+						)}
+					</ul>
+				
 
-                  <il-button-icon
-                    class="scroll-button"
-                    @click="${this.scrollToBottom}"
-                    content="${IconNames.scrollDownArrow}"
-                  ></il-button-icon>
+					<il-forward-list></il-forward-list>
 
-                  <il-input-controls
-                    @send-message="${this.sendMessage}"
-                  ></il-input-controls>
-                `
-              : html`<il-empty-chat></il-empty-chat>`}
+					<il-button-icon
+						style="bottom: 81px"
+						class="scroll-button"
+						@click="${this.scrollToBottom}"
+						content="${IconNames.scrollDownArrow}"
+					></il-button-icon>
+
+								<il-input-controls
+									@send-message="${this.sendMessage}"
+									@open-insertion-mode=${this.setScrollButtonY}
+								></il-input-controls>` : html`<il-empty-chat></il-empty-chat>`
+
+					}
+
+
+  
           </div>
         </section>
       </main>
-    `;
+    `
   }
 
   async firstUpdated() {
@@ -237,24 +234,28 @@ export class Chat extends LitElement {
       this.activeChatName
     ).then((messages) => {
       this.messages = messages.data.reverse();
+				})
 
       for (var i = 0; i < this.messages.length; i++) {
         this.messages[i].index = i;
       }
-    });
-  }
+		    }
+	
 
-  async updateMessages(e) {
-    MessagesService.getMessagesById(
-      this.login.username,
-      this.login.password,
-      e.detail.roomName
-    ).then((messages) => {
-      this.messages = messages.data.reverse();
-    });
+	async updateMessages(e) {
+		MessagesService.getMessagesById(
+			this.login.username,
+			this.login.password,
+			e.detail.roomName
+		).then((messages) => {
+			this.messages = messages.data.reverse();
 
-    this.activeChatName = e.detail.roomName;
-  }
+			for (var i = 0; i < this.messages.length; i++) {
+				this.messages[i].index = i;
+			}
+		});
+		this.activeChatName = e.detail.roomName;
+	}
 
   async updated() {
     await setTimeout(() => {
@@ -277,6 +278,14 @@ export class Chat extends LitElement {
       () => this.onConnect(),
       () => this.onError()
     );
+  }
+
+  manageScrollButtonVisility() {
+    if (this.checkScrolledToBottom()) {
+      this.renderRoot.querySelector(".scroll-button").style.opacity = "0";
+      return;
+    }
+    this.renderRoot.querySelector(".scroll-button").style.opacity = "1";
   }
 
   checkScrolledToBottom() {
