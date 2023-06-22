@@ -78,15 +78,12 @@ class ConversationList extends LitElement {
     }
 
     .separator {
-      position: sticky;
-      top: 0;
       padding: 5px 0px 5px 10px;
       color: #d6d6d6;
-      background: #083c72;
     }
 
     .conversation-list-scrollable {
-      height: calc(100vh - 135px);
+      height: calc(100% - 135px);
       overflow: auto;
     }
   `;

@@ -69,6 +69,10 @@ class Conversation extends LitElement {
     .unread {
       color: rgb(58 179 255);
     }
+
+    .chat-name {
+      color: white;
+    }
   `;
 
   render() {

@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 import { ConversationDto } from "../models/conversation-dto.js";
 import { CookieService } from "../services/cookie-service";
 
-import "./input-ricerca";
+import "../pages/chat/sidebar/conversation/conversation-list.js";
 
 export class ForwardList extends LitElement {
   static get properties() {
@@ -18,6 +18,10 @@ export class ForwardList extends LitElement {
   }
 
   static styles = css`
+    * {
+      background-color: rgb(8, 60, 114);
+    }
+
     dialog {
       width: 400px;
       z-index: 5000;
@@ -127,26 +131,26 @@ export class ForwardList extends LitElement {
 
   render() {
     return html`
-			<dialog @click=${(e) => this.closeForwardList(e, "")}>
-				<div class="forward-list-header">
-        <p>Inoltra messaggio</p>
-        <div class="forward-list-search">
-				<il-input-ricerca
-                placeholder="Cerca"
-                id="fwdSearch"
-                @search=${this.fwdSearch}
-              ></il-input-ricerca>
-        </div>
-      </div>
-      <div class="forward-list-scrollable">
-        <div class="forward-list-section">
-          <div class="forward-list-section-title">Chat</div>
-          <div class="forward-list-body">${this.renderForwardList()}</div>
-        </div>
-      </div>
-    </div>
-			</dialog>
-		`;
+      <dialog @click=${(e) => this.closeForwardList(e, "")}>
+        <il-conversation-list></il-conversation-list>
+        <!--div class="forward-list-header">
+          <p>Inoltra messaggio</p>
+          <div class="forward-list-search">
+            <il-input-ricerca
+              placeholder="Cerca"
+              id="fwdSearch"
+              @search=${this.fwdSearch}
+            ></il-input-ricerca>
+          </div>
+          <div class="forward-list-scrollable">
+            <div class="forward-list-section">
+              <div class="forward-list-section-title">Chat</div>
+              <div class="forward-list-body">${this.renderForwardList()}</div>
+            </div>
+          </div>
+        </div-->
+      </dialog>
+    `;
   }
 
   renderForwardList() {
@@ -203,7 +207,7 @@ export class ForwardList extends LitElement {
     if (
       dialog.contains(e.target) && //controlla se clicchi un elemento dentro dialog
       e.target.closest(".forward-conversation") === null && // controlla che l'elemento cliccato sia diverso dal componente conversation
-			!this.checkIfClickIsOuter(e) // controlla se si sta cliccando nel backdrop
+      !this.checkIfClickIsOuter(e) // controlla se si sta cliccando nel backdrop
     ) {
       e.stopPropagation();
       return;
