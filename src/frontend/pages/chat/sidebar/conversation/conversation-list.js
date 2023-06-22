@@ -13,6 +13,7 @@ class ConversationList extends LitElement {
     conversationList: { state: true },
     activeChatName: { state: "general" },
     newConversationList: [],
+    users: [],
   };
 
   constructor() {
@@ -121,24 +122,37 @@ class ConversationList extends LitElement {
   }
 
   async onLoad() {
-    await this.getAllRooms().then(async () => {
-      await this.getAllUsers().then(() => {
-        this.update();
-      });
-    });
+    await this.getAllUsers();
+    await this.getAllRooms();
+    this.setNewConversationList();
+    this.update();
   }
 
   async getAllRooms() {
     let cookie = CookieService.getCookie();
 
     try {
-      await OpenChatsService.getOpenChats(
+      let rooms = await OpenChatsService.getOpenChats(
         cookie.username,
         cookie.password
-      ).then((rooms) => {
-        rooms["data"].forEach((room) => {
+      );
+      rooms["data"].forEach((room) => {
+        let userIndex = this.usersList.findIndex(
+          (user) => user.name == room.description
+        );
+        if (userIndex == -1) {
           this.conversationList.push(room);
-        });
+        } else {
+          let conversation = {
+            roomName: room.roomName,
+            avatarLink: room.avatarlink,
+            unreadMessages: room.unreadMessages,
+            description: room.description,
+            lastMessage: room.lastMessage,
+            id: this.usersList[userIndex].id,
+          };
+          this.conversationList.push(conversation);
+        }
       });
 
       this.conversationList.sort(this.compareTimestamp);
@@ -150,20 +164,24 @@ class ConversationList extends LitElement {
   async getAllUsers() {
     let cookie = CookieService.getCookie();
     try {
-      await UsersService.GetUsers(
+      let users = await UsersService.GetUsers(
         this.query,
         cookie.username,
         cookie.password
-      ).then((users) => {
-        users["data"].forEach((user) => {
-          if (user.name != cookie.username) {
-            this.setUsersList(user);
-          }
-        });
-      });
+      );
+      this.usersList = users["data"];
     } catch (error) {
       console.error(error);
     }
+  }
+
+  setNewConversationList() {
+    let cookie = CookieService.getCookie();
+    this.usersList.forEach((user) => {
+      if (user.name != cookie.username) {
+        this.setUsersList(user);
+      }
+    });
   }
 
   setList(message) {
@@ -204,12 +222,12 @@ class ConversationList extends LitElement {
     );
 
     if (!isPresent) {
-      const roomFormatted = this.convertUserToRoom(roomName);
+      const roomFormatted = this.convertUserToRoom(roomName, user);
       this.newConversationList.push(roomFormatted);
     }
   }
 
-  convertUserToRoom(roomName) {
+  convertUserToRoom(roomName, user) {
     return {
       roomName: roomName,
       avatarLink: null,
@@ -219,6 +237,7 @@ class ConversationList extends LitElement {
         sender: null,
         timestamp: null,
       },
+      id: user.id,
     };
   }
 
