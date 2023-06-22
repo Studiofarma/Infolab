@@ -170,7 +170,7 @@ export class Editor extends LitElement {
 					<il-button-text
             @click=${() => this.setPreviewer(false)}
             class="button-text"
-						text="Write"
+						text="Scrivi"
             styleProp=${
               this.openPreview
                 ? "border: 1px solid transparent; background:none; transform: translateY(1px);"
@@ -180,7 +180,7 @@ export class Editor extends LitElement {
 					<il-button-text
             @click=${() => this.setPreviewer(true)}
             class="button-text"
-						text="Preview"
+						text="Anteprima"
             styleProp=${
               this.openPreview
                 ? ""
