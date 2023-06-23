@@ -145,8 +145,10 @@ class ConversationList extends LitElement {
       this.updateMessages(room);
       this.cleanSearchInput();
       this.activeChatName = room;
+      this.selectedRoom = "";
       this.indexOnConversationList = -1;
       CookieService.setCookieByKey(CookieService.Keys.lastChat, room);
+      this.chatClicked(room);
     }
   }
 
@@ -309,7 +311,7 @@ class ConversationList extends LitElement {
           @click=${() => {
             this.activeChatName = conversation.roomName;
             this.updateMessages(conversation.roomName);
-
+            this.selectedRoom = "";
             CookieService.setCookieByKey(
               CookieService.Keys.lastChat,
               conversation.roomName
@@ -353,7 +355,7 @@ class ConversationList extends LitElement {
         @click=${() => {
           this.activeChatName = conversation.roomName;
           this.updateMessages(conversation.roomName);
-
+          this.selectedRoom = "";
           CookieService.setCookieByKey(
             CookieService.Keys.lastChat,
             conversation.roomName
