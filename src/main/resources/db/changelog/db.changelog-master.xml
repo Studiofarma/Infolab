@@ -90,4 +90,40 @@
             <column name="description" type="varchar(500)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="query_optimization" author="Lorenzo Rinaldi">
+        <createIndex schemaName="infolab" tableName="chatmessages" indexName="sent_at_index" >
+            <column name="sent_at" descending="true"/>
+        </createIndex>
+
+        <createIndex schemaName="infolab" tableName="chatmessages" indexName="sender_id_index" >
+            <column name="sender_id" />
+        </createIndex>
+
+        <createIndex schemaName="infolab" tableName="chatmessages" indexName="recipient_room_id_index" >
+            <column name="recipient_room_id" />
+        </createIndex>
+
+
+        <addColumn schemaName="infolab" tableName="rooms_subscriptions">
+            <column name="username" type="varchar(50)">
+                <constraints foreignKeyName="fk_subscriptions_username" references="infolab.users(username)"/>
+            </column>
+        </addColumn>
+
+        <createIndex schemaName="infolab" tableName="rooms_subscriptions" indexName="subscriptions_username_index">
+            <column name="username"/>
+        </createIndex>
+
+
+        <addColumn schemaName="infolab" tableName="download_dates">
+            <column name="username" type="varchar(50)">
+                <constraints foreignKeyName="fk_download_dates_username" references="infolab.users(username)"/>
+            </column>
+        </addColumn>
+
+        <createIndex schemaName="infolab" tableName="download_dates" indexName="download_dates_username_index">
+            <column name="username"/>
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
