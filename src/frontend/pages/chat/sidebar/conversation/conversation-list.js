@@ -4,9 +4,10 @@ import { CookieService } from "../../../../services/cookie-service";
 import { OpenChatsService } from "../../../../services/open-chats-service";
 import { UsersService } from "../../../../services/users-service";
 
-import "../../../../components/avatar.js";
-import "./conversation.js";
-import { ConversationDto } from "../../../../models/conversation-dto.js";
+import "../../../../components/avatar";
+import "./conversation";
+import "../search-chats";
+import { ConversationDto } from "../../../../models/conversation-dto";
 
 class ConversationList extends LitElement {
   static properties = {
@@ -77,21 +78,19 @@ class ConversationList extends LitElement {
     }
 
     .separator {
-      position: sticky;
-      top: 0;
       padding: 5px 0px 5px 10px;
       color: #d6d6d6;
-      background: #083c72;
     }
 
     .conversation-list-scrollable {
-      height: calc(100vh - 135px);
+      height: calc(100% - 170px);
       overflow: auto;
     }
   `;
 
   render() {
     return html`
+      <il-search @search-chat=${this.searchChat}></il-search>
       <div class="conversation-list-scrollable">
         <div>
           <p class="separator">Conversazioni</p>
@@ -109,8 +108,8 @@ class ConversationList extends LitElement {
     `;
   }
 
-  searchChat(query) {
-    this.query = query;
+  searchChat(event) {
+    this.query = event.detail.query;
     this.update();
   }
 
@@ -268,8 +267,8 @@ class ConversationList extends LitElement {
               CookieService.Keys.lastChat,
               conversation.roomName
             );
-
-            this.setList(null);
+            this.chatClicked(conversation.roomName);
+            this.update();
             this.cleanSearchInput();
           }}
         ></il-conversation>`;
@@ -307,19 +306,17 @@ class ConversationList extends LitElement {
             CookieService.Keys.lastChat,
             conversation.roomName
           );
-
+          this.chatClicked(conversation.roomName);
           this.cleanSearchInput();
         }}
       ></il-conversation>`;
     });
   }
 
-  onMessageInNewChat(conversation, message) {
-    if (this.updateListOnConversationClick(conversation)) {
-      this.scrollToTop();
-    }
-    this.setList(message);
-    this.update();
+  chatClicked(chatName) {
+    this.dispatchEvent(
+      new CustomEvent("chat-clicked", { detail: { roomName: chatName } })
+    );
   }
 
   updateListOnConversationClick(conversation) {
@@ -368,42 +365,29 @@ class ConversationList extends LitElement {
   }
 
   cleanSearchInput() {
-    let searchInput = document
-      .querySelector("body > il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("main > section > il-sidebar")
-      .shadowRoot.querySelector("div > il-search")
-      .shadowRoot.querySelector("div > div > il-input-ricerca");
-    searchInput.clear();
-    this.searchChat(searchInput.value);
+    let searchInput = this.shadowRoot
+      .querySelector("il-search")
+      ?.shadowRoot.querySelector("il-input-ricerca");
+    if (searchInput) searchInput.clear();
+    this.query = searchInput.value;
+    this.update();
   }
 
   selectChat(selectedChatName) {
     let cookie = CookieService.getCookie();
 
     for (let conversation of this.conversationList) {
-      if (this.chatNameFormatter(conversation.roomName) == selectedChatName) {
+      if (this.chatNameFormatter(conversation.roomName) === selectedChatName) {
         this.activeChatName = conversation.roomName;
         this.updateMessages(this.activeChatName);
         return;
       }
     }
 
-    selectedChatName = this.chatNameFormatter(
-      selectedChatName,
+    selectedChatName = this.chatNameRecomposer(
+      this.chatNameFormatter(selectedChatName),
       cookie.username
     );
-
-    this.conversationList.push({
-      avatarLink: null,
-      roomName: selectedChatName,
-      unreadMessages: 0,
-      lastMessage: {
-        content: null,
-        sender: null,
-        timestamp: null,
-      },
-    });
 
     this.activeChatName = selectedChatName;
     this.updateMessages(this.activeChatName);
