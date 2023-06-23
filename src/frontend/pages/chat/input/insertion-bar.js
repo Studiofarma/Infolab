@@ -4,6 +4,7 @@ import "../../../components/button-icon";
 import "./editor/editor-formatting-buttons";
 
 import { IconNames } from "../../../enums/icon-names";
+import { MarkdownService } from "../../../services/markdown-service";
 
 export class InsertionBar extends LitElement {
   static properties = {
@@ -43,12 +44,18 @@ export class InsertionBar extends LitElement {
 
   render() {
     return html`
-      <div @click=${this.select_formatting_option}>
+      <div>
         <div class="formatting-container">
-          <il-button-icon content=${IconNames.emoticon}></il-button-icon>
+          <il-button-icon
+            content=${IconNames.emoticon}
+            @click=${this.emojiPickerClick}
+          ></il-button-icon>
           <il-button-icon
             content=${IconNames.pencil}
-            @click=${() => (this.bEditor = !this.bEditor)}
+            @click=${() => {
+              this.bEditor = !this.bEditor;
+              MarkdownService.focusTextarea();
+            }}
           ></il-button-icon>
           ${this.bEditor
             ? html`<il-editor-formatting-buttons></il-editor-formatting-buttons>`
@@ -68,15 +75,8 @@ export class InsertionBar extends LitElement {
     this.dispatchEvent(new CustomEvent("send-message"));
   }
 
-  select_formatting_option(e) {
-    const option = e.target.content;
-    this.dispatchEvent(
-      new CustomEvent("open-insertion-mode", {
-        detail: {
-          bEmoji: option === IconNames.emoticon,
-        },
-      })
-    );
+  emojiPickerClick() {
+    this.dispatchEvent(new CustomEvent("emoji-picker-click"));
   }
 }
 

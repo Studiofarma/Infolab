@@ -7,15 +7,11 @@ export class Editor extends LitElement {
   static properties = {
     message: { type: String },
     openPreview: { type: Boolean },
-    altPressed: { type: Boolean },
-    shiftPressed: { type: Boolean },
   };
 
   constructor() {
     super();
     this.lastKeyPressed = "";
-    this.altPressed = false;
-    this.shiftPressed = false;
     this.message = "";
   }
 
@@ -103,11 +99,8 @@ export class Editor extends LitElement {
   }
 
   onKeyDown(event) {
-    if (event.key == "Shift") this.shiftPressed = true;
-    if (event.key == "Alt") this.altPressed = true;
-
     if (event.key == "Enter") {
-      if (this.shiftPressed) {
+      if (event.shiftKey) {
         this.checkList(event);
       } else {
         this.dispatchEvent(new CustomEvent("enter-key-pressed"));
@@ -115,7 +108,7 @@ export class Editor extends LitElement {
       }
     }
 
-    this.checkMarkdownKeys(event.key);
+    if (event.altKey) this.checkMarkdownKeys(event.key);
   }
 
   clearMessage() {
@@ -155,19 +148,19 @@ export class Editor extends LitElement {
   }
 
   checkMarkdownKeys(currentKeyPressed) {
-    if (this.altPressed && currentKeyPressed === "b") {
+    if (currentKeyPressed === "b") {
       MarkdownService.insertBold();
       return;
     }
-    if (this.altPressed && currentKeyPressed === "i") {
+    if (currentKeyPressed === "i") {
       MarkdownService.insertItalic();
       return;
     }
-    if (this.altPressed && currentKeyPressed === "s") {
+    if (currentKeyPressed === "s") {
       MarkdownService.insertStrike();
       return;
     }
-    if (this.altPressed && currentKeyPressed === "l") {
+    if (currentKeyPressed === "l") {
       MarkdownService.insertLink();
       return;
     }

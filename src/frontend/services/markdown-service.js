@@ -22,7 +22,7 @@ export class MarkdownService {
     editor.textChanged();
   }
 
-  static getText(text) {
+  static getText() {
     const editor = MarkdownService.getEditor();
     const textarea = editor.shadowRoot.querySelector("textarea");
     const selection = editor.getSelection();
@@ -31,7 +31,7 @@ export class MarkdownService {
   }
 
   static insertBold() {
-    const text = MarkdownService.getText("grassetto");
+    const text = MarkdownService.getText();
     let regEx = /[*]{2}/g;
     if (text.startsWith("**") && text.endsWith("**"))
       MarkdownService.insertInTextArea(text.replace(regEx, ""));
@@ -40,7 +40,7 @@ export class MarkdownService {
   }
 
   static insertItalic() {
-    const text = MarkdownService.getText("italic");
+    const text = MarkdownService.getText();
     let regEx = /[*]{1}/g;
     if (text.startsWith("*") && text.endsWith("*"))
       MarkdownService.insertInTextArea(text.replace(regEx, ""));
@@ -49,7 +49,7 @@ export class MarkdownService {
   }
 
   static insertStrike() {
-    const text = MarkdownService.getText("barrato");
+    const text = MarkdownService.getText();
     let regEx = /[~]{2}/g;
     if (text.startsWith("~~") && text.endsWith("~~"))
       MarkdownService.insertInTextArea(text.replace(regEx, ""));
@@ -58,7 +58,7 @@ export class MarkdownService {
   }
 
   static insertLink() {
-    const text = MarkdownService.getText("testo");
+    const text = MarkdownService.getText();
     let regEx = /[\[\]]+|(\(.*\))/g;
     if (text.startsWith("[") && text.includes("](") && text.endsWith(")"))
       MarkdownService.insertInTextArea(text.replace(regEx, ""));
@@ -72,19 +72,19 @@ export class MarkdownService {
   }
 
   static insertListBulleted() {
-    const text = MarkdownService.getText("punto");
+    const text = MarkdownService.getText();
     MarkdownService.insertInTextArea("* " + text);
     MarkdownService.focusTextarea();
   }
 
   static insertListNumbered() {
-    const text = MarkdownService.getText("punto");
+    const text = MarkdownService.getText();
     MarkdownService.insertInTextArea("1. " + text);
     MarkdownService.focusTextarea();
   }
 
   static insertHeading() {
-    const text = MarkdownService.getText("Titolo");
+    const text = MarkdownService.getText();
     MarkdownService.insertInTextArea("### " + text);
     MarkdownService.focusTextarea();
   }

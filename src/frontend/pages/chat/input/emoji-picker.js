@@ -18,8 +18,11 @@ export class EmojiPicker extends LitElement {
   static styles = css`
     emoji-picker {
       --emoji-size: 15pt;
-      --background: #f8f8f8;
       --border-size: 2px;
+    }
+
+    emoji-picker.light {
+      --background: #f8f8f8;
       --input-font-color: black;
       --input-placeholder-color: black;
       --outline-color: black;

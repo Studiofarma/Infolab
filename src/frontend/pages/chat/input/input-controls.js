@@ -6,11 +6,12 @@ import "../../../components/button-icon";
 import "../../../components/input-field";
 import "./emoji-picker";
 
+import { MarkdownService } from "../../../services/markdown-service";
+
 export class InputControls extends LitElement {
   static properties = {
     message: "",
-    bEditor: false,
-    bEmoji: false,
+    isEmojiPickerOpen: false,
     picker: {},
     selectedText: { startingPoint: NaN, endingPoint: NaN },
   };
@@ -18,8 +19,7 @@ export class InputControls extends LitElement {
   constructor() {
     super();
     this.message = "";
-    this.bEditor = false;
-    this.bEmoji = false;
+    this.isEmojiPickerOpen = false;
     this.selectedText = null;
   }
 
@@ -39,7 +39,6 @@ export class InputControls extends LitElement {
 
     il-emoji-picker {
       position: absolute;
-      bottom: 80px;
       left: 10px;
     }
 
@@ -72,6 +71,7 @@ export class InputControls extends LitElement {
       flex-wrap: wrap;
       justify-content: center;
       flex-direction: column;
+      z-index: 10000;
     }
 
     il-editor {
@@ -91,26 +91,40 @@ export class InputControls extends LitElement {
               @text-editor-resized=${this.textEditorResized}
             ></il-editor>
             <il-insertion-bar
-              @open-insertion-mode=${this.openInsertionMode}
-              @click=${this.prova}
               @send-message=${this.sendMessage}
+              @emoji-picker-click=${this.emojiPickerClick}
             >
             </il-insertion-bar>
           </div>
           <il-emoji-picker
             @emoji-click=${this.insertEmoji}
-            ?hidden=${!this.bEmoji}
+            @picker-close=${() => (this.isEmojiPickerOpen = false)}
+            ?isOpen=${this.isEmojiPickerOpen}
+            style="bottom: 120px;"
           ></il-emoji-picker>
         </div>
       </div>
     `;
   }
 
+  insertEmoji(event) {
+    MarkdownService.insertInTextArea(event.detail.unicode);
+    MarkdownService.focusTextarea();
+  }
+
   checkEnterKey(event) {
     if (event.key === "Enter") this.sendMessage();
   }
 
+  emojiPickerClick() {
+    this.isEmojiPickerOpen = !this.isEmojiPickerOpen;
+    MarkdownService.focusTextarea();
+  }
+
   textEditorResized(event) {
+    const emojiPicker = this.shadowRoot.querySelector("il-emoji-picker");
+    emojiPicker.style.bottom = `${event.detail.height + 90}px`;
+
     this.dispatchEvent(
       new CustomEvent("text-editor-resized", { detail: event.detail })
     );
@@ -127,6 +141,7 @@ export class InputControls extends LitElement {
     this.message = "";
     this.shadowRoot.querySelector("il-editor").clearMessage();
   }
+
   updateMessage(event) {
     this.message = event.detail.content;
   }
