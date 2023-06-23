@@ -148,6 +148,9 @@ export class InputControls extends LitElement {
           <il-emoji-picker
             @emoji-click=${this.insertEmoji}
             ?isopen=${this.bEmoji}
+            @picker-close=${() => {
+              this.bEmoji = false;
+            }}
             class=${this.bEditor ? "emoji-picker-editor-opened" : ""}
           ></il-emoji-picker>
         </div>

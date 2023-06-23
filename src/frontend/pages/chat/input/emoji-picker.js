@@ -24,22 +24,30 @@ export class EmojiPicker extends LitElement {
       --input-placeholder-color: black;
       --outline-color: black;
     }
+
+    div {
+      width: 5000px;
+      height: 5000px;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
   `;
 
   render() {
     return html`
+      <div @click=${this.closePicker} ?hidden=${!this.isOpen}></div>
       <emoji-picker
         .i18n=${it}
         locale="it"
         class="light"
         ?hidden=${!this.isOpen}
-        @click=${this.closePicker}
       ></emoji-picker>
     `;
   }
 
-  closePicker(event) {
-    if (event.target != "emoji-picker.light") this.isOpen = false;
+  closePicker() {
+    this.dispatchEvent(new CustomEvent("picker-close"));
   }
 }
 
