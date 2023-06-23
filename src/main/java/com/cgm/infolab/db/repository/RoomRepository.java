@@ -55,9 +55,9 @@ public class RoomRepository {
      * @return id della room con il nome passato a parametro. -1 in caso la room non esista.
      */
     public Optional<RoomEntity> getByRoomName(RoomName roomName, Username username) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("roomName", roomName.value());
-        return queryRoom(ROOMS_WHERE_ROOMNAME, username, map);
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("roomName", roomName.value());
+        return queryRoom(ROOMS_WHERE_ROOMNAME, username, arguments);
     }
 
     // Questo metodo è necessario perché altrimenti nella creazione della RoomSubscription in ChatController
@@ -66,9 +66,9 @@ public class RoomRepository {
     // ChatMessagesRepository è basata sul fatto che se non si ha accesso alla stanza allora non viene ritornato l'id
     // e viene lanciata un'eccezione
     public Optional<RoomEntity> getByRoomNameEvenIfNotSubscribed(RoomName roomName) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("roomName", roomName.value());
-        return queryRoomNoUserRestriction(ROOMS_WHERE_ROOMNAME, map);
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("roomName", roomName.value());
+        return queryRoomNoUserRestriction(ROOMS_WHERE_ROOMNAME, arguments);
     }
 
     /**
@@ -77,9 +77,9 @@ public class RoomRepository {
      * @return oggetto Room con il nome preso dal db. Ritorna null se la room non esiste.
      */
     public Optional<RoomEntity> getById(long id, Username username) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("roomId", id);
-        return  queryRoom("AND r.id = :roomId", username, map);
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("roomId", id);
+        return  queryRoom("AND r.id = :roomId", username, arguments);
     }
 
     private Optional<RoomEntity> queryRoom(String where, Username username, Map<String, ?> queryParams) {
@@ -134,14 +134,14 @@ public class RoomRepository {
             return getAllRoomsAndLastMessageEvenIfNullInPublicRooms(username);
         }
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("date", dateLimit);
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("date", dateLimit);
 
         List<RoomEntity> rooms = queryRooms(
                 "AND m.sent_at > :date",
                 ROOMS_AND_LAST_MESSAGES_OTHER,
                 username,
-                map
+                arguments
         );
 
         List<RoomIdNotDownloadedCount> notDownloadedCountsList = getNotDownloadedYetNumberByRoomName(username);
@@ -193,8 +193,8 @@ public class RoomRepository {
 
     public List<RoomIdNotDownloadedCount> getNotDownloadedYetNumberByRoomName(Username username) {
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("username", username.value());
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("username", username.value());
 
         return queryHelper
                 .forUser(username)
@@ -202,6 +202,6 @@ public class RoomRepository {
                 .join(DOWNLOAD_DATES_JOIN)
                 .where(DOWNLOAD_DATES_WHERE_NULL)
                 .other("GROUP BY r.id")
-                .executeForList(RowMappers::mapNotDownloadedMessagesCount, map);
+                .executeForList(RowMappers::mapNotDownloadedMessagesCount, arguments);
     }
 }

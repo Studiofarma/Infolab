@@ -45,10 +45,10 @@ public class UserRepository {
      * @return id dell'utente con il nome passato a parametro. -1 in caso l'utente non esista.
      */
     public Optional<UserEntity> getByUsername(Username username) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("username", username.value());
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("username", username.value());
 
-        return queryUser("username = :username", map);
+        return queryUser("username = :username", arguments);
     }
 
     /**
@@ -57,10 +57,10 @@ public class UserRepository {
      * @return oggetto User con il nome preso dal db. Ritorna null se l'user non esiste.
      */
     public Optional<UserEntity> getById(long id) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("userId", id);
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("userId", id);
 
-        return queryUser("id = :userId", map);
+        return queryUser("id = :userId", arguments);
     }
 
     private Optional<UserEntity> queryUser(String where, Map<String, ?> queryParams) {
@@ -82,9 +82,9 @@ public class UserRepository {
      * @return una lista di users.
      */
     public List<UserEntity> getByUsernameWithLike(Username username) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("similarUsername", username.value());
-        return queryUsers("username ILIKE :similarUsername || '%%'", "ORDER BY username ASC", map);
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("similarUsername", username.value());
+        return queryUsers("username ILIKE :similarUsername || '%%'", "ORDER BY username ASC", arguments);
     }
 
     private List<UserEntity> queryUsers(String where, String other, Map<String, ?> queryParams) {
