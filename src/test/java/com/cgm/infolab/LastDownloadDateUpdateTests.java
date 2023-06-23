@@ -44,10 +44,10 @@ public class LastDownloadDateUpdateTests {
     public String generalMessage2 = "Hello general 2";
 
     public ChatMessageDto[] messageDtos = {
-            new ChatMessageDto(generalMessage, users[0].getName().value()),
-            new ChatMessageDto(generalMessage2, users[1].getName().value()),
-            new ChatMessageDto("Visible only to user0 and user1", users[1].getName().value()),
-            new ChatMessageDto("Visible only to user1 and user2", users[2].getName().value()),
+            ChatMessageDto.of(generalMessage, users[0].getName().value()),
+            ChatMessageDto.of(generalMessage2, users[1].getName().value()),
+            ChatMessageDto.of("Visible only to user0 and user1", users[1].getName().value()),
+            ChatMessageDto.of("Visible only to user1 and user2", users[2].getName().value()),
     };
 
     public String query = "select * from infolab.download_dates d left join infolab.chatmessages m on m.id = d.message_id where d.user_id = ? and m.content = ?";
