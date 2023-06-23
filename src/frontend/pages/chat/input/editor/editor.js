@@ -55,8 +55,6 @@ export class Editor extends LitElement {
       <textarea
         @input=${this.onInput}
         @keydown=${this.onKeyDown}
-        @keyup=${this.onKeyUp}
-        @select=${this.onSelect}
         placeholder="Scrivi un messaggio..."
       ></textarea>
     `;
@@ -115,11 +113,6 @@ export class Editor extends LitElement {
     this.message = "";
     this.shadowRoot.querySelector("textarea").value = "";
     this.textEditorResize();
-  }
-
-  onKeyUp(event) {
-    if (event.key == "Shift") this.shiftPressed = false;
-    if (event.key == "Alt") this.altPressed = false;
   }
 
   checkList(event) {
