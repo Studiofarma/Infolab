@@ -238,6 +238,7 @@ export class Message extends LitElement {
             .message=${this.message}
             .cookie=${this.cookie}
             .index=${this.index}
+            .room=${this.activeChatName}
             .type=${this.message.sender == this.cookie.username
               ? "sender"
               : "receiver"}
