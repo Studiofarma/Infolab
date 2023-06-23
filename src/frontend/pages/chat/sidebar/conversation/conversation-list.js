@@ -15,17 +15,24 @@ class ConversationList extends LitElement {
     activeChatName: { state: "general" },
     newConversationList: [],
     users: [],
+    conversationListFiltered: [],
+    newConversationListFiltered: [],
+    indexOnConversationList: 0,
+    selectedRoom: "",
   };
 
   constructor() {
     super();
+
     this.query = "";
     this.conversationList = [];
     this.newConversationList = [];
     this.usersList = [];
     this.onLoad();
+    this.indexOnConversationList = -1;
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
+    this.selectedRoom = "";
   }
 
   static styles = css`
@@ -90,7 +97,10 @@ class ConversationList extends LitElement {
 
   render() {
     return html`
-      <il-search @search-chat=${this.searchChat}></il-search>
+      <il-search
+        @search-chat=${this.searchChat}
+        @keyPressed=${this.arrowNavigation}
+      ></il-search>
       <div class="conversation-list-scrollable">
         <div>
           <p class="separator">Conversazioni</p>
@@ -106,6 +116,38 @@ class ConversationList extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  arrowNavigation(e) {
+    let convListLength = this.conversationListFiltered.length;
+    let newConvListLength = this.newConversationListFiltered.length;
+    let room;
+
+    if (
+      e.detail.key == "ArrowDown" &&
+      this.indexOnConversationList < convListLength + newConvListLength - 1
+    )
+      this.indexOnConversationList++;
+    else if (e.detail.key == "ArrowUp" && this.indexOnConversationList > -1)
+      this.indexOnConversationList--;
+
+    if (this.indexOnConversationList > -1) {
+      room =
+        this.indexOnConversationList < convListLength
+          ? this.conversationListFiltered[this.indexOnConversationList].roomName
+          : this.newConversationListFiltered[
+              this.indexOnConversationList - convListLength
+            ].roomName;
+      this.selectedRoom = room;
+    }
+
+    if (e.detail.key == "Enter" && this.indexOnConversationList > -1) {
+      this.updateMessages(room);
+      this.cleanSearchInput();
+      this.activeChatName = room;
+      this.indexOnConversationList = -1;
+      CookieService.setCookieByKey(CookieService.Keys.lastChat, room);
+    }
   }
 
   searchChat(event) {
@@ -247,9 +289,11 @@ class ConversationList extends LitElement {
   }
 
   renderConversationList() {
-    let conversationList = this.searchConversation(this.conversationList);
+    this.conversationListFiltered = this.searchConversation(
+      this.conversationList
+    );
 
-    return conversationList.map((pharmacy, index) => {
+    return this.conversationListFiltered.map((pharmacy, index) => {
       let conversation = new ConversationDto(pharmacy);
       if (
         conversation.lastMessage.content ||
@@ -257,7 +301,10 @@ class ConversationList extends LitElement {
       ) {
         return html`<il-conversation
           class=${"conversation " +
-          (conversation.roomName == this.activeChatName ? "active" : "")}
+          (conversation.roomName == this.activeChatName ||
+          conversation.roomName == this.selectedRoom
+            ? "active"
+            : "")}
           .chat=${conversation}
           @click=${() => {
             this.activeChatName = conversation.roomName;
@@ -290,13 +337,18 @@ class ConversationList extends LitElement {
   }
 
   renderNewConversationList() {
-    let newConversationList = this.searchConversation(this.newConversationList);
+    this.newConversationListFiltered = this.searchConversation(
+      this.newConversationList
+    );
 
-    return newConversationList.map((pharmacy) => {
+    return this.newConversationListFiltered.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
       return html`<il-conversation
         class=${"conversation new-conversation " +
-        (conversation.roomName == this.activeChatName ? "active" : "")}
+        (conversation.roomName == this.activeChatName ||
+        conversation.roomName == this.selectedRoom
+          ? "active"
+          : "")}
         .chat=${conversation}
         @click=${() => {
           this.activeChatName = conversation.roomName;
