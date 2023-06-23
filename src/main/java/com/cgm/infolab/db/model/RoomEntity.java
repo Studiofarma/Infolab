@@ -22,7 +22,7 @@ public class RoomEntity {
     }
 
     public static RoomEntity of(RoomName name, VisibilityEnum visibility) {
-        return new RoomEntity(ID.None, name, visibility, "", null);
+        return new RoomEntity(ID.None, name, visibility, null, null);
     }
 
     public static RoomEntity of(RoomName name, VisibilityEnum visibility, String description) {
@@ -34,7 +34,7 @@ public class RoomEntity {
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility) {
-        return new RoomEntity(id, name, visibility, "", null);
+        return new RoomEntity(id, name, visibility, null, null);
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, String description) {
@@ -42,7 +42,7 @@ public class RoomEntity {
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
-        return new RoomEntity(id, name, visibility, "", messages);
+        return new RoomEntity(id, name, visibility, null, messages);
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, String description, List<ChatMessageEntity> messages) {

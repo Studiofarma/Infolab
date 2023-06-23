@@ -28,11 +28,11 @@ public class RoomDto {
     }
 
     public static RoomDto empty() {
-        return new RoomDto("", null, 0, "", LastMessageDto.empty());
+        return new RoomDto("", null, 0, null, LastMessageDto.empty());
     }
 
     public static RoomDto of(String roomName) {
-        return new RoomDto(roomName, null, 0, "", LastMessageDto.empty());
+        return new RoomDto(roomName, null, 0, null, LastMessageDto.empty());
     }
 
     public static RoomDto of(String roomName, String description) {
