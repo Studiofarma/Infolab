@@ -411,34 +411,30 @@ class ConversationList extends LitElement {
 
   // per inoltro e altro 
 
-  selectChat(selectedChatName) {
-    let cookie = CookieService.getCookie();
+  selectChat(selectedConversation) {
 
     for (let conversation of this.conversationList) {
-      if (this.chatNameFormatter(conversation.roomName) == selectedChatName) {
+      if (conversation.roomName == selectedConversation.roomName) {
         this.activeChatName = conversation.roomName;
         this.updateMessages(this.activeChatName);
         return;
       }
     }
 
-    selectedChatName = this.chatNameFormatter(
-      selectedChatName,
-      cookie.username
-    );
 
     this.conversationList.push({
       avatarLink: null,
-      roomName: selectedChatName,
+      roomName: selectedConversation.roomName,
       unreadMessages: 0,
       lastMessage: {
         content: null,
         sender: null,
         timestamp: null,
       },
+      description: "babel-babylon"
     });
 
-    this.activeChatName = selectedChatName;
+    this.activeChatName = selectedConversation.roomName;
     this.updateMessages(this.activeChatName);
 
     this.update();

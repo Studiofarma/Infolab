@@ -150,20 +150,19 @@ export class ForwardList extends LitElement {
   }
 
   renderForwardList() {
-    return this.forwardList.map((pharmacy) => {
+    return this.forwardList.map((pharmacy,index) => {
       let conversation = new ConversationDto(pharmacy);
-      let roomName = this.activeChatNameFormatter(conversation.roomName);
 
       return html`
         <div
           @click=${() => {
-            this.forwardMessage(roomName);
+            this.forwardMessage(conversation,index);
             this.clearSearchInput();
           }}
         >
           <div class="forward-conversation">
-            <il-avatar .name=${roomName}></il-avatar>
-            <p>${roomName}</p>
+            <il-avatar .name=${conversation.roomName}></il-avatar>
+            <p>${conversation.roomName}</p>
           </div>
         </div>
       `;
@@ -216,11 +215,10 @@ export class ForwardList extends LitElement {
       return;
     }
 
-    this.forwardMessage(roomName);
   }
 
-  forwardMessage(roomName) {
-    this.goToChat(roomName);
+  forwardMessage(conversation,conversationIndex) {
+    this.goToChat(conversation,conversationIndex);
 
     let chatElement = document
       .querySelector("body > il-app")
@@ -241,15 +239,17 @@ export class ForwardList extends LitElement {
     this.update();
   }
 
-  goToChat(roomName) {
+  goToChat(conversation,conversationIndex) {
     let conversationList = document
       .querySelector("body > il-app")
       .shadowRoot.querySelector("il-chat")
       .shadowRoot.querySelector("main > section > il-sidebar")
       .shadowRoot.querySelector("div > il-conversation-list");
 
-    conversationList.selectChat(roomName);
-    conversationList.changeDescription()
+    conversationList.selectChat(conversation);
+    // per il momento il dialog fa visualizzare solo la conversation list; quando invece farà visualizzare l'elenco delle conversazioni completo vi sarà 
+    //la necessità di distinguere tra la conversationList e la newConversationList
+    conversationList.changeDescription(conversationList.conversationList,conversationIndex) 
   }
 
   updateForwardList() {
@@ -262,15 +262,6 @@ export class ForwardList extends LitElement {
     this.forwardList = [...convList.conversationList];
   }
 
-  activeChatNameFormatter(activeChatName) {
-    let cookie = CookieService.getCookie();
-    if (activeChatName.includes("-")) {
-      activeChatName = activeChatName.split("-");
-      activeChatName.splice(activeChatName.indexOf(cookie.username), 1);
-      return activeChatName[0];
-    }
-    return activeChatName;
-  }
 }
 
 customElements.define("il-forward-list", ForwardList);

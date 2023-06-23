@@ -384,8 +384,6 @@ export class Chat extends LitElement {
   onMessage(payload) {
     let message = JSON.parse(payload.body);
 
-    console.log(message)
-
     if (message.content) {
       if (this.activeChatName == message.roomName) {
         this.messages.push(message);
