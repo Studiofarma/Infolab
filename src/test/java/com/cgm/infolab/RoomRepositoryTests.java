@@ -55,7 +55,9 @@ public class RoomRepositoryTests {
                     ChatMessageDto.of("3 Visible only to user1 and user2", users[1].getName().value()),
                     ChatMessageDto.of("4 Visible only to user0 and user2", users[2].getName().value()),
                     ChatMessageDto.of("5 Visible only to user0 and user1", users[0].getName().value()),
-                    ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())};
+                    ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value()),
+                    ChatMessageDto.of("7 Hello general from user1", users[1].getName().value())
+            };
 
     @BeforeAll
     void setUpAll() {
