@@ -124,7 +124,6 @@ export class Chat extends LitElement {
       grid-auto-rows: max-content;
       gap: 30px;
       width: 100%;
-      height: calc(100vh - 141px);
       overflow-y: auto;
       padding: 20px;
       margin-top: 71px;
@@ -181,6 +180,7 @@ export class Chat extends LitElement {
               ? html` <ul
                     @scroll="${this.manageScrollButtonVisility}"
                     class="message-box"
+                    style="height: calc(100vh - 179px);"
                   >
                     ${repeat(
                       this.messages,
@@ -197,15 +197,15 @@ export class Chat extends LitElement {
                   <il-forward-list></il-forward-list>
 
                   <il-button-icon
-                    style="bottom: 81px"
+                    style="bottom: 120px"
                     class="scroll-button"
                     @click="${this.scrollToBottom}"
                     content="${IconNames.scrollDownArrow}"
                   ></il-button-icon>
 
                   <il-input-controls
-                    @send-message="${this.sendMessage}"
-                    @open-insertion-mode=${this.setScrollButtonY}
+                    @send-message=${this.sendMessage}
+                    @text-editor-resized=${this.textEditorResized}
                   ></il-input-controls>`
               : html`<il-empty-chat></il-empty-chat>`}
           </div>
@@ -287,25 +287,14 @@ export class Chat extends LitElement {
     }
   }
 
-  setScrollButtonY(e) {
-    let buttonIcon = this.renderRoot.querySelector("il-button-icon");
+  textEditorResized(event) {
+    const buttonIcon = this.renderRoot.querySelector("il-button-icon");
+    const messageBox = this.renderRoot.querySelector(".message-box");
 
-    if (e.detail.bEditor && !e.detail.bEmoji) {
-      buttonIcon.style.bottom = "265px";
-      return;
-    }
+    buttonIcon.style.bottom = `${event.detail.height + 100}px`;
+    messageBox.style.height = `calc(100vh - ${event.detail.height + 150}px)`;
 
-    if (e.detail.bEmoji && !e.detail.bEditor) {
-      buttonIcon.style.bottom = "391px";
-      return;
-    }
-
-    if (e.detail.bEditor && e.detail.bEmoji) {
-      buttonIcon.style.bottom = "575px";
-      return;
-    }
-
-    buttonIcon.style.bottom = "81px";
+    this.scrollToBottom();
   }
   scrollToBottom() {
     if (this.activeChatName === "") return;

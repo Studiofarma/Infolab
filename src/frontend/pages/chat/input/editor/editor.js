@@ -33,7 +33,7 @@ export class Editor extends LitElement {
       padding-left: 10px;
       line-height: 20px;
       max-height: 100px;
-      height: 20px;
+      height: 21px;
     }
     textarea::placeholder {
       color: lightgray;
@@ -69,6 +69,7 @@ export class Editor extends LitElement {
   onInput(event) {
     this.message = event.target.value;
     this.textChanged();
+    this.textEditorResize();
   }
 
   textChanged() {
@@ -76,6 +77,18 @@ export class Editor extends LitElement {
     this.dispatchEvent(
       new CustomEvent("text-changed", {
         detail: { content: this.message.trimEnd().replaceAll("\n", "\\\n") },
+      })
+    );
+  }
+
+  textEditorResize() {
+    const textarea = this.shadowRoot.querySelector("textarea");
+    textarea.style.height = "21px";
+    const scrollHeight = textarea.scrollHeight;
+    textarea.style.height = `${scrollHeight}px`;
+    this.dispatchEvent(
+      new CustomEvent("text-editor-resized", {
+        detail: { height: textarea.clientHeight },
       })
     );
   }
@@ -104,16 +117,12 @@ export class Editor extends LitElement {
   clearMessage() {
     this.message = "";
     this.shadowRoot.querySelector("textarea").value = "";
+    this.textEditorResize();
   }
 
   onKeyUp(event) {
     if (event.key == "Shift") this.shiftPressed = false;
     if (event.key == "Alt") this.altPressed = false;
-
-    const textarea = this.shadowRoot.querySelector("textarea");
-    textarea.style.height = "20px";
-    const scrollHeight = textarea.scrollHeight;
-    textarea.style.height = `${scrollHeight}px`;
   }
 
   checkList(event) {

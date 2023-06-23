@@ -93,6 +93,7 @@ export class InputControls extends LitElement {
             <il-editor
               @enter-key-pressed=${this.sendMessage}
               @text-changed=${this.updateMessage}
+              @text-editor-resized=${this.textEditorResized}
             ></il-editor>
             <il-insertion-bar
               @open-insertion-mode=${this.openInsertionMode}
@@ -114,15 +115,9 @@ export class InputControls extends LitElement {
     if (event.key === "Enter") this.sendMessage();
   }
 
-  openInsertionMode(e) {
-    if (e.detail.bEmoji) this.bEmoji = !this.bEmoji;
-
+  textEditorResized(event) {
     this.dispatchEvent(
-      new CustomEvent(e.type, {
-        detail: {
-          bEmoji: this.bEmoji,
-        },
-      })
+      new CustomEvent("text-editor-resized", { detail: event.detail })
     );
   }
 
@@ -135,7 +130,7 @@ export class InputControls extends LitElement {
       })
     );
     this.message = "";
-		this.shadowRoot.querySelector("il-editor").clearMessage();
+    this.shadowRoot.querySelector("il-editor").clearMessage();
   }
   updateMessage(event) {
     this.message = event.detail.content;

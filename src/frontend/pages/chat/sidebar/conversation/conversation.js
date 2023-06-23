@@ -69,6 +69,17 @@ class Conversation extends LitElement {
     .unread {
       color: rgb(58 179 255);
     }
+
+    .last-message a[href] {
+      color: lightgray;
+      text-underline-position: below;
+      text-underline-offset: 2px;
+      transition: color 0.5s;
+    }
+
+    .last-message a[href]:hover {
+      color: white;
+    }
   `;
 
   render() {
