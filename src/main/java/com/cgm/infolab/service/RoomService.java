@@ -59,18 +59,17 @@ public class RoomService {
     }
 
     private void subscribeUserToRoom(RoomName roomName, Username username) {
-        RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
+        RoomSubscriptionEntity roomSubscription = null;
         try {
-            RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseThrow(() -> {
-                throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
-            });
+            RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseThrow(
+                    () -> new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName.value()))
+            );
 
-            UserEntity user = userRepository.getByUsername(username).orElseThrow(() -> {
-                throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()));
-            });
+            UserEntity user = userRepository.getByUsername(username).orElseThrow(
+                    () -> new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()))
+            );
 
-            roomSubscription.setRoomId(room.getId());
-            roomSubscription.setUserId(user.getId());
+            roomSubscription = RoomSubscriptionEntity.of(room.getId(), user.getId(), user.getName());
 
             roomSubscriptionRepository.add(roomSubscription);
         } catch (DuplicateKeyException e) {
