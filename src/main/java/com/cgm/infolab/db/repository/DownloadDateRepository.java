@@ -46,16 +46,16 @@ public class DownloadDateRepository {
     public void addWhereNotDownloadedYetForUser(Username username, RoomName roomName) throws IllegalArgumentException {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("timestamp", timestamp);
-        map.put("username", username.value());
-        map.put("roomName", roomName.value());
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("timestamp", timestamp);
+        arguments.put("username", username.value());
+        arguments.put("roomName", roomName.value());
 
         queryHelper
                 .forUser(username)
                 .query("INSERT INTO infolab.download_dates(download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id")
                 .join(DOWNLOAD_DATES_JOIN)
                 .where(DOWNLOAD_DATES_WHERE_NOT_DOWNLOADED_AND_ROOMNAME)
-                .update(map);
+                .update(arguments);
     }
 }
