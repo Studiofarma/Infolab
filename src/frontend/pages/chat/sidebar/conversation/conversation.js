@@ -200,6 +200,10 @@ class Conversation extends LitElement {
   }
 
   fixLastMessageLength(message) {
+    const messageLines = message.split("\\\n");
+    if (messageLines.length > 1) {
+      message = messageLines[0] + "...";
+    }
     let maxLength = 20;
     if (message.length > maxLength) {
       message = message.substring(0, maxLength);
