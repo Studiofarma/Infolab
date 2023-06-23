@@ -1,5 +1,6 @@
 package com.cgm.infolab.model;
 
+import com.cgm.infolab.db.ID;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
@@ -7,6 +8,7 @@ import java.util.Objects;
 
 
 public class ChatMessageDto {
+    private long id;
     private String content;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -18,23 +20,35 @@ public class ChatMessageDto {
     private ChatMessageDto() {
     }
 
-    public ChatMessageDto(String content, String sender) {
-        this.sender = sender;
-        this.content = content;
-    }
-
-    public ChatMessageDto(String content, LocalDateTime timestamp, String sender) {
-        this.content = content;
-        this.timestamp = timestamp;
-        this.sender = sender;
-        this.roomName = "";
-    }
-
-    public ChatMessageDto(String content, LocalDateTime timestamp, String sender, String roomName) {
+    private ChatMessageDto(long id, String content, LocalDateTime timestamp, String sender, String roomName) {
+        this.id = id;
         this.content = content;
         this.timestamp = timestamp;
         this.sender = sender;
         this.roomName = roomName;
+    }
+
+    public static ChatMessageDto of(String content, String sender) {
+        return new ChatMessageDto(ID.None, content, null, sender, "");
+    }
+
+    public static ChatMessageDto of(String content, LocalDateTime timestamp, String sender) {
+        return new ChatMessageDto(ID.None, content, timestamp, sender, "");
+    }
+
+    public static ChatMessageDto of(String content, LocalDateTime timestamp, String sender, String roomName) {
+        return new ChatMessageDto(ID.None, content, timestamp, sender, roomName);
+    }
+    public static ChatMessageDto of(long id, String content, LocalDateTime timestamp, String sender, String roomName) {
+        return new ChatMessageDto(id, content, timestamp, sender, roomName);
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getRoomName() {

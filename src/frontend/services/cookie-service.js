@@ -1,40 +1,50 @@
-const USERNAME_COOKIE_NAME = "username";
-const PASSWORD_COOKIE_NAME = "password";
-const HEADER_COOKIE_NAME = "header";
-const TOKEN_COOKIE_NAME = "token";
-
-function getCookiePropertyByName(name) {
-  const result = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(`${name}=`))
-    ?.split("=")[1];
-
-  return result;
-}
-
 export class CookieService {
+  static Keys = {
+    username: "username",
+    password: "password",
+    header: "header",
+    token: "token",
+    lastChat: "last-chat",
+  };
+
+  static getCookieByKey(name) {
+    const result = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(`${name}=`))
+      ?.split("=")[1];
+
+    return result;
+  }
   static getCookie() {
     let isValid = true;
-    const user = getCookiePropertyByName(USERNAME_COOKIE_NAME);
-    if (!user) isValid = false;
+    const username = CookieService.getCookieByKey(CookieService.Keys.username);
+    if (!username) isValid = false;
 
-    const pass = getCookiePropertyByName(PASSWORD_COOKIE_NAME);
-    if (!pass) isValid = false;
+    const password = CookieService.getCookieByKey(CookieService.Keys.password);
+    if (!password) isValid = false;
 
-    const header = getCookiePropertyByName(HEADER_COOKIE_NAME);
+    const header = CookieService.getCookieByKey(CookieService.Keys.header);
     if (!header) isValid = false;
 
-    const token = getCookiePropertyByName(TOKEN_COOKIE_NAME);
+    const token = CookieService.getCookieByKey(CookieService.Keys.token);
     if (!token) isValid = false;
 
+    const lastChat = CookieService.getCookieByKey(CookieService.Keys.lastChat);
+
     let cookie = {
-      username: user,
-      password: pass,
-      token: token,
+      username: username,
+      password: password,
       header: header,
+      token: token,
+      lastChat: lastChat,
       isValid: isValid,
     };
 
     return cookie;
+  }
+  static setCookieByKey(key, value) {
+    let expires = new Date(Date.now());
+    expires.setDate(expires.getDate() + 1);
+    document.cookie = `${key}=${value}; expires=${expires}; `;
   }
 }
