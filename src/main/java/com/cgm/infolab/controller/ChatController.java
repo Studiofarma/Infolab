@@ -65,7 +65,7 @@ public class ChatController {
     @SendTo("/topic/public")
     public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
         ChatMessageEntity messageEntity = chatService.saveMessageInDb(message, Username.of(principal.getName()), RoomName.of("general"), null);
-        return ChatMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender().getName().value(), "general");
+        return FromEntitiesToDtosMapper.fromEntityToChatMessageDto(messageEntity);
     }
 
     @MessageMapping("/chat.send.{destinationUser}")
@@ -84,7 +84,7 @@ public class ChatController {
                 Username.of(destinationUser)),
                 Username.of(destinationUser)
         );
-        return ChatMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender().getName().value(), RoomName.getRoomNameByUsers(Username.of(principal.getName()), Username.of(destinationUser)));
+        return FromEntitiesToDtosMapper.fromEntityToChatMessageDto(messageEntity);
     }
 }
 

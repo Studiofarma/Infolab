@@ -50,8 +50,7 @@ public class RoomService {
         RoomName roomName = RoomName.of(user1, user2);
 
         try {
-            long roomId = roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
-            return RoomEntity.of(roomId, roomName, VisibilityEnum.PRIVATE);
+            return roomRepository.add(RoomEntity.of(roomName, VisibilityEnum.PRIVATE));
         } catch (DuplicateKeyException e) {
             log.info(String.format("Room roomName=\"%s\" già esistente nel database", roomName));
             return roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseGet(() -> null);
