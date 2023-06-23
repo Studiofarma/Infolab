@@ -1,6 +1,7 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -73,9 +74,7 @@ public abstract class RowMappers {
                 rs.getString("description"));
     }
 
-    public static Map<Long, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
-        Map<Long, Integer> map = new HashMap<>();
-        map.put(rs.getLong("id"), rs.getInt("not_downloaded_count"));
-        return map;
+    public static Pair<Long, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
+        return Pair.of(rs.getLong("id"), rs.getInt("not_downloaded_count"));
     }
 }
