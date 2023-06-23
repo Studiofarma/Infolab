@@ -434,6 +434,7 @@ export class Chat extends LitElement {
   }
 
   setDescription(event) {
+    console.log(event)
     this.activeDescription = event.detail.description;
   }
 

@@ -150,23 +150,35 @@ export class ForwardList extends LitElement {
   }
 
   renderForwardList() {
-    return this.forwardList.map((pharmacy,index) => {
+    return this.forwardList.map((pharmacy, index) => {
       let conversation = new ConversationDto(pharmacy);
 
       return html`
         <div
           @click=${() => {
-            this.forwardMessage(conversation,index);
+            this.forwardMessage(conversation, index);
             this.clearSearchInput();
           }}
         >
           <div class="forward-conversation">
-            <il-avatar .name=${conversation.roomName}></il-avatar>
-            <p>${conversation.roomName}</p>
+            <il-avatar
+              .name=${this.getConversationDescription(index)}
+            ></il-avatar>
+            <p>${this.getConversationDescription( index)}</p>
           </div>
         </div>
       `;
     });
+  }
+
+  getConversationDescription(index) {
+    let conversationList = document
+      .querySelector(" il-app")
+      .shadowRoot.querySelector("il-chat")
+      .shadowRoot.querySelector(" il-sidebar")
+      .shadowRoot.querySelector("il-conversation-list");
+
+    return conversationList.conversationList[index].description;
   }
 
   clearSearchInput() {
@@ -202,7 +214,7 @@ export class ForwardList extends LitElement {
     if (
       dialog.contains(e.target) && //controlla se clicchi un elemento dentro dialog
       e.target.closest(".forward-conversation") === null && // controlla che l'elemento cliccato sia diverso dal componente conversation
-			!this.checkIfClickIsOuter(e) // controlla se si sta cliccando nel backdrop
+      !this.checkIfClickIsOuter(e) // controlla se si sta cliccando nel backdrop
     ) {
       e.stopPropagation();
       return;
@@ -214,17 +226,6 @@ export class ForwardList extends LitElement {
       e.stopPropagation();
       return;
     }
-
-  }
-
-  forwardMessage(conversation,conversationIndex) {
-    this.goToChat(conversation,conversationIndex);
-
-    let chatElement = document
-      .querySelector("body > il-app")
-      .shadowRoot.querySelector("il-chat");
-
-    chatElement.sendMessage({ detail: { message: this.messageToForward } });
   }
 
   fwdSearch(event) {
@@ -239,17 +240,31 @@ export class ForwardList extends LitElement {
     this.update();
   }
 
-  goToChat(conversation,conversationIndex) {
+  forwardMessage(conversation, conversationIndex) {
     let conversationList = document
-      .querySelector("body > il-app")
+      .querySelector(" il-app")
       .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("main > section > il-sidebar")
-      .shadowRoot.querySelector("div > il-conversation-list");
+      .shadowRoot.querySelector(" il-sidebar")
+      .shadowRoot.querySelector("il-conversation-list");
 
     conversationList.selectChat(conversation);
-    // per il momento il dialog fa visualizzare solo la conversation list; quando invece farà visualizzare l'elenco delle conversazioni completo vi sarà 
+    // per il momento il dialog fa visualizzare solo la conversation list; quando invece farà visualizzare l'elenco delle conversazioni completo vi sarà
     //la necessità di distinguere tra la conversationList e la newConversationList
-    conversationList.changeDescription(conversationList.conversationList,conversationIndex) 
+    conversationList.changeDescription(
+      conversationList.conversationList,
+      conversationIndex
+    );
+
+    let chatElement = document
+      .querySelector("body > il-app")
+      .shadowRoot.querySelector("il-chat");
+
+    chatElement.sendMessage({ detail: { message: this.messageToForward } });
+
+    CookieService.setCookieByKey(
+      CookieService.Keys.lastChat,
+      conversation.roomName
+    );
   }
 
   updateForwardList() {
@@ -261,7 +276,6 @@ export class ForwardList extends LitElement {
     this.tmpForwardList = [...convList.conversationList];
     this.forwardList = [...convList.conversationList];
   }
-
 }
 
 customElements.define("il-forward-list", ForwardList);

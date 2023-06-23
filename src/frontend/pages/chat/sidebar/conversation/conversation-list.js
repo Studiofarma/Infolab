@@ -292,6 +292,7 @@ class ConversationList extends LitElement {
   }
 
   changeDescription(list, index) {
+    
     let description = list[index].description;
 
     this.dispatchEvent(
