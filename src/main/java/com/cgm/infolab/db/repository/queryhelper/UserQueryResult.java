@@ -1,13 +1,16 @@
 package com.cgm.infolab.db.repository.queryhelper;
 
 import com.cgm.infolab.db.model.Username;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public record UserQueryResult(
     NamedParameterJdbcTemplate namedJdbcTemplate,
@@ -85,6 +88,16 @@ public record UserQueryResult(
         MapSqlParameterSource params = addAllParams(queryParams);
 
         return namedJdbcTemplate.query(this.query(), params, rowMapper);
+    }
+
+    public <T, K> Map<T, K> executeForMap(RowMapper<Pair<T, K>> rowMapper, Map<String, ?> queryParams) throws InvalidUserKeyException, EmptyResultDataAccessException {
+        checkInputKeysAndThrow(queryParams);
+
+        MapSqlParameterSource params = addAllParams(queryParams);
+
+        List<Pair<T, K>> result = namedJdbcTemplate.query(this.query(), params, rowMapper);
+
+        return result.stream().collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
     public <T> T executeForObject(RowMapper<T> rowMapper, Map<String, ?> queryParams) throws InvalidUserKeyException, EmptyResultDataAccessException {

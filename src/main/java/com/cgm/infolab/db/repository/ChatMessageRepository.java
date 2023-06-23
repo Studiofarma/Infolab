@@ -45,10 +45,10 @@ public class ChatMessageRepository {
     }
 
     public List<ChatMessageEntity> getByRoomName(RoomName roomName, Username username) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("roomName", roomName.value());
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("roomName", roomName.value());
 
-        return queryUserMessages("ORDER BY m.sent_at DESC", username, map);
+        return queryUserMessages("ORDER BY m.sent_at DESC", username, arguments);
     }
 
     public List<ChatMessageEntity> getByRoomNameNumberOfMessages(RoomName roomName, int numberOfMessages, Username username) {
@@ -57,16 +57,16 @@ public class ChatMessageRepository {
             return getByRoomName(roomName, username);
         }
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("roomName", roomName.value());
-        map.put("limit", numberOfMessages);
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("roomName", roomName.value());
+        arguments.put("limit", numberOfMessages);
 
-        return queryUserMessages("ORDER BY m.sent_at DESC LIMIT :limit", username, map);
+        return queryUserMessages("ORDER BY m.sent_at DESC LIMIT :limit", username, arguments);
     }
 
     private List<ChatMessageEntity> queryUserMessages(String other, Username username, Map<String, ?> queryParams) {
         try {
-            return getMessagges(username)
+            return getMessages(username)
                     .other(other)
                     .executeForList(RowMappers::mapToChatMessageEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
@@ -74,7 +74,7 @@ public class ChatMessageRepository {
         }
     }
 
-    private UserQueryResult getMessagges(Username username) {
+    private UserQueryResult getMessages(Username username) {
         return queryHelper
                 .forUser(username)
                 .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content")
