@@ -1,4 +1,6 @@
 import { LitElement, html, css } from "lit";
+import { repeat } from "lit/directives/repeat.js";
+
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
@@ -12,9 +14,10 @@ import "../../components/message";
 import "../../components/button-icon";
 import "../../components/icon";
 import "../../components/forward-list";
-import "./input/input-controls.js";
-import "./sidebar/sidebar.js";
-import "./header/chat-header.js";
+import "./input/input-controls";
+import "./sidebar/sidebar";
+import "./header/chat-header";
+import "./empty-chat";
 
 export class Chat extends LitElement {
   static properties = {
@@ -42,7 +45,8 @@ export class Chat extends LitElement {
     this.messages = [];
     this.message = "";
     this.nMessages = 0;
-    this.activeChatName = "general";
+    this.activeChatName =
+      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
     this.forwardListVisibility = false;
     this.scrolledToBottom = false;
     window.addEventListener("resize", () => {
@@ -69,11 +73,6 @@ export class Chat extends LitElement {
       width: 100%;
       min-height: 100%;
       background: rgb(247, 247, 247);
-    }
-
-    input[type="text"] {
-      border: none;
-      outline: none;
     }
 
     section {
@@ -135,8 +134,6 @@ export class Chat extends LitElement {
       z-index: 9999;
       position: absolute;
       right: 20px;
-      bottom: 130px;
-
       border-radius: 5px;
       padding: 2px;
       background-color: rgb(8, 60, 114);
@@ -175,48 +172,45 @@ export class Chat extends LitElement {
             @update-message="${this.updateMessages}"
             .login=${this.login}
           ></il-sidebar>
+
           <div class="chat">
             <il-chat-header
               userName=${this.login.username}
               roomName=${this.activeChatNameFormatter(this.activeChatName)}
             ></il-chat-header>
-            <ul
-              @scroll="${(e) => {
-                if (this.checkScrolledToBottom()) {
-                  this.renderRoot.querySelector(
-                    ".scroll-button"
-                  ).style.opacity = "0";
-                } else if (
-                  this.renderRoot.querySelector(".scroll-button").style
-                    .opacity == 0
-                ) {
-                  this.renderRoot.querySelector(
-                    ".scroll-button"
-                  ).style.opacity = "1";
-                }
-              }}"
-              class="message-box"
-            >
-              ${this.messages.map(
-                (message, index) =>
-                  html` <il-message
-                    .messages=${this.messages}
-                    .message=${message}
-                    .index=${index}
-                  ></il-message>`
-              )}
-            </ul>
-            <il-forward-list></il-forward-list>
 
-            <il-button-icon
-              class="scroll-button"
-              @click="${this.scrollToBottom}"
-              content="${IconNames.scrollDownArrow}"
-            ></il-button-icon>
+            ${this.activeChatName !== ""
+              ? html` <ul
+                    @scroll="${this.manageScrollButtonVisility}"
+                    class="message-box"
+                  >
+                    ${repeat(
+                      this.messages,
+                      (message) => message.index,
+                      (message, index) =>
+                        html` <il-message
+                          .messages=${this.messages}
+                          .message=${message}
+                          .index=${index}
+                          .activeChatName=${this.activeChatName}
+                        ></il-message>`
+                    )}
+                  </ul>
 
-            <il-input-controls
-              @send-message="${this.sendMessage}"
-            ></il-input-controls>
+                  <il-forward-list></il-forward-list>
+
+                  <il-button-icon
+                    style="bottom: 81px"
+                    class="scroll-button"
+                    @click="${this.scrollToBottom}"
+                    content="${IconNames.scrollDownArrow}"
+                  ></il-button-icon>
+
+                  <il-input-controls
+                    @send-message="${this.sendMessage}"
+                    @open-insertion-mode=${this.setScrollButtonY}
+                  ></il-input-controls>`
+              : html`<il-empty-chat></il-empty-chat>`}
           </div>
         </section>
       </main>
@@ -224,17 +218,19 @@ export class Chat extends LitElement {
   }
 
   async firstUpdated() {
+    if (this.activeChatName === "") return;
+
     MessagesService.getMessagesById(
       this.login.username,
       this.login.password,
-      "general"
+      this.activeChatName
     ).then((messages) => {
       this.messages = messages.data.reverse();
-
-      for (var i = 0; i < this.messages.length; i++) {
-        this.messages[i].index = i;
-      }
     });
+
+    for (var i = 0; i < this.messages.length; i++) {
+      this.messages[i].index = i;
+    }
   }
 
   async updateMessages(e) {
@@ -244,8 +240,11 @@ export class Chat extends LitElement {
       e.detail.roomName
     ).then((messages) => {
       this.messages = messages.data.reverse();
-    });
 
+      for (var i = 0; i < this.messages.length; i++) {
+        this.messages[i].index = i;
+      }
+    });
     this.activeChatName = e.detail.roomName;
   }
 
@@ -272,6 +271,14 @@ export class Chat extends LitElement {
     );
   }
 
+  manageScrollButtonVisility() {
+    if (this.checkScrolledToBottom()) {
+      this.renderRoot.querySelector(".scroll-button").style.opacity = "0";
+      return;
+    }
+    this.renderRoot.querySelector(".scroll-button").style.opacity = "1";
+  }
+
   checkScrolledToBottom() {
     try {
       let element = this.renderRoot.querySelector("ul.message-box");
@@ -283,7 +290,29 @@ export class Chat extends LitElement {
     }
   }
 
+  setScrollButtonY(e) {
+    let buttonIcon = this.renderRoot.querySelector("il-button-icon");
+
+    if (e.detail.bEditor && !e.detail.bEmoji) {
+      buttonIcon.style.bottom = "265px";
+      return;
+    }
+
+    if (e.detail.bEmoji && !e.detail.bEditor) {
+      buttonIcon.style.bottom = "391px";
+      return;
+    }
+
+    if (e.detail.bEditor && e.detail.bEmoji) {
+      buttonIcon.style.bottom = "575px";
+      return;
+    }
+
+    buttonIcon.style.bottom = "81px";
+  }
   scrollToBottom() {
+    if (this.activeChatName === "") return;
+
     let element = this.renderRoot.querySelector("ul.message-box");
     element.scrollTo({ top: element.scrollHeight });
   }
@@ -369,9 +398,7 @@ export class Chat extends LitElement {
         .shadowRoot.querySelector("il-chat")
         .shadowRoot.querySelector("main > section > il-sidebar")
         .shadowRoot.querySelector("div > il-conversation-list");
-
-      let room = conversationListElement.convertUserToRoom(message.roomName);
-      conversationListElement.onMessageInNewChat(room, message);
+      conversationListElement.scrollToTop();
     }
 
     this.messageNotification(message);

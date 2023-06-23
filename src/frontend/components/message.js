@@ -1,17 +1,20 @@
 import { LitElement, html, css } from "lit";
 
 import { resolveMarkdown } from "lit-markdown";
-import { MarkdownService } from "../services/markdown-services";
+import { MarkdownService } from "../services/markdown-service";
 
 import { CookieService } from "../services/cookie-service";
 
 import { IconNames } from "../enums/icon-names";
 
+import "./message-settings";
+
 export class Message extends LitElement {
   static properties = {
     messages: { type: Array },
-    message: { type: String },
+    message: { type: Object },
     index: { type: Number },
+    activeChatName: { type: String },
   };
 
   constructor() {
@@ -23,6 +26,26 @@ export class Message extends LitElement {
     * {
       margin: 0;
       padding: 0;
+    }
+
+    .message-body:has(.sender) {
+      justify-self: flex-end;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .message-body:has(.receiver) {
+      justify-self: flex-start;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .message-body:has(.receiver) {
+      justify-self: flex-start;
     }
 
     .sender,
@@ -46,12 +69,9 @@ export class Message extends LitElement {
     }
 
     .sender {
-      justify-self: flex-end;
       border-radius: 10px 0 10px 10px;
-
       color: white;
       background-color: rgb(54, 123, 251);
-      justify-self: flex-end;
     }
     .sender::after {
       content: "";
@@ -88,9 +108,7 @@ export class Message extends LitElement {
     }
 
     .receiver {
-      justify-self: flex-start;
       border-radius: 0 10px 10px 10px;
-
       color: black;
       background-color: white;
     }
@@ -124,79 +142,41 @@ export class Message extends LitElement {
       overflow-wrap: break-word;
     }
 
+    .settings-container {
+      position: relative;
+      background: white;
+      border-radius: 6px;
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .message-body:hover .settings-container {
+      opacity: 1;
+    }
+
     .sender .message-timestamp {
       text-align: end;
-
       font-size: 11px;
       color: #e9e9e9;
     }
 
+    .sender ~ .settings-container il-message-settings {
+      position: absolute;
+      top: 0px;
+      left: -89px;
+    }
+
+    .receiver ~ .settings-container il-message-settings {
+      position: absolute;
+      top: 0px;
+      right: 33px;
+    }
+
     .receiver .message-timestamp {
       text-align: end;
-
       font-size: 11px;
       color: #8c8d8d;
-    }
-
-    .message-settings {
-      opacity: 0;
-      position: absolute;
-      top: 50%;
-      transform: translate(0, -50%);
-
-      background: white;
-      border-radius: 6px;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-    }
-
-    .sender .message-settings {
-      color: black;
-      left: -40px;
-    }
-
-    .receiver .message-settings {
-      right: -40px;
-    }
-
-    .sender:hover .message-settings,
-    .receiver:hover .message-settings {
-      opacity: 1;
-    }
-
-    .message-settings:hover,
-    .menu-options:hover .message-settings {
-      opacity: 1;
-    }
-
-    .menu-options {
-      display: none;
-      top: -3px;
-      width: max-content;
-
-      padding: 5px;
-    }
-
-    .menu-options-section {
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 5px;
-      user-select: none;
-
-      display: flex;
-      align-items: center;
-      gap: 3px;
-    }
-
-    .menu-options-section:hover {
-      background-color: #f5f5f5;
-    }
-
-    .message-settings:hover .menu-options {
-      display: block !important;
-    }
-
-    .message-settings:hover il-button-icon {
-      display: none !important;
     }
 
     .message-date {
@@ -214,114 +194,73 @@ export class Message extends LitElement {
         this.message.timestamp
       )}
 
-      <div
-        class=${this.message.sender == this.cookie.username
-          ? "sender"
-          : "receiver"}
-      >
-        <p class="receiver-name">
-          ${this.message.sender != this.cookie.username
-            ? this.message.sender
-            : ""}
-        </p>
-        <p class="message">
-          ${resolveMarkdown(
-            MarkdownService.parseMarkdown(this.message.content)
-          )}
-        </p>
-        <p class="message-timestamp">
-          ${new Date(this.message.timestamp).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </p>
-        <div class="message-settings">
+      <!-- da refactorizzare in una storia apposita -->
+
+      <div class="message-body">
+        <!--  message content -->
+        <div
+          class=${this.message.sender == this.cookie.username
+            ? "sender"
+            : "receiver"}
+        >
+          ${this.activeChatName.indexOf(this.cookie.username) === -1
+            ? html` <p class="receiver-name">
+                ${this.message.sender != this.cookie.username
+                  ? this.message.sender
+                  : ""}
+              </p>`
+            : html``}
+          <p class="message">
+            ${resolveMarkdown(
+              MarkdownService.parseMarkdown(this.message.content)
+            )}
+          </p>
+          <p class="message-timestamp">
+            ${new Date(this.message.timestamp).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        </div>
+
+        <!-- end -->
+        <!-- menu icon -->
+
+        <div class="settings-container">
           <il-button-icon
+            @click=${this.openSettings}
             content="${IconNames.dotsHorizontal}"
-            styleProp="color: black;"
+            color="black"
           >
           </il-button-icon>
-          <div class="menu-options">
-            <div
-              class="menu-options-section"
-              @click=${() => {
-                this.copyToClipboard(this.message.content);
-              }}
-            >
-              <il-icon name=${IconNames.mdiContentCopy}></il-icon>
-              Copia
-            </div>
 
-            <div
-              class="menu-options-section"
-              @click=${() => {
-                this.forwardMessage(this.message.content);
-              }}
-            >
-              <il-icon name=${IconNames.mdiShare}></il-icon>
-              Inoltra
-            </div>
-
-            ${this.message.sender != this.cookie.username
-              ? html`<div
-                  class="menu-options-section"
-                  @click=${() => {
-                    this.goToChat(this.message.sender);
-                  }}
-                >
-                  <il-icon name=${IconNames.mdiMessage}></il-icon>
-                  Scrivi in privato
-                </div>`
-              : null}
-
-            <div
-              class="menu-options-section"
-              @click=${() => {
-                this.deleteMessage(this.message);
-                this.update();
-              }}
-            >
-              <il-icon name=${IconNames.mdiDelete}></il-icon>
-              Elimina
-            </div>
-          </div>
+          <il-message-settings
+            .message=${this.message}
+            .cookie=${this.cookie}
+            .index=${this.index}
+            .room=${this.activeChatName}
+            .type=${this.message.sender == this.cookie.username
+              ? "sender"
+              : "receiver"}
+          >
+          </il-message-settings>
         </div>
+
+        <!-- end -->
       </div>
     `;
   }
 
-  copyToClipboard(text) {
-    navigator.clipboard.writeText(text);
+  openSettings() {
+    let settings = this.renderRoot.querySelector("il-message-settings");
+
+    settings.openDialog();
   }
 
-  forwardMessage(message) {
-    let forwardListElement = document
-      .querySelector("body > il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("main > section > div > il-forward-list");
+  closeSettings() {
+    let settings = this.renderRoot.querySelector("il-message-settings");
 
-    let e = { message: message };
-
-    forwardListElement.forwardMessageHandler(e);
-  }
-
-  goToChat(roomName) {
-    let conversationList = document
-      .querySelector("body > il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("main > section > il-sidebar")
-      .shadowRoot.querySelector("div > il-conversation-list");
-
-    conversationList.selectChat(roomName);
-  }
-
-  deleteMessage(message) {
-    let chatElement = document
-      .querySelector("body > il-app")
-      .shadowRoot.querySelector("il-chat");
-
-    chatElement.messages.splice(this.messages.indexOf(message), 1);
-    chatElement.update();
+    settings.closeDialog();
   }
 
   compareMessageDate(messageDate1, messageDate2) {

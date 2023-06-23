@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
 
-import { MarkdownService } from "../../../../services/markdown-services";
+import { MarkdownService } from "../../../../services/markdown-service";
 import { CookieService } from "../../../../services/cookie-service";
 
 import "../../../../components/icon";
@@ -68,6 +68,10 @@ class Conversation extends LitElement {
 
     .unread {
       color: rgb(58 179 255);
+    }
+
+    .chat-name {
+      color: white;
     }
   `;
 
