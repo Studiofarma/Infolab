@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +73,9 @@ public abstract class RowMappers {
                 rs.getString("description"));
     }
 
-    public static RoomIdNotDownloadedCount mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
-        return RoomIdNotDownloadedCount.of(rs.getLong("id"), rs.getInt("not_downloaded_count"));
+    public static Map<Long, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
+        Map<Long, Integer> map = new HashMap<>();
+        map.put(rs.getLong("id"), rs.getInt("not_downloaded_count"));
+        return map;
     }
 }
