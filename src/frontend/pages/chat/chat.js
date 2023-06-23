@@ -195,6 +195,7 @@ export class Chat extends LitElement {
                           .message=${message}
                           .index=${index}
                           .activeChatName=${this.activeChatName}
+                          .activeDescription=${this.activeDescription}
                         ></il-message>`
                     )}
                   </ul>
@@ -221,10 +222,6 @@ export class Chat extends LitElement {
 
   async firstUpdated() {
     if (this.activeChatName === "") return;
-
-    if(this.activeDescription === "") {
-      this.activeDescription = this.activeChatNameFormatter(this.activeChatName);
-    }
 
     MessagesService.getMessagesById(
       this.login.username,
@@ -355,7 +352,7 @@ export class Chat extends LitElement {
       .shadowRoot.querySelector("main > section > il-sidebar")
       .shadowRoot.querySelector("div > il-conversation-list");
 
-    let roomName = this.activeChatNameFormatter(message.roomName);
+    let roomName = this.activeDescription;
 
     if (Notification.permission === "granted") {
       let notification = new Notification(roomName, {
@@ -375,7 +372,7 @@ export class Chat extends LitElement {
 
           notification.onclick = function () {
             conversationList.selectChat(
-              this.activeChatNameFormatter(message.roomName)
+              this.activeDescription
             );
             window.focus("/");
           };
@@ -386,26 +383,25 @@ export class Chat extends LitElement {
 
   onMessage(payload) {
     let message = JSON.parse(payload.body);
+
+    console.log(message)
+
     if (message.content) {
       if (this.activeChatName == message.roomName) {
         this.messages.push(message);
         this.update();
         this.updated();
       }
-      let sidebar = this.renderRoot.querySelector(
-        "main > section > il-sidebar"
-      );
-      sidebar.shadowRoot
-        .querySelector("div > il-conversation-list")
-        .setList(message);
 
       let conversationListElement = document
-        .querySelector("body > il-app")
+        .querySelector("il-app")
         .shadowRoot.querySelector("il-chat")
-        .shadowRoot.querySelector("main > section > il-sidebar")
-        .shadowRoot.querySelector("div > il-conversation-list");
+        .shadowRoot.querySelector("il-sidebar")
+        .shadowRoot.querySelector("il-conversation-list");
 
-      let room = conversationListElement.convertUserToRoom(message.roomName);
+        conversationListElement.setList(message)
+
+      let room = conversationListElement.convertUserToRoom(message.roomName, message.activeDescription);
       conversationListElement.onMessageInNewChat(room, message);
     }
 
@@ -417,6 +413,7 @@ export class Chat extends LitElement {
 
     let messageContent = this.message.trim();
 
+
     if (messageContent && this.stompClient) {
       const chatMessage = {
         sender: this.login.username,
@@ -424,11 +421,9 @@ export class Chat extends LitElement {
         type: "CHAT",
       };
 
-      let activeChatName = this.activeChatNameFormatter(this.activeChatName);
-
       this.stompClient.send(
         `/app/chat.send${
-          activeChatName != "general" ? `.${activeChatName}` : ""
+          this.activeDescription != "Generale" ? `.${this.activeDescription}` : ""
         }`,
         {},
         JSON.stringify(chatMessage)
@@ -444,15 +439,7 @@ export class Chat extends LitElement {
     this.activeDescription = event.detail.description;
   }
 
-  activeChatNameFormatter(activeChatName) {
-    let cookie = CookieService.getCookie();
-    if (activeChatName.includes("-")) {
-      activeChatName = activeChatName.split("-");
-      activeChatName.splice(activeChatName.indexOf(cookie.username), 1);
-      return activeChatName[0];
-    }
-    return activeChatName;
-  }
+ 
 }
 
 customElements.define("il-chat", Chat);

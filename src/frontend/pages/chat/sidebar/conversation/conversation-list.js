@@ -149,6 +149,7 @@ class ConversationList extends LitElement {
             unreadMessages: room.unreadMessages,
             description: room.description,
             lastMessage: room.lastMessage,
+            description: room.description,
             id: this.usersList[userIndex].id,
           };
           this.conversationList.push(conversation);
@@ -190,6 +191,10 @@ class ConversationList extends LitElement {
         (conversation) => conversation.roomName == message.roomName
       );
 
+      let description = this.conversationList[conversationIndex].description
+
+      message.description = description
+
       let conversation = this.convertMessageToConversation(message);
 
       this.conversationList[conversationIndex] = conversation;
@@ -208,6 +213,7 @@ class ConversationList extends LitElement {
         timestamp: message.timestamp,
         sender: message.sender,
       },
+      description: message.description,
       unreadMessages: 0,
     };
   }
@@ -222,12 +228,12 @@ class ConversationList extends LitElement {
     );
 
     if (!isPresent) {
-      const roomFormatted = this.convertUserToRoom(roomName, user);
+      const roomFormatted = this.convertUserToRoom(roomName, user.name);
       this.newConversationList.push(roomFormatted);
     }
   }
 
-  convertUserToRoom(roomName, user) {
+  convertUserToRoom(roomName, description) {
     return {
       roomName: roomName,
       avatarLink: null,
@@ -237,7 +243,7 @@ class ConversationList extends LitElement {
         sender: null,
         timestamp: null,
       },
-      id: user.id,
+      description: description,
     };
   }
 
@@ -269,7 +275,7 @@ class ConversationList extends LitElement {
               conversation.roomName
             );
 
-            this.changeDescription()
+            this.changeDescription(this.conversationList, index);
             this.setList(null);
             this.cleanSearchInput();
           }}
@@ -285,23 +291,8 @@ class ConversationList extends LitElement {
     });
   }
 
-  changeDescription() {
-    let description = this.passDescription();
-
-    CookieService.setCookieByKey(
-      CookieService.Keys.lastDescription,
-      description
-    );
-  }
-
-  passDescription() {
-    let index = this.conversationList.findIndex(
-      (conversation) => conversation.roomName === this.activeChatName
-    );
-
-    let description =
-      this.conversationList[index].description ??
-      this.chatNameFormatter(this.conversationList[index].roomName);
+  changeDescription(list, index) {
+    let description = list[index].description;
 
     this.dispatchEvent(
       new CustomEvent("onChangeConversation", {
@@ -313,7 +304,10 @@ class ConversationList extends LitElement {
       })
     );
 
-    return description;
+    CookieService.setCookieByKey(
+      CookieService.Keys.lastDescription,
+      description
+    );
   }
 
   searchConversation(list) {
@@ -325,7 +319,7 @@ class ConversationList extends LitElement {
   renderNewConversationList() {
     let newConversationList = this.searchConversation(this.newConversationList);
 
-    return newConversationList.map((pharmacy) => {
+    return newConversationList.map((pharmacy, index) => {
       let conversation = new ConversationDto(pharmacy);
       return html`<il-conversation
         class=${"conversation new-conversation " +
@@ -340,11 +334,9 @@ class ConversationList extends LitElement {
             conversation.roomName
           );
 
-          let description = this.passConversationSelected();
-
-          CookieService.setCookieByKey(
-            CookieService.Keys.lastDescription,
-            description
+          this.changeDescription(
+            this.newConversationList,
+            index
           );
 
           this.cleanSearchInput();
@@ -417,6 +409,8 @@ class ConversationList extends LitElement {
     this.searchChat(searchInput.value);
   }
 
+  // per inoltro e altro 
+
   selectChat(selectedChatName) {
     let cookie = CookieService.getCookie();
 
@@ -456,15 +450,6 @@ class ConversationList extends LitElement {
     return array.join("-");
   }
 
-  chatNameFormatter(chatName) {
-    let cookie = CookieService.getCookie();
-    if (chatName.includes("-")) {
-      chatName = chatName.split("-");
-      chatName.splice(chatName.indexOf(cookie.username), 1);
-      return chatName[0];
-    }
-    return chatName;
-  }
 }
 
 customElements.define("il-conversation-list", ConversationList);

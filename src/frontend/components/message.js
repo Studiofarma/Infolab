@@ -15,6 +15,7 @@ export class Message extends LitElement {
 		message: { type: Object },
     index: { type: Number },
     activeChatName: { type: String },
+		activeDescription: {type: String}
   };
 
 	constructor() {
