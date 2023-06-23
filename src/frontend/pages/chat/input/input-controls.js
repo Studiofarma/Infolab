@@ -1,11 +1,10 @@
 import { LitElement, html, css } from "lit";
-import { Picker } from "emoji-picker-element";
-import it from "emoji-picker-element/i18n/it";
 
 import "./insertion-bar";
 import "./editor/editor";
 import "../../../components/button-icon";
 import "../../../components/input-field";
+import "./emoji-picker";
 
 import { IconNames } from "../../../enums/icon-names";
 
@@ -40,13 +39,7 @@ export class InputControls extends LitElement {
       gap: 10px;
     }
 
-    emoji-picker {
-      --emoji-size: 15pt;
-      --background: #f8f8f8;
-      --border-size: 2px;
-      --input-font-color: black;
-      --input-placeholder-color: black;
-      --outline-color: black;
+    il-emoji-picker {
       position: absolute;
       bottom: 80px;
       left: 10px;
@@ -152,13 +145,11 @@ export class InputControls extends LitElement {
               @is-selecting=${this.onSelectionFromTextarea}
             ></il-editor>
           </div>
-          <emoji-picker
+          <il-emoji-picker
             @emoji-click=${this.insertEmoji}
-            ?hidden=${!this.bEmoji}
-            .i18n=${it}
-            locale="it"
+            ?isopen=${this.bEmoji}
             class=${this.bEditor ? "emoji-picker-editor-opened" : ""}
-          ></emoji-picker>
+          ></il-emoji-picker>
         </div>
 
         <div id="submitContainer">
