@@ -1,8 +1,7 @@
 import { LitElement, html, css } from "lit";
-import { ConversationDto } from "../models/conversation-dto.js";
 import { CookieService } from "../services/cookie-service";
 
-import "../pages/chat/sidebar/conversation/conversation-list.js";
+import "../pages/chat/sidebar/conversation/conversation-list";
 
 export class ForwardList extends LitElement {
   static get properties() {
