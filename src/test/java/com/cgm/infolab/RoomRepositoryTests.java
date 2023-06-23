@@ -50,13 +50,13 @@ public class RoomRepositoryTests {
     public RoomEntity anotherPublic = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC);
 
     public ChatMessageDto[] messageDtos =
-            {new ChatMessageDto("1 Hello general from user0", users[0].getName().value()),
-                    new ChatMessageDto("2 Visible only to user0 and user1", users[1].getName().value()),
-                    new ChatMessageDto("3 Visible only to user1 and user2", users[1].getName().value()),
-                    new ChatMessageDto("4 Visible only to user0 and user2", users[2].getName().value()),
-                    new ChatMessageDto("5 Visible only to user0 and user1", users[0].getName().value()),
-                    new ChatMessageDto("6 Visible only to user1 and user2", users[2].getName().value()),
-                    new ChatMessageDto("7 Hello general from user1", users[1].getName().value())
+            {ChatMessageDto.of("1 Hello general from user0", users[0].getName().value()),
+                    ChatMessageDto.of("2 Visible only to user0 and user1", users[1].getName().value()),
+                    ChatMessageDto.of("3 Visible only to user1 and user2", users[1].getName().value()),
+                    ChatMessageDto.of("4 Visible only to user0 and user2", users[2].getName().value()),
+                    ChatMessageDto.of("5 Visible only to user0 and user1", users[0].getName().value()),
+                    ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value()),
+                    ChatMessageDto.of("7 Hello general from user1", users[1].getName().value())
             };
 
     @BeforeAll
