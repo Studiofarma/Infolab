@@ -59,8 +59,8 @@ public class LastDownloadDateUpdateTests {
         jdbcTemplate.update("DELETE FROM infolab.rooms_subscriptions");
         jdbcTemplate.update("DELETE FROM infolab.users");
 
-        for (UserEntity user : users) {
-            user.setId(userRepository.add(user));
+        for (int i = 0; i < users.length; i++) {
+            users[i] = userRepository.add(users[i]);
         }
 
         roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[1].getName());

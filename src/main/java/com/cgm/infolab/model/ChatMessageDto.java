@@ -20,7 +20,7 @@ public class ChatMessageDto {
     private ChatMessageDto() {
     }
 
-    private ChatMessageDto(int id, String content, LocalDateTime timestamp, String sender, String roomName) {
+    private ChatMessageDto(long id, String content, LocalDateTime timestamp, String sender, String roomName) {
         this.id = id;
         this.content = content;
         this.timestamp = timestamp;
@@ -39,8 +39,16 @@ public class ChatMessageDto {
     public static ChatMessageDto of(String content, LocalDateTime timestamp, String sender, String roomName) {
         return new ChatMessageDto(ID.None, content, timestamp, sender, roomName);
     }
-    public static ChatMessageDto of(int id, String content, LocalDateTime timestamp, String sender, String roomName) {
+    public static ChatMessageDto of(long id, String content, LocalDateTime timestamp, String sender, String roomName) {
         return new ChatMessageDto(id, content, timestamp, sender, roomName);
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getRoomName() {
