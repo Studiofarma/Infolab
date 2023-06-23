@@ -150,10 +150,13 @@ class ConversationList extends LitElement {
       CookieService.setCookieByKey(CookieService.Keys.lastChat, room);
       this.chatClicked(room);
     }
+    if (this.indexOnConversationList < 0) this.selectedRoom = "";
   }
 
   searchChat(event) {
     this.query = event.detail.query;
+    this.selectedRoom = "";
+    this.indexOnConversationList = -1;
     this.update();
   }
 
