@@ -396,7 +396,28 @@ export class Chat extends LitElement {
   }
 
   sendMessage(e) {
-    this.message = e.detail.message;
+    this.message = e.detail.message.replaceAll("\\\n", "\n");
+    const messageLines = e.detail.message.split("\n");
+
+    for (let i = 1; i < messageLines.length; i++) {
+      if (messageLines[i].startsWith("* ")) continue;
+      if (messageLines[i].startsWith("#")) continue;
+
+      let indexOfDot = messageLines[i].indexOf(".");
+      if (indexOfDot !== -1) {
+        let isList = true;
+        for (let j = 0; j < indexOfDot; j++) {
+          if (isNaN(Number(messageLines[i][j]))) {
+            isList = false;
+            break;
+          }
+        }
+        if (isList) break;
+      }
+      if (!messageLines[i - 1].startsWith("#")) messageLines[i - 1] += "\\";
+    }
+
+    this.message = messageLines.join("\n");
 
     let messageContent = this.message.trim();
 

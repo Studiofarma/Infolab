@@ -76,7 +76,7 @@ export class Editor extends LitElement {
     this.shadowRoot.querySelector("textarea").value = this.message;
     this.dispatchEvent(
       new CustomEvent("text-changed", {
-        detail: { content: this.message.trimEnd().replaceAll("\n", "\\\n") },
+        detail: { content: this.message },
       })
     );
   }
@@ -106,9 +106,13 @@ export class Editor extends LitElement {
     if (event.key == "Shift") this.shiftPressed = true;
     if (event.key == "Alt") this.altPressed = true;
 
-    if (!this.shiftPressed && event.key == "Enter") {
-      this.dispatchEvent(new CustomEvent("enter-key-pressed"));
-      event.preventDefault();
+    if (event.key == "Enter") {
+      if (this.shiftPressed) {
+        this.checkList(event);
+      } else {
+        this.dispatchEvent(new CustomEvent("enter-key-pressed"));
+        event.preventDefault();
+      }
     }
 
     this.checkMarkdownKeys(event.key);
@@ -126,30 +130,28 @@ export class Editor extends LitElement {
   }
 
   checkList(event) {
-    if (event.key === "Enter") {
-      const rows = this.message.split("\n");
-      let last_row = rows[rows.length - 1];
-      const indexOfPoint = last_row.indexOf(".");
+    const rows = this.message.split("\n");
+    let lastRow = rows[rows.length - 1].trimStart();
 
-      if (last_row.startsWith("* ")) {
-        this.message += "\n* ";
-        event.preventDefault();
-        return;
-      }
-
-      if (
-        indexOfPoint != -1 &&
-        !isNaN(parseInt(last_row.slice(0, indexOfPoint))) &&
-        last_row.startsWith(". ", indexOfPoint)
-      ) {
-        this.message +=
-          "\n" +
-          (parseInt(last_row.slice(0, indexOfPoint)) + 1).toString() +
-          ". ";
-        event.preventDefault();
-        return;
-      }
+    if (lastRow.startsWith("* ")) {
+      this.message += "\n* ";
+      event.preventDefault();
+      this.textChanged();
+      this.textEditorResize();
+      return;
     }
+
+    const indexOfDot = lastRow.indexOf(".");
+    if (indexOfDot === -1) return;
+    for (let i = 0; i < indexOfDot; i++) {
+      if (isNaN(Number(lastRow[i]))) return;
+    }
+
+    const lineNumber = Number(lastRow.substring(0, indexOfDot)) + 1;
+    this.message += `\n${lineNumber}. `;
+    event.preventDefault();
+    this.textChanged();
+    this.textEditorResize();
   }
 
   checkMarkdownKeys(currentKeyPressed) {

@@ -6,8 +6,6 @@ import "./editor/editor";
 import "../../../components/button-icon";
 import "../../../components/input-field";
 
-import { IconNames } from "../../../enums/icon-names";
-
 export class InputControls extends LitElement {
   static properties = {
     message: "",

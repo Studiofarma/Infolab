@@ -36,6 +36,7 @@ export class MarkdownService {
     if (text.startsWith("**") && text.endsWith("**"))
       MarkdownService.insertInTextArea(text.replace(regEx, ""));
     else MarkdownService.insertInTextArea("**" + text + "**");
+    MarkdownService.focusTextarea();
   }
 
   static insertItalic() {
@@ -44,6 +45,7 @@ export class MarkdownService {
     if (text.startsWith("*") && text.endsWith("*"))
       MarkdownService.insertInTextArea(text.replace(regEx, ""));
     else MarkdownService.insertInTextArea("*" + text + "*");
+    MarkdownService.focusTextarea();
   }
 
   static insertStrike() {
@@ -52,6 +54,7 @@ export class MarkdownService {
     if (text.startsWith("~~") && text.endsWith("~~"))
       MarkdownService.insertInTextArea(text.replace(regEx, ""));
     else MarkdownService.insertInTextArea("~~" + text + "~~");
+    MarkdownService.focusTextarea();
   }
 
   static insertLink() {
@@ -60,25 +63,30 @@ export class MarkdownService {
     if (text.startsWith("[") && text.includes("](") && text.endsWith(")"))
       MarkdownService.insertInTextArea(text.replace(regEx, ""));
     else MarkdownService.insertInTextArea("[" + text + "](insert link)");
+    MarkdownService.focusTextarea();
   }
 
   static insertLine() {
     MarkdownService.insertInTextArea("\n - - - \n");
+    MarkdownService.focusTextarea();
   }
 
   static insertListBulleted() {
     const text = MarkdownService.getText("punto");
     MarkdownService.insertInTextArea("* " + text);
+    MarkdownService.focusTextarea();
   }
 
   static insertListNumbered() {
     const text = MarkdownService.getText("punto");
     MarkdownService.insertInTextArea("1. " + text);
+    MarkdownService.focusTextarea();
   }
 
   static insertHeading() {
     const text = MarkdownService.getText("Titolo");
     MarkdownService.insertInTextArea("### " + text);
+    MarkdownService.focusTextarea();
   }
 
   static getEditor() {
@@ -89,5 +97,11 @@ export class MarkdownService {
         .shadowRoot.querySelector("il-input-controls")
         .shadowRoot.querySelector("il-editor") ?? null
     );
+  }
+
+  static focusTextarea() {
+    const textarea =
+      MarkdownService.getEditor().shadowRoot.querySelector("textarea");
+    textarea.focus();
   }
 }
