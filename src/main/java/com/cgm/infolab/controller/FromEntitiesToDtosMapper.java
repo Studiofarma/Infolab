@@ -12,9 +12,12 @@ import org.springframework.stereotype.Service;
 public abstract class FromEntitiesToDtosMapper {
 
     public static ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
-        return new ChatMessageDto(messageEntity.getContent(),
+        return ChatMessageDto.of(
+                messageEntity.getId(),
+                messageEntity.getContent(),
                 messageEntity.getTimestamp(),
-                messageEntity.getSender().getName().value());
+                messageEntity.getSender().getName().value(),
+                messageEntity.getRoom().getName().value());
     }
 
     public static LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
