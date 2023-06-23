@@ -122,7 +122,7 @@ public class RoomRepository {
 
     public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
         List<RoomEntity> rooms = queryRooms(null, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
-        List<RoomIdNotDownloadedCount> notDownloadedCountsList = getNotDownloadedYetNumberByRoomName(username);
+        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberByRoomName(username);
 
         rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
 
@@ -144,22 +144,17 @@ public class RoomRepository {
                 arguments
         );
 
-        List<RoomIdNotDownloadedCount> notDownloadedCountsList = getNotDownloadedYetNumberByRoomName(username);
+        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberByRoomName(username);
 
         rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
 
         return rooms;
     }
 
-    private List<RoomEntity> mergeRoomsAndNotDownloadedCount(List<RoomEntity> rooms, List<RoomIdNotDownloadedCount> notDownloadedCountsList) {
+    private List<RoomEntity> mergeRoomsAndNotDownloadedCount(List<RoomEntity> rooms, Map<Long, Integer> notDownloadedCountsList) {
         rooms.forEach(room -> {
-            int count = notDownloadedCountsList
-                            .stream()
-                            .filter(notDownloadedCount ->
-                                    notDownloadedCount.getRoomId() == room.getId())
-                            .findFirst()
-                            .orElse(RoomIdNotDownloadedCount.of(room.getId(), 0))
-                            .getNotDownloadedCount();
+            Integer countObj = notDownloadedCountsList.get(room.getId());
+            int count = countObj == null ? 0 : countObj;
 
             room.setNotDownloadedMessagesCount(count);
 
@@ -191,7 +186,7 @@ public class RoomRepository {
                         "left join infolab.users u_other on u_other.id = s_other.user_id");
     }
 
-    public List<RoomIdNotDownloadedCount> getNotDownloadedYetNumberByRoomName(Username username) {
+    public Map<Long, Integer> getNotDownloadedYetNumberByRoomName(Username username) {
 
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("username", username.value());
@@ -202,6 +197,6 @@ public class RoomRepository {
                 .join(DOWNLOAD_DATES_JOIN)
                 .where(DOWNLOAD_DATES_WHERE_NULL)
                 .other("GROUP BY r.id")
-                .executeForList(RowMappers::mapNotDownloadedMessagesCount, arguments);
+                .executeForMap(RowMappers::mapNotDownloadedMessagesCount, arguments);
     }
 }
