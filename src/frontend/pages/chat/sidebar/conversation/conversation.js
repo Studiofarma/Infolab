@@ -80,6 +80,10 @@ class Conversation extends LitElement {
     .last-message a[href]:hover {
       color: white;
     }
+
+    .chat-name {
+      color: white;
+    }
   `;
 
   render() {

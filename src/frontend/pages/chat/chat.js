@@ -387,9 +387,7 @@ export class Chat extends LitElement {
         .shadowRoot.querySelector("il-chat")
         .shadowRoot.querySelector("main > section > il-sidebar")
         .shadowRoot.querySelector("div > il-conversation-list");
-
-      let room = conversationListElement.convertUserToRoom(message.roomName);
-      conversationListElement.onMessageInNewChat(room, message);
+      conversationListElement.scrollToTop();
     }
 
     this.messageNotification(message);

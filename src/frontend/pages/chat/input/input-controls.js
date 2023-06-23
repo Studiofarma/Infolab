@@ -1,10 +1,10 @@
 import { LitElement, html, css } from "lit";
-import { Picker } from "emoji-picker-element";
 
 import "./insertion-bar";
 import "./editor/editor";
 import "../../../components/button-icon";
 import "../../../components/input-field";
+import "./emoji-picker";
 
 export class InputControls extends LitElement {
   static properties = {
@@ -20,13 +20,6 @@ export class InputControls extends LitElement {
     this.message = "";
     this.bEditor = false;
     this.bEmoji = false;
-    this.picker = new Picker({
-      emojiVersion: "14.0",
-      dataSource:
-        "https://cdn.jsdelivr.net/npm/emoji-picker-element-data@^1/en/emojibase/data.json",
-      locale: "it",
-      skinToneEmoji: "🖐️",
-    });
     this.selectedText = null;
   }
 
@@ -44,10 +37,14 @@ export class InputControls extends LitElement {
       gap: 10px;
     }
 
-    emoji-picker {
-      width: 100%;
-      height: 300px;
-      --emoji-size: 15pt;
+    il-emoji-picker {
+      position: absolute;
+      bottom: 80px;
+      left: 10px;
+    }
+
+    .emoji-picker-editor-opened {
+      bottom: 265px;
     }
 
     #inputControls {
@@ -100,10 +97,10 @@ export class InputControls extends LitElement {
             >
             </il-insertion-bar>
           </div>
-          <emoji-picker
+          <il-emoji-picker
             @emoji-click=${this.insertEmoji}
             ?hidden=${!this.bEmoji}
-          ></emoji-picker>
+          ></il-emoji-picker>
         </div>
       </div>
     `;

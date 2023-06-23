@@ -60,13 +60,15 @@ export class ChatHeader extends LitElement {
     return html`
       <div class="chatHeader">
         <div class="contact">
-          <div class="profileContainer">
-            <il-avatar
-              name=${this.roomName}
-              .id=${this.getUserId(this.roomName)}
-            ></il-avatar>
-            <h2>${this.roomName}</h2>
-          </div>
+          ${this.roomName == ""
+            ? html`<div></div>` //metto un placeholder per far allineare a destra il profilo utente con il diplay flex
+            : html`<div class="profileContainer">
+                <il-avatar
+                  name=${this.roomName}
+                  .id=${this.getUserId(this.roomName)}
+                ></il-avatar>
+                <h2>${this.roomName}</h2>
+              </div>`}
 
           <div class="profileContainer">
             <h2>${this.userName}</h2>
