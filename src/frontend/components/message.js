@@ -14,6 +14,7 @@ export class Message extends LitElement {
     messages: { type: Array },
     message: { type: Object },
     index: { type: Number },
+    activeChatName: { type: String },
   };
 
   constructor() {
@@ -199,25 +200,22 @@ export class Message extends LitElement {
 
   render() {
     return html`
-      ${this.compareMessageDate(
-        this.messages[this.index - 1]?.timestamp,
-        this.message.timestamp
-      )}
-
-      <!-- da refactorizzare in una storia apposita -->
-
       <div class="message-body">
         <!--  message content -->
         <div
-          class=${this.message.sender == this.cookie.username
-            ? "sender"
-            : "receiver"}
+          class=${
+            this.message.sender == this.cookie.username ? "sender" : "receiver"
+          }
         >
-          <p class="receiver-name">
-            ${this.message.sender != this.cookie.username
-              ? this.message.sender
-              : ""}
-          </p>
+          ${
+            this.activeChatName.indexOf(this.cookie.username) === -1
+              ? html` <p class="receiver-name">
+                  ${this.message.sender != this.cookie.username
+                    ? this.message.sender
+                    : ""}
+                </p>`
+              : html``
+          }
           <p class="message">
             ${resolveMarkdown(
               MarkdownService.parseMarkdown(this.message.content)
@@ -229,31 +227,32 @@ export class Message extends LitElement {
               minute: "2-digit",
             })}
           </p>
+					</div>
+          <!-- menu icon -->
+
+          <div class="settings-container">
+            <il-button-icon
+              @click=${this.openSettings}
+              content="${IconNames.dotsHorizontal}"
+              color="black"
+            >
+            </il-button-icon>
+
+            <il-message-settings
+              .message=${this.message}
+              .cookie=${this.cookie}
+              .index=${this.index}
+              .type=${
+                this.message.sender == this.cookie.username
+                  ? "sender"
+                  : "receiver"
+              }
+            >
+            </il-message-settings>
+          </div>
+
+          <!-- end -->
         </div>
-
-        <!-- end -->
-        <!-- menu icon -->
-
-        <div class="settings-container">
-          <il-button-icon
-            @click=${this.openSettings}
-            content="${IconNames.dotsHorizontal}"
-            color="black"
-          >
-          </il-button-icon>
-
-          <il-message-settings
-            .message=${this.message}
-            .cookie=${this.cookie}
-            .index=${this.index}
-            .type=${this.message.sender == this.cookie.username
-              ? "sender"
-              : "receiver"}
-          >
-          </il-message-settings>
-        </div>
-
-        <!-- end -->
       </div>
     `;
   }

@@ -162,6 +162,7 @@ export class Chat extends LitElement {
       max-width: 100%;
     }
   `;
+
   render() {
     return html`
       <main>
@@ -170,6 +171,7 @@ export class Chat extends LitElement {
             @update-message="${this.updateMessages}"
             .login=${this.login}
           ></il-sidebar>
+
           <div class="chat">
             <il-chat-header
               userName=${this.login.username}
@@ -190,6 +192,7 @@ export class Chat extends LitElement {
                           .messages=${this.messages}
                           .message=${message}
                           .index=${index}
+                          .activeChatName=${this.activeChatName}
                         ></il-message>`
                     )}
                   </ul>
