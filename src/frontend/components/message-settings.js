@@ -12,6 +12,7 @@ export class MessageSettings extends LitElement {
       message: { type: Object },
       cookie: { type: Object },
       type: { type: String },
+      room: { type: String },
       index: { type: Number },
     };
   }
@@ -48,7 +49,7 @@ export class MessageSettings extends LitElement {
         >
         </message-menu-option>
 
-        ${this.type === "receiver"
+        ${this.type === "receiver" && !this.room.includes(this.cookie.username)
           ? html` <message-menu-option
               iconName=${IconNames.mdiMessage}
               text="Scrivi in privato"

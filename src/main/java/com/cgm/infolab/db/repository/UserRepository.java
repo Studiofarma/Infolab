@@ -27,7 +27,7 @@ public class UserRepository {
      * @param user utente da salvare sul database.
      * @return chiave che è stata auto generata per l'utente creato, oppure -1 se l'utente inserito esisteva già.
      */
-    public long add(UserEntity user) {
+    public UserEntity add(UserEntity user) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("users")
@@ -35,7 +35,7 @@ public class UserRepository {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("username", user.getName().value());
-        return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
+        return UserEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters), user.getName(), user.getDescription());
     }
 
     /**

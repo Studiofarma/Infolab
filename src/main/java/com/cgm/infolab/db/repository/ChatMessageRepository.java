@@ -25,12 +25,7 @@ public class ChatMessageRepository {
         this.queryHelper = queryHelper;
     }
 
-    /**
-     * Metodo che aggiunge un messaggio al database.
-     * @param message messaggio da salvare.
-     * @return chiave che è stata auto generata per il messaggio creato, oppure -1 se il messaggio inserito esisteva già.
-     */
-    public long add(ChatMessageEntity message) throws DuplicateKeyException {
+    public ChatMessageEntity add(ChatMessageEntity message) throws DuplicateKeyException {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("chatmessages")
@@ -41,7 +36,12 @@ public class ChatMessageRepository {
         parameters.put("recipient_room_id", message.getRoom().getId());
         parameters.put("sent_at", message.getTimestamp());
         parameters.put("content", message.getContent());
-        return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
+
+        return ChatMessageEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters),
+                message.getSender(),
+                message.getRoom(),
+                message.getTimestamp(),
+                message.getContent());
     }
 
     public List<ChatMessageEntity> getByRoomName(RoomName roomName, Username username) {
