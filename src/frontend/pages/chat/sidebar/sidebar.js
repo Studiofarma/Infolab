@@ -1,7 +1,6 @@
 import { LitElement, html, css } from "lit";
 
-import "./search-chats.js";
-import "./conversation/conversation-list.js";
+import "./conversation/conversation-list";
 
 export class Sidebar extends LitElement {
   static properties = {
@@ -25,7 +24,6 @@ export class Sidebar extends LitElement {
       z-index: 1100;
     }
 
-    .search,
     .conversation-list {
       flex: 1 0 auto;
       margin-right: 5px;
@@ -39,13 +37,6 @@ export class Sidebar extends LitElement {
   render() {
     return html`
       <div class="side-bar">
-        <il-search
-          class="search"
-          @load-chat=${(e) => {
-            this.loadChat(e);
-          }}
-          @search-chat="${this.searchChat}"
-        ></il-search>
         <il-conversation-list class="conversation-list"></il-conversation-list>
       </div>
     `;
@@ -55,18 +46,6 @@ export class Sidebar extends LitElement {
     this.shadowRoot
       .querySelector("il-conversation-list")
       .selectChat(e.detail.selectedChatName);
-  }
-
-  searchChat(event) {
-    let query = event.detail.query;
-
-    let il_conversation_list = document
-      .querySelector("body > il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("main > section > il-sidebar")
-      .shadowRoot.querySelector("div > il-conversation-list");
-
-    il_conversation_list.searchChat(query);
   }
 }
 
