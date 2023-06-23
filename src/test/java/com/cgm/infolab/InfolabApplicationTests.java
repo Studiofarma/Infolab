@@ -99,7 +99,7 @@ class InfolabApplicationTests {
             }
         });
 
-        ChatMessageDto sentMessage = new ChatMessageDto(null, Username.of("banana").value());
+        ChatMessageDto sentMessage = ChatMessageDto.of(null, Username.of("banana").value());
         client.send("/app/chat.register", sentMessage);
 
         await()
@@ -124,7 +124,7 @@ class InfolabApplicationTests {
             }
         });
 
-        ChatMessageDto sentMessage = new ChatMessageDto("pippo", userBanana.getName().value());
+        ChatMessageDto sentMessage = ChatMessageDto.of("pippo", userBanana.getName().value());
         client.send("/app/chat.send", sentMessage);
 
         await()
@@ -169,7 +169,7 @@ class InfolabApplicationTests {
             }
         });
 
-        ChatMessageDto sentMessage = new ChatMessageDto("pippo", userBanana.getName().value());
+        ChatMessageDto sentMessage = ChatMessageDto.of("pippo", userBanana.getName().value());
         client.send("/app/chat.send." + userBanana.getName().value(), sentMessage);
 
         await()
