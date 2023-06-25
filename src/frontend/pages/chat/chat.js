@@ -25,6 +25,7 @@ export class Chat extends LitElement {
     messages: [],
     message: "",
     nMessages: 0,
+    messageToForward: "",
   };
 
   static get properties() {
@@ -173,8 +174,8 @@ export class Chat extends LitElement {
         <section>
           <il-sidebar
             @update-message="${this.updateMessages}"
+            @onChangeConversation=${this.setActiveChat}
             .login=${this.login}
-            @onChangeConversation=${this.setDescription}
           ></il-sidebar>
 
           <div class="chat">
@@ -198,7 +199,7 @@ export class Chat extends LitElement {
                           .index=${index}
                           .activeChatName=${this.activeChatName}
                           .activeDescription=${this.activeDescription}
-                          @forwardMessage=${this.forwardMessage}
+                          @onForwardMessage=${this.openForwardMenu}
                         ></il-message>`
                     )}
                   </ul>
@@ -210,7 +211,9 @@ export class Chat extends LitElement {
                       width: "400px",
                     }}
                   >
-                    <il-conversation-list></il-conversation-list>
+                    <il-conversation-list
+                      @onChangeConversation=${this.closeForwardMenu}
+                    ></il-conversation-list>
                   </il-modal>
 
                   <il-button-icon
@@ -231,11 +234,29 @@ export class Chat extends LitElement {
     `;
   }
 
-  forwardMessage(event) {
-    let message = event.detail.messageToForward;
-    console.log(message);
+  openForwardMenu(event) {
+    this.messageToForward = event.detail.messageToForward;
     let modal = this.renderRoot.querySelector("il-modal");
     modal.isOpened = true;
+  }
+
+  closeForwardMenu(event) {
+    let modal = this.renderRoot.querySelector("il-modal");
+    modal.isOpened = false;
+
+    this.setActiveChat(event);
+    this.updateMessages(event);
+
+    let sidebarConversationList = this.renderRoot
+      .querySelector("il-sidebar")
+      .shadowRoot.querySelector("il-conversation-list");
+
+    sidebarConversationList.activeChatName = event.detail.conversation.roomName;
+    sidebarConversationList.activeDescription =
+      event.detail.conversation.description;
+
+    this.sendMessage({ detail: { message: this.messageToForward } });
+
   }
 
   async firstUpdated() {
@@ -258,7 +279,7 @@ export class Chat extends LitElement {
     MessagesService.getMessagesById(
       this.login.username,
       this.login.password,
-      e.detail.roomName
+      e.detail.conversation.roomName
     ).then((messages) => {
       this.messages = messages.data.reverse();
 
@@ -266,7 +287,8 @@ export class Chat extends LitElement {
         this.messages[i].index = i;
       }
     });
-    this.activeChatName = e.detail.roomName;
+    this.activeChatName = e.detail.conversation.roomName;
+    this.activeDescription = e.detail.conversation.description;
   }
 
   async updated() {
@@ -389,7 +411,7 @@ export class Chat extends LitElement {
           });
 
           notification.onclick = function () {
-            conversationList.selectChat(this.activeDescription);
+            conversationList.selectChat(message,this.activeDescription);
             window.focus("/");
           };
         }
@@ -406,7 +428,14 @@ export class Chat extends LitElement {
         this.update();
         this.updated();
       }
+
     }
+
+  let conversationList = this.renderRoot
+    .querySelector("il-sidebar")
+    .shadowRoot.querySelector(" il-conversation-list")
+
+    conversationList.setList(message,this.activeDescription)
 
     this.messageNotification(message);
   }
@@ -439,8 +468,9 @@ export class Chat extends LitElement {
     console.log(error);
   }
 
-  setDescription(event) {
-    this.activeDescription = event.detail.description;
+  setActiveChat(event) {
+    this.activeChatName = event.detail.conversation.roomName;
+    this.activeDescription = event.detail.conversation.description;
   }
 }
 

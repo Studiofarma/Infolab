@@ -19,7 +19,7 @@ export class MessageSettings extends LitElement {
       <message-menu-option
         iconName=${IconNames.mdiContentCopy}
         text="Copia"
-        @click=${() => this.copyToClipboard(this.message.content)}
+        @click=${this.copyToClipboardHandler}
       >
       </message-menu-option>
 
@@ -34,7 +34,7 @@ export class MessageSettings extends LitElement {
         ? html` <message-menu-option
             iconName=${IconNames.mdiMessage}
             text="Scrivi in privato"
-            @click=${() => this.goToChat(this.message.sender)}
+            @click=${this.goToChatHandler}
           >
           </message-menu-option>`
         : html``}
@@ -42,22 +42,19 @@ export class MessageSettings extends LitElement {
       <message-menu-option
         iconName=${IconNames.mdiDelete}
         text="Elimina"
-        @click=${() => {
-          this.deleteMessage();
-          this.update();
-        }}
+        @click=${this.deleteMessageHandler}
       >
       </message-menu-option>
     `;
   }
 
-  copyToClipboard(text) {
-    navigator.clipboard.writeText(text);
+  copyToClipboardHandler() {
+    navigator.clipboard.writeText(this.message.content);
   }
 
   forwardMessageHandler() {
     this.dispatchEvent(
-      new CustomEvent("forwardMessage", {
+      new CustomEvent("onForwardMessage", {
         detail: {
           messageToForward: this.message.content,
         },
@@ -65,23 +62,14 @@ export class MessageSettings extends LitElement {
     );
   }
 
-  goToChat(sender) {
-    let conversationList = document
-      .querySelector("body > il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("main > section > il-sidebar")
-      .shadowRoot.querySelector("div > il-conversation-list");
-
-    conversationList.selectChat(sender);
-  }
-
-  deleteMessage() {
+  deleteMessageHandler() {
     let chatElement = document
       .querySelector("body > il-app")
       .shadowRoot.querySelector("il-chat");
 
     chatElement.messages.splice(this.index, 1);
     chatElement.update();
+    this.requestUpdate();
   }
 }
 

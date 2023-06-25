@@ -11,10 +11,11 @@ import { ConversationDto } from "../../../../models/conversation-dto";
 
 class ConversationList extends LitElement {
   static properties = {
-    conversationList: { state: true },
-    activeChatName: { state: "general" },
-    newConversationList: [],
-    users: [],
+    conversationList: { type: Array },
+    newConversationList: { type: Array },
+    users: { type: Array },
+    activeChatName: { type: String },
+    activeDescription: {type: String},
   };
 
   constructor() {
@@ -23,9 +24,9 @@ class ConversationList extends LitElement {
     this.conversationList = [];
     this.newConversationList = [];
     this.usersList = [];
+    this.activeChatName = CookieService.getCookieByKey(CookieService.Keys.lastChat) || ""
+    this.activeDescription = CookieService.getCookieByKey(CookieService.Keys.lastDescription) || ""
     this.onLoad();
-    this.activeChatName =
-      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
   }
 
   static styles = css`
@@ -74,7 +75,7 @@ class ConversationList extends LitElement {
     }
 
     .active {
-      background-color: #1460b1;
+      background-color: #1460b1a0;
     }
 
     .separator {
@@ -90,7 +91,7 @@ class ConversationList extends LitElement {
 
   render() {
     return html`
-      <il-search @search-chat=${this.searchChat}></il-search>
+      <il-search @search-chat=${this.setQueryString}></il-search>
       <div class="conversation-list-scrollable">
         <div>
           <p class="separator">Conversazioni</p>
@@ -108,16 +109,15 @@ class ConversationList extends LitElement {
     `;
   }
 
-  searchChat(event) {
+  setQueryString(event) {
     this.query = event.detail.query;
     this.update();
   }
 
-  scrollToTop() {
-    let element = this.renderRoot.querySelector(
-      "div.conversation-list-scrollable"
+  filterConversations(list) {
+    return list.filter((conversation) =>
+      conversation.roomName.includes(this.query)
     );
-    element.scrollTo({ top: 0 });
   }
 
   async onLoad() {
@@ -148,7 +148,6 @@ class ConversationList extends LitElement {
             unreadMessages: room.unreadMessages,
             description: room.description,
             lastMessage: room.lastMessage,
-            description: room.description,
             id: this.usersList[userIndex].id,
           };
           this.conversationList.push(conversation);
@@ -184,37 +183,20 @@ class ConversationList extends LitElement {
     });
   }
 
-  setList(message) {
-    if (message) {
-      let conversationIndex = this.conversationList.findIndex(
-        (conversation) => conversation.roomName == message.roomName
-      );
+  setList(message, activeDescription) {
+    let index = this.conversationList.findIndex(
+      (conversation) => conversation.description == activeDescription
+    );
 
-      let description = this.conversationList[conversationIndex].description;
+    this.conversationList[index].lastMessage = {
+      content: message.content,
+      timestamp: message.timestamp,
+      sender: message.sender,
+    };
 
-      message.description = description;
-
-      let conversation = this.convertMessageToConversation(message);
-
-      this.conversationList[conversationIndex] = conversation;
-      this.conversationList.sort(this.compareTimestamp);
-    }
+    this.conversationList.sort(this.compareTimestamp);
 
     this.update();
-  }
-
-  convertMessageToConversation(message) {
-    return {
-      roomName: message.roomName,
-      avatarLink: null,
-      lastMessage: {
-        content: message.content,
-        timestamp: message.timestamp,
-        sender: message.sender,
-      },
-      description: message.description,
-      unreadMessages: 0,
-    };
   }
 
   setUsersList(user) {
@@ -242,7 +224,7 @@ class ConversationList extends LitElement {
         sender: null,
         timestamp: null,
       },
-      description: user.name,
+      description: user.description,
       id: user.id,
     };
   }
@@ -254,9 +236,9 @@ class ConversationList extends LitElement {
   }
 
   renderConversationList() {
-    let conversationList = this.searchConversation(this.conversationList);
+    let conversationList = this.filterConversations(this.conversationList);
 
-    return conversationList.map((pharmacy, index) => {
+    return conversationList.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
       if (
         conversation.lastMessage.content ||
@@ -268,17 +250,27 @@ class ConversationList extends LitElement {
           .chat=${conversation}
           @click=${() => {
             this.activeChatName = conversation.roomName;
-            this.updateMessages(conversation.roomName);
+            this.activeDescription = conversation.description;
+            this.updateMessages(conversation);
 
             CookieService.setCookieByKey(
               CookieService.Keys.lastChat,
               conversation.roomName
             );
 
-            this.changeDescription(this.conversationList, index);
-            this.setList(null);
-            this.chatClicked(conversation.roomName);
-            this.update();
+            CookieService.setCookieByKey(
+              CookieService.Keys.lastDescription,
+              conversation.description
+            );
+
+            this.dispatchEvent(
+              new CustomEvent("onChangeConversation", {
+                detail: {
+                  conversation: { ...conversation },
+                },
+              })
+            );
+
             this.cleanSearchInput();
           }}
         ></il-conversation>`;
@@ -293,35 +285,12 @@ class ConversationList extends LitElement {
     });
   }
 
-  changeDescription(list, index) {
-    let description = list[index].description;
-
-    this.dispatchEvent(
-      new CustomEvent("onChangeConversation", {
-        detail: {
-          description: description,
-        },
-        bubbles: true,
-        composed: true,
-      })
-    );
-
-    CookieService.setCookieByKey(
-      CookieService.Keys.lastDescription,
-      description
-    );
-  }
-
-  searchConversation(list) {
-    return list.filter((conversation) =>
-      conversation.description.toLowerCase().includes(this.query.toLowerCase())
-    );
-  }
-
   renderNewConversationList() {
-    let newConversationList = this.searchConversation(this.newConversationList);
+    let newConversationList = this.filterConversations(
+      this.newConversationList
+    );
 
-    return newConversationList.map((pharmacy, index) => {
+    return newConversationList.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
       return html`<il-conversation
         class=${"conversation new-conversation " +
@@ -329,58 +298,39 @@ class ConversationList extends LitElement {
         .chat=${conversation}
         @click=${() => {
           this.activeChatName = conversation.roomName;
-          this.updateMessages(conversation.roomName);
+          this.activeDescription = conversation.description;
+          this.updateMessages(conversation);
 
           CookieService.setCookieByKey(
             CookieService.Keys.lastChat,
             conversation.roomName
           );
 
-          this.changeDescription(this.newConversationList, index);
+          CookieService.setCookieByKey(
+            CookieService.Keys.lastDescription,
+            conversation.description
+          );
 
-          this.chatClicked(conversation.roomName);
+          this.dispatchEvent(
+            new CustomEvent("onChangeConversation", {
+              detail: {
+                conversation: { ...conversation },
+              },
+            })
+          );
+
           this.cleanSearchInput();
         }}
       ></il-conversation>`;
     });
   }
 
-  chatClicked(chatName) {
-    this.dispatchEvent(
-      new CustomEvent("chat-clicked", { detail: { roomName: chatName } })
-    );
-  }
-
-  updateListOnConversationClick(conversation) {
-    const roomFormatted = new ConversationDto(conversation);
-
-    let conversationIndex = this.newConversationList.findIndex(
-      (conversation) => conversation.roomName == roomFormatted.roomName
-    );
-
-    if (conversationIndex == -1) return false;
-
-    this.moveElementToList(
-      this.conversationList,
-      this.newConversationList,
-      conversationIndex
-    );
-    return true;
-  }
-
-  moveElementToList(targetList, sourceList, elementIndex) {
-    const elementToMove = sourceList.splice(elementIndex, 1)[0];
-    targetList.unshift(elementToMove);
-  }
-
-  updateMessages(roomName) {
+  updateMessages(conversation) {
     this.dispatchEvent(
       new CustomEvent("update-message", {
         detail: {
-          roomName: roomName,
+          conversation: conversation,
         },
-        bubbles: true,
-        composed: true,
       })
     );
 
@@ -402,35 +352,6 @@ class ConversationList extends LitElement {
       ?.shadowRoot.querySelector("il-input-ricerca");
     if (searchInput) searchInput.clear();
     this.query = searchInput.value;
-    this.update();
-  }
-
-  // per inoltro e altro
-
-  selectChat(selectedConversation) {
-    for (let conversation of this.conversationList) {
-      if (conversation.roomName == selectedConversation.roomName) {
-        this.activeChatName = conversation.roomName;
-        this.updateMessages(this.activeChatName);
-        return;
-      }
-    }
-
-    this.conversationList.push({
-      avatarLink: null,
-      roomName: selectedConversation.roomName,
-      unreadMessages: 0,
-      lastMessage: {
-        content: null,
-        sender: null,
-        timestamp: null,
-      },
-      description: "babel-babylon",
-    });
-
-    this.activeChatName = selectedConversation.roomName;
-    this.updateMessages(this.activeChatName);
-
     this.update();
   }
 

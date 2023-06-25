@@ -37,7 +37,20 @@ export class Sidebar extends LitElement {
   render() {
     return html`
       <div class="side-bar">
-        <il-conversation-list class="conversation-list"></il-conversation-list>
+        <il-conversation-list
+          class="conversation-list"
+          @update-message=${(event) =>
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            )}
+          }
+          @onChangeConversation=${(event) =>
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            )}
+          .activeChatName=${this.activeChatName}
+          .activeDescription=${this.activeDescription}
+        ></il-conversation-list>
       </div>
     `;
   }
