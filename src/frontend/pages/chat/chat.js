@@ -165,12 +165,6 @@ export class Chat extends LitElement {
       flex-direction: column;
       max-width: 100%;
     }
-
-    .forward-list {
-      width: 400px;
-      background: #083c72;
-      padding: 8px;
-    }
   `;
 
   render() {
@@ -208,10 +202,14 @@ export class Chat extends LitElement {
                     )}
                   </ul>
 
-                  <il-modal>
-                    <div class="forward-list">
-                      <il-conversation-list></il-conversation-list>
-                    </div>
+                  <il-modal
+                    .styleProperties=${{
+                      background: "#083c72",
+                      color: "white",
+                      width: "400px"
+                    }}
+                  >
+                    <il-conversation-list></il-conversation-list>
                   </il-modal>
 
                   <button

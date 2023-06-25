@@ -1,14 +1,16 @@
 import { LitElement, html, css } from "lit";
-
+import { styleMap } from "lit-html/directives/style-map.js";
 export class Modal extends LitElement {
   static properties = {
     isOpened: { type: Boolean },
     closeByBackdropClick: { type: Boolean },
+    styleProperties: { type: Object },
   };
 
   constructor() {
     super();
     this.closeByBackdropClick = true;
+    this.styleProperties = { background: "", color: "", width: "" };
   }
 
   static styles = css`
@@ -17,7 +19,7 @@ export class Modal extends LitElement {
       border: none;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
       border-radius: 6px;
-      padding: 0px; // non toccare ! modificare solo il padding dei nodi figli
+      padding: 8px;
       transition: animation 0.5s;
     }
 
@@ -55,7 +57,10 @@ export class Modal extends LitElement {
 
   render() {
     return html`
-      <dialog @click=${this.handleClick}>
+      <dialog
+        @click=${this.handleClick}
+        style=${styleMap(this.styleProperties)}
+      >
         <slot></slot>
       </dialog>
     `;
