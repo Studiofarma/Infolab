@@ -198,6 +198,7 @@ export class Chat extends LitElement {
                           .index=${index}
                           .activeChatName=${this.activeChatName}
                           .activeDescription=${this.activeDescription}
+                          @forwardMessage=${this.forwardMessage}
                         ></il-message>`
                     )}
                   </ul>
@@ -211,16 +212,6 @@ export class Chat extends LitElement {
                   >
                     <il-conversation-list></il-conversation-list>
                   </il-modal>
-
-                  <button
-                    @click=${() => {
-                      let modal = this.renderRoot.querySelector("il-modal");
-                      modal.isOpened = true;
-                    }}
-                    style="position: fixed; top: 50%; left: 50%; z-index:60000000"
-                  >
-                    open modal
-                  </button>
 
                   <il-button-icon
                     style="bottom: 81px"
@@ -238,6 +229,13 @@ export class Chat extends LitElement {
         </section>
       </main>
     `;
+  }
+
+  forwardMessage(event) {
+    let message = event.detail.messageToForward;
+    console.log(message);
+    let modal = this.renderRoot.querySelector("il-modal");
+    modal.isOpened = true;
   }
 
   async firstUpdated() {

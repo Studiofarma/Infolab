@@ -236,6 +236,10 @@ export class Message extends LitElement {
             .type=${this.message.sender == this.cookie.username
               ? "sender"
               : "receiver"}
+            @forwardMessage=${(event) =>
+              this.dispatchEvent(
+                new CustomEvent(event.type, { detail: event.detail })
+              )}
           >
           </il-message-settings>
         </il-popover>

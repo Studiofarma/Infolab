@@ -26,7 +26,7 @@ export class MessageSettings extends LitElement {
       <message-menu-option
         iconName=${IconNames.mdiShare}
         text="Inoltra"
-        @click=${() => alert("forwarding message!")}
+        @click=${this.forwardMessageHandler}
       >
       </message-menu-option>
 
@@ -53,6 +53,16 @@ export class MessageSettings extends LitElement {
 
   copyToClipboard(text) {
     navigator.clipboard.writeText(text);
+  }
+
+  forwardMessageHandler() {
+    this.dispatchEvent(
+      new CustomEvent("forwardMessage", {
+        detail: {
+          messageToForward: this.message.content,
+        },
+      })
+    );
   }
 
   goToChat(sender) {
