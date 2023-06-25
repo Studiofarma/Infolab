@@ -7,7 +7,7 @@ import { CookieService } from "../../../services/cookie-service";
 
 import { IconNames } from "../../../enums/icon-names";
 
-import "../../../components/message-settings";
+import "./message-settings";
 import "../../../components/popover";
 
 export class Message extends LitElement {

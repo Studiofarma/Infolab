@@ -2,6 +2,8 @@ import { LitElement, html, css } from "lit";
 
 import { IconNames } from "../../../enums/icon-names.js";
 
+import "./message-menu-option";
+
 export class MessageSettings extends LitElement {
   static get properties() {
     return {
