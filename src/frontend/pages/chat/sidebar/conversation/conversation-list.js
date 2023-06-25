@@ -190,9 +190,9 @@ class ConversationList extends LitElement {
         (conversation) => conversation.roomName == message.roomName
       );
 
-      let description = this.conversationList[conversationIndex].description
+      let description = this.conversationList[conversationIndex].description;
 
-      message.description = description
+      message.description = description;
 
       let conversation = this.convertMessageToConversation(message);
 
@@ -293,7 +293,6 @@ class ConversationList extends LitElement {
   }
 
   changeDescription(list, index) {
-    
     let description = list[index].description;
 
     this.dispatchEvent(
@@ -336,10 +335,7 @@ class ConversationList extends LitElement {
             conversation.roomName
           );
 
-          this.changeDescription(
-            this.newConversationList,
-            index
-          );
+          this.changeDescription(this.newConversationList, index);
 
           this.chatClicked(conversation.roomName);
           this.cleanSearchInput();
@@ -408,10 +404,9 @@ class ConversationList extends LitElement {
     this.update();
   }
 
-  // per inoltro e altro 
+  // per inoltro e altro
 
   selectChat(selectedConversation) {
-
     for (let conversation of this.conversationList) {
       if (conversation.roomName == selectedConversation.roomName) {
         this.activeChatName = conversation.roomName;
@@ -419,7 +414,6 @@ class ConversationList extends LitElement {
         return;
       }
     }
-
 
     this.conversationList.push({
       avatarLink: null,
@@ -430,7 +424,7 @@ class ConversationList extends LitElement {
         sender: null,
         timestamp: null,
       },
-      description: "babel-babylon"
+      description: "babel-babylon",
     });
 
     this.activeChatName = selectedConversation.roomName;
@@ -444,7 +438,6 @@ class ConversationList extends LitElement {
 
     return array.join("-");
   }
-
 }
 
 customElements.define("il-conversation-list", ConversationList);

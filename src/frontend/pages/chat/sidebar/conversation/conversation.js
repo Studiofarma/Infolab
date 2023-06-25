@@ -22,7 +22,6 @@ class Conversation extends LitElement {
       display: flex;
       gap: 12px;
       align-items: flex-start;
-
       padding: 12px 12px;
       cursor: pointer;
       transition: 0.5s;

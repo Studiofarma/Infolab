@@ -13,7 +13,7 @@ import { IconNames } from "../../enums/icon-names";
 import "../../components/message";
 import "../../components/button-icon";
 import "../../components/icon";
-import "../../components/forward-list";
+import "../../components/modal";
 import "./input/input-controls";
 import "./sidebar/sidebar";
 import "./header/chat-header";
@@ -47,7 +47,9 @@ export class Chat extends LitElement {
     this.nMessages = 0;
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
-    this.activeDescription = CookieService.getCookieByKey(CookieService.Keys.lastDescription);
+    this.activeDescription = CookieService.getCookieByKey(
+      CookieService.Keys.lastDescription
+    );
     this.forwardListVisibility = false;
     this.scrolledToBottom = false;
     window.addEventListener("resize", () => {
@@ -163,6 +165,12 @@ export class Chat extends LitElement {
       flex-direction: column;
       max-width: 100%;
     }
+
+    .forward-list {
+      width: 400px;
+      background: #083c72;
+      padding: 8px;
+    }
   `;
 
   render() {
@@ -200,7 +208,21 @@ export class Chat extends LitElement {
                     )}
                   </ul>
 
-                  <il-forward-list></il-forward-list>
+                  <il-modal>
+                    <div class="forward-list">
+                      <il-conversation-list></il-conversation-list>
+                    </div>
+                  </il-modal>
+
+                  <button
+                    @click=${() => {
+                      let modal = this.renderRoot.querySelector("il-modal");
+                      modal.isOpened = true;
+                    }}
+                    style="position: fixed; top: 50%; left: 50%; z-index:60000000"
+                  >
+                    open modal
+                  </button>
 
                   <il-button-icon
                     style="bottom: 81px"
@@ -371,9 +393,7 @@ export class Chat extends LitElement {
           });
 
           notification.onclick = function () {
-            conversationList.selectChat(
-              this.activeDescription
-            );
+            conversationList.selectChat(this.activeDescription);
             window.focus("/");
           };
         }
@@ -397,9 +417,12 @@ export class Chat extends LitElement {
         .shadowRoot.querySelector("il-sidebar")
         .shadowRoot.querySelector("il-conversation-list");
 
-        conversationListElement.setList(message)
+      conversationListElement.setList(message);
 
-      let room = conversationListElement.convertUserToRoom(message.roomName, message.activeDescription);
+      let room = conversationListElement.convertUserToRoom(
+        message.roomName,
+        message.activeDescription
+      );
       conversationListElement.onMessageInNewChat(room, message);
     }
 
@@ -411,7 +434,6 @@ export class Chat extends LitElement {
 
     let messageContent = this.message.trim();
 
-
     if (messageContent && this.stompClient) {
       const chatMessage = {
         sender: this.login.username,
@@ -421,7 +443,9 @@ export class Chat extends LitElement {
 
       this.stompClient.send(
         `/app/chat.send${
-          this.activeDescription != "Generale" ? `.${this.activeDescription}` : ""
+          this.activeDescription != "Generale"
+            ? `.${this.activeDescription}`
+            : ""
         }`,
         {},
         JSON.stringify(chatMessage)
@@ -434,11 +458,9 @@ export class Chat extends LitElement {
   }
 
   setDescription(event) {
-    console.log(event)
+    console.log(event);
     this.activeDescription = event.detail.description;
   }
-
- 
 }
 
 customElements.define("il-chat", Chat);
