@@ -89,7 +89,7 @@ class Conversation extends LitElement {
           .id=${this.chat.id}
         ></il-avatar>
         <div class="name-box">
-          <p class="chat-name">${this.chatNameFormatter(this.chat.roomName)}</p>
+          <p class="chat-name">${this.chat.description}</p>
           <p class="last-message">
             ${this.lastMessageTextFormatter(
               this.chat.lastMessage.sender,
@@ -165,16 +165,6 @@ class Conversation extends LitElement {
     }
 
     return "Date not available";
-  }
-
-  chatNameFormatter(chatName) {
-    let cookie = CookieService.getCookie();
-    if (chatName.includes("-")) {
-      chatName = chatName.split("-");
-      chatName.splice(chatName.indexOf(cookie.username), 1);
-      return chatName[0];
-    }
-    return chatName;
   }
 
   lastMessageTextFormatter(sender, message) {

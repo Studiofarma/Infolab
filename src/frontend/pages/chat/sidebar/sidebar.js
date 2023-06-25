@@ -41,12 +41,6 @@ export class Sidebar extends LitElement {
       </div>
     `;
   }
-
-  loadChat(e) {
-    this.shadowRoot
-      .querySelector("il-conversation-list")
-      .selectChat(e.detail.selectedChatName);
-  }
 }
 
 customElements.define("il-sidebar", Sidebar);

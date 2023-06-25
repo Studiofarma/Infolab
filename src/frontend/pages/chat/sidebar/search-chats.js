@@ -149,20 +149,6 @@ export class SearchChats extends LitElement {
         detail: {
           query: event.detail.query,
         },
-        bubbles: true,
-        composed: true,
-      })
-    );
-  }
-
-  loadChat(selectedChatName) {
-    this.dispatchEvent(
-      new CustomEvent("load-chat", {
-        detail: {
-          selectedChatName: selectedChatName,
-        },
-        bubbles: true,
-        composed: true,
       })
     );
   }

@@ -227,12 +227,12 @@ class ConversationList extends LitElement {
     );
 
     if (!isPresent) {
-      const roomFormatted = this.convertUserToRoom(roomName, user.name);
+      const roomFormatted = this.convertUserToRoom(roomName, user);
       this.newConversationList.push(roomFormatted);
     }
   }
 
-  convertUserToRoom(roomName, description) {
+  convertUserToRoom(roomName, user) {
     return {
       roomName: roomName,
       avatarLink: null,
@@ -242,7 +242,8 @@ class ConversationList extends LitElement {
         sender: null,
         timestamp: null,
       },
-      description: description,
+      description: user.name,
+      id: user.id,
     };
   }
 
@@ -313,7 +314,7 @@ class ConversationList extends LitElement {
 
   searchConversation(list) {
     return list.filter((conversation) =>
-      conversation.roomName.includes(this.query)
+      conversation.description.toLowerCase().includes(this.query.toLowerCase())
     );
   }
 

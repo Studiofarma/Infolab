@@ -406,20 +406,6 @@ export class Chat extends LitElement {
         this.update();
         this.updated();
       }
-
-      let conversationListElement = document
-        .querySelector("il-app")
-        .shadowRoot.querySelector("il-chat")
-        .shadowRoot.querySelector("il-sidebar")
-        .shadowRoot.querySelector("il-conversation-list");
-
-      conversationListElement.setList(message);
-
-      let room = conversationListElement.convertUserToRoom(
-        message.roomName,
-        message.activeDescription
-      );
-      conversationListElement.onMessageInNewChat(room, message);
     }
 
     this.messageNotification(message);
@@ -454,7 +440,6 @@ export class Chat extends LitElement {
   }
 
   setDescription(event) {
-    console.log(event);
     this.activeDescription = event.detail.description;
   }
 }
