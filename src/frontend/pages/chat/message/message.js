@@ -1,13 +1,14 @@
 import { LitElement, html, css } from "lit";
 
 import { resolveMarkdown } from "lit-markdown";
-import { MarkdownService } from "../services/markdown-service";
+import { MarkdownService } from "../../../services/markdown-service";
 
-import { CookieService } from "../services/cookie-service";
+import { CookieService } from "../../../services/cookie-service";
 
-import { IconNames } from "../enums/icon-names";
+import { IconNames } from "../../../enums/icon-names";
 
-import "./message-settings";
+import "../../../components/message-settings";
+import "../../../components/popover";
 
 export class Message extends LitElement {
   static properties = {
@@ -15,7 +16,7 @@ export class Message extends LitElement {
     message: { type: Object },
     index: { type: Number },
     activeChatName: { type: String },
-		activeDescription: {type: String}
+    activeDescription: { type: String },
   };
 
   constructor() {
@@ -143,16 +144,17 @@ export class Message extends LitElement {
       overflow-wrap: break-word;
     }
 
-    .settings-container {
+    il-popover {
       position: relative;
       background: white;
       border-radius: 6px;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
       opacity: 0;
       transition: opacity 0.5s;
+      z-index: 1000000;
     }
 
-    .message-body:hover .settings-container {
+    .message-body:hover il-popover {
       opacity: 1;
     }
 
@@ -160,18 +162,6 @@ export class Message extends LitElement {
       text-align: end;
       font-size: 11px;
       color: #e9e9e9;
-    }
-
-    .sender ~ .settings-container il-message-settings {
-      position: absolute;
-      top: 0px;
-      left: -89px;
-    }
-
-    .receiver ~ .settings-container il-message-settings {
-      position: absolute;
-      top: 0px;
-      right: 33px;
     }
 
     .receiver .message-timestamp {
@@ -225,17 +215,21 @@ export class Message extends LitElement {
         </div>
 
         <!-- end -->
-        <!-- menu icon -->
 
-        <div class="settings-container">
+        <il-popover
+          .popupCoords=${this.message.sender == this.cookie.username
+            ? { top: "0px", left: "-75px" }
+            : { top: "0px", right: "-33px" }}
+        >
           <il-button-icon
-            @click=${this.openSettings}
+            slot="pop-button"
             content="${IconNames.dotsHorizontal}"
             color="black"
           >
           </il-button-icon>
 
           <il-message-settings
+            slot="popup"
             .message=${this.message}
             .cookie=${this.cookie}
             .index=${this.index}
@@ -244,23 +238,9 @@ export class Message extends LitElement {
               : "receiver"}
           >
           </il-message-settings>
-        </div>
-
-        <!-- end -->
+        </il-popover>
       </div>
     `;
-  }
-
-  openSettings() {
-    let settings = this.renderRoot.querySelector("il-message-settings");
-
-    settings.openDialog();
-  }
-
-  closeSettings() {
-    let settings = this.renderRoot.querySelector("il-message-settings");
-
-    settings.closeDialog();
   }
 
   compareMessageDate(messageDate1, messageDate2) {

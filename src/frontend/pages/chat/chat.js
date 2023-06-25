@@ -10,7 +10,7 @@ import { CookieService } from "../../services/cookie-service";
 
 import { IconNames } from "../../enums/icon-names";
 
-import "../../components/message";
+import "./message/message";
 import "../../components/button-icon";
 import "../../components/icon";
 import "../../components/modal";
@@ -206,7 +206,7 @@ export class Chat extends LitElement {
                     .styleProperties=${{
                       background: "#083c72",
                       color: "white",
-                      width: "400px"
+                      width: "400px",
                     }}
                   >
                     <il-conversation-list></il-conversation-list>
