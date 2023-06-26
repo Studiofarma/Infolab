@@ -320,7 +320,7 @@ class ConversationList extends LitElement {
       this.conversationList
     );
 
-    return this.conversationListFiltered.map((pharmacy, index) => {
+    return this.conversationListFiltered.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
       if (
         conversation.lastMessage.content ||
