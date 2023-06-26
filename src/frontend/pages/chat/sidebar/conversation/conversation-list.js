@@ -131,9 +131,19 @@ class ConversationList extends LitElement {
 
     this.getSelectedRoom(convListLength);
 
-    if (e.detail.key == "Enter" && this.indexOfSelectedChat > -1) {
+    if (e.detail.key == "Enter" && this.indexOfSelectedChat > -1)
       this.changeRoom(this.selectedRoom);
-    }
+
+    if (this.indexOfSelectedChat > -1) this.scrollToSelectedChat();
+  }
+
+  scrollToSelectedChat() {
+    this.renderRoot
+      .querySelectorAll("il-conversation")
+      [this.indexOfSelectedChat].scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
   }
 
   changeIndexOfSelectedChat(key, maxIndex) {
@@ -322,6 +332,7 @@ class ConversationList extends LitElement {
           conversation.roomName == this.selectedRoom
             ? "active"
             : "")}
+          id=${conversation.roomName == this.selectedRoom ? "selected" : ""}
           .chat=${conversation}
           @click=${() => {
             this.changeRoom(conversation.roomName);
@@ -359,6 +370,7 @@ class ConversationList extends LitElement {
           ? "active"
           : "")}
         .chat=${conversation}
+        id=${conversation.roomName == this.selectedRoom ? "selected" : ""}
         @click=${() => {
           this.changeRoom(conversation.roomName);
         }}
