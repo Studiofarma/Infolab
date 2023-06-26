@@ -11,6 +11,7 @@ import { ConversationDto } from "../../../../models/conversation-dto";
 
 const arrowUp = "ArrowUp";
 const arrowDown = "ArrowDown";
+const enter = "Enter";
 
 class ConversationList extends LitElement {
   static properties = {
@@ -131,7 +132,7 @@ class ConversationList extends LitElement {
 
     this.getSelectedRoom(convListLength);
 
-    if (e.detail.key == "Enter" && this.indexOfSelectedChat > -1)
+    if (e.detail.key == enter && this.indexOfSelectedChat > -1)
       this.changeRoom(this.selectedRoom);
 
     if (this.indexOfSelectedChat > -1) this.scrollToSelectedChat();
