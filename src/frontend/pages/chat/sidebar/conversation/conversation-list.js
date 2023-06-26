@@ -124,29 +124,36 @@ class ConversationList extends LitElement {
   navigateSearchResultsWithArrows(e) {
     let convListLength = this.conversationListFiltered.length;
     let newConvListLength = this.newConversationListFiltered.length;
-    let maxINdex = convListLength + newConvListLength - 1;
+    let maxIndex = convListLength + newConvListLength - 1;
     let room;
 
-    if (e.detail.key == arrowDown && this.indexOnConversationList < maxIndex)
-      this.indexOnConversationList++;
-    else if (e.detail.key == arrowUp && this.indexOnConversationList > -1)
-      this.indexOnConversationList--;
+    if (e.detail.key == arrowDown && e.detail.key == arrowUp)
+      this.changeIndexOfSelectedChat(e.detail.key, maxIndex);
 
+    this.getSelectedRoom();
+
+    if (e.detail.key == "Enter" && this.indexOnConversationList > -1) {
+      this.changeRoom(room);
+    }
+  }
+
+  changeIndexOfSelectedChat(key, maxIndex) {
+    if (key == arrowDown && this.indexOnConversationList < maxIndex)
+      this.indexOnConversationList++;
+    else if (key == arrowUp && this.indexOnConversationList > -1)
+      this.indexOnConversationList--;
+  }
+
+  getSelectedRoom() {
     if (this.indexOnConversationList > -1) {
-      room =
+      let room =
         this.indexOnConversationList < convListLength
           ? this.conversationListFiltered[this.indexOnConversationList].roomName
           : this.newConversationListFiltered[
               this.indexOnConversationList - convListLength
             ].roomName;
       this.selectedRoom = room;
-    }
-
-    if (e.detail.key == "Enter" && this.indexOnConversationList > -1) {
-      this.changeRoom(room);
-    }
-
-    if (this.indexOnConversationList < 0) this.selectedRoom = "";
+    } else this.selectedRoom = "";
   }
 
   changeRoom(room) {
