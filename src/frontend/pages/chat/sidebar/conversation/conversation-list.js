@@ -9,6 +9,9 @@ import "./conversation";
 import "../search-chats";
 import { ConversationDto } from "../../../../models/conversation-dto";
 
+const arrowUp = "ArrowUp";
+const arrowDown = "ArrowDown";
+
 class ConversationList extends LitElement {
   static properties = {
     conversationList: { state: true },
@@ -33,8 +36,6 @@ class ConversationList extends LitElement {
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
     this.selectedRoom = "";
-    this.arrowUp = "ArrowUp";
-    this.arrowDown = "ArrowDown";
   }
 
   static styles = css`
@@ -123,15 +124,12 @@ class ConversationList extends LitElement {
   navigateSearchResultsWithArrows(e) {
     let convListLength = this.conversationListFiltered.length;
     let newConvListLength = this.newConversationListFiltered.length;
-    let maxLength = convListLength + newConvListLength - 1;
+    let maxINdex = convListLength + newConvListLength - 1;
     let room;
 
-    if (
-      e.detail.key == this.arrowDown &&
-      this.indexOnConversationList < maxLength
-    )
+    if (e.detail.key == arrowDown && this.indexOnConversationList < maxIndex)
       this.indexOnConversationList++;
-    else if (e.detail.key == this.arrowUp && this.indexOnConversationList > -1)
+    else if (e.detail.key == arrowUp && this.indexOnConversationList > -1)
       this.indexOnConversationList--;
 
     if (this.indexOnConversationList > -1) {
