@@ -16,11 +16,6 @@ export class EmojiPicker extends LitElement {
   }
 
   static styles = css`
-    emoji-picker {
-      --emoji-size: 15pt;
-      --border-size: 2px;
-    }
-
     div {
       width: 5000px;
       height: 5000px;

@@ -102,6 +102,8 @@ export class Editor extends LitElement {
       }
     }
 
+    MarkdownService.focusTextarea();
+
     if (event.altKey) this.checkMarkdownKeys(event.key);
   }
 

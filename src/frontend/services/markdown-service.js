@@ -102,6 +102,7 @@ export class MarkdownService {
   static focusTextarea() {
     const textarea =
       MarkdownService.getEditor().shadowRoot.querySelector("textarea");
+    textarea.blur();
     textarea.focus();
   }
 }
