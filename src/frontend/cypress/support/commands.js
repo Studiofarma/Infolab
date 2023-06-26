@@ -53,3 +53,12 @@ Cypress.Commands.add("login", (user) => {
     }
   );
 });
+
+Cypress.Commands.add(
+  "countElements",
+  (elementParentPath, elementToFind, number) => {
+    cy.getLitElement(elementParentPath)
+      .find(elementToFind)
+      .should("have.length.of.at.least", number);
+  }
+);
