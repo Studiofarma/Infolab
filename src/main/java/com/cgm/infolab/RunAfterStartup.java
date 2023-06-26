@@ -23,11 +23,14 @@ public class RunAfterStartup {
     public static final UserEntity[] TEST_USERS =
             {UserEntity.of(Username.of("user1"), "Mario Rossi"),
             UserEntity.of(Username.of("user2"), "Fabrizio Bruno"),
-            UserEntity.of(Username.of("user3"), "Ruggero Esposito"),
-            UserEntity.of(Username.of("user4"), "Ileana Trentino"),
             UserEntity.of(Username.of("davide.giudici"), "Davide Giudici"),
             UserEntity.of(Username.of("mattia.pedersoli"), "Mattia Pedersoli"),
-            UserEntity.of(Username.of("luca.minini"), "Luca Minini")};
+            UserEntity.of(Username.of("luca.minini"), "Luca Minini"),
+            UserEntity.of(Username.of("Lorenzo"), ""),
+            UserEntity.of(Username.of("Daniele"), ""),
+            UserEntity.of(Username.of("Davide"), ""),
+            UserEntity.of(Username.of("Mirko"), ""),
+            };
     public static final RoomEntity[] ROOMS = {RoomEntity.general()};
 
     private final RoomRepository roomRepository;
