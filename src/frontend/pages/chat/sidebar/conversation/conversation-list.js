@@ -126,13 +126,15 @@ class ConversationList extends LitElement {
     if (e.detail.key == arrowDown || e.detail.key == arrowUp)
       this.changeIndexOfSelectedChat(e.detail.key);
 
-    if (this.indexOfSelectedChat > -1) {
-      this.scrollToSelectedChat();
-      this.getSelectedRoom();
-      if (e.detail.key == enter) this.changeRoom(this.selectedRoom);
-    } else {
+    if (this.indexOfSelectedChat <= -1) {
       this.selectedRoom = "";
+      return;
     }
+
+    this.scrollToSelectedChat();
+    this.getSelectedRoom();
+
+    if (e.detail.key == enter) this.changeRoom(this.selectedRoom);
   }
 
   scrollToSelectedChat() {
