@@ -89,7 +89,7 @@ public class PopulateDb {
                 destinationUser = buildUsername(random.nextInt(USERS_NUMBER));
             } while (sender.equals(destinationUser));
 
-            RoomName room = RoomName.of(sender, buildUsername(random.nextInt(USERS_NUMBER)));
+            RoomName room = RoomName.of(sender, destinationUser);
 
             ChatMessageDto messageDto = new ChatMessageDto(randomMessage(), new Timestamp(System.currentTimeMillis()).toLocalDateTime(), sender.value());
 
@@ -102,8 +102,16 @@ public class PopulateDb {
     }
 
     private String randomMessage() {
-        byte[] bytes = new byte[50];
-        new Random().nextBytes(bytes);
-        return new String(bytes, StandardCharsets.UTF_8);
+        int leftLimit = 97; // letter 'a'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 50;
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(targetStringLength);
+        for (int i = 0; i < targetStringLength; i++) {
+            int randomLimitedInt = leftLimit + (int)
+                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+        return buffer.toString();
     }
 }

@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -77,8 +78,8 @@ public class ChatService {
 
             try {
                 return roomRepository.getByRoomName(roomName, username).orElseThrow();
-            } catch (Exception e) {
-                log.error("Room già esistente");
+            } catch (EmptyResultDataAccessException e) {
+                log.error("Room inesistente");
             }
 
             return null;
