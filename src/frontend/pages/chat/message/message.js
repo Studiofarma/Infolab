@@ -236,7 +236,13 @@ export class Message extends LitElement {
             .type=${this.message.sender == this.cookie.username
               ? "sender"
               : "receiver"}
+
             @onForwardMessage=${(event) =>
+              this.dispatchEvent(
+                new CustomEvent(event.type, { detail: event.detail })
+              )}
+  
+  @onGoToChat=${(event) =>
               this.dispatchEvent(
                 new CustomEvent(event.type, { detail: event.detail })
               )}

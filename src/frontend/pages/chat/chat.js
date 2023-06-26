@@ -10,6 +10,8 @@ import { CookieService } from "../../services/cookie-service";
 
 import { IconNames } from "../../enums/icon-names";
 
+import { ConversationDto } from "../../models/conversation-dto";
+
 import "./message/message";
 import "../../components/button-icon";
 import "../../components/icon";
@@ -200,6 +202,7 @@ export class Chat extends LitElement {
                           .activeChatName=${this.activeChatName}
                           .activeDescription=${this.activeDescription}
                           @onForwardMessage=${this.openForwardMenu}
+                          @onGoToChat=${this.goToChat}
                         ></il-message>`
                     )}
                   </ul>
@@ -245,7 +248,6 @@ export class Chat extends LitElement {
     let modal = this.renderRoot.querySelector("il-modal");
     modal.isOpened = false;
 
-
     // apro la chat a cui devo inoltrare
     this.setActiveChat(event);
     this.updateMessages(event);
@@ -260,7 +262,37 @@ export class Chat extends LitElement {
 
     // invio il messaggio
     this.sendMessage({ detail: { message: this.messageToForward } });
+  }
 
+  goToChat(event) {
+    let sidebarConversationList = this.renderRoot
+      .querySelector("il-sidebar")
+      .shadowRoot.querySelector("il-conversation-list");
+
+    let list = sidebarConversationList.conversationList;
+
+    let newList = sidebarConversationList.newConversationList;
+
+    let index = list.findIndex(
+      (elem) => elem.description === event.detail.description
+    );
+
+    if (index === -1) {
+      index = newList.findIndex(
+        (elem) => elem.description === event.detail.description+"\n"
+      );
+
+      console.log(index)
+      sidebarConversationList.activeChatName = newList[index].roomName;
+      sidebarConversationList.activeDescription = newList[index].description;
+
+      this.updateMessages({ detail: {conversation: newList[index]} });
+    } else {
+      sidebarConversationList.activeChatName = list[index].roomName;
+      sidebarConversationList.activeDescription = list[index].description;
+
+      this.updateMessages({ detail: {conversation: list[index]} });
+    }
   }
 
   async firstUpdated() {
@@ -415,7 +447,7 @@ export class Chat extends LitElement {
           });
 
           notification.onclick = function () {
-            conversationList.selectChat(message,this.activeDescription);
+            conversationList.selectChat(message, this.activeDescription);
             window.focus("/");
           };
         }
@@ -432,15 +464,14 @@ export class Chat extends LitElement {
         this.update();
         this.updated();
       }
-
     }
 
-    // riordino le conversazioni con una funzione contenuta in il-conversation-list che compara il timestamp 
-  let conversationList = this.renderRoot
-    .querySelector("il-sidebar")
-    .shadowRoot.querySelector(" il-conversation-list")
+    // riordino le conversazioni con una funzione contenuta in il-conversation-list che compara il timestamp
+    let conversationList = this.renderRoot
+      .querySelector("il-sidebar")
+      .shadowRoot.querySelector(" il-conversation-list");
 
-    conversationList.setList(message)
+    conversationList.setList(message);
 
     this.messageNotification(message);
   }

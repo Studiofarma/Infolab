@@ -62,7 +62,16 @@ export class MessageSettings extends LitElement {
     );
   }
 
-  goToChatHandler() {}
+  goToChatHandler() {
+    console.log(this.message)
+    this.dispatchEvent(
+      new CustomEvent("onGoToChat", {
+        detail: {
+          description: this.message.sender,
+        },
+      })
+    );
+  }
 
   deleteMessageHandler() {
     let chatElement = document
