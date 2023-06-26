@@ -33,6 +33,8 @@ class ConversationList extends LitElement {
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
     this.selectedRoom = "";
+    this.arrowUp = "ArrowUp";
+    this.arrowDown = "ArrowDown";
   }
 
   static styles = css`
@@ -124,9 +126,12 @@ class ConversationList extends LitElement {
     let maxLength = convListLength + newConvListLength - 1;
     let room;
 
-    if (e.detail.key == "ArrowDown" && this.indexOnConversationList < maxLength)
+    if (
+      e.detail.key == this.arrowDown &&
+      this.indexOnConversationList < maxLength
+    )
       this.indexOnConversationList++;
-    else if (e.detail.key == "ArrowUp" && this.indexOnConversationList > -1)
+    else if (e.detail.key == this.arrowUp && this.indexOnConversationList > -1)
       this.indexOnConversationList--;
 
     if (this.indexOnConversationList > -1) {
