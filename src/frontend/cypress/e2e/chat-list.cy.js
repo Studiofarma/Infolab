@@ -8,6 +8,16 @@ describe("chat list render spec", () => {
       7
     );
   });
+
+  it("change chat works", () => {
+    cy.login({ user: "user1", password: "password1" });
+
+    cy.getLitElement("il-app,il-chat,il-sidebar,il-conversation-list")
+      .find("il-conversation")
+      .first()
+      .click({ force: true });
+    cy.countElements("il-app,il-chat,il-chat-header", "il-avatar", 2);
+  });
 });
 
 afterEach(() => {
