@@ -4,7 +4,7 @@ describe("chat list render spec", () => {
 
     cy.countElements(
       "il-app,il-chat,il-sidebar,il-conversation-list",
-      "conversation",
+      "il-conversation",
       7
     );
   });
