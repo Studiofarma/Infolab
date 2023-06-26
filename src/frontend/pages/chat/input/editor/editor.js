@@ -3,6 +3,9 @@ import { MarkdownService } from "../../../../services/markdown-service";
 
 import "../../../../components/button-text";
 
+const textareaDefaultHeight = 21;
+const enterKey = "Enter";
+
 export class Editor extends LitElement {
   static properties = {
     message: { type: String },
@@ -17,7 +20,7 @@ export class Editor extends LitElement {
     textarea {
       width: 100%;
       resize: none;
-      font-size: 21px;
+      font-size: ${textareaDefaultHeight}px;
       outline: none;
       background: none;
       color: white;
@@ -27,7 +30,7 @@ export class Editor extends LitElement {
       padding-left: 10px;
       line-height: 20px;
       max-height: 100px;
-      height: 21px;
+      height: ${textareaDefaultHeight}px;
     }
 
     textarea::placeholder {
@@ -73,9 +76,8 @@ export class Editor extends LitElement {
 
   textEditorResize() {
     const textarea = this.shadowRoot.querySelector("textarea");
-    textarea.style.height = "21px";
-    const scrollHeight = textarea.scrollHeight;
-    textarea.style.height = `${scrollHeight}px`;
+    textarea.style.height = `${textareaDefaultHeight}px`;
+    textarea.style.height = `${textarea.scrollHeight}px`;
     this.dispatchEvent(
       new CustomEvent("text-editor-resized", {
         detail: { height: textarea.clientHeight },
@@ -93,7 +95,7 @@ export class Editor extends LitElement {
   }
 
   onKeyDown(event) {
-    if (event.key == "Enter") {
+    if (event.key == enterKey) {
       if (event.shiftKey) {
         this.checkList(event);
       } else {
@@ -102,7 +104,7 @@ export class Editor extends LitElement {
       }
     }
 
-    MarkdownService.focusTextarea();
+    this.focusTextarea();
 
     if (event.altKey) this.checkMarkdownKeys(event.key);
   }
@@ -116,45 +118,68 @@ export class Editor extends LitElement {
   checkList(event) {
     const rows = this.message.split("\n");
     let lastRow = rows[rows.length - 1].trimStart();
+    let indexOfDot;
 
-    if (lastRow.startsWith("* ")) {
+    if (MarkdownService.checkUnorderedList(lastRow)) {
       this.message += "\n* ";
       event.preventDefault();
-      this.textChanged();
-      this.textEditorResize();
-      return;
+    } else if (
+      (indexOfDot = MarkdownService.checkOrderedList(lastRow)) !== -1
+    ) {
+      const lineNumber = Number(lastRow.substring(0, indexOfDot)) + 1;
+      this.message += `\n${lineNumber}. `;
+      event.preventDefault();
     }
 
-    const indexOfDot = lastRow.indexOf(".");
-    if (indexOfDot === -1) return;
-    for (let i = 0; i < indexOfDot; i++) {
-      if (isNaN(Number(lastRow[i]))) return;
-    }
-
-    const lineNumber = Number(lastRow.substring(0, indexOfDot)) + 1;
-    this.message += `\n${lineNumber}. `;
-    event.preventDefault();
     this.textChanged();
     this.textEditorResize();
   }
 
   checkMarkdownKeys(currentKeyPressed) {
-    if (currentKeyPressed === "b") {
-      MarkdownService.insertBold();
-      return;
-    }
-    if (currentKeyPressed === "i") {
-      MarkdownService.insertItalic();
-      return;
-    }
-    if (currentKeyPressed === "s") {
-      MarkdownService.insertStrike();
-      return;
-    }
-    if (currentKeyPressed === "l") {
-      MarkdownService.insertLink();
-      return;
-    }
+    const selectedText = this.getSelectedText();
+    let textToInsert = selectedText;
+
+    if (currentKeyPressed === "b")
+      textToInsert = MarkdownService.insertBold(selectedText);
+    else if (currentKeyPressed === "i")
+      textToInsert = MarkdownService.insertItalic(selectedText);
+    else if (currentKeyPressed === "s")
+      textToInsert = MarkdownService.insertStrike(selectedText);
+    else if (currentKeyPressed === "l")
+      textToInsert = MarkdownService.insertLink(selectedText);
+
+    this.insertInTextarea(textToInsert);
+  }
+
+  getTextarea() {
+    return this.shadowRoot.querySelector("textarea");
+  }
+
+  insertInTextarea(text) {
+    const textarea = this.getTextarea();
+    const selection = this.getSelection();
+
+    this.message =
+      textarea.value.slice(0, selection.start) +
+      text +
+      textarea.value.slice(selection.end);
+
+    this.textChanged();
+    this.focusTextarea();
+  }
+
+  focusTextarea() {
+    const textarea = this.getTextarea();
+
+    textarea.blur();
+    textarea.focus();
+  }
+
+  getSelectedText() {
+    const textarea = this.getTextarea();
+    const selection = this.getSelection();
+
+    return textarea.value.slice(selection.start, selection.end);
   }
 }
 customElements.define("il-editor", Editor);

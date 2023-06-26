@@ -6,7 +6,8 @@ import "../../../components/button-icon";
 import "../../../components/input-field";
 import "./emoji-picker";
 
-import { MarkdownService } from "../../../services/markdown-service";
+const emojiPickerBottomOffset = 90;
+const enterKey = "Enter";
 
 export class InputControls extends LitElement {
   static properties = {
@@ -93,6 +94,7 @@ export class InputControls extends LitElement {
             <il-insertion-bar
               @send-message=${this.sendMessage}
               @emoji-picker-click=${this.emojiPickerClick}
+              .editor=${this.shadowRoot.querySelector("il-editor")}
             >
             </il-insertion-bar>
           </div>
@@ -107,23 +109,28 @@ export class InputControls extends LitElement {
     `;
   }
 
+  getEditor() {
+    return this.shadowRoot.querySelector("il-editor");
+  }
+
   insertEmoji(event) {
-    MarkdownService.insertInTextArea(event.detail.unicode);
-    MarkdownService.focusTextarea();
+    this.getEditor().insertInTextarea(event.detail.unicode);
   }
 
   checkEnterKey(event) {
-    if (event.key === "Enter") this.sendMessage();
+    if (event.key === enterKey) this.sendMessage();
   }
 
   emojiPickerClick() {
     this.isEmojiPickerOpen = !this.isEmojiPickerOpen;
-    MarkdownService.focusTextarea();
+    this.getEditor().focusTextarea();
   }
 
   textEditorResized(event) {
     const emojiPicker = this.shadowRoot.querySelector("il-emoji-picker");
-    emojiPicker.style.bottom = `${event.detail.height + 90}px`;
+    emojiPicker.style.bottom = `${
+      event.detail.height + emojiPickerBottomOffset
+    }px`;
 
     this.dispatchEvent(
       new CustomEvent("text-editor-resized", { detail: event.detail })

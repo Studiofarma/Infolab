@@ -37,8 +37,7 @@ export class MessageSettings extends LitElement {
         <message-menu-option
           iconName=${IconNames.mdiContentCopy}
           text="Copia"
-          @click=${() =>
-            this.copyToClipboard(this.message.content.replaceAll("\\\n", "\n"))}
+          @click=${() => this.copyToClipboard(this.message.content)}
         >
         </message-menu-option>
 

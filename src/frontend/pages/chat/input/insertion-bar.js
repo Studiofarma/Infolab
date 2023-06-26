@@ -1,14 +1,15 @@
 import { LitElement, html, css } from "lit";
+import { when } from "lit/directives/when.js";
 
 import "../../../components/button-icon";
 import "./editor/editor-formatting-buttons";
 
 import { IconNames } from "../../../enums/icon-names";
-import { MarkdownService } from "../../../services/markdown-service";
 
 export class InsertionBar extends LitElement {
   static properties = {
     bEditor: false,
+    editor: undefined,
   };
 
   static styles = css`
@@ -54,12 +55,16 @@ export class InsertionBar extends LitElement {
             content=${IconNames.pencil}
             @click=${() => {
               this.bEditor = !this.bEditor;
-              MarkdownService.focusTextarea();
+              this.editor.focusTextarea();
             }}
           ></il-button-icon>
-          ${this.bEditor
-            ? html`<il-editor-formatting-buttons></il-editor-formatting-buttons>`
-            : ""}
+          ${when(
+            this.bEditor,
+            () =>
+              html`<il-editor-formatting-buttons
+                .editor=${this.editor}
+              ></il-editor-formatting-buttons>`
+          )}
         </div>
         <div id="submitContainer">
           <il-button-icon

@@ -18,6 +18,9 @@ import "./input/input-controls";
 import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
+import { MarkdownService } from "../../services/markdown-service";
+
+const fullScreenHeight = "100vh";
 
 export class Chat extends LitElement {
   static properties = {
@@ -182,7 +185,7 @@ export class Chat extends LitElement {
               ? html` <ul
                     @scroll="${this.manageScrollButtonVisility}"
                     class="message-box"
-                    style="height: calc(100vh - 179px);"
+                    style="height: calc(${fullScreenHeight} - 179px);"
                   >
                     ${repeat(
                       this.messages,
@@ -295,9 +298,9 @@ export class Chat extends LitElement {
     const messageBox = this.renderRoot.querySelector(".message-box");
 
     buttonIcon.style.bottom = `${event.detail.height + 100}px`;
-    messageBox.style.height = `calc(100vh - ${event.detail.height + 150}px)`;
-
-    this.scrollToBottom();
+    messageBox.style.height = `calc(${fullScreenHeight} - ${
+      event.detail.height + 150
+    }px)`;
   }
   scrollToBottom() {
     if (this.activeChatName === "") return;
@@ -398,21 +401,13 @@ export class Chat extends LitElement {
     const messageLines = e.detail.message.split("\n");
 
     for (let i = 1; i < messageLines.length; i++) {
-      if (messageLines[i].startsWith("* ")) continue;
-      if (messageLines[i].startsWith("#")) continue;
-
-      let indexOfDot = messageLines[i].indexOf(".");
-      if (indexOfDot !== -1) {
-        let isList = true;
-        for (let j = 0; j < indexOfDot; j++) {
-          if (isNaN(Number(messageLines[i][j]))) {
-            isList = false;
-            break;
-          }
-        }
-        if (isList) break;
-      }
-      if (!messageLines[i - 1].startsWith("#")) messageLines[i - 1] += "\\";
+      if (
+        MarkdownService.checkList(messageLines[i]) ||
+        MarkdownService.checkTitle(messageLines[i]) ||
+        MarkdownService.checkTitle(messageLines[i - 1])
+      )
+        continue;
+      messageLines[i - 1] += "\\";
     }
 
     this.message = messageLines.join("\n");

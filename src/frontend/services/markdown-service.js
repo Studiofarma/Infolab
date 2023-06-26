@@ -10,99 +10,87 @@ export class MarkdownService {
     return output;
   }
 
-  static insertInTextArea(text) {
-    const editor = MarkdownService.getEditor();
-    const textarea = editor.shadowRoot.querySelector("textarea");
-    const selection = editor.getSelection();
-
-    editor.message =
-      textarea.value.slice(0, selection.start) +
-      text +
-      textarea.value.slice(selection.end);
-    editor.textChanged();
-  }
-
-  static getText() {
-    const editor = MarkdownService.getEditor();
-    const textarea = editor.shadowRoot.querySelector("textarea");
-    const selection = editor.getSelection();
-
-    return textarea.value.slice(selection.start, selection.end);
-  }
-
-  static insertBold() {
-    const text = MarkdownService.getText();
+  static insertBold(text) {
+    let output;
     let regEx = /[*]{2}/g;
     if (text.startsWith("**") && text.endsWith("**"))
-      MarkdownService.insertInTextArea(text.replace(regEx, ""));
-    else MarkdownService.insertInTextArea("**" + text + "**");
-    MarkdownService.focusTextarea();
+      output = text.replace(regEx, "");
+    else output = "**" + text + "**";
+    return output;
   }
 
-  static insertItalic() {
-    const text = MarkdownService.getText();
+  static insertItalic(text) {
+    let output;
     let regEx = /[*]{1}/g;
     if (text.startsWith("*") && text.endsWith("*"))
-      MarkdownService.insertInTextArea(text.replace(regEx, ""));
-    else MarkdownService.insertInTextArea("*" + text + "*");
-    MarkdownService.focusTextarea();
+      output = text.replace(regEx, "");
+    else output = "*" + text + "*";
+    return output;
   }
 
-  static insertStrike() {
-    const text = MarkdownService.getText();
+  static insertStrike(text) {
+    let output;
     let regEx = /[~]{2}/g;
     if (text.startsWith("~~") && text.endsWith("~~"))
-      MarkdownService.insertInTextArea(text.replace(regEx, ""));
-    else MarkdownService.insertInTextArea("~~" + text + "~~");
-    MarkdownService.focusTextarea();
+      output = text.replace(regEx, "");
+    else output = "~~" + text + "~~";
+    return output;
   }
 
-  static insertLink() {
-    const text = MarkdownService.getText();
+  static insertLink(text) {
+    let output;
     let regEx = /[\[\]]+|(\(.*\))/g;
     if (text.startsWith("[") && text.includes("](") && text.endsWith(")"))
-      MarkdownService.insertInTextArea(text.replace(regEx, ""));
-    else MarkdownService.insertInTextArea("[" + text + "](insert link)");
-    MarkdownService.focusTextarea();
+      output = text.replace(regEx, "");
+    else output = "[" + text + "](insert link)";
+    return output;
   }
 
   static insertLine() {
-    MarkdownService.insertInTextArea("\n - - - \n");
-    MarkdownService.focusTextarea();
+    return "\n - - - \n";
   }
 
-  static insertListBulleted() {
-    const text = MarkdownService.getText();
-    MarkdownService.insertInTextArea("* " + text);
-    MarkdownService.focusTextarea();
+  static insertListBulleted(text) {
+    return "* " + text;
   }
 
-  static insertListNumbered() {
-    const text = MarkdownService.getText();
-    MarkdownService.insertInTextArea("1. " + text);
-    MarkdownService.focusTextarea();
+  static insertListNumbered(text) {
+    return "1. " + text;
   }
 
-  static insertHeading() {
-    const text = MarkdownService.getText();
-    MarkdownService.insertInTextArea("### " + text);
-    MarkdownService.focusTextarea();
+  static insertHeading(text) {
+    return "### " + text;
   }
 
-  static getEditor() {
+  static checkTitle(text) {
+    return text.startsWith("#");
+  }
+
+  static checkUnorderedList(text) {
+    return text.startsWith("* ");
+  }
+
+  static checkOrderedList(text) {
+    let indexOfDot = text.indexOf(".");
+    if (indexOfDot !== -1) {
+      let isList = true;
+
+      for (let i = 0; i < indexOfDot; i++) {
+        if (isNaN(Number(text[i]))) {
+          isList = false;
+          break;
+        }
+      }
+
+      if (isList) return indexOfDot;
+    }
+    return -1;
+  }
+
+  static checkList(text) {
     return (
-      document
-        .querySelector("il-app")
-        .shadowRoot.querySelector("il-chat")
-        .shadowRoot.querySelector("il-input-controls")
-        .shadowRoot.querySelector("il-editor") ?? null
+      MarkdownService.checkUnorderedList(text) ||
+      MarkdownService.checkOrderedList(text) !== -1
     );
-  }
-
-  static focusTextarea() {
-    const textarea =
-      MarkdownService.getEditor().shadowRoot.querySelector("textarea");
-    textarea.blur();
-    textarea.focus();
   }
 }
