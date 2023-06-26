@@ -356,10 +356,10 @@ class ConversationList extends LitElement {
       .querySelector("il-app")
       .shadowRoot.querySelector("il-chat")
       .shadowRoot.querySelector("il-input-controls")
-      ?.shadowRoot.querySelector("il-editor")
+      .shadowRoot.querySelector("il-editor")
       .shadowRoot.querySelector("textarea");
 
-    editor?.focus();
+    editor.focus();
   }
 
   cleanSearchInput() {

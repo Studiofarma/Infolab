@@ -6,12 +6,10 @@ import "../../../../components/button-text";
 export class Editor extends LitElement {
   static properties = {
     message: { type: String },
-    openPreview: { type: Boolean },
   };
 
   constructor() {
     super();
-    this.lastKeyPressed = "";
     this.message = "";
   }
 
@@ -24,16 +22,18 @@ export class Editor extends LitElement {
       background: none;
       color: white;
       border: 0;
-      font-family: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-family: inherit;
       border-left: 3px solid white;
       padding-left: 10px;
       line-height: 20px;
       max-height: 100px;
       height: 21px;
     }
+
     textarea::placeholder {
       color: lightgray;
     }
+
     textarea::-webkit-scrollbar {
       background: lightgray;
       width: 5px;
@@ -43,10 +43,6 @@ export class Editor extends LitElement {
 
     textarea::-webkit-scrollbar-thumb {
       background: gray;
-    }
-    @font-face {
-      font-family: "Inter";
-      src: url(../../../../assets/fonts/inter.ttf);
     }
   `;
 
