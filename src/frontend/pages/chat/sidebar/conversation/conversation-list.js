@@ -20,7 +20,7 @@ class ConversationList extends LitElement {
     users: [],
     conversationListFiltered: [],
     newConversationListFiltered: [],
-    indexOnConversationList: 0,
+    indexOfSelectedChat: 0,
     selectedRoom: "",
   };
 
@@ -32,7 +32,7 @@ class ConversationList extends LitElement {
     this.newConversationList = [];
     this.usersList = [];
     this.onLoad();
-    this.indexOnConversationList = -1;
+    this.indexOfSelectedChat = -1;
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
     this.selectedRoom = "";
@@ -125,32 +125,31 @@ class ConversationList extends LitElement {
     let convListLength = this.conversationListFiltered.length;
     let newConvListLength = this.newConversationListFiltered.length;
     let maxIndex = convListLength + newConvListLength - 1;
-    let room;
 
-    if (e.detail.key == arrowDown && e.detail.key == arrowUp)
+    if (e.detail.key == arrowDown || e.detail.key == arrowUp)
       this.changeIndexOfSelectedChat(e.detail.key, maxIndex);
 
-    this.getSelectedRoom();
+    this.getSelectedRoom(convListLength);
 
-    if (e.detail.key == "Enter" && this.indexOnConversationList > -1) {
-      this.changeRoom(room);
+    if (e.detail.key == "Enter" && this.indexOfSelectedChat > -1) {
+      this.changeRoom(this.selectedRoom);
     }
   }
 
   changeIndexOfSelectedChat(key, maxIndex) {
-    if (key == arrowDown && this.indexOnConversationList < maxIndex)
-      this.indexOnConversationList++;
-    else if (key == arrowUp && this.indexOnConversationList > -1)
-      this.indexOnConversationList--;
+    if (key == arrowDown && this.indexOfSelectedChat < maxIndex)
+      this.indexOfSelectedChat++;
+    else if (key == arrowUp && this.indexOfSelectedChat > -1)
+      this.indexOfSelectedChat--;
   }
 
-  getSelectedRoom() {
-    if (this.indexOnConversationList > -1) {
+  getSelectedRoom(convListLength) {
+    if (this.indexOfSelectedChat > -1) {
       let room =
-        this.indexOnConversationList < convListLength
-          ? this.conversationListFiltered[this.indexOnConversationList].roomName
+        this.indexOfSelectedChat < convListLength
+          ? this.conversationListFiltered[this.indexOfSelectedChat].roomName
           : this.newConversationListFiltered[
-              this.indexOnConversationList - convListLength
+              this.indexOfSelectedChat - convListLength
             ].roomName;
       this.selectedRoom = room;
     } else this.selectedRoom = "";
@@ -161,7 +160,7 @@ class ConversationList extends LitElement {
     this.cleanSearchInput();
     this.activeChatName = room;
     this.selectedRoom = "";
-    this.indexOnConversationList = -1;
+    this.indexOfSelectedChat = -1;
     CookieService.setCookieByKey(CookieService.Keys.lastChat, room);
     this.chatClicked(room);
   }
@@ -169,7 +168,7 @@ class ConversationList extends LitElement {
   searchChat(event) {
     this.query = event.detail.query;
     this.selectedRoom = "";
-    this.indexOnConversationList = -1;
+    this.indexOfSelectedChat = -1;
     this.update();
   }
 
