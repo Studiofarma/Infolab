@@ -123,19 +123,16 @@ class ConversationList extends LitElement {
   }
 
   navigateSearchResultsWithArrows(e) {
-    let convListLength = this.conversationListFiltered.length;
-    let newConvListLength = this.newConversationListFiltered.length;
-    let maxIndex = convListLength + newConvListLength - 1;
-
     if (e.detail.key == arrowDown || e.detail.key == arrowUp)
-      this.changeIndexOfSelectedChat(e.detail.key, maxIndex);
+      this.changeIndexOfSelectedChat(e.detail.key);
 
-    this.getSelectedRoom(convListLength);
-
-    if (e.detail.key == enter && this.indexOfSelectedChat > -1)
-      this.changeRoom(this.selectedRoom);
-
-    if (this.indexOfSelectedChat > -1) this.scrollToSelectedChat();
+    if (this.indexOfSelectedChat > -1) {
+      this.scrollToSelectedChat();
+      this.getSelectedRoom();
+      if (e.detail.key == enter) this.changeRoom(this.selectedRoom);
+    } else {
+      this.selectedRoom = "";
+    }
   }
 
   scrollToSelectedChat() {
@@ -147,23 +144,26 @@ class ConversationList extends LitElement {
       });
   }
 
-  changeIndexOfSelectedChat(key, maxIndex) {
+  changeIndexOfSelectedChat(key) {
+    let convListLength = this.conversationListFiltered.length;
+    let newConvListLength = this.newConversationListFiltered.length;
+    let maxIndex = convListLength + newConvListLength - 1;
+
     if (key == arrowDown && this.indexOfSelectedChat < maxIndex)
       this.indexOfSelectedChat++;
     else if (key == arrowUp && this.indexOfSelectedChat > -1)
       this.indexOfSelectedChat--;
   }
 
-  getSelectedRoom(convListLength) {
-    if (this.indexOfSelectedChat > -1) {
-      let room =
-        this.indexOfSelectedChat < convListLength
-          ? this.conversationListFiltered[this.indexOfSelectedChat].roomName
-          : this.newConversationListFiltered[
-              this.indexOfSelectedChat - convListLength
-            ].roomName;
-      this.selectedRoom = room;
-    } else this.selectedRoom = "";
+  getSelectedRoom() {
+    let convListLength = this.conversationListFiltered.length;
+    let room =
+      this.indexOfSelectedChat < convListLength
+        ? this.conversationListFiltered[this.indexOfSelectedChat].roomName
+        : this.newConversationListFiltered[
+            this.indexOfSelectedChat - convListLength
+          ].roomName;
+    this.selectedRoom = room;
   }
 
   changeRoom(room) {
