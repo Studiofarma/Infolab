@@ -15,17 +15,16 @@ public class DownloadDateRepository {
     private final QueryHelper queryHelper;
     private final DataSource dataSource;
 
-    private final String DOWNLOAD_DATES_INSERT_SELECT =
-            "INSERT INTO infolab.download_dates(download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id";
-    private final String DOWNLOAD_DATES_JOIN =
+    protected static final String DOWNLOAD_DATES_JOIN =
             "LEFT JOIN infolab.chatmessages m " +
                     "ON m.recipient_room_id = r.id " +
                     "LEFT JOIN infolab.users u_logged " +
                     "ON u_logged.username = :username " +
                     "LEFT JOIN infolab.download_dates d " +
                     "ON d.user_id = u_logged.id AND d.message_id = m.id";
-    private final String DOWNLOAD_DATES_WHERE_NOT_DOWNLOADED_AND_ROOMNAME =
-            "d.download_timestamp IS NULL AND r.roomname = :roomName";
+    protected static final String DOWNLOAD_DATES_WHERE_NULL = "d.download_timestamp IS NULL";
+    protected static final String DOWNLOAD_DATES_WHERE_NOT_DOWNLOADED_AND_ROOMNAME =
+            DOWNLOAD_DATES_WHERE_NULL + " AND r.roomname = :roomName";
 
     public DownloadDateRepository(QueryHelper queryHelper, DataSource dataSource) {
         this.queryHelper = queryHelper;
@@ -47,16 +46,16 @@ public class DownloadDateRepository {
     public void addWhereNotDownloadedYetForUser(Username username, RoomName roomName) throws IllegalArgumentException {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("timestamp", timestamp);
-        map.put("username", username.value());
-        map.put("roomName", roomName.value());
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("timestamp", timestamp);
+        arguments.put("username", username.value());
+        arguments.put("roomName", roomName.value());
 
         queryHelper
                 .forUser(username)
-                .query(DOWNLOAD_DATES_INSERT_SELECT)
+                .query("INSERT INTO infolab.download_dates(download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id")
                 .join(DOWNLOAD_DATES_JOIN)
                 .where(DOWNLOAD_DATES_WHERE_NOT_DOWNLOADED_AND_ROOMNAME)
-                .update(map);
+                .update(arguments);
     }
 }

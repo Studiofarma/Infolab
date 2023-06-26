@@ -2,15 +2,13 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
+import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
 import com.cgm.infolab.service.RoomService;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,6 +28,8 @@ public class RoomRepositoryTests {
     public RoomRepository roomRepository;
     @Autowired
     public UserRepository userRepository;
+    @Autowired
+    public DownloadDateRepository downloadDateRepository;
     @Autowired
     public RoomService roomService;
     @Autowired
@@ -55,7 +55,9 @@ public class RoomRepositoryTests {
                     ChatMessageDto.of("3 Visible only to user1 and user2", users[1].getName().value()),
                     ChatMessageDto.of("4 Visible only to user0 and user2", users[2].getName().value()),
                     ChatMessageDto.of("5 Visible only to user0 and user1", users[0].getName().value()),
-                    ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())};
+                    ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value()),
+                    ChatMessageDto.of("7 Hello general from user1", users[1].getName().value())
+            };
 
     @BeforeAll
     void setUpAll() {
@@ -80,6 +82,11 @@ public class RoomRepositoryTests {
         chatService.saveMessageInDb(messageDtos[3], users[0].getName(), RoomName.of("user0-user2"), users[0].getName());
         chatService.saveMessageInDb(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"), users[1].getName());
         chatService.saveMessageInDb(messageDtos[5], users[1].getName(), RoomName.of("user1-user2"), users[1].getName());
+    }
+
+    @AfterEach
+    void tearDown() {
+        jdbcTemplate.update("DELETE FROM infolab.chatmessages WHERE content = '7 Hello general from user1'");
     }
 
     @Test
@@ -110,10 +117,6 @@ public class RoomRepositoryTests {
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
 
-        for (RoomEntity entity : roomEntities) {
-            System.out.println(entity.getName());
-        }
-
         Assertions.assertEquals(3, roomEntities.size());
 
         String descriptionGeneral = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
@@ -136,5 +139,52 @@ public class RoomRepositoryTests {
 
         Assertions.assertNotEquals(descriptionUser0User2, roomEntities.get(2).getDescription());
         Assertions.assertEquals("user2", roomEntities.get(2).getDescription());
+    }
+
+    @Test
+    void whenFetchingAllRooms_unreadMessagesCount_isCorrect() {
+        List<RoomEntity> roomEntities = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        Assertions.assertEquals(3, roomEntities.size());
+
+        Assertions.assertEquals(1, roomEntities.get(0).getNotDownloadedMessagesCount()); // General
+
+        Assertions.assertEquals(2, roomEntities.get(1).getNotDownloadedMessagesCount()); // user0-user1
+
+        Assertions.assertEquals(1, roomEntities.get(2).getNotDownloadedMessagesCount()); // user0-user2
+
+        downloadDateRepository.addWhereNotDownloadedYetForUser(loggedInUser.getName(), general.getName());
+        downloadDateRepository.addWhereNotDownloadedYetForUser(loggedInUser.getName(), RoomName.of("user0-user1"));
+
+        roomEntities = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        Assertions.assertEquals(3, roomEntities.size());
+
+        Assertions.assertEquals(0, roomEntities.get(0).getNotDownloadedMessagesCount()); // General
+
+        Assertions.assertEquals(0, roomEntities.get(1).getNotDownloadedMessagesCount()); // user0-user1
+
+        Assertions.assertEquals(1, roomEntities.get(2).getNotDownloadedMessagesCount()); // user0-user2
+
+        chatService.saveMessageInDb(messageDtos[6], users[0].getName(), general.getName(), null);
+
+        roomEntities = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        Assertions.assertEquals(3, roomEntities.size());
+
+        Assertions.assertEquals(1, roomEntities.get(0).getNotDownloadedMessagesCount()); // General
+
+        Assertions.assertEquals(0, roomEntities.get(1).getNotDownloadedMessagesCount()); // user0-user1
+
+        Assertions.assertEquals(1, roomEntities.get(2).getNotDownloadedMessagesCount()); // user0-user2
     }
 }

@@ -40,3 +40,5 @@ env-file
 node_modules
 src/main/resources/static
 src/frontend/node
+src/frontend/cypress/videos
+src/frontend/cypress/screenshots

@@ -1,12 +1,15 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public abstract class RowMappers {
 
@@ -69,5 +72,9 @@ public abstract class RowMappers {
         return UserEntity.of(rs.getLong("id"),
                 Username.of(rs.getString("username")),
                 rs.getString("description"));
+    }
+
+    public static Pair<Long, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
+        return Pair.of(rs.getLong("id"), rs.getInt("not_downloaded_count"));
     }
 }
