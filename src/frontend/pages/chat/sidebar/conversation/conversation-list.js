@@ -151,7 +151,8 @@ class ConversationList extends LitElement {
 
     if (key == arrowDown && this.indexOfSelectedChat < maxIndex)
       this.indexOfSelectedChat++;
-    else if (key == arrowUp && this.indexOfSelectedChat > -1)
+
+    if (key == arrowUp && this.indexOfSelectedChat > -1)
       this.indexOfSelectedChat--;
   }
 
