@@ -116,7 +116,7 @@ class ConversationList extends LitElement {
 
   filterConversations(list) {
     return list.filter((conversation) =>
-      conversation.roomName.includes(this.query)
+      conversation.description.toLowerCase().includes(this.query.toLowerCase())
     );
   }
 
@@ -183,9 +183,9 @@ class ConversationList extends LitElement {
     });
   }
 
-  setList(message, activeDescription) {
+  setList(message) {
     let index = this.conversationList.findIndex(
-      (conversation) => conversation.description == activeDescription
+      (conversation) => conversation.roomName == message.roomName
     );
 
     this.conversationList[index].lastMessage = {

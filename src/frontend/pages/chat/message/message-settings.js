@@ -62,6 +62,8 @@ export class MessageSettings extends LitElement {
     );
   }
 
+  goToChatHandler() {}
+
   deleteMessageHandler() {
     let chatElement = document
       .querySelector("body > il-app")

@@ -48,8 +48,6 @@ export class Sidebar extends LitElement {
             this.dispatchEvent(
               new CustomEvent(event.type, { detail: event.detail })
             )}
-          .activeChatName=${this.activeChatName}
-          .activeDescription=${this.activeDescription}
         ></il-conversation-list>
       </div>
     `;

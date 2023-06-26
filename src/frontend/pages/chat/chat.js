@@ -212,7 +212,7 @@ export class Chat extends LitElement {
                     }}
                   >
                     <il-conversation-list
-                      @onChangeConversation=${this.closeForwardMenu}
+                      @onChangeConversation=${this.forwardMessage}
                     ></il-conversation-list>
                   </il-modal>
 
@@ -240,10 +240,13 @@ export class Chat extends LitElement {
     modal.isOpened = true;
   }
 
-  closeForwardMenu(event) {
+  forwardMessage(event) {
+    // chiudo il menù di inoltro
     let modal = this.renderRoot.querySelector("il-modal");
     modal.isOpened = false;
 
+
+    // apro la chat a cui devo inoltrare
     this.setActiveChat(event);
     this.updateMessages(event);
 
@@ -255,6 +258,7 @@ export class Chat extends LitElement {
     sidebarConversationList.activeDescription =
       event.detail.conversation.description;
 
+    // invio il messaggio
     this.sendMessage({ detail: { message: this.messageToForward } });
 
   }
@@ -431,11 +435,12 @@ export class Chat extends LitElement {
 
     }
 
+    // riordino le conversazioni con una funzione contenuta in il-conversation-list che compara il timestamp 
   let conversationList = this.renderRoot
     .querySelector("il-sidebar")
     .shadowRoot.querySelector(" il-conversation-list")
 
-    conversationList.setList(message,this.activeDescription)
+    conversationList.setList(message)
 
     this.messageNotification(message);
   }
