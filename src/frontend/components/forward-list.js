@@ -31,20 +31,6 @@ export class ForwardList extends LitElement {
       transition: animation 0.5s;
     }
 
-    ::-webkit-scrollbar {
-      width: 4px;
-      margin-right: 10px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background-color: none;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      background-color: rgb(54, 123, 251);
-    }
-
     dialog::backdrop {
       background-color: #00000037;
     }
@@ -64,6 +50,8 @@ export class ForwardList extends LitElement {
 
     il-conversation-list {
       height: 700px;
+      display: flex;
+      flex-direction: column;
     }
   `;
 
