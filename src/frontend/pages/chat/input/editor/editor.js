@@ -1,281 +1,197 @@
 import { LitElement, html, css } from "lit";
-import { resolveMarkdown } from "lit-markdown";
 import { MarkdownService } from "../../../../services/markdown-service";
 
 import "../../../../components/button-text";
-import "./editor-formatting-buttons";
+
+const textareaDefaultHeight = 21;
+const keys = {
+  enter: "Enter",
+  bold: "b",
+  italic: "i",
+  strike: "s",
+  link: "l",
+};
 
 export class Editor extends LitElement {
-	static properties = {
-		message: {type: String},
-		openPreview: {type: Boolean},
-		lastKeyPressed: {type: String},
-	};
+  static properties = {
+    message: { type: String },
+  };
 
-	constructor() {
-		super();
-		this.message = "";
-		this.openPreview = false;
-		this.lastKeyPressed = "";
-		this.Alt = "Alt";
-	}
+  constructor() {
+    super();
+    this.message = "";
+  }
 
-	static styles = css`
-		* {
-			box-sizing: border-box;
-			padding: 0;
-			margin: 0;
-		}
+  static styles = css`
+    textarea {
+      width: 100%;
+      resize: none;
+      font-size: ${textareaDefaultHeight}px;
+      outline: none;
+      background: none;
+      color: white;
+      border: 0;
+      font-family: inherit;
+      border-left: 3px solid white;
+      padding-left: 10px;
+      line-height: 20px;
+      max-height: 100px;
+      height: ${textareaDefaultHeight}px;
+    }
 
-		ul,
-		ol {
-			list-style-position: inside;
-		}
+    textarea::placeholder {
+      color: lightgray;
+    }
 
-		.formatting-bar {
-			width: 100%;
-			background: #0a478a;
-			display: flex;
-			align-items: center;
-			gap: 10px;
-			padding: 0px 10px;
-			border-top: 1px solid rgb(97, 104, 112);
-			border-right: 1px solid rgb(97, 104, 112);
-			border-left: 1px solid rgb(97, 104, 112);
-			border-radius: 6px 6px 0 0;
-		}
+    textarea::-webkit-scrollbar {
+      background: lightgray;
+      width: 5px;
+      border-top: 2px solid gray;
+      border-bottom: 2px solid gray;
+    }
 
-		.buttons-container {
-			width: 100%;
-			display: flex;
-			gap: 5px;
-			margin-top: 8px;
-		}
+    textarea::-webkit-scrollbar-thumb {
+      background: gray;
+    }
+  `;
 
-		.textarea-container {
-			display: flex;
-			justify-content: center;
-			height: 69%;
+  render() {
+    return html`
+      <textarea
+        @input=${this.onInput}
+        @keydown=${this.onKeyDown}
+        placeholder="Scrivi un messaggio..."
+      ></textarea>
+    `;
+  }
 
-			background-color: rgb(8 60 114);
-			border: 1px solid #616870;
-			border-radius: 0 0 5px 5px;
-		}
+  onInput(event) {
+    this.message = event.target.value;
+    this.textChanged();
+    this.textEditorResize();
+  }
 
-		.text-area,
-		.previewer {
-			width: 99%;
-			height: 91%;
+  textChanged() {
+    this.shadowRoot.querySelector("textarea").value = this.message;
+    this.dispatchEvent(
+      new CustomEvent("text-changed", {
+        detail: { content: this.message },
+      })
+    );
+  }
 
-			padding: 5px;
+  textEditorResize() {
+    const textarea = this.shadowRoot.querySelector("textarea");
+    textarea.style.height = `${textareaDefaultHeight}px`;
+    textarea.style.height = `${textarea.scrollHeight}px`;
+    this.dispatchEvent(
+      new CustomEvent("text-editor-resized", {
+        detail: { height: textarea.clientHeight },
+      })
+    );
+  }
 
-			border-radius: 5px;
+  getSelection() {
+    const textarea = this.shadowRoot.querySelector("textarea");
+    return {
+      start: textarea.selectionStart,
+      end: textarea.selectionEnd,
+      direction: textarea.selectionDirection,
+    };
+  }
 
-			resize: none;
-			overflow: auto;
+  onKeyDown(event) {
+    if (event.key == keys.enter) {
+      if (event.shiftKey) {
+        this.checkList(event);
+      } else {
+        this.dispatchEvent(new CustomEvent("enter-key-pressed"));
+        event.preventDefault();
+      }
+    }
 
-			font-family: inherit;
-			font-size: 12px;
+    this.focusTextarea();
 
-			background: rgb(6, 43, 82);
-			color: white;
-		}
+    if (event.altKey) this.checkMarkdownKeys(event.key);
+  }
 
-		.text-area {
-			margin-top: 7px;
-		}
+  clearMessage() {
+    this.message = "";
+    this.shadowRoot.querySelector("textarea").value = "";
+    this.textEditorResize();
+  }
 
-		.text-area::placeholder {
-			color: #ddd;
-		}
+  checkList(event) {
+    const rows = this.message.split("\n");
+    let lastRow = rows[rows.length - 1].trimStart();
+    let indexOfDot;
 
-		.previewer {
-			background: #083c72;
-			border: 1px solid transparent;
-			margin-top: 6px;
-		}
+    if (MarkdownService.checkUnorderedList(lastRow)) {
+      this.message += "\n* ";
+      event.preventDefault();
+    } else if (
+      (indexOfDot = MarkdownService.checkOrderedList(lastRow)) !== -1
+    ) {
+      const lineNumber = Number(lastRow.substring(0, indexOfDot)) + 1;
+      this.message += `\n${lineNumber}. `;
+      event.preventDefault();
+    }
 
-		.previewer > p {
-			color: white;
-			font-size: 12px;
-		}
+    this.textChanged();
+    this.textEditorResize();
+  }
 
-		div[class*="select-"] {
-			position: relative;
-			width: max-content;
-		}
+  checkMarkdownKeys(currentKeyPressed) {
+    const selectedText = this.getSelectedText();
+    let textToInsert = selectedText;
 
-		div[class*="select-"] .dropdown {
-			overflow: hidden;
-			max-height: 0px;
-			transition: 0.5s;
-			position: absolute;
-			top: 30px;
-			left: 0px;
-			min-width: 100px;
-			background: #bcc7d9;
-			z-index: 10;
-		}
+    switch (currentKeyPressed) {
+      case keys.bold:
+        textToInsert = MarkdownService.insertBold(selectedText);
+        break;
+      case keys.italic:
+        textToInsert = MarkdownService.insertItalic(selectedText);
+        break;
+      case keys.strike:
+        textToInsert = MarkdownService.insertStrike(selectedText);
+        break;
+      case keys.link:
+        textToInsert = MarkdownService.insertLink(selectedText);
+        break;
+    }
 
-		div[class*="select-"]:hover .dropdown {
-			overflow-y: auto;
-			max-height: 100px;
-			padding: 10px 8px;
-		}
+    this.insertInTextarea(textToInsert);
+  }
 
-		.dropdown::-webkit-scrollbar {
-			width: 3px;
-			background: #677fa5;
-		}
+  getTextarea() {
+    return this.shadowRoot.querySelector("textarea");
+  }
 
-		.dropdown::-webkit-scrollbar-thumb {
-			background: #507cc4;
-		}
+  insertInTextarea(text) {
+    const textarea = this.getTextarea();
+    const selection = this.getSelection();
 
-		.dropdown .option {
-			cursor: pointer;
-			transition: 0.5s;
-			padding: 2px;
-			display: flex;
-			align-items: center;
-			white-space: nowrap;
-		}
+    this.message =
+      textarea.value.slice(0, selection.start) +
+      text +
+      textarea.value.slice(selection.end);
 
-		.dropdown .option:hover {
-			background: #9faec5;
-		}
+    this.textChanged();
+    this.focusTextarea();
+  }
 
-		.dropdown input[type="radio"] {
-			display: block;
-			margin-left: 25px;
-		}
+  focusTextarea() {
+    const textarea = this.getTextarea();
 
-		il-editor-formatting-buttons {
-			display: flex;
-		}
+    textarea.blur();
+    textarea.focus();
+  }
 
-		.button-text {
-			transform: translateY(1px);
-		}
+  getSelectedText() {
+    const textarea = this.getTextarea();
+    const selection = this.getSelection();
 
-	`;
-
-	render() {
-		return html`
-			<!-- diventerà un componente -->
-			<div class="formatting-bar">
-				<div class="buttons-container">
-
-					<il-button-text
-            @click=${() => this.setPreviewer(false)}
-            class="button-text"
-						text="Scrivi"
-						?isactive=${this.openPreview}
-					></il-button-text>
-
-					<il-button-text
-            @click=${() => this.setPreviewer(true)}
-            class="button-text"
-						text="Anteprima"
-						?isactive=${!this.openPreview}
-					></il-button-text>
-
-
-       </div>
-						<il-editor-formatting-buttons></il-editor-formatting-buttons>
-						
-					</div>
-          <div class="textarea-container">
-					${
-						!this.openPreview
-							? html`<textarea
-									class="text-area"
-									placeholder="Scrivi un messaggio..."
-									@input=${this.onMessageInput}
-									@keydown=${this.checkList}
-									.value=${this.message}
-							  >
-							  </textarea>`
-							: html`<div class="previewer">
-									${resolveMarkdown(
-										MarkdownService.parseMarkdown(this.message)
-									)}
-							  </div>`
-					}
-          </div>
-				</div>
-			</div>
-		`;
-	}
-
-	onMessageInput(e) {
-		const inputEl = e.target;
-		this.message = inputEl.value;
-	}
-
-	setPreviewer(isOpened) {
-		this.openPreview = isOpened;
-	}
-
-	checkList(event) {
-		if (event.key === "Enter") {
-			const rows = this.message.split("\n");
-			let last_row = rows[rows.length - 1];
-			const indexOfPoint = last_row.indexOf(".");
-
-			if (last_row.startsWith("* ")) {
-				this.message += "\n* ";
-				event.preventDefault();
-				return;
-			}
-
-			if (
-				indexOfPoint != -1 &&
-				!isNaN(parseInt(last_row.slice(0, indexOfPoint))) &&
-				last_row.startsWith(". ", indexOfPoint)
-			) {
-				this.message +=
-					"\n" +
-					(parseInt(last_row.slice(0, indexOfPoint)) + 1).toString() +
-					". ";
-				event.preventDefault();
-				return;
-			}
-		}
-
-		let currentKeyPressed = event.key;
-
-		this.applyMarkdown(this.lastKeyPressed, currentKeyPressed);
-
-		this.lastKeyPressed = currentKeyPressed;
-	}
-
-	applyMarkdown(lastKeyPressed, currentKeyPressed) {
-		if (lastKeyPressed === this.Alt && currentKeyPressed === "b") {
-			MarkdownService.insertBold();
-			return;
-		}
-		if (lastKeyPressed === this.Alt && currentKeyPressed === "i") {
-			MarkdownService.insertItalic();
-			return;
-		}
-		if (lastKeyPressed === this.Alt && currentKeyPressed === "s") {
-			MarkdownService.insertStrike();
-			return;
-		}
-		if (lastKeyPressed === this.Alt && currentKeyPressed === "l") {
-			MarkdownService.insertLink();
-			return;
-		}
-	}
-
-	updated(changed) {
-		if (changed.has("message")) {
-			this.dispatchEvent(
-				new CustomEvent("typing-text", { detail: { content: this.message } })
-			);
-			MarkdownService.getTextarea().focus();
-		}
-	}
-}	
+    return textarea.value.slice(selection.start, selection.end);
+  }
+}
 customElements.define("il-editor", Editor);
