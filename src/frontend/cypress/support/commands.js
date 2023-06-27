@@ -59,6 +59,6 @@ Cypress.Commands.add(
   (elementParentPath, elementToFind, number) => {
     cy.getLitElement(elementParentPath)
       .find(elementToFind)
-      .should("have.length.of", number);
+      .should("have.length", number);
   }
 );
