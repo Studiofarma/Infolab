@@ -76,12 +76,9 @@ export class MessageOptions extends LitElement {
   }
 
   deleteMessageHandler() {
-    let chatElement = document
-      .querySelector("body > il-app")
-      .shadowRoot.querySelector("il-chat");
 
-    chatElement.messages.splice(this.index, 1);
-    chatElement.update();
+    this.chatRef.value.messages.splice(this.index, 1);
+    this.chatRef.value.update();
     this.requestUpdate();
   }
 }

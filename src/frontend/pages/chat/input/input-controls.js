@@ -83,7 +83,7 @@ export class InputControls extends LitElement {
         <!-- .container is for emoji picker -->
         <div class="container">
           <div class="inputContainer">
-            <il-editor
+            <il-editor 
               @enter-key-pressed=${this.sendMessage}
               @text-changed=${this.updateMessage}
               @text-editor-resized=${this.textEditorResized}

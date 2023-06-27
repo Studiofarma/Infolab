@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 
 import "./conversation/conversation-list";
+import { ref, createRef } from "lit/directives/ref.js";
 
 export class Sidebar extends LitElement {
   static properties = {
@@ -32,12 +33,15 @@ export class Sidebar extends LitElement {
 
   constructor() {
     super();
+    // Refs
+    this.sidebarListRef = createRef();
   }
 
   render() {
     return html`
       <div class="side-bar">
         <il-conversation-list
+        ${ref(this.sidebarListRef)}
           class="conversation-list"
           @update-message=${(event) =>
             this.dispatchEvent(
