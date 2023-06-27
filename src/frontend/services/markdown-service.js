@@ -10,31 +10,24 @@ export class MarkdownService {
     return output;
   }
 
-  static insertBold(text) {
+  static insertGeneric(text, start, end, regEx) {
     let output;
-    let regEx = /[*]{2}/g;
-    if (text.startsWith("**") && text.endsWith("**"))
+    if (text.startsWith(start) && text.endsWith(end))
       output = text.replace(regEx, "");
-    else output = "**" + text + "**";
+    else output = start + text + end;
     return output;
+  }
+
+  static insertBold(text) {
+    return MarkdownService.insertGeneric(text, "**", "**", /[*]{2}/g);
   }
 
   static insertItalic(text) {
-    let output;
-    let regEx = /[*]{1}/g;
-    if (text.startsWith("*") && text.endsWith("*"))
-      output = text.replace(regEx, "");
-    else output = "*" + text + "*";
-    return output;
+    return MarkdownService.insertItalic(text, "*", "*", /[*]{1}/g);
   }
 
   static insertStrike(text) {
-    let output;
-    let regEx = /[~]{2}/g;
-    if (text.startsWith("~~") && text.endsWith("~~"))
-      output = text.replace(regEx, "");
-    else output = "~~" + text + "~~";
-    return output;
+    return MarkdownService.insertStrike(text, "~~", "~~", /[~]{2}/g);
   }
 
   static insertLink(text) {

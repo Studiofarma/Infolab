@@ -44,7 +44,7 @@ export class InputControls extends LitElement {
     }
 
     .emoji-picker-editor-opened {
-      bottom: 265px;
+      bottom: 120px;
     }
 
     #inputControls {
@@ -102,7 +102,7 @@ export class InputControls extends LitElement {
             @emoji-click=${this.insertEmoji}
             @picker-close=${() => (this.isEmojiPickerOpen = false)}
             ?isOpen=${this.isEmojiPickerOpen}
-            style="bottom: 120px;"
+            class="emoji-picker-editor-opened"
           ></il-emoji-picker>
         </div>
       </div>

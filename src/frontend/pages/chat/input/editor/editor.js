@@ -4,7 +4,13 @@ import { MarkdownService } from "../../../../services/markdown-service";
 import "../../../../components/button-text";
 
 const textareaDefaultHeight = 21;
-const enterKey = "Enter";
+const keys = {
+  enter: "Enter",
+  bold: "b",
+  italic: "i",
+  strike: "s",
+  link: "l",
+};
 
 export class Editor extends LitElement {
   static properties = {
@@ -95,7 +101,7 @@ export class Editor extends LitElement {
   }
 
   onKeyDown(event) {
-    if (event.key == enterKey) {
+    if (event.key == keys.enter) {
       if (event.shiftKey) {
         this.checkList(event);
       } else {
@@ -139,14 +145,20 @@ export class Editor extends LitElement {
     const selectedText = this.getSelectedText();
     let textToInsert = selectedText;
 
-    if (currentKeyPressed === "b")
-      textToInsert = MarkdownService.insertBold(selectedText);
-    else if (currentKeyPressed === "i")
-      textToInsert = MarkdownService.insertItalic(selectedText);
-    else if (currentKeyPressed === "s")
-      textToInsert = MarkdownService.insertStrike(selectedText);
-    else if (currentKeyPressed === "l")
-      textToInsert = MarkdownService.insertLink(selectedText);
+    switch (currentKeyPressed) {
+      case keys.bold:
+        textToInsert = MarkdownService.insertBold(selectedText);
+        break;
+      case keys.italic:
+        textToInsert = MarkdownService.insertItalic(selectedText);
+        break;
+      case keys.strike:
+        textToInsert = MarkdownService.insertStrike(selectedText);
+        break;
+      case keys.link:
+        textToInsert = MarkdownService.insertLink(selectedText);
+        break;
+    }
 
     this.insertInTextarea(textToInsert);
   }
