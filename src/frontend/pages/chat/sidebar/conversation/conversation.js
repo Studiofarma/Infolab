@@ -69,6 +69,17 @@ class Conversation extends LitElement {
       color: rgb(58 179 255);
     }
 
+    .last-message a[href] {
+      color: lightgray;
+      text-underline-position: below;
+      text-underline-offset: 2px;
+      transition: color 0.5s;
+    }
+
+    .last-message a[href]:hover {
+      color: white;
+    }
+
     .chat-name {
       color: white;
     }
@@ -182,6 +193,10 @@ class Conversation extends LitElement {
   }
 
   fixLastMessageLength(message) {
+    const messageLines = message.split("\n");
+    if (messageLines.length > 1) {
+      message = messageLines[0] + "...";
+    }
     let maxLength = 20;
     if (message.length > maxLength) {
       message = message.substring(0, maxLength);

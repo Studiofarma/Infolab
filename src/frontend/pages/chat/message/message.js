@@ -176,6 +176,17 @@ export class Message extends LitElement {
       border-radius: 6px;
       background-color: rgb(221, 221, 221);
     }
+
+    .message a[href] {
+      color: lightgray;
+      text-underline-position: below;
+      text-underline-offset: 2px;
+      transition: color 0.5s;
+    }
+
+    .message a[href]:hover {
+      color: white;
+    }
   `;
 
   render() {
