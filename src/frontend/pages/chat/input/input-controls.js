@@ -41,9 +41,6 @@ export class InputControls extends LitElement {
     il-emoji-picker {
       position: absolute;
       left: 10px;
-    }
-
-    .emoji-picker-editor-opened {
       bottom: 120px;
     }
 
