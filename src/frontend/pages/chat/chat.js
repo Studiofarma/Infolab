@@ -10,7 +10,6 @@ import { CookieService } from "../../services/cookie-service";
 
 import { IconNames } from "../../enums/icon-names";
 
-
 import "./message/message";
 import "../../components/button-icon";
 import "../../components/icon";
@@ -52,7 +51,6 @@ export class Chat extends LitElement {
     this.activeDescription = CookieService.getCookieByKey(
       CookieService.Keys.lastDescription
     );
-    this.forwardListVisibility = false;
     this.scrolledToBottom = false;
     window.addEventListener("resize", () => {
       this.scrollToBottom();
@@ -470,7 +468,7 @@ export class Chat extends LitElement {
       .querySelector("il-sidebar")
       .shadowRoot.querySelector(" il-conversation-list");
 
-    if (message.content !== null ) conversationList.setList(message);
+    if (message.content !== null) conversationList.setList(message);
 
     this.messageNotification(message);
   }
