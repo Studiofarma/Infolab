@@ -6,13 +6,13 @@ import "../../../components/button-icon";
 import "../../../components/input-field";
 import "./emoji-picker";
 
-import { IconNames } from "../../../enums/icon-names";
+const emojiPickerBottomOffset = 90;
+const enterKey = "Enter";
 
 export class InputControls extends LitElement {
   static properties = {
     message: "",
-    bEditor: false,
-    bEmoji: false,
+    isEmojiPickerOpen: false,
     picker: {},
     selectedText: { startingPoint: NaN, endingPoint: NaN },
   };
@@ -20,8 +20,7 @@ export class InputControls extends LitElement {
   constructor() {
     super();
     this.message = "";
-    this.bEditor = false;
-    this.bEmoji = false;
+    this.isEmojiPickerOpen = false;
     this.selectedText = null;
   }
 
@@ -41,12 +40,8 @@ export class InputControls extends LitElement {
 
     il-emoji-picker {
       position: absolute;
-      bottom: 80px;
       left: 10px;
-    }
-
-    .emoji-picker-editor-opened {
-      bottom: 265px;
+      bottom: 120px;
     }
 
     #inputControls {
@@ -72,50 +67,13 @@ export class InputControls extends LitElement {
       transition: 0.5s;
       transition-delay: 1s;
       flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .inputContainer il-input-field[type="text"] {
-      flex-grow: 1;
-      border: none;
-      outline: none;
-      padding-left: 3px;
-    }
-
-    #submitContainer il-button-icon {
-      width: 50px;
-      height: 50px;
-      margin-top: 0px;
-      border: none;
-      color: white !important;
-      font-size: 20px;
-      cursor: pointer;
-      display: flex;
       justify-content: center;
-      align-items: center;
+      flex-direction: column;
+      z-index: 10000;
     }
 
     il-editor {
-      display: none;
-      transition: 0.5s;
-      overflow-y: hidden;
-      border-radius: 6px;
-    }
-
-    il-input-field[type="text"].closed {
-      display: none;
-    }
-
-    il-input-field[type="text"].closed ~ il-editor {
-      flex-grow: 1;
-      width: calc(100% + 60px);
-      height: 200px;
-      display: block;
-      overflow-x: hidden;
-    }
-
-    il-input-field {
-      margin-right: 20px;
+      width: 100%;
     }
   `;
 
@@ -125,87 +83,58 @@ export class InputControls extends LitElement {
         <!-- .container is for emoji picker -->
         <div class="container">
           <div class="inputContainer">
+            <il-editor
+              @enter-key-pressed=${this.sendMessage}
+              @text-changed=${this.updateMessage}
+              @text-editor-resized=${this.textEditorResized}
+            ></il-editor>
             <il-insertion-bar
-              @open-insertion-mode=${this.openInsertionMode}
-              @click=${this.prova}
+              @send-message=${this.sendMessage}
+              @emoji-picker-click=${this.emojiPickerClick}
+              .editor=${this.shadowRoot.querySelector("il-editor")}
             >
             </il-insertion-bar>
-
-            <il-input-field
-              class=${this.bEditor ? "closed" : "opened"}
-              type="text"
-              placeholder="Scrivi un messaggio..."
-              @keydown=${this.checkEnterKey}
-              @mouseup=${this.setSelectedText}
-              .value=${this.message}
-            ></il-input-field>
-
-            <il-editor
-              @typing-text=${this.onInputFromEditor}
-              @is-selecting=${this.onSelectionFromTextarea}
-            ></il-editor>
           </div>
           <il-emoji-picker
             @emoji-click=${this.insertEmoji}
-            ?isopen=${this.bEmoji}
-            @picker-close=${() => {
-              this.bEmoji = false;
-            }}
-            class=${this.bEditor ? "emoji-picker-editor-opened" : ""}
+            @picker-close=${() => (this.isEmojiPickerOpen = false)}
+            ?isOpen=${this.isEmojiPickerOpen}
+            class="emoji-picker-editor-opened"
           ></il-emoji-picker>
-        </div>
-
-        <div id="submitContainer">
-          <il-button-icon
-            @click=${this.sendMessage}
-            content=${IconNames.send}
-          ></il-button-icon>
         </div>
       </div>
     `;
   }
 
-  onInputFromEditor(e) {
-    const markdownText = e.detail.content;
-    this.renderRoot.querySelector("il-input-field").value = markdownText;
-    this.updateMessage();
+  getEditor() {
+    return this.shadowRoot.querySelector("il-editor");
+  }
+
+  insertEmoji(event) {
+    this.getEditor().insertInTextarea(event.detail.unicode);
   }
 
   checkEnterKey(event) {
-    if (event.key === "Enter") this.sendMessage();
+    if (event.key === enterKey) this.sendMessage();
   }
 
-  getTextarea() {
-    return (
-      this.renderRoot
-        .querySelector("il-editor")
-        .shadowRoot.querySelector("textarea") ?? null
-    );
+  emojiPickerClick() {
+    this.isEmojiPickerOpen = !this.isEmojiPickerOpen;
+    this.getEditor().focusTextarea();
   }
 
-  getInputText() {
-    return this.renderRoot.querySelector("il-input-field") ?? null;
-  }
-
-  openInsertionMode(e) {
-    if (e.detail.bEditor) {
-      this.bEditor = !this.bEditor;
-      this.updateMessage();
-      this.getTextarea().value = this.message;
-    } else if (e.detail.bEmoji) this.bEmoji = !this.bEmoji;
+  textEditorResized(event) {
+    const emojiPicker = this.shadowRoot.querySelector("il-emoji-picker");
+    emojiPicker.style.bottom = `${
+      event.detail.height + emojiPickerBottomOffset
+    }px`;
 
     this.dispatchEvent(
-      new CustomEvent(e.type, {
-        detail: {
-          bEditor: this.bEditor,
-          bEmoji: this.bEmoji,
-        },
-      })
+      new CustomEvent("text-editor-resized", { detail: event.detail })
     );
   }
 
   sendMessage() {
-    this.updateMessage();
     this.dispatchEvent(
       new CustomEvent("send-message", {
         detail: {
@@ -213,58 +142,12 @@ export class InputControls extends LitElement {
         },
       })
     );
-
-    this.renderRoot.querySelector("il-input-field").value = "";
     this.message = "";
-    if (this.bEditor) {
-      this.getTextarea().value = "";
-      this.bEditor = false;
-    }
+    this.shadowRoot.querySelector("il-editor").clearMessage();
   }
 
-  //per Emoji
-  setSelectedText() {
-    const input = this.getInputText();
-    this.selectedText = {
-      startingPoint: input.selectionStart,
-      endingPoint: input.selectionEnd,
-    };
-  }
-
-  onSelectionFromTextarea(event) {
-    this.selectedText = {
-      startingPoint: event.detail.start,
-      endingPoint: event.detail.end,
-    };
-  }
-
-  insertEmoji(event) {
-    const symbol = event.detail.unicode;
-
-    if (this.selectedText !== null) {
-      this.message =
-        this.message.slice(0, this.selectedText.startingPoint) +
-        symbol +
-        this.message.slice(this.selectedText.endingPoint);
-    } else {
-      this.message = this.message + symbol;
-    }
-
-    if (this.bEditor) {
-      this.renderRoot.querySelector("il-editor").message = this.message;
-    }
-    this.renderRoot.querySelector("il-input-field").value = this.message;
-    this.selectedText = null;
-  }
-
-  updated(changed) {
-    if (changed.has("message")) {
-      this.getInputText().focus();
-    }
-  }
-
-  updateMessage() {
-    this.message = this.renderRoot.querySelector("il-input-field").value;
+  updateMessage(event) {
+    this.message = event.detail.content;
   }
 }
 
