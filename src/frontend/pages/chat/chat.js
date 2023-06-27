@@ -138,15 +138,15 @@ export class Chat extends LitElement {
       right: 20px;
       border-radius: 5px;
       padding: 2px;
-      background-color: rgb(8, 60, 114);
+      background-color: #ffffff;
       color: white;
       opacity: 0;
       transition: opacity 0.2s ease-in-out;
+      box-shadow: 0 0 7px 2px #6f7174;
     }
 
     .message-box::-webkit-scrollbar {
-      width: 4px;
-      margin-right: 10px;
+      width: 7px;
     }
 
     .message-box::-webkit-scrollbar-track {
@@ -155,7 +155,7 @@ export class Chat extends LitElement {
 
     .message-box::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: rgb(54, 123, 251);
+      background-color: #206cf7;
       min-height: 40px;
     }
 

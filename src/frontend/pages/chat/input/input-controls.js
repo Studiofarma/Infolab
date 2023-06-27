@@ -75,7 +75,6 @@ export class InputControls extends LitElement {
     }
 
     il-editor {
-      width: 100%;
       background-color: #eaecef;
       border-radius: 10px;
     }

@@ -3,7 +3,8 @@ import { MarkdownService } from "../../../../services/markdown-service";
 
 import "../../../../components/button-text";
 
-const textareaDefaultHeight = 22;
+const textareaDefaultHeight = 21;
+const textAreaWidthOffset = 20;
 const keys = {
   enter: "Enter",
   bold: "b",
@@ -24,7 +25,7 @@ export class Editor extends LitElement {
 
   static styles = css`
     textarea {
-      width: 100%;
+      width: calc(100% - ${textAreaWidthOffset}px);
       resize: none;
       font-size: ${textareaDefaultHeight}px;
       outline: none;
@@ -44,7 +45,6 @@ export class Editor extends LitElement {
 
     ::-webkit-scrollbar {
       width: 4px;
-      margin-right: 10px;
     }
 
     ::-webkit-scrollbar-track {
@@ -54,6 +54,10 @@ export class Editor extends LitElement {
     ::-webkit-scrollbar-thumb {
       border-radius: 10px;
       background-color: #206cf7;
+    }
+
+    ::-webkit-scrollbar:vertical {
+      margin-right: 10px;
     }
   `;
 
