@@ -49,7 +49,7 @@ export class InputRicerca extends InputField {
     return html`
       <div
         .style=${this.isFocus
-          ? "border-color: #004CE3;"
+          ? "border-color: #206CF7;"
           : "border-color: #989A9D;"}
       >
         <input

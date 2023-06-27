@@ -27,7 +27,7 @@ export class ButtonIcon extends LitElement {
       cursor: pointer;
       user-select: none;
       padding: 5px;
-      color: #f74d62;
+      color: #206cf7;
     }
   `;
 
