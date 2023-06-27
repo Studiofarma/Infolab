@@ -14,7 +14,7 @@ export class Sidebar extends LitElement {
 
   static styles = css`
     .side-bar {
-      background: #083c72;
+      background: #f2f4f7;
       color: white;
       display: flex;
       flex-direction: column;
