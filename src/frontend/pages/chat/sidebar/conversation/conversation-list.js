@@ -46,6 +46,10 @@ class ConversationList extends LitElement {
       margin: 0;
     }
 
+    #selected {
+      background-color: #e1f0ff;
+    }
+
     .conversation-list {
       display: flex;
       flex-direction: column;
@@ -332,10 +336,7 @@ class ConversationList extends LitElement {
       ) {
         return html`<il-conversation
           class=${"conversation " +
-          (conversation.roomName == this.activeChatName ||
-          conversation.roomName == this.selectedRoom
-            ? "active"
-            : "")}
+          (conversation.roomName == this.activeChatName ? "active" : "")}
           id=${conversation.roomName == this.selectedRoom ? "selected" : ""}
           .chat=${conversation}
           @click=${() => {
@@ -369,10 +370,7 @@ class ConversationList extends LitElement {
       let conversation = new ConversationDto(pharmacy);
       return html`<il-conversation
         class=${"conversation new-conversation " +
-        (conversation.roomName == this.activeChatName ||
-        conversation.roomName == this.selectedRoom
-          ? "active"
-          : "")}
+        (conversation.roomName == this.activeChatName ? "active" : "")}
         .chat=${conversation}
         id=${conversation.roomName == this.selectedRoom ? "selected" : ""}
         @click=${() => {

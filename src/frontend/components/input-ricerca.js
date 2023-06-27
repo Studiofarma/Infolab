@@ -66,7 +66,8 @@ export class InputRicerca extends InputField {
             this.clear();
             this.search();
           }}
-          content=${this.isFocus == true && this.value != ""
+          content=${(this.isFocus && this.value != "") == true ||
+          this.value != ""
             ? IconNames.close
             : IconNames.magnify}
         ></il-button-icon>
@@ -89,7 +90,7 @@ export class InputRicerca extends InputField {
   }
 
   toggleFocus() {
-    this.isFocus = this.isFocus == true && this.value != "";
+    this.isFocus = !this.isFocus;
   }
 }
 
