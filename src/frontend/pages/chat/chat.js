@@ -279,19 +279,19 @@ export class Chat extends LitElement {
 
     if (index === -1) {
       index = newList.findIndex(
-        (elem) => elem.description === event.detail.description+"\n"
+        (elem) => elem.description === event.detail.description + "\n"
       );
 
-      console.log(index)
+      console.log(index);
       sidebarConversationList.activeChatName = newList[index].roomName;
       sidebarConversationList.activeDescription = newList[index].description;
 
-      this.updateMessages({ detail: {conversation: newList[index]} });
+      this.updateMessages({ detail: { conversation: newList[index] } });
     } else {
       sidebarConversationList.activeChatName = list[index].roomName;
       sidebarConversationList.activeDescription = list[index].description;
 
-      this.updateMessages({ detail: {conversation: list[index]} });
+      this.updateMessages({ detail: { conversation: list[index] } });
     }
   }
 
@@ -471,7 +471,7 @@ export class Chat extends LitElement {
       .querySelector("il-sidebar")
       .shadowRoot.querySelector(" il-conversation-list");
 
-    conversationList.setList(message);
+    if (message.content !== null ) conversationList.setList(message);
 
     this.messageNotification(message);
   }

@@ -15,7 +15,7 @@ class ConversationList extends LitElement {
     newConversationList: { type: Array },
     users: { type: Array },
     activeChatName: { type: String },
-    activeDescription: {type: String},
+    activeDescription: { type: String },
   };
 
   constructor() {
@@ -24,8 +24,10 @@ class ConversationList extends LitElement {
     this.conversationList = [];
     this.newConversationList = [];
     this.usersList = [];
-    this.activeChatName = CookieService.getCookieByKey(CookieService.Keys.lastChat) || ""
-    this.activeDescription = CookieService.getCookieByKey(CookieService.Keys.lastDescription) || ""
+    this.activeChatName =
+      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
+    this.activeDescription =
+      CookieService.getCookieByKey(CookieService.Keys.lastDescription) || "";
     this.onLoad();
   }
 
