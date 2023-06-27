@@ -226,7 +226,7 @@ class ConversationList extends LitElement {
         sender: null,
         timestamp: null,
       },
-      description: user.description,
+      description: user.name,
       id: user.id,
     };
   }
