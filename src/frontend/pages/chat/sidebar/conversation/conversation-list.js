@@ -76,7 +76,7 @@ class ConversationList extends LitElement {
 
     .conversation {
       margin-right: 3px;
-      border-radius: 0px 7px 7px 0px;
+      border-radius: 7px;
       transition: background-color 0.2s;
     }
 
