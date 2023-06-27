@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 
 import "../../../components/icon";
 
-export class MessageMenuOption extends LitElement {
+export class MessageButtonOption extends LitElement {
   static properties = {
     iconName: { type: String },
     text: { type: String },
@@ -34,4 +34,4 @@ export class MessageMenuOption extends LitElement {
   }
 }
 
-customElements.define("message-menu-option", MessageMenuOption);
+customElements.define("message-button-option", MessageButtonOption);

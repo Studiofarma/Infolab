@@ -2,9 +2,9 @@ import { LitElement, html, css } from "lit";
 
 import { IconNames } from "../../../enums/icon-names.js";
 
-import "./message-menu-option";
+import "./message-button-option.js";
 
-export class MessageSettings extends LitElement {
+export class MessageOptions extends LitElement {
   static get properties() {
     return {
       message: { type: Object },
@@ -16,35 +16,35 @@ export class MessageSettings extends LitElement {
 
   render() {
     return html`
-      <message-menu-option
+      <message-button-option
         iconName=${IconNames.mdiContentCopy}
         text="Copia"
         @click=${this.copyToClipboardHandler}
       >
-      </message-menu-option>
+      </message-button-option>
 
-      <message-menu-option
+      <message-button-option
         iconName=${IconNames.mdiShare}
         text="Inoltra"
         @click=${this.forwardMessageHandler}
       >
-      </message-menu-option>
+      </message-button-option>
 
       ${this.type === "receiver"
-        ? html` <message-menu-option
+        ? html` <message-button-option
             iconName=${IconNames.mdiMessage}
             text="Scrivi in privato"
             @click=${this.goToChatHandler}
           >
-          </message-menu-option>`
+          </message-button-option>`
         : html``}
 
-      <message-menu-option
+      <message-button-option
         iconName=${IconNames.mdiDelete}
         text="Elimina"
         @click=${this.deleteMessageHandler}
       >
-      </message-menu-option>
+      </message-button-option>
     `;
   }
 
@@ -84,4 +84,4 @@ export class MessageSettings extends LitElement {
   }
 }
 
-customElements.define("il-message-settings", MessageSettings);
+customElements.define("il-message-options", MessageOptions);

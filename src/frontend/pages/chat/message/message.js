@@ -7,7 +7,7 @@ import { CookieService } from "../../../services/cookie-service";
 
 import { IconNames } from "../../../enums/icon-names";
 
-import "./message-settings";
+import "./message-options";
 import "../../../components/popover";
 
 export class Message extends LitElement {
@@ -228,7 +228,7 @@ export class Message extends LitElement {
           >
           </il-button-icon>
 
-          <il-message-settings
+          <il-message-options
             slot="popup"
             .message=${this.message}
             .cookie=${this.cookie}
@@ -248,7 +248,7 @@ export class Message extends LitElement {
                 new CustomEvent(event.type, { detail: event.detail })
               )}
           >
-          </il-message-settings>
+          </il-message-options>
         </il-popover>
       </div>
     `;
