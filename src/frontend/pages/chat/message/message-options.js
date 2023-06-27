@@ -1,4 +1,5 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html } from "lit";
+import { when } from "lit/directives/when.js";
 
 import { IconNames } from "../../../enums/icon-names.js";
 
@@ -30,14 +31,15 @@ export class MessageOptions extends LitElement {
       >
       </message-button-option>
 
-      ${this.type === "receiver"
-        ? html` <message-button-option
-            iconName=${IconNames.mdiMessage}
-            text="Scrivi in privato"
-            @click=${this.goToChatHandler}
-          >
-          </message-button-option>`
-        : html``}
+      ${when(
+        this.type === "receiver",
+        () => html` <message-button-option
+          iconName=${IconNames.mdiMessage}
+          text="Scrivi in privato"
+          @click=${this.goToChatHandler}
+        >
+        </message-button-option>`
+      )}
 
       <message-button-option
         iconName=${IconNames.mdiDelete}
@@ -63,7 +65,7 @@ export class MessageOptions extends LitElement {
   }
 
   goToChatHandler() {
-    console.log(this.message)
+    console.log(this.message);
     this.dispatchEvent(
       new CustomEvent("go-to-chat", {
         detail: {

@@ -10,7 +10,6 @@ import { CookieService } from "../../services/cookie-service";
 
 import { IconNames } from "../../enums/icon-names";
 
-import { ConversationDto } from "../../models/conversation-dto";
 
 import "./message/message";
 import "../../components/button-icon";
