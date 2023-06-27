@@ -15,19 +15,19 @@ describe("search spec", () => {
     );
   });
 
-  it("serch user1", () => {
+  it("serch general", () => {
     cy.login({ user: "user1", password: "password1" });
 
     cy.getLitElement(
       "il-app,il-chat,il-sidebar,il-conversation-list,il-search,il-input-ricerca"
     )
       .find("input")
-      .type("user1", { force: true });
+      .type("general", { force: true });
 
     cy.countElements(
       "il-app,il-chat,il-sidebar,il-conversation-list",
       "il-conversation",
-      6
+      1
     );
   });
 
@@ -49,7 +49,7 @@ describe("search spec", () => {
     cy.countElements(
       "il-app,il-chat,il-sidebar,il-conversation-list",
       "il-conversation",
-      7
+      11
     );
   });
 });
