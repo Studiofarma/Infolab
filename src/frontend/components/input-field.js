@@ -33,7 +33,7 @@ export class InputField extends LitElement {
       width: 100%;
       height: 40px;
       padding: 5px 10px;
-      color: white;
+      color: black;
       border: none;
       outline: none;
       font-size: 15pt;
@@ -42,7 +42,7 @@ export class InputField extends LitElement {
     }
 
     input::placeholder {
-      color: rgb(214, 214, 214);
+      color: #6f7174;
     }
   `;
 
