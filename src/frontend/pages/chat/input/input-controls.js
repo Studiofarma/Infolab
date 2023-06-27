@@ -48,15 +48,17 @@ export class InputControls extends LitElement {
       position: fixed;
       bottom: 0px;
       left: 350px;
-      width: calc(100% - 350px);
+      width: calc(100% - 390px);
       min-height: 60px;
       display: flex;
       align-items: center;
       gap: 5px;
-      padding: 5px 10px;
-      background: #083c72;
-      border-top: 1px solid black;
+      padding: 5px 5px;
+      background: #f2f4f7;
+      box-shadow: 0 0 8px 2px #b7b9bd;
+      margin: 0 20px;
       z-index: 1000;
+      border-radius: 10px 10px 0 0;
     }
 
     .inputContainer {
@@ -74,6 +76,15 @@ export class InputControls extends LitElement {
 
     il-editor {
       width: 100%;
+      background-color: #eaecef;
+      border-radius: 10px;
+    }
+
+    hr {
+      height: 4px;
+      background-color: #206cf7;
+      border: 0;
+      border-radius: 5px;
     }
   `;
 

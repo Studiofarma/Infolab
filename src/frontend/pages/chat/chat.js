@@ -75,7 +75,7 @@ export class Chat extends LitElement {
       left: 0;
       width: 100%;
       min-height: 100%;
-      background: #f2f4f7;
+      background: #eaecef;
     }
 
     section {

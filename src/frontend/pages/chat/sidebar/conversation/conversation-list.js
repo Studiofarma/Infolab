@@ -60,7 +60,7 @@ class ConversationList extends LitElement {
 
     ::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: rgb(54, 123, 251);
+      background-color: #206cf7;
     }
 
     .conversation {

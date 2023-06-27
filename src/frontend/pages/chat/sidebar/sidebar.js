@@ -20,7 +20,7 @@ export class Sidebar extends LitElement {
       flex-direction: column;
       height: 100vh;
       width: 350px;
-      box-shadow: inset -1px 0px 0px 0px black;
+      box-shadow: 2px 0 8px #b7b9bd;
       z-index: 1100;
     }
 
