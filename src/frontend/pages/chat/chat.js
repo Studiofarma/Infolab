@@ -28,6 +28,7 @@ export class Chat extends LitElement {
     messages: [],
     message: "",
     nMessages: 0,
+    textAreaRef: {},
   };
 
   static get properties() {
@@ -212,6 +213,8 @@ export class Chat extends LitElement {
                   <il-input-controls
                     @send-message=${this.sendMessage}
                     @text-editor-resized=${this.textEditorResized}
+                    @editor-rendered=${(e) =>
+                      (this.textAreaRef = e.detail.textAreaRef.value)}
                   ></il-input-controls>`
               : html`<il-empty-chat></il-empty-chat>`}
           </div>
@@ -249,6 +252,8 @@ export class Chat extends LitElement {
       }
     });
     this.activeChatName = e.detail.roomName;
+
+    this.textAreaRef.focus();
   }
 
   async updated() {
@@ -335,11 +340,9 @@ export class Chat extends LitElement {
       return;
     }
 
-    let conversationList = document
-      .querySelector("body > il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("main > section > il-sidebar")
-      .shadowRoot.querySelector("div > il-conversation-list");
+    let conversationList = this.shadowRoot
+      .querySelector("il-sidebar")
+      .shadowRoot.querySelector("il-conversation-list");
 
     let roomName = this.activeChatNameFormatter(message.roomName);
 

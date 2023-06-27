@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { MarkdownService } from "../../../../services/markdown-service";
+import { createRef, ref } from "lit/directives/ref.js";
 
 import "../../../../components/button-text";
 
@@ -21,6 +22,7 @@ export class Editor extends LitElement {
   constructor() {
     super();
     this.message = "";
+    this.textAreaRef = createRef();
   }
 
   static styles = css`
@@ -64,6 +66,7 @@ export class Editor extends LitElement {
   render() {
     return html`
       <textarea
+        ${ref(this.textAreaRef)}
         @input=${this.onInput}
         @keydown=${this.onKeyDown}
         placeholder="Scrivi un messaggio..."
@@ -99,6 +102,16 @@ export class Editor extends LitElement {
 
   firstUpdated() {
     this.textEditorResize();
+
+    this.dispatchEvent(
+      new CustomEvent("editor-rendered", {
+        detail: {
+          textAreaRef: this.textAreaRef,
+        },
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   getSelection() {

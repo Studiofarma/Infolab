@@ -418,15 +418,6 @@ class ConversationList extends LitElement {
         composed: true,
       })
     );
-
-    let editor = document
-      .querySelector("il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("il-input-controls")
-      .shadowRoot.querySelector("il-editor")
-      .shadowRoot.querySelector("textarea");
-
-    editor.focus();
   }
 
   cleanSearchInput() {
