@@ -83,7 +83,7 @@ class ConversationList extends LitElement {
     }
 
     .conversation-list-scrollable {
-      height: calc(100% - 170px);
+      height: calc(100vh - 100px);
       overflow: auto;
     }
   `;
@@ -352,16 +352,14 @@ class ConversationList extends LitElement {
       })
     );
 
-    let messageInput = document
-      .querySelector("body > il-app")
+    let editor = document
+      .querySelector("il-app")
       .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("main > section > div > il-input-controls")
-      ?.shadowRoot.querySelector(
-        "#inputControls > div.container > div > il-input-field"
-      )
-      .shadowRoot.querySelector("#message-input");
+      .shadowRoot.querySelector("il-input-controls")
+      .shadowRoot.querySelector("il-editor")
+      .shadowRoot.querySelector("textarea");
 
-    messageInput?.focus();
+    editor.focus();
   }
 
   cleanSearchInput() {
