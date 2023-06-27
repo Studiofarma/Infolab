@@ -23,11 +23,11 @@ export class MarkdownService {
   }
 
   static insertItalic(text) {
-    return MarkdownService.insertItalic(text, "*", "*", /[*]{1}/g);
+    return MarkdownService.insertGeneric(text, "*", "*", /[*]{1}/g);
   }
 
   static insertStrike(text) {
-    return MarkdownService.insertStrike(text, "~~", "~~", /[~]{2}/g);
+    return MarkdownService.insertGeneric(text, "~~", "~~", /[~]{2}/g);
   }
 
   static insertLink(text) {
