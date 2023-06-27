@@ -312,7 +312,7 @@ class ConversationList extends LitElement {
           );
 
           this.dispatchEvent(
-            new CustomEvent("onChangeConversation", {
+            new CustomEvent("change-conversation", {
               detail: {
                 conversation: { ...conversation },
               },

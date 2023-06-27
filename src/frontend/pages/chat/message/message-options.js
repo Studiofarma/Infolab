@@ -54,7 +54,7 @@ export class MessageOptions extends LitElement {
 
   forwardMessageHandler() {
     this.dispatchEvent(
-      new CustomEvent("onForwardMessage", {
+      new CustomEvent("forward-message", {
         detail: {
           messageToForward: this.message.content,
         },
@@ -65,7 +65,7 @@ export class MessageOptions extends LitElement {
   goToChatHandler() {
     console.log(this.message)
     this.dispatchEvent(
-      new CustomEvent("onGoToChat", {
+      new CustomEvent("go-to-chat", {
         detail: {
           description: this.message.sender,
         },

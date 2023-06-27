@@ -176,7 +176,7 @@ export class Chat extends LitElement {
         <section>
           <il-sidebar
             @update-message="${this.updateMessages}"
-            @onChangeConversation=${this.setActiveChat}
+            @change-conversation=${this.setActiveChat}
             .login=${this.login}
           ></il-sidebar>
 
@@ -201,8 +201,8 @@ export class Chat extends LitElement {
                           .index=${index}
                           .activeChatName=${this.activeChatName}
                           .activeDescription=${this.activeDescription}
-                          @onForwardMessage=${this.openForwardMenu}
-                          @onGoToChat=${this.goToChat}
+                          @forward-message=${this.openForwardMenu}
+                          @go-to-chat=${this.goToChat}
                         ></il-message>`
                     )}
                   </ul>
@@ -215,7 +215,7 @@ export class Chat extends LitElement {
                     }}
                   >
                     <il-conversation-list
-                      @onChangeConversation=${this.forwardMessage}
+                      @change-conversation=${this.forwardMessage}
                     ></il-conversation-list>
                   </il-modal>
 

@@ -238,12 +238,12 @@ export class Message extends LitElement {
               ? "sender"
               : "receiver"}
 
-            @onForwardMessage=${(event) =>
+            @forward-message=${(event) =>
               this.dispatchEvent(
                 new CustomEvent(event.type, { detail: event.detail })
               )}
   
-  @onGoToChat=${(event) =>
+  @go-to-chat=${(event) =>
               this.dispatchEvent(
                 new CustomEvent(event.type, { detail: event.detail })
               )}

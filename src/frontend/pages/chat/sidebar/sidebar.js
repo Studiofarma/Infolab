@@ -44,7 +44,7 @@ export class Sidebar extends LitElement {
               new CustomEvent(event.type, { detail: event.detail })
             )}
           }
-          @onChangeConversation=${(event) =>
+          @change-conversation=${(event) =>
             this.dispatchEvent(
               new CustomEvent(event.type, { detail: event.detail })
             )}
