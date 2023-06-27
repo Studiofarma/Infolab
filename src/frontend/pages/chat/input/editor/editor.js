@@ -108,8 +108,6 @@ export class Editor extends LitElement {
         detail: {
           textAreaRef: this.textAreaRef,
         },
-        bubbles: true,
-        composed: true,
       })
     );
   }

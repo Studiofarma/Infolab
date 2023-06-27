@@ -94,6 +94,15 @@ export class InputControls extends LitElement {
         <div class="container">
           <div class="inputContainer">
             <il-editor
+              @editor-rendered=${(e) => {
+                this.dispatchEvent(
+                  new CustomEvent("editor-rendered", {
+                    detail: {
+                      ...e.detail,
+                    },
+                  })
+                );
+              }}
               @enter-key-pressed=${this.sendMessage}
               @text-changed=${this.updateMessage}
               @text-editor-resized=${this.textEditorResized}
