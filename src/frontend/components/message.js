@@ -71,14 +71,14 @@ export class Message extends LitElement {
     .sender {
       border-radius: 10px 0 10px 10px;
       color: black;
-      background-color: #96c7fd;
+      background-color: #c5e1fe;
     }
     .sender::after {
       content: "";
       position: absolute;
       top: 0px;
       right: -9px;
-      border-top: 10px solid rgb(150, 199, 253);
+      border-top: 10px solid rgb(197, 225, 254);
       border-left: 0px solid transparent;
       border-right: 10px solid transparent;
       z-index: 3;
@@ -88,23 +88,11 @@ export class Message extends LitElement {
       position: absolute;
       top: -1px;
       right: -13px;
-      border-top: 11px solid rgb(150, 199, 253 / 34%);
+      border-top: 11px solidrgb(197, 225, 254 / 34%);
       border-left: 0px solid transparent;
       border-right: 12px solid transparent;
       filter: blur(0.8px);
       z-index: 2;
-    }
-
-    .sender a:link {
-      color: black;
-    }
-
-    .sender a:visited {
-      color: black;
-    }
-
-    .sender a:hover {
-      color: white;
     }
 
     .receiver {
@@ -181,14 +169,10 @@ export class Message extends LitElement {
     }
 
     .message a[href] {
-      color: lightgray;
+      color: blue;
       text-underline-position: below;
       text-underline-offset: 2px;
       transition: color 0.5s;
-    }
-
-    .message a[href]:hover {
-      color: white;
     }
   `;
 
