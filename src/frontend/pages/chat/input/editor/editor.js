@@ -1,9 +1,11 @@
 import { LitElement, html, css } from "lit";
 import { MarkdownService } from "../../../../services/markdown-service";
+import { createRef, ref } from "lit/directives/ref.js";
 
 import "../../../../components/button-text";
 
 const textareaDefaultHeight = 21;
+const textAreaWidthOffset = 20;
 const keys = {
   enter: "Enter",
   bold: "b",
@@ -20,44 +22,51 @@ export class Editor extends LitElement {
   constructor() {
     super();
     this.message = "";
+    this.textAreaRef = createRef();
   }
 
   static styles = css`
     textarea {
-      width: 100%;
+      width: calc(100% - ${textAreaWidthOffset}px);
       resize: none;
       font-size: ${textareaDefaultHeight}px;
       outline: none;
       background: none;
-      color: white;
+      color: black;
       border: 0;
       font-family: inherit;
-      border-left: 3px solid white;
       padding-left: 10px;
-      line-height: 20px;
       max-height: 100px;
       height: ${textareaDefaultHeight}px;
+      padding-bottom: 0;
     }
 
     textarea::placeholder {
-      color: lightgray;
+      color: #6f7174;
     }
 
-    textarea::-webkit-scrollbar {
-      background: lightgray;
-      width: 5px;
-      border-top: 2px solid gray;
-      border-bottom: 2px solid gray;
+    ::-webkit-scrollbar {
+      width: 4px;
     }
 
-    textarea::-webkit-scrollbar-thumb {
-      background: gray;
+    ::-webkit-scrollbar-track {
+      background-color: none;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #206cf7;
+    }
+
+    ::-webkit-scrollbar:vertical {
+      margin-right: 10px;
     }
   `;
 
   render() {
     return html`
       <textarea
+        ${ref(this.textAreaRef)}
         @input=${this.onInput}
         @keydown=${this.onKeyDown}
         placeholder="Scrivi un messaggio..."
@@ -89,6 +98,14 @@ export class Editor extends LitElement {
         detail: { height: textarea.clientHeight },
       })
     );
+  }
+
+  firstUpdated() {
+    this.textEditorResize();
+  }
+
+  focusTextArea() {
+    this.textAreaRef.value.focus();
   }
 
   getSelection() {

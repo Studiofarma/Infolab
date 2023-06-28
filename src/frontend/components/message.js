@@ -70,15 +70,15 @@ export class Message extends LitElement {
 
     .sender {
       border-radius: 10px 0 10px 10px;
-      color: white;
-      background-color: rgb(54, 123, 251);
+      color: black;
+      background-color: #c5e1fe;
     }
     .sender::after {
       content: "";
       position: absolute;
       top: 0px;
       right: -9px;
-      border-top: 10px solid rgb(54, 123, 251);
+      border-top: 10px solid rgb(197, 225, 254);
       border-left: 0px solid transparent;
       border-right: 10px solid transparent;
       z-index: 3;
@@ -88,23 +88,11 @@ export class Message extends LitElement {
       position: absolute;
       top: -1px;
       right: -13px;
-      border-top: 11px solid rgb(209 209 209 / 34%);
+      border-top: 11px solidrgb(197, 225, 254 / 34%);
       border-left: 0px solid transparent;
       border-right: 12px solid transparent;
       filter: blur(0.8px);
       z-index: 2;
-    }
-
-    .sender a:link {
-      color: black;
-    }
-
-    .sender a:visited {
-      color: black;
-    }
-
-    .sender a:hover {
-      color: white;
     }
 
     .receiver {
@@ -155,12 +143,6 @@ export class Message extends LitElement {
       opacity: 1;
     }
 
-    .sender .message-timestamp {
-      text-align: end;
-      font-size: 11px;
-      color: #e9e9e9;
-    }
-
     .sender ~ .settings-container il-message-settings {
       position: absolute;
       top: 0px;
@@ -173,10 +155,10 @@ export class Message extends LitElement {
       right: 33px;
     }
 
-    .receiver .message-timestamp {
+    .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: #8c8d8d;
+      color: #1d1e20;
     }
 
     .message-date {
@@ -187,14 +169,10 @@ export class Message extends LitElement {
     }
 
     .message a[href] {
-      color: lightgray;
+      color: blue;
       text-underline-position: below;
       text-underline-offset: 2px;
       transition: color 0.5s;
-    }
-
-    .message a[href]:hover {
-      color: white;
     }
   `;
 
