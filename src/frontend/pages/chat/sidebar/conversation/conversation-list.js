@@ -232,7 +232,7 @@ class ConversationList extends LitElement {
       );
       rooms["data"].forEach((room) => {
         let userIndex = this.usersList.findIndex(
-          (user) => user.name == room.description
+          (user) => user.description == room.description
         );
         if (userIndex == -1) {
           this.conversationList.push(room);
