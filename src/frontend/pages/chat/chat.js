@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { repeat } from "lit/directives/repeat.js";
-import {ref, createRef} from 'lit/directives/ref.js'
+import { ref, createRef } from "lit/directives/ref.js";
 
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
@@ -61,11 +61,11 @@ export class Chat extends LitElement {
     });
 
     // Refs
-    this.forwardListRef = createRef()
-    this.sidebarRef = createRef()
-    this.scrollButtonRef = createRef()
-    this.messageBoxRef = createRef()
-    this.inputControlsRef = createRef()
+    this.forwardListRef = createRef();
+    this.sidebarRef = createRef();
+    this.scrollButtonRef = createRef();
+    this.messageBoxRef = createRef();
+    this.inputControlsRef = createRef();
   }
 
   connectedCallback() {
@@ -182,9 +182,12 @@ export class Chat extends LitElement {
       <main>
         <section>
           <il-sidebar
-          ${ref(this.sidebarRef)}
+            ${ref(this.sidebarRef)}
             @update-message="${this.updateMessages}"
-            @change-conversation=${this.setActiveChat}
+            @change-conversation=${(event) => {
+              this.setActiveChat(event);
+              this.focusOnEditor(event)
+            }}
             .login=${this.login}
           ></il-sidebar>
 
@@ -218,17 +221,17 @@ export class Chat extends LitElement {
                     )}
                   </ul>
 
-                  <il-modal
-                    theme="forward-blue"
-                    ${ref(this.forwardListRef)}
-                  >
+                  <il-modal theme="forward-blue" ${ref(this.forwardListRef)}>
                     <il-conversation-list
-                      @change-conversation=${this.forwardMessage}
+                      @change-conversation=${(event) => {
+                        this.forwardMessage(event)
+                        this.focusOnEditor(event)
+                      }}
                     ></il-conversation-list>
                   </il-modal>
 
                   <il-button-icon
-                  ${ref(this.scrollButtonRef)}
+                    ${ref(this.scrollButtonRef)}
                     style="bottom: 120px"
                     class="scroll-button"
                     @click="${this.scrollToBottom}"
@@ -236,6 +239,7 @@ export class Chat extends LitElement {
                   ></il-button-icon>
 
                   <il-input-controls
+                   ${ref(this.inputControlsRef)}
                     @send-message=${this.sendMessage}
                     @text-editor-resized=${this.textEditorResized}
                   ></il-input-controls>`
@@ -259,7 +263,8 @@ export class Chat extends LitElement {
     this.setActiveChat(event);
     this.updateMessages(event);
 
-    this.sidebarRef.value.sidebarListRef.value.activeChatName = event.detail.conversation.roomName;
+    this.sidebarRef.value.sidebarListRef.value.activeChatName =
+      event.detail.conversation.roomName;
     this.sidebarRef.value.sidebarListRef.value.activeDescription =
       event.detail.conversation.description;
 
@@ -268,10 +273,10 @@ export class Chat extends LitElement {
   }
 
   goToChat(event) {
-
     let list = this.sidebarRef.value.sidebarListRef.value.conversationList;
 
-    let newList = this.sidebarRef.value.sidebarListRef.value.newConversationList;
+    let newList =
+      this.sidebarRef.value.sidebarListRef.value.newConversationList;
 
     let index = list.findIndex(
       (elem) => elem.description === event.detail.description
@@ -282,16 +287,29 @@ export class Chat extends LitElement {
         (elem) => elem.description === event.detail.description + "\n"
       );
 
-      this.sidebarRef.value.sidebarListRef.value.activeChatName = newList[index].roomName;
-      this.sidebarRef.value.sidebarListRef.value.activeDescription = newList[index].description;
+      this.sidebarRef.value.sidebarListRef.value.activeChatName =
+        newList[index].roomName;
+      this.sidebarRef.value.sidebarListRef.value.activeDescription =
+        newList[index].description;
 
       this.updateMessages({ detail: { conversation: newList[index] } });
     } else {
-      this.sidebarRef.value.sidebarListRef.value.activeChatName = list[index].roomName;
-      this.sidebarRef.value.sidebarListRef.value.activeDescription = list[index].description;
+      this.sidebarRef.value.sidebarListRef.value.activeChatName =
+        list[index].roomName;
+      this.sidebarRef.value.sidebarListRef.value.activeDescription =
+        list[index].description;
 
       this.updateMessages({ detail: { conversation: list[index] } });
     }
+  }
+
+  focusOnEditor(event) {
+    this.inputControlsRef.value.editorRef.value.textareaRef.value.focus()
+
+    // Bug da fixare, segnalato in proposal
+    // if(event.detail.eventType === "keyPressed")
+    // this.inputControlsRef.value.editorRef.value.textareaRef.value = ""
+
   }
 
   async firstUpdated() {
@@ -360,7 +378,9 @@ export class Chat extends LitElement {
   checkScrolledToBottom() {
     try {
       return (
-        this.messageBoxRef.value.scrollHeight - this.messageBoxRef.value.offsetHeight <= this.messageBoxRef.value.scrollTop + 10
+        this.messageBoxRef.value.scrollHeight -
+          this.messageBoxRef.value.offsetHeight <=
+        this.messageBoxRef.value.scrollTop + 10
       );
     } catch (error) {
       return false;
@@ -368,7 +388,6 @@ export class Chat extends LitElement {
   }
 
   textEditorResized(event) {
-
     this.scrollButtonRef.value.style.bottom = `${event.detail.height + 100}px`;
     this.messageBoxRef.value.style.height = `calc(${fullScreenHeight} - ${
       event.detail.height + 150
@@ -377,7 +396,9 @@ export class Chat extends LitElement {
   scrollToBottom() {
     if (this.activeChatName === "") return;
 
-    this.messageBoxRef.value.scrollTo({ top: this.messageBoxRef.value.scrollHeight });
+    this.messageBoxRef.value.scrollTo({
+      top: this.messageBoxRef.value.scrollHeight,
+    });
   }
 
   onConnect() {
@@ -406,7 +427,6 @@ export class Chat extends LitElement {
       return;
     }
 
-
     let roomName = this.activeDescription;
 
     if (Notification.permission === "granted") {
@@ -415,7 +435,7 @@ export class Chat extends LitElement {
       });
 
       notification.onclick = function () {
-        this.sidebarRef.value.sidebarListRef.value.selectChat(roomName)
+        this.sidebarRef.value.sidebarListRef.value.selectChat(roomName);
         window.focus("/");
       };
     } else if (Notification.permission !== "denied") {
@@ -426,7 +446,10 @@ export class Chat extends LitElement {
           });
 
           notification.onclick = function () {
-            this.sidebarRef.value.sidebarListRef.value.selectChat(message, this.activeDescription);
+            this.sidebarRef.value.sidebarListRef.value.selectChat(
+              message,
+              this.activeDescription
+            );
             window.focus("/");
           };
         }
@@ -447,7 +470,8 @@ export class Chat extends LitElement {
 
     // riordino le conversazioni con una funzione contenuta in il-conversation-list che compara il timestamp
 
-    if (message.content !== null) this.sidebarRef.value.sidebarListRef.value.setList(message);
+    if (message.content !== null)
+      this.sidebarRef.value.sidebarListRef.value.setList(message);
 
     this.messageNotification(message);
   }

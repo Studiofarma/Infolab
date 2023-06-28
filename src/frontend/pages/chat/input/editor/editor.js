@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { ref, createRef } from "lit/directives/ref.js";
 
 import { MarkdownService } from "../../../../services/markdown-service";
 
@@ -21,6 +22,8 @@ export class Editor extends LitElement {
   constructor() {
     super();
     this.message = "";
+    // Refs
+    this.textareaRef = createRef()
   }
 
   static styles = css`
@@ -59,6 +62,7 @@ export class Editor extends LitElement {
   render() {
     return html`
       <textarea
+      ${ref(this.textareaRef)}
         @input=${this.onInput}
         @keydown=${this.onKeyDown}
         placeholder="Scrivi un messaggio..."

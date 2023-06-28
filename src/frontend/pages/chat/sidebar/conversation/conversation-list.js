@@ -136,7 +136,7 @@ class ConversationList extends LitElement {
     this.scrollToSelectedChat();
     this.getSelectedRoom();
 
-    if (e.detail.key == enter) this.changeRoom(this.selectedRoom);
+    if (e.detail.key == enter) this.changeRoom(e,this.selectedRoom);
   }
 
   scrollToSelectedChat() {
@@ -171,7 +171,7 @@ class ConversationList extends LitElement {
     this.selectedRoom = { ...selected };
   }
 
-  changeRoom(conversation) {
+  changeRoom(event, conversation) {
     this.activeChatName = conversation.roomName;
     this.activeDescription = conversation.description;
     this.updateMessages(conversation);
@@ -190,6 +190,7 @@ class ConversationList extends LitElement {
       new CustomEvent("change-conversation", {
         detail: {
           conversation: { ...conversation },
+          eventType: event.type,
         },
       })
     );
@@ -347,7 +348,7 @@ class ConversationList extends LitElement {
             ? "selected"
             : ""}
           .chat=${conversation}
-          @click=${() => this.changeRoom(conversation)}
+          @click=${(event) => this.changeRoom(event,conversation)}
         ></il-conversation>`;
       } else {
         let conversationIndex = this.conversationList.findIndex(
@@ -377,7 +378,7 @@ class ConversationList extends LitElement {
         id=${conversation.roomName == this.selectedRoom.roomName
           ? "selected"
           : ""}
-        @click=${() => this.changeRoom(conversation)}
+        @click=${(event) => this.changeRoom(event,conversation)}
       ></il-conversation>`;
     });
   }

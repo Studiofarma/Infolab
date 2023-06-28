@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { ref, createRef } from "lit/directives/ref.js";
 
 import "./insertion-bar";
 import "./editor/editor";
@@ -22,6 +23,8 @@ export class InputControls extends LitElement {
     this.message = "";
     this.isEmojiPickerOpen = false;
     this.selectedText = null;
+    //Refs
+    this.editorRef = createRef()
   }
 
   static styles = css`
@@ -84,6 +87,7 @@ export class InputControls extends LitElement {
         <div class="container">
           <div class="inputContainer">
             <il-editor 
+             ${ref(this.editorRef)}
               @enter-key-pressed=${this.sendMessage}
               @text-changed=${this.updateMessage}
               @text-editor-resized=${this.textEditorResized}
