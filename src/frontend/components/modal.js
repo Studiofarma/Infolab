@@ -31,16 +31,15 @@ export class Modal extends LitElement {
   }
 
   isClickOuter(event) {
-    if (event.offsetX < 0) return true;
-    if (event.offsetX > this.ilDialogRef.value.offsetWidth) return true;
-    if (event.offsetY < 0) return true;
-    if (event.offsetY > this.ilDialogRef.value.offsetHeight) return true;
+    if (event.detail.x < 0) return true;
+    if (event.detail.x > this.ilDialogRef.value.dialogRef.value.offsetWidth) return true;
+    if (event.detail.y < 0) return true;
+    if (event.detail.y > this.ilDialogRef.value.dialogRef.value.offsetHeight) return true;
 
     return false;
   }
 
   handleClick(event) {
-    console.log(event)
     if (this.closeByBackdropClick && this.isClickOuter(event))
       this.ilDialogRef.value.isOpened = false;
   }

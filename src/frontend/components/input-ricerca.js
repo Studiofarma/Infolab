@@ -82,7 +82,7 @@ export class InputRicerca extends InputField {
   }
 
   toggleFocus() {
-    this.isFocus = this.isFocus == true && this.value != "";
+    this.isFocus = this.isFocus  && this.value != "";
   }
 }
 

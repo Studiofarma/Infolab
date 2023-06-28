@@ -54,28 +54,7 @@ class ConversationList extends LitElement {
       gap: 10px;
       margin-right: 3px;
     }
-
-    .container {
-      max-height: 806px;
-      display: flex;
-      flex-direction: column;
-      overflow-y: scroll;
-    }
-
-    ::-webkit-scrollbar {
-      width: 4px;
-      margin-right: 10px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background-color: none;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      background-color: rgb(54, 123, 251);
-    }
-
+    
     .conversation {
       margin-right: 3px;
       border-radius: 7px;
@@ -95,10 +74,6 @@ class ConversationList extends LitElement {
       color: #d6d6d6;
     }
 
-    .conversation-list-scrollable {
-      height: 100%;
-      overflow: auto;
-    }
   `;
 
   render() {

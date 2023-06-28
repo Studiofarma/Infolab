@@ -23,11 +23,25 @@ export class Dialog extends LitElement {
       border-radius: 6px;
       padding: 8px;
       transition: 0.5s;
-      overflow: hidden;
+      overflow-y: auto;
     }
 
     dialog::backdrop {
-      background-color:#00000037;
+      background-color: #00000037;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+      margin-right: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: none;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: rgb(54, 123, 251);
     }
 
     .forward-blue {
@@ -40,9 +54,20 @@ export class Dialog extends LitElement {
 
   render() {
     return html`
-      <dialog ${ref(this.dialogRef)} class=${this.theme} @click=${(event) => {
-        this.dispatchEvent(new CustomEvent("dialog-clicked", {detail: event}))
-      }}>
+      <dialog
+        ${ref(this.dialogRef)}
+        class=${this.theme}
+        @click=${(event) => {
+          this.dispatchEvent(
+            new CustomEvent("dialog-clicked", {
+              detail: {
+                x: event.offsetX,
+                y: event.offsetY,
+              },
+            })
+          );
+        }}
+      >
         <slot></slot>
       </dialog>
     `;
