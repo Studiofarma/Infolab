@@ -1,12 +1,13 @@
 import { LitElement, html, css } from "lit";
 import { repeat } from "lit/directives/repeat.js";
+import { createRef, ref } from "lit/directives/ref.js";
 
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
 import { MessagesService } from "../../services/messages-service";
-
 import { CookieService } from "../../services/cookie-service";
+import { MarkdownService } from "../../services/markdown-service";
 
 import { IconNames } from "../../enums/icon-names";
 
@@ -18,7 +19,6 @@ import "./input/input-controls";
 import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
-import { MarkdownService } from "../../services/markdown-service";
 
 const fullScreenHeight = "100vh";
 
@@ -55,6 +55,10 @@ export class Chat extends LitElement {
     window.addEventListener("resize", () => {
       this.scrollToBottom();
     });
+    this.inputControlsRef = createRef();
+    this.scrollButtonRef = createRef();
+    this.messageBoxRef = createRef();
+    this.sidebarRef = createRef();
   }
 
   connectedCallback() {
@@ -75,7 +79,7 @@ export class Chat extends LitElement {
       left: 0;
       width: 100%;
       min-height: 100%;
-      background: rgb(247, 247, 247);
+      background: #eaecef;
     }
 
     section {
@@ -138,15 +142,15 @@ export class Chat extends LitElement {
       right: 20px;
       border-radius: 5px;
       padding: 2px;
-      background-color: rgb(8, 60, 114);
+      background-color: #ffffff;
       color: white;
       opacity: 0;
       transition: opacity 0.2s ease-in-out;
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
 
     .message-box::-webkit-scrollbar {
-      width: 4px;
-      margin-right: 10px;
+      width: 7px;
     }
 
     .message-box::-webkit-scrollbar-track {
@@ -155,7 +159,7 @@ export class Chat extends LitElement {
 
     .message-box::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: rgb(54, 123, 251);
+      background-color: #206cf7;
       min-height: 40px;
     }
 
@@ -171,6 +175,7 @@ export class Chat extends LitElement {
       <main>
         <section>
           <il-sidebar
+            ${ref(this.sidebarRef)}
             @update-message="${this.updateMessages}"
             .login=${this.login}
           ></il-sidebar>
@@ -183,6 +188,7 @@ export class Chat extends LitElement {
 
             ${this.activeChatName !== ""
               ? html` <ul
+                    ${ref(this.messageBoxRef)}
                     @scroll="${this.manageScrollButtonVisility}"
                     class="message-box"
                     style="height: calc(${fullScreenHeight} - 179px);"
@@ -203,6 +209,7 @@ export class Chat extends LitElement {
                   <il-forward-list></il-forward-list>
 
                   <il-button-icon
+                    ${ref(this.scrollButtonRef)}
                     style="bottom: 120px"
                     class="scroll-button"
                     @click="${this.scrollToBottom}"
@@ -210,6 +217,7 @@ export class Chat extends LitElement {
                   ></il-button-icon>
 
                   <il-input-controls
+                    ${ref(this.inputControlsRef)}
                     @send-message=${this.sendMessage}
                     @text-editor-resized=${this.textEditorResized}
                   ></il-input-controls>`
@@ -249,6 +257,8 @@ export class Chat extends LitElement {
       }
     });
     this.activeChatName = e.detail.roomName;
+
+    this.inputControlsRef.value.focusEditor();
   }
 
   async updated() {
@@ -276,15 +286,15 @@ export class Chat extends LitElement {
 
   manageScrollButtonVisility() {
     if (this.checkScrolledToBottom()) {
-      this.renderRoot.querySelector(".scroll-button").style.opacity = "0";
+      this.scrollButtonRef.value.style.opacity = "0";
       return;
     }
-    this.renderRoot.querySelector(".scroll-button").style.opacity = "1";
+    this.scrollButtonRef.value.style.opacity = "1";
   }
 
   checkScrolledToBottom() {
     try {
-      let element = this.renderRoot.querySelector("ul.message-box");
+      let element = this.messageBoxRef.value;
       return (
         element.scrollHeight - element.offsetHeight <= element.scrollTop + 10
       );
@@ -294,8 +304,8 @@ export class Chat extends LitElement {
   }
 
   textEditorResized(event) {
-    const buttonIcon = this.renderRoot.querySelector("il-button-icon");
-    const messageBox = this.renderRoot.querySelector(".message-box");
+    const buttonIcon = this.scrollButtonRef.value;
+    const messageBox = this.messageBoxRef.value;
 
     buttonIcon.style.bottom = `${event.detail.height + 100}px`;
     messageBox.style.height = `calc(${fullScreenHeight} - ${
@@ -305,7 +315,7 @@ export class Chat extends LitElement {
   scrollToBottom() {
     if (this.activeChatName === "") return;
 
-    let element = this.renderRoot.querySelector("ul.message-box");
+    let element = this.messageBoxRef.value;
     element.scrollTo({ top: element.scrollHeight });
   }
 
@@ -335,11 +345,7 @@ export class Chat extends LitElement {
       return;
     }
 
-    let conversationList = document
-      .querySelector("body > il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("main > section > il-sidebar")
-      .shadowRoot.querySelector("div > il-conversation-list");
+    let sidebar = this.sidebarRef.value;
 
     let roomName = this.activeChatNameFormatter(message.roomName);
 
@@ -349,7 +355,7 @@ export class Chat extends LitElement {
       });
 
       notification.onclick = function () {
-        conversationList.selectChat(roomName);
+        sidebar.loadChat(roomName);
         window.focus("/");
       };
     } else if (Notification.permission !== "denied") {
@@ -360,9 +366,7 @@ export class Chat extends LitElement {
           });
 
           notification.onclick = function () {
-            conversationList.selectChat(
-              this.activeChatNameFormatter(message.roomName)
-            );
+            sidebar.loadChat(this.activeChatNameFormatter(message.roomName));
             window.focus("/");
           };
         }
@@ -378,19 +382,10 @@ export class Chat extends LitElement {
         this.update();
         this.updated();
       }
-      let sidebar = this.renderRoot.querySelector(
-        "main > section > il-sidebar"
-      );
-      sidebar.shadowRoot
-        .querySelector("div > il-conversation-list")
-        .setList(message);
+      let sidebar = this.sidebarRef.value;
+      sidebar.setList(message);
 
-      let conversationListElement = document
-        .querySelector("body > il-app")
-        .shadowRoot.querySelector("il-chat")
-        .shadowRoot.querySelector("main > section > il-sidebar")
-        .shadowRoot.querySelector("div > il-conversation-list");
-      conversationListElement.scrollToTop();
+      sidebar.scrollConversationList();
     }
 
     this.messageNotification(message);
