@@ -96,7 +96,7 @@ class Conversation extends LitElement {
       <div class="chat-box">
         <il-avatar
           .avatarLink=${this.chat.avatarLink}
-          .name=${this.chat.roomName}
+          .name=${this.chat.description}
           .id=${this.chat.id}
         ></il-avatar>
         <div class="name-box">
