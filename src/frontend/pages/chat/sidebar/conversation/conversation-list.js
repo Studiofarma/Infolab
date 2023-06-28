@@ -98,6 +98,10 @@ class ConversationList extends LitElement {
       padding: 5px 0px 5px 10px;
       color: #1d1e20;
     }
+
+    .conversation-list-scrollable {
+      overflow-y: scroll;
+    }
   `;
 
   render() {
