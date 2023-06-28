@@ -1,6 +1,6 @@
-import { LitElement, html, css, unsafeCSS } from "lit";
+import { LitElement, html, css } from "lit";
 
-import "../../../components/input-ricerca";
+import "../../../components/input-search";
 
 export class SearchChats extends LitElement {
   static properties = {

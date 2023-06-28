@@ -24,8 +24,12 @@ export class InputRicerca extends InputField {
         border: solid 2px;
       }
 
-      div:focus {
-        border: #5a9bfb;
+      .focused {
+        border-color: #206cf7;
+      }
+
+      .blurred {
+        border-color: #989a9d;
       }
 
       input {
@@ -47,11 +51,7 @@ export class InputRicerca extends InputField {
 
   render() {
     return html`
-      <div
-        .style=${this.isFocus
-          ? "border-color: #206CF7;"
-          : "border-color: #989A9D;"}
-      >
+      <div class=${this.isFocus ? "focused" : "blurred"}>
         <input
           placeholder="${this.placeholder}"
           @input="${(e) => {
@@ -66,10 +66,7 @@ export class InputRicerca extends InputField {
             this.clear();
             this.search();
           }}
-          content=${(this.isFocus && this.value != "") == true ||
-          this.value != ""
-            ? IconNames.close
-            : IconNames.magnify}
+          content=${this.value !== "" ? IconNames.close : IconNames.magnify}
         ></il-button-icon>
       </div>
     `;
