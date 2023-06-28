@@ -40,6 +40,7 @@ export class Modal extends LitElement {
   }
 
   handleClick(event) {
+    console.log(event)
     if (this.closeByBackdropClick && this.isClickOuter(event))
       this.ilDialogRef.value.isOpened = false;
   }

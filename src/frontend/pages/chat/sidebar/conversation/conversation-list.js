@@ -20,15 +20,14 @@ class ConversationList extends LitElement {
     users: { type: Array },
     activeChatName: { type: String },
     activeDescription: { type: String },
-    conversationListFiltered: {type: Array},
-    newConversationListFiltered: {type: Array},
-    indexOfSelectedChat: {type: Number},
-    selectedRoom: {type: Object},
+    conversationListFiltered: { type: Array },
+    newConversationListFiltered: { type: Array },
+    indexOfSelectedChat: { type: Number },
+    selectedRoom: { type: Object },
   };
 
   constructor() {
     super();
-
     this.query = "";
     this.conversationList = [];
     this.newConversationList = [];
@@ -169,11 +168,10 @@ class ConversationList extends LitElement {
         : this.newConversationListFiltered[
             this.indexOfSelectedChat - convListLength
           ];
-    this.selectedRoom = {...selected};
+    this.selectedRoom = { ...selected };
   }
 
   changeRoom(conversation) {
-
     this.activeChatName = conversation.roomName;
     this.activeDescription = conversation.description;
     this.updateMessages(conversation);
@@ -198,10 +196,9 @@ class ConversationList extends LitElement {
 
     this.cleanSearchInput();
     this.update();
-
   }
 
-    setQueryString(event) {
+  setQueryString(event) {
     this.query = event.detail.query;
     this.selectedRoom = "";
     this.indexOfSelectedChat = -1;
@@ -346,7 +343,9 @@ class ConversationList extends LitElement {
           conversation.roomName == this.selectedRoom.roomName
             ? "active"
             : "")}
-          id=${conversation.roomName == this.selectedRoom.roomName ? "selected" : ""}
+          id=${conversation.roomName == this.selectedRoom.roomName
+            ? "selected"
+            : ""}
           .chat=${conversation}
           @click=${() => this.changeRoom(conversation)}
         ></il-conversation>`;
@@ -375,11 +374,10 @@ class ConversationList extends LitElement {
           ? "active"
           : "")}
         .chat=${conversation}
-        id=${conversation.roomName == this.selectedRoom.roomName ? "selected" : ""}
+        id=${conversation.roomName == this.selectedRoom.roomName
+          ? "selected"
+          : ""}
         @click=${() => this.changeRoom(conversation)}
-
-
-
       ></il-conversation>`;
     });
   }
@@ -392,7 +390,6 @@ class ConversationList extends LitElement {
         },
       })
     );
-
   }
 
   cleanSearchInput() {

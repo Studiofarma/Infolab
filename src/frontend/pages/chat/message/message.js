@@ -269,7 +269,7 @@ export class Message extends LitElement {
 
   getPopupCoords( ) {
 
-    if (this.index == this.messages.length -1) {
+    if (this.index === this.messages.length -1 && this.messages.length !== 1) {
       return this.message.sender == this.cookie.username
       ? { top: lastMenuOptionTop, left: menuOptionLeft }
       : { top: lastMenuOptionTop, right: menuOptionRight }

@@ -41,7 +41,7 @@ export class Dialog extends LitElement {
   render() {
     return html`
       <dialog ${ref(this.dialogRef)} class=${this.theme} @click=${(event) => {
-        this.dispatchEvent(new CustomEvent("dialog-clicked", {detail: event.detail}))
+        this.dispatchEvent(new CustomEvent("dialog-clicked", {detail: event}))
       }}>
         <slot></slot>
       </dialog>
