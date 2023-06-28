@@ -60,17 +60,6 @@ export class Sidebar extends LitElement {
     `;
   }
 
-  loadChat(roomName) {
-    this.conversationsListRef.value.selectChat(roomName);
-  }
-
-  setList(message) {
-    this.conversationsListRef.value.setList(message);
-  }
-
-  scrollConversationList() {
-    this.conversationsListRef.value.scrollToTop();
-  }
 }
 
 customElements.define("il-sidebar", Sidebar);
