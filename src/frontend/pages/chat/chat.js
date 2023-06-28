@@ -503,12 +503,10 @@ export class Chat extends LitElement {
         type: "CHAT",
       };
 
-
-      // da fixare
       this.stompClient.send(
         `/app/chat.send${
-          this.activeDescription != "general"
-            ? `.${this.activeDescription}`
+          this.activeChatName != "general"
+            ? `.${this.activeChatName}`
             : ""
         }`,
         {},
@@ -523,7 +521,6 @@ export class Chat extends LitElement {
 
   setActiveChat(event) {
     this.activeChatName = event.detail.conversation.roomName;
-    this.activeDescription = event.detail.conversation.description;
   }
 }
 
