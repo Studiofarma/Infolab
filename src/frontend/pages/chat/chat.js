@@ -461,24 +461,15 @@ export class Chat extends LitElement {
   onMessage(payload) {
     let message = JSON.parse(payload.body);
 
-    console.log("In arrivo ", message);
-
-    if (message.content) {
+    if (message.content !== null) {
       if (this.activeChatName == message.roomName) {
         this.messages.push(message);
         this.update();
         this.updated();
       }
-      let sidebar = this.sidebarRef.value;
-      sidebar.setList(message);
 
-      sidebar.scrollConversationList();
-    }
-
-    // riordino le conversazioni con una funzione contenuta in il-conversation-list che compara il timestamp
-
-    if (message.content !== null)
       this.sidebarRef.value.sidebarListRef.value.setList(message);
+    }
 
     this.messageNotification(message);
   }
