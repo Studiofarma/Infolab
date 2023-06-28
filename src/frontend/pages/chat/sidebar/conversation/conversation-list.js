@@ -98,7 +98,6 @@ class ConversationList extends LitElement {
       padding: 5px 0px 5px 10px;
       color: #1d1e20;
     }
-
   `;
 
   render() {
@@ -136,7 +135,7 @@ class ConversationList extends LitElement {
     this.scrollToSelectedChat();
     this.getSelectedRoom();
 
-    if (e.detail.key == enter) this.changeRoom(e,this.selectedRoom);
+    if (e.detail.key == enter) this.changeRoom(e, this.selectedRoom);
   }
 
   scrollToSelectedChat() {
@@ -229,7 +228,7 @@ class ConversationList extends LitElement {
       );
       rooms["data"].forEach((room) => {
         let userIndex = this.usersList.findIndex(
-          (user) => user.name == room.description
+          (user) => user.description == room.description
         );
         if (userIndex == -1) {
           this.conversationList.push(room);
@@ -276,8 +275,6 @@ class ConversationList extends LitElement {
   }
 
   setList(message) {
-
-    console.log(message)
     let index = this.conversationList.findIndex(
       (conversation) => conversation.roomName == message.roomName
     );
@@ -350,7 +347,7 @@ class ConversationList extends LitElement {
             ? "selected"
             : ""}
           .chat=${conversation}
-          @click=${(event) => this.changeRoom(event,conversation)}
+          @click=${(event) => this.changeRoom(event, conversation)}
         ></il-conversation>`;
       } else {
         let conversationIndex = this.conversationList.findIndex(
@@ -380,7 +377,7 @@ class ConversationList extends LitElement {
         id=${conversation.roomName == this.selectedRoom.roomName
           ? "selected"
           : ""}
-        @click=${(event) => this.changeRoom(event,conversation)}
+        @click=${(event) => this.changeRoom(event, conversation)}
       ></il-conversation>`;
     });
   }
