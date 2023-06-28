@@ -136,6 +136,7 @@ export class SearchChats extends LitElement {
         <div class="container-input">
           <il-input-ricerca
             @search="${this.searchChat}"
+            @keydown=${this.keyPressed}
             placeholder="Cerca o inizia una nuova conversazione"
           ></il-input-ricerca>
         </div>
@@ -150,6 +151,12 @@ export class SearchChats extends LitElement {
           query: event.detail.query,
         },
       })
+    );
+  }
+
+  keyPressed(e) {
+    this.dispatchEvent(
+      new CustomEvent("keyPressed", { detail: { key: e.key } })
     );
   }
 }
