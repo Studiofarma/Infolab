@@ -275,7 +275,6 @@ class ConversationList extends LitElement {
   }
 
   setList(message) {
-    console.log(message);
     let index = this.conversationList.findIndex(
       (conversation) => conversation.roomName == message.roomName
     );
