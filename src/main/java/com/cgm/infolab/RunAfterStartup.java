@@ -26,10 +26,10 @@ public class RunAfterStartup {
             UserEntity.of(Username.of("davide.giudici"), "Davide Giudici"),
             UserEntity.of(Username.of("mattia.pedersoli"), "Mattia Pedersoli"),
             UserEntity.of(Username.of("luca.minini"), "Luca Minini"),
-            UserEntity.of(Username.of("Lorenzo"), ""),
-            UserEntity.of(Username.of("Daniele"), ""),
-            UserEntity.of(Username.of("Davide"), ""),
-            UserEntity.of(Username.of("Mirko"), ""),
+            UserEntity.of(Username.of("lorenzo"), "Lorenzo"),
+            UserEntity.of(Username.of("daniele"), "Daniele"),
+            UserEntity.of(Username.of("davide"), "Davide"),
+            UserEntity.of(Username.of("mirko"), "Mirko"),
             };
     public static final RoomEntity[] ROOMS = {RoomEntity.general()};
 
