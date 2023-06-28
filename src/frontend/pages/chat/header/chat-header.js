@@ -76,6 +76,7 @@ export class ChatHeader extends LitElement {
               name=${this.getUserDescription(this.userName)}
               .id="${this.getUserId(this.userName)}"
             ></il-avatar>
+            <h2>${this.userName}</h2>
           </div>
         </div>
       </div>

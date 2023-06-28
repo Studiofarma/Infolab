@@ -38,11 +38,11 @@ class Conversation extends LitElement {
     }
 
     .last-message {
-      color: #bcbec2;
+      color: #3d3f41;
     }
 
     .last-message-timestamp {
-      color: #bcbec2;
+      color: #3d3f41;
     }
 
     il-icon {
@@ -81,7 +81,7 @@ class Conversation extends LitElement {
     }
 
     .chat-name {
-      color: white;
+      color: black;
     }
   `;
 

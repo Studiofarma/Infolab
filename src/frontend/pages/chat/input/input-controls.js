@@ -1,5 +1,5 @@
 import { LitElement, html, css } from "lit";
-import { ref, createRef } from "lit/directives/ref.js";
+import { createRef, ref } from "lit/directives/ref.js";
 
 import "./insertion-bar";
 import "./editor/editor";
@@ -23,8 +23,7 @@ export class InputControls extends LitElement {
     this.message = "";
     this.isEmojiPickerOpen = false;
     this.selectedText = null;
-    //Refs
-    this.editorRef = createRef()
+    this.editorRef = createRef();
   }
 
   static styles = css`
@@ -51,15 +50,17 @@ export class InputControls extends LitElement {
       position: fixed;
       bottom: 0px;
       left: 350px;
-      width: calc(100% - 350px);
+      width: calc(100% - 390px);
       min-height: 60px;
       display: flex;
       align-items: center;
       gap: 5px;
-      padding: 5px 10px;
-      background: #083c72;
-      border-top: 1px solid black;
+      padding: 5px 5px;
+      background: #f2f4f7;
+      box-shadow: 0 0 8px 2px #b7b9bd;
+      margin: 0 20px;
       z-index: 1000;
+      border-radius: 10px 10px 0 0;
     }
 
     .inputContainer {
@@ -76,7 +77,15 @@ export class InputControls extends LitElement {
     }
 
     il-editor {
-      width: 100%;
+      background-color: #eaecef;
+      border-radius: 10px;
+    }
+
+    hr {
+      height: 4px;
+      background-color: #206cf7;
+      border: 0;
+      border-radius: 5px;
     }
   `;
 
@@ -86,8 +95,8 @@ export class InputControls extends LitElement {
         <!-- .container is for emoji picker -->
         <div class="container">
           <div class="inputContainer">
-            <il-editor 
-             ${ref(this.editorRef)}
+            <il-editor
+              ${ref(this.editorRef)}
               @enter-key-pressed=${this.sendMessage}
               @text-changed=${this.updateMessage}
               @text-editor-resized=${this.textEditorResized}
@@ -95,7 +104,7 @@ export class InputControls extends LitElement {
             <il-insertion-bar
               @send-message=${this.sendMessage}
               @emoji-picker-click=${this.emojiPickerClick}
-              .editor=${this.shadowRoot.querySelector("il-editor")}
+              .editor=${this.editorRef.value}
             >
             </il-insertion-bar>
           </div>
@@ -110,12 +119,12 @@ export class InputControls extends LitElement {
     `;
   }
 
-  getEditor() {
-    return this.shadowRoot.querySelector("il-editor");
+  focusEditor() {
+    this.editorRef.value.focusTextarea();
   }
 
   insertEmoji(event) {
-    this.getEditor().insertInTextarea(event.detail.unicode);
+    this.editorRef.value.insertInTextarea(event.detail.unicode);
   }
 
   checkEnterKey(event) {
@@ -124,7 +133,7 @@ export class InputControls extends LitElement {
 
   emojiPickerClick() {
     this.isEmojiPickerOpen = !this.isEmojiPickerOpen;
-    this.getEditor().focusTextarea();
+    this.editorRef.value.focusTextarea();
   }
 
   textEditorResized(event) {

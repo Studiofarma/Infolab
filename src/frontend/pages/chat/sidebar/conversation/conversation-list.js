@@ -48,13 +48,38 @@ class ConversationList extends LitElement {
       margin: 0;
     }
 
+    #selected {
+      background-color: #e1f0ff;
+    }
+
     .conversation-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
       margin-right: 3px;
     }
-    
+
+    .container {
+      max-height: 806px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: scroll;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+      margin-right: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: none;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #206cf7;
+    }
+
     .conversation {
       margin-right: 3px;
       border-radius: 7px;
@@ -62,16 +87,16 @@ class ConversationList extends LitElement {
     }
 
     .conversation:hover {
-      background-color: #1460b1;
+      background-color: #e1f0ff;
     }
 
     .active {
-      background-color: #1460b1a0;
+      background-color: #c5e1fe;
     }
 
     .separator {
       padding: 5px 0px 5px 10px;
-      color: #d6d6d6;
+      color: #1d1e20;
     }
 
   `;

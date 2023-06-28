@@ -1,13 +1,13 @@
 import { LitElement, html, css } from "lit";
 import { repeat } from "lit/directives/repeat.js";
-import { ref, createRef } from "lit/directives/ref.js";
+import { createRef, ref } from "lit/directives/ref.js";
 
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
 import { MessagesService } from "../../services/messages-service";
-
 import { CookieService } from "../../services/cookie-service";
+import { MarkdownService } from "../../services/markdown-service";
 
 import { IconNames } from "../../enums/icon-names";
 
@@ -19,7 +19,6 @@ import "./input/input-controls";
 import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
-import { MarkdownService } from "../../services/markdown-service";
 
 const fullScreenHeight = "100vh";
 
@@ -86,7 +85,7 @@ export class Chat extends LitElement {
       left: 0;
       width: 100%;
       min-height: 100%;
-      background: rgb(247, 247, 247);
+      background: #eaecef;
     }
 
     section {
@@ -149,15 +148,15 @@ export class Chat extends LitElement {
       right: 20px;
       border-radius: 5px;
       padding: 2px;
-      background-color: rgb(8, 60, 114);
+      background-color: #ffffff;
       color: white;
       opacity: 0;
       transition: opacity 0.2s ease-in-out;
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
 
     .message-box::-webkit-scrollbar {
-      width: 4px;
-      margin-right: 10px;
+      width: 7px;
     }
 
     .message-box::-webkit-scrollbar-track {
@@ -166,7 +165,7 @@ export class Chat extends LitElement {
 
     .message-box::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: rgb(54, 123, 251);
+      background-color: #206cf7;
       min-height: 40px;
     }
 
@@ -199,6 +198,7 @@ export class Chat extends LitElement {
 
             ${this.activeChatName !== ""
               ? html` <ul
+                    ${ref(this.messageBoxRef)}
                     @scroll="${this.manageScrollButtonVisility}"
                     class="message-box"
                     style="height: calc(${fullScreenHeight} - 179px);"
@@ -341,6 +341,8 @@ export class Chat extends LitElement {
     });
     this.activeChatName = e.detail.conversation.roomName;
     this.activeDescription = e.detail.conversation.description;
+
+    this.inputControlsRef.value.focusEditor();
   }
 
   async updated() {
@@ -467,6 +469,10 @@ export class Chat extends LitElement {
         this.update();
         this.updated();
       }
+      let sidebar = this.sidebarRef.value;
+      sidebar.setList(message);
+
+      sidebar.scrollConversationList();
     }
 
     // riordino le conversazioni con una funzione contenuta in il-conversation-list che compara il timestamp
