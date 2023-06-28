@@ -186,7 +186,7 @@ export class Chat extends LitElement {
             @update-message="${this.updateMessages}"
             @change-conversation=${(event) => {
               this.setActiveChat(event);
-              this.focusOnEditor(event)
+              this.focusOnEditor(event);
             }}
             .login=${this.login}
           ></il-sidebar>
@@ -224,8 +224,8 @@ export class Chat extends LitElement {
                   <il-modal theme="forward-blue" ${ref(this.forwardListRef)}>
                     <il-conversation-list
                       @change-conversation=${(event) => {
-                        this.forwardMessage(event)
-                        this.focusOnEditor(event)
+                        this.forwardMessage(event);
+                        this.focusOnEditor(event);
                       }}
                     ></il-conversation-list>
                   </il-modal>
@@ -239,7 +239,7 @@ export class Chat extends LitElement {
                   ></il-button-icon>
 
                   <il-input-controls
-                   ${ref(this.inputControlsRef)}
+                    ${ref(this.inputControlsRef)}
                     @send-message=${this.sendMessage}
                     @text-editor-resized=${this.textEditorResized}
                   ></il-input-controls>`
@@ -304,12 +304,11 @@ export class Chat extends LitElement {
   }
 
   focusOnEditor(event) {
-    this.inputControlsRef.value.editorRef.value.textareaRef.value.focus()
+    this.inputControlsRef.value.editorRef.value.textareaRef.value.focus();
 
     // Bug da fixare, segnalato in proposal
     // if(event.detail.eventType === "keyPressed")
     // this.inputControlsRef.value.editorRef.value.textareaRef.value = ""
-
   }
 
   async firstUpdated() {
@@ -460,7 +459,7 @@ export class Chat extends LitElement {
   onMessage(payload) {
     let message = JSON.parse(payload.body);
 
-    console.log("In arrivo ", message)
+    console.log("In arrivo ", message);
 
     if (message.content) {
       if (this.activeChatName == message.roomName) {
@@ -503,13 +502,11 @@ export class Chat extends LitElement {
         type: "CHAT",
       };
 
-      let activeChatName = this.activeChatNameFormatter(this.activeChatName)
+      let activeChatName = this.activeChatNameFormatter(this.activeChatName);
 
       this.stompClient.send(
         `/app/chat.send${
-          this.activeChatName != "general"
-            ? `.${this.activeChatName}`
-            : ""
+          activeChatName != "general" ? `.${activeChatName}` : ""
         }`,
         {},
         JSON.stringify(chatMessage)
@@ -534,8 +531,6 @@ export class Chat extends LitElement {
     }
     return activeChatName;
   }
-
-
 }
 
 customElements.define("il-chat", Chat);

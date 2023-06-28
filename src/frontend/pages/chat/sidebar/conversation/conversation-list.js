@@ -34,6 +34,8 @@ class ConversationList extends LitElement {
     this.usersList = [];
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
+    this.activeDescription =
+      CookieService.getCookieByKey(CookieService.Keys.lastDescription) || "";
     this.onLoad();
     this.indexOfSelectedChat = -1;
     this.selectedRoom = {};
@@ -152,6 +154,11 @@ class ConversationList extends LitElement {
     CookieService.setCookieByKey(
       CookieService.Keys.lastChat,
       conversation.roomName
+    );
+
+    CookieService.setCookieByKey(
+      CookieService.Keys.lastDescription,
+      conversation.description
     );
 
     this.dispatchEvent(
