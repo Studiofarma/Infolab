@@ -71,9 +71,9 @@ export class ChatHeader extends LitElement {
           </div>
 
           <div class="profileContainer">
-            <h2>${this.userName}</h2>
+            <h2>${this.getUserDescription(this.userName)}</h2>
             <il-avatar
-              name=${this.userName}
+              name=${this.getUserDescription(this.userName)}
               .id="${this.getUserId(this.userName)}"
             ></il-avatar>
           </div>
@@ -87,6 +87,13 @@ export class ChatHeader extends LitElement {
     if (userIndex < 0) return;
     let user = this.usersList[userIndex];
     return user.id;
+  }
+
+  getUserDescription(userName) {
+    let userIndex = this.usersList.findIndex((user) => user.name == userName);
+    if (userIndex < 0) return;
+    let user = this.usersList[userIndex];
+    return user.description;
   }
 
   async getAllUsers() {
