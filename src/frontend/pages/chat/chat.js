@@ -460,6 +460,8 @@ export class Chat extends LitElement {
   onMessage(payload) {
     let message = JSON.parse(payload.body);
 
+    console.log("In arrivo ", message)
+
     if (message.content) {
       if (this.activeChatName == message.roomName) {
         this.messages.push(message);
@@ -501,9 +503,11 @@ export class Chat extends LitElement {
         type: "CHAT",
       };
 
+
+      // da fixare
       this.stompClient.send(
         `/app/chat.send${
-          this.activeDescription != "Generale"
+          this.activeDescription != "general"
             ? `.${this.activeDescription}`
             : ""
         }`,
