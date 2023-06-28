@@ -2,7 +2,6 @@ import { LitElement, html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
 import "./conversation/conversation-list";
-import { ref, createRef } from "lit/directives/ref.js";
 
 export class Sidebar extends LitElement {
   static properties = {
@@ -14,9 +13,11 @@ export class Sidebar extends LitElement {
     },
   };
 
+  
   constructor() {
     super();
-    this.conversationsListRef = createRef();
+    // Refs
+    this.sidebarListRef = createRef();
   }
 
   static styles = css`
@@ -39,11 +40,6 @@ export class Sidebar extends LitElement {
     }
   `;
 
-  constructor() {
-    super();
-    // Refs
-    this.sidebarListRef = createRef();
-  }
 
   render() {
     return html`

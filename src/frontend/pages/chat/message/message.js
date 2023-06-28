@@ -10,9 +10,9 @@ import { IconNames } from "../../../enums/icon-names";
 import "./message-options";
 import "../../../components/popover";
 
-const menuOptionLeft = "-73px"
-const menuOptionRight = "33px"
-const lastMenuOptionTop = "-86px"
+const menuOptionLeft = "-73px";
+const menuOptionRight = "33px";
+const lastMenuOptionTop = "-86px";
 export class Message extends LitElement {
   static properties = {
     messages: { type: Array },
@@ -75,15 +75,15 @@ export class Message extends LitElement {
 
     .sender {
       border-radius: 10px 0 10px 10px;
-      color: white;
-      background-color: rgb(54, 123, 251);
+      color: black;
+      background-color: #c5e1fe;
     }
     .sender::after {
       content: "";
       position: absolute;
       top: 0px;
       right: -9px;
-      border-top: 10px solid rgb(54, 123, 251);
+      border-top: 10px solid rgb(197, 225, 254);
       border-left: 0px solid transparent;
       border-right: 10px solid transparent;
       z-index: 3;
@@ -93,23 +93,11 @@ export class Message extends LitElement {
       position: absolute;
       top: -1px;
       right: -13px;
-      border-top: 11px solid rgb(209 209 209 / 34%);
+      border-top: 11px solidrgb(197, 225, 254 / 34%);
       border-left: 0px solid transparent;
       border-right: 12px solid transparent;
       filter: blur(0.8px);
       z-index: 2;
-    }
-
-    .sender a:link {
-      color: black;
-    }
-
-    .sender a:visited {
-      color: black;
-    }
-
-    .sender a:hover {
-      color: white;
     }
 
     .receiver {
@@ -147,30 +135,36 @@ export class Message extends LitElement {
       overflow-wrap: break-word;
     }
 
-    il-popover {
+
+    .settings-container {
       position: relative;
       background: white;
       border-radius: 6px;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
       opacity: 0;
       transition: opacity 0.5s;
-      z-index: 1000000;
     }
 
-    .message-body:hover il-popover {
+    .message-body:hover .settings-container {
       opacity: 1;
     }
 
-    .sender .message-timestamp {
-      text-align: end;
-      font-size: 11px;
-      color: #e9e9e9;
+    .sender ~ .settings-container il-message-settings {
+      position: absolute;
+      top: 0px;
+      left: -89px;
     }
 
-    .receiver .message-timestamp {
+    .receiver ~ .settings-container il-message-settings {
+      position: absolute;
+      top: 0px;
+      right: 33px;
+    }
+
+    .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: #8c8d8d;
+      color: #1d1e20;
     }
 
     .message-date {
@@ -181,14 +175,25 @@ export class Message extends LitElement {
     }
 
     .message a[href] {
-      color: lightgray;
+      color: blue;
       text-underline-position: below;
       text-underline-offset: 2px;
       transition: color 0.5s;
     }
 
-    .message a[href]:hover {
-      color: white;
+    il-button-icon {
+      background-color: white;
+      border-radius: 6px;
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    il-popover {
+      opacity: 0;
+      transition: 0.5s;
+    }
+
+    .message-body:hover il-popover {
+      opacity: 1;
     }
   `;
 
@@ -230,9 +235,7 @@ export class Message extends LitElement {
 
         <!-- end -->
 
-        <il-popover
-          .popupCoords=${ {...this.getPopupCoords() }}
-        >
+        <il-popover .popupCoords=${{ ...this.getPopupCoords() }}>
           <il-button-icon
             slot="pop-button"
             content="${IconNames.dotsHorizontal}"
@@ -250,13 +253,11 @@ export class Message extends LitElement {
             .type=${this.message.sender == this.cookie.username
               ? "sender"
               : "receiver"}
-
             @forward-message=${(event) =>
               this.dispatchEvent(
                 new CustomEvent(event.type, { detail: event.detail })
               )}
-  
-  @go-to-chat=${(event) =>
+            @go-to-chat=${(event) =>
               this.dispatchEvent(
                 new CustomEvent(event.type, { detail: event.detail })
               )}
@@ -267,17 +268,16 @@ export class Message extends LitElement {
     `;
   }
 
-  getPopupCoords( ) {
-
-    if (this.index === this.messages.length -1 && this.messages.length !== 1) {
+  getPopupCoords() {
+    if (this.index === this.messages.length - 1 && this.messages.length !== 1) {
       return this.message.sender == this.cookie.username
-      ? { top: lastMenuOptionTop, left: menuOptionLeft }
-      : { top: lastMenuOptionTop, right: menuOptionRight }
-    } 
+        ? { top: lastMenuOptionTop, left: menuOptionLeft }
+        : { top: lastMenuOptionTop, right: menuOptionRight };
+    }
 
     return this.message.sender == this.cookie.username
-    ? { top: "0px", left: menuOptionLeft }
-    : { top: "0px", right: menuOptionRight }
+      ? { top: "0px", left: menuOptionLeft }
+      : { top: "0px", right: menuOptionRight };
   }
 
   compareMessageDate(messageDate1, messageDate2) {

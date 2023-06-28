@@ -2,7 +2,6 @@ import { LitElement, html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
 import { MarkdownService } from "../../../../services/markdown-service";
-import { createRef, ref } from "lit/directives/ref.js";
 
 import "../../../../components/button-text";
 

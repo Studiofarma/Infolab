@@ -221,7 +221,7 @@ export class Chat extends LitElement {
                     )}
                   </ul>
 
-                  <il-modal theme="forward-blue" ${ref(this.forwardListRef)}>
+                  <il-modal theme="forward-list" ${ref(this.forwardListRef)}>
                     <il-conversation-list
                       @change-conversation=${(event) => {
                         this.forwardMessage(event);

@@ -44,12 +44,12 @@ export class Dialog extends LitElement {
       background-color: rgb(54, 123, 251);
     }
 
-    .forward-blue {
+    .forward-list {
       width: 400px;
-      background: #083c72;
-      color: "white";
-      max-height: 700px;
+      color: white
     }
+
+
   `;
 
   render() {

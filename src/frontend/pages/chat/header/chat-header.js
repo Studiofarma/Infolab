@@ -71,12 +71,11 @@ export class ChatHeader extends LitElement {
           </div>
 
           <div class="profileContainer">
-            <h2>${this.getUserDescription(this.userName)}</h2>
             <il-avatar
-              name=${this.getUserDescription(this.userName)}
-              .id="${this.getUserId(this.userName)}"
+            name=${this.getUserDescription(this.userName)}
+            .id="${this.getUserId(this.userName)}"
             ></il-avatar>
-            <h2>${this.userName}</h2>
+            <h2>${this.getUserDescription(this.userName)}</h2>
           </div>
         </div>
       </div>
