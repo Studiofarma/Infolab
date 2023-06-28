@@ -18,13 +18,14 @@ const keys = {
 export class Editor extends LitElement {
   static properties = {
     message: { type: String },
+    isKeyDown: false,
   };
 
   constructor() {
     super();
     this.message = "";
     // Refs
-    this.textareaRef = createRef()
+    this.textareaRef = createRef();
   }
 
   static styles = css`
@@ -68,7 +69,7 @@ export class Editor extends LitElement {
   render() {
     return html`
       <textarea
-      ${ref(this.textareaRef)}
+        ${ref(this.textareaRef)}
         @input=${this.onInput}
         @keydown=${this.onKeyDown}
         placeholder="Scrivi un messaggio..."
@@ -77,9 +78,11 @@ export class Editor extends LitElement {
   }
 
   onInput(event) {
-    this.message = event.target.value;
+    if (this.isKeyDown) this.message = event.target.value;
+
     this.textChanged();
     this.textEditorResize();
+    this.isKeyDown = false;
   }
 
   textChanged() {
@@ -120,6 +123,8 @@ export class Editor extends LitElement {
   }
 
   onKeyDown(event) {
+    this.isKeyDown = true;
+
     if (event.key == keys.enter) {
       if (event.shiftKey) {
         this.checkList(event);
