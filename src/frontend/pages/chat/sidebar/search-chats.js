@@ -136,6 +136,7 @@ export class SearchChats extends LitElement {
         <div class="container-input">
           <il-input-ricerca
             @search="${this.searchChat}"
+            @keydown=${this.keyPressed}
             placeholder="Cerca o inizia una nuova conversazione"
           ></il-input-ricerca>
         </div>
@@ -155,15 +156,9 @@ export class SearchChats extends LitElement {
     );
   }
 
-  loadChat(selectedChatName) {
+  keyPressed(e) {
     this.dispatchEvent(
-      new CustomEvent("load-chat", {
-        detail: {
-          selectedChatName: selectedChatName,
-        },
-        bubbles: true,
-        composed: true,
-      })
+      new CustomEvent("keyPressed", { detail: { key: e.key } })
     );
   }
 }
