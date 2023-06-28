@@ -150,8 +150,6 @@ export class SearchChats extends LitElement {
         detail: {
           query: event.detail.query,
         },
-        bubbles: true,
-        composed: true,
       })
     );
   }

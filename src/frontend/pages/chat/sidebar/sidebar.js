@@ -13,9 +13,11 @@ export class Sidebar extends LitElement {
     },
   };
 
+  
   constructor() {
     super();
-    this.conversationsListRef = createRef();
+    // Refs
+    this.sidebarListRef = createRef();
   }
 
   static styles = css`
@@ -38,12 +40,21 @@ export class Sidebar extends LitElement {
     }
   `;
 
+
   render() {
     return html`
       <div class="side-bar">
         <il-conversation-list
-          ${ref(this.conversationsListRef)}
+        ${ref(this.sidebarListRef)}
           class="conversation-list"
+          @update-message=${(event) =>
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            )}
+          @change-conversation=${(event) =>
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            )}
         ></il-conversation-list>
       </div>
     `;
