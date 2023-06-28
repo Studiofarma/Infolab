@@ -503,6 +503,8 @@ export class Chat extends LitElement {
         type: "CHAT",
       };
 
+      let activeChatName = this.activeChatNameFormatter(this.activeChatName)
+
       this.stompClient.send(
         `/app/chat.send${
           this.activeChatName != "general"
@@ -522,6 +524,18 @@ export class Chat extends LitElement {
   setActiveChat(event) {
     this.activeChatName = event.detail.conversation.roomName;
   }
+
+  activeChatNameFormatter(activeChatName) {
+    let cookie = CookieService.getCookie();
+    if (activeChatName.includes("-")) {
+      activeChatName = activeChatName.split("-");
+      activeChatName.splice(activeChatName.indexOf(cookie.username), 1);
+      return activeChatName[0];
+    }
+    return activeChatName;
+  }
+
+
 }
 
 customElements.define("il-chat", Chat);
