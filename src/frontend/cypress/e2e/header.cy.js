@@ -37,9 +37,9 @@ describe("header component spec", () => {
 
     cy.login({ user: "user1", password: "password1" });
 
-    cy.getLitElement("il-app,il-chat, il-sidebar, il-conversation-list").find("il-conversation").each($el => {
+    cy.getLitElement("il-app,il-chat, il-sidebar, il-conversation-list").find("il-conversation").each( ($el,index)=> {
 
-      $el.shadow().find(".chat-name").click()
+      cy.getLitElement("il-app,il-chat, il-sidebar, il-conversation-list").find("il-conversation").eq(index).click({force: true})
 
     })
 
