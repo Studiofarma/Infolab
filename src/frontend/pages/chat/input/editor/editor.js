@@ -102,14 +102,10 @@ export class Editor extends LitElement {
 
   firstUpdated() {
     this.textEditorResize();
+  }
 
-    this.dispatchEvent(
-      new CustomEvent("editor-rendered", {
-        detail: {
-          textAreaRef: this.textAreaRef,
-        },
-      })
-    );
+  focusTextArea() {
+    this.textAreaRef.value.focus();
   }
 
   getSelection() {

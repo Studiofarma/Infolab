@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { createRef, ref } from "lit/directives/ref.js";
 
 import "./insertion-bar";
 import "./editor/editor";
@@ -22,6 +23,7 @@ export class InputControls extends LitElement {
     this.message = "";
     this.isEmojiPickerOpen = false;
     this.selectedText = null;
+    this.editorRef = createRef();
   }
 
   static styles = css`
@@ -94,15 +96,7 @@ export class InputControls extends LitElement {
         <div class="container">
           <div class="inputContainer">
             <il-editor
-              @editor-rendered=${(e) => {
-                this.dispatchEvent(
-                  new CustomEvent("editor-rendered", {
-                    detail: {
-                      ...e.detail,
-                    },
-                  })
-                );
-              }}
+              ${ref(this.editorRef)}
               @enter-key-pressed=${this.sendMessage}
               @text-changed=${this.updateMessage}
               @text-editor-resized=${this.textEditorResized}
@@ -110,7 +104,7 @@ export class InputControls extends LitElement {
             <il-insertion-bar
               @send-message=${this.sendMessage}
               @emoji-picker-click=${this.emojiPickerClick}
-              .editor=${this.shadowRoot.querySelector("il-editor")}
+              .editor=${this.editorRef.value}
             >
             </il-insertion-bar>
           </div>
@@ -125,12 +119,12 @@ export class InputControls extends LitElement {
     `;
   }
 
-  getEditor() {
-    return this.shadowRoot.querySelector("il-editor");
+  focusEditor() {
+    this.editorRef.value.focusTextarea();
   }
 
   insertEmoji(event) {
-    this.getEditor().insertInTextarea(event.detail.unicode);
+    this.editorRef.value.insertInTextarea(event.detail.unicode);
   }
 
   checkEnterKey(event) {
@@ -139,7 +133,7 @@ export class InputControls extends LitElement {
 
   emojiPickerClick() {
     this.isEmojiPickerOpen = !this.isEmojiPickerOpen;
-    this.getEditor().focusTextarea();
+    this.editorRef.value.focusTextarea();
   }
 
   textEditorResized(event) {

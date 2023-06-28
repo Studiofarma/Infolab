@@ -19,6 +19,7 @@ import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
 import { MarkdownService } from "../../services/markdown-service";
+import { createRef, ref } from "lit/directives/ref.js";
 
 const fullScreenHeight = "100vh";
 
@@ -28,7 +29,6 @@ export class Chat extends LitElement {
     messages: [],
     message: "",
     nMessages: 0,
-    textAreaRef: {},
   };
 
   static get properties() {
@@ -56,6 +56,7 @@ export class Chat extends LitElement {
     window.addEventListener("resize", () => {
       this.scrollToBottom();
     });
+    this.inputControlsRef = createRef();
   }
 
   connectedCallback() {
@@ -211,10 +212,9 @@ export class Chat extends LitElement {
                   ></il-button-icon>
 
                   <il-input-controls
+                    ${ref(this.inputControlsRef)}
                     @send-message=${this.sendMessage}
                     @text-editor-resized=${this.textEditorResized}
-                    @editor-rendered=${(e) =>
-                      (this.textAreaRef = e.detail.textAreaRef.value)}
                   ></il-input-controls>`
               : html`<il-empty-chat></il-empty-chat>`}
           </div>
@@ -253,7 +253,7 @@ export class Chat extends LitElement {
     });
     this.activeChatName = e.detail.roomName;
 
-    this.textAreaRef.focus();
+    this.inputControlsRef.value.focusEditor();
   }
 
   async updated() {
