@@ -38,10 +38,10 @@ public class RoomRepositoryTests {
     public JdbcTemplate jdbcTemplate;
 
     public UserEntity[] users =
-            {UserEntity.of(Username.of("user0")),
-                    UserEntity.of(Username.of("user1")),
-                    UserEntity.of(Username.of("user2")),
-                    UserEntity.of(Username.of("user3"))};
+            {UserEntity.of(Username.of("user0"), "user0 desc"),
+                    UserEntity.of(Username.of("user1"), "user1 desc"),
+                    UserEntity.of(Username.of("user2"), "user2 desc"),
+                    UserEntity.of(Username.of("user3"), "user3 desc")};
 
     public UserEntity loggedInUser = users[0]; // user0
 
@@ -107,7 +107,7 @@ public class RoomRepositoryTests {
                 general.getName().value());
 
         Assertions.assertNotEquals(descriptionPrivate, roomPrivate.getDescription());
-        Assertions.assertEquals("user1", roomPrivate.getDescription());
+        Assertions.assertEquals("user1 desc", roomPrivate.getDescription());
     }
 
     @Test
@@ -131,14 +131,14 @@ public class RoomRepositoryTests {
                 "user0-user1");
 
         Assertions.assertNotEquals(descriptionUser0User1, roomEntities.get(1).getDescription());
-        Assertions.assertEquals("user1", roomEntities.get(1).getDescription());
+        Assertions.assertEquals("user1 desc", roomEntities.get(1).getDescription());
 
         String descriptionUser0User2 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
                 (rs, rowNum) -> rs.getString("description"),
                 "user0-user2");
 
         Assertions.assertNotEquals(descriptionUser0User2, roomEntities.get(2).getDescription());
-        Assertions.assertEquals("user2", roomEntities.get(2).getDescription());
+        Assertions.assertEquals("user2 desc", roomEntities.get(2).getDescription());
     }
 
     @Test

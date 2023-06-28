@@ -24,7 +24,7 @@ public class RoomRepository {
     private final String CASE_QUERY =
             "CASE " +
                 "WHEN r.visibility = 'PUBLIC' THEN r.description " +
-                "ELSE u_other.username " +
+                "ELSE u_other.description " +
             "END AS description";
     private final String JOIN = "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
             "left join infolab.users u_other on u_other.id = s_other.user_id";
