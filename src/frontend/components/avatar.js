@@ -48,28 +48,28 @@ export class Avatar extends LitElement {
     this.initials = this.getInitials(this.name);
     switch ((this.id || 0) % 8) {
       case 0:
-        this.color = "#08c771";
-        break;
-      case 1:
         this.color = "#008A33";
         break;
+      case 1:
+        this.color = "#005B13";
+        break;
       case 2:
-        this.color = "#00b8bd";
+        this.color = "#EF2C49";
         break;
       case 3:
-        this.color = "#ff6961";
+        this.color = "#CF173A";
         break;
       case 4:
-        this.color = "#dc2093";
+        this.color = "#F0981D";
         break;
       case 5:
-        this.color = "#31ba00";
+        this.color = "#CF7A04";
         break;
       case 6:
-        this.color = "#E48B0E";
+        this.color = "#206CF7";
         break;
       case 7:
-        this.color = "#11cd00";
+        this.color = "#5C5E60";
     }
   }
 

@@ -17,10 +17,6 @@ export class ForwardList extends LitElement {
   }
 
   static styles = css`
-    * {
-      background-color: rgb(8, 60, 114);
-    }
-
     dialog {
       width: 400px;
       z-index: 5000;

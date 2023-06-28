@@ -19,9 +19,17 @@ export class InputRicerca extends InputField {
       div {
         width: 100%;
         display: flex;
-        background-color: rgb(0, 38, 78);
-        border-radius: 10px;
         color: white;
+        border-radius: 10px;
+        border: solid 2px;
+      }
+
+      .focused {
+        border-color: #206cf7;
+      }
+
+      .blurred {
+        border-color: #989a9d;
       }
 
       input {
@@ -30,7 +38,6 @@ export class InputRicerca extends InputField {
         padding: 0 10px;
         border: none;
         outline: none;
-        color: white;
         background-color: rgba(0, 0, 0, 0);
         position: relative;
         overflow: hidden;
@@ -44,7 +51,7 @@ export class InputRicerca extends InputField {
 
   render() {
     return html`
-      <div>
+      <div class=${this.isFocus ? "focused" : "blurred"}>
         <input
           placeholder="${this.placeholder}"
           @input="${(e) => {
@@ -59,15 +66,13 @@ export class InputRicerca extends InputField {
             this.clear();
             this.search();
           }}
-          content=${this.isFocus || this.value != ""
-            ? IconNames.close
-            : IconNames.magnify}
+          content=${this.value !== "" ? IconNames.close : IconNames.magnify}
         ></il-button-icon>
       </div>
     `;
   }
 
-  search(event) {
+  search() {
     let input = this.renderRoot.querySelector("div input");
     this.dispatchEvent(
       new CustomEvent("search", {
@@ -82,7 +87,7 @@ export class InputRicerca extends InputField {
   }
 
   toggleFocus() {
-    this.isFocus = this.isFocus == true && this.value != "";
+    this.isFocus = !this.isFocus;
   }
 }
 

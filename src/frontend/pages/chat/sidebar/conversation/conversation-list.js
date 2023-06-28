@@ -46,6 +46,10 @@ class ConversationList extends LitElement {
       margin: 0;
     }
 
+    #selected {
+      background-color: #e1f0ff;
+    }
+
     .conversation-list {
       display: flex;
       flex-direction: column;
@@ -71,7 +75,7 @@ class ConversationList extends LitElement {
 
     ::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: rgb(54, 123, 251);
+      background-color: #206cf7;
     }
 
     .conversation {
@@ -81,16 +85,16 @@ class ConversationList extends LitElement {
     }
 
     .conversation:hover {
-      background-color: #1460b1;
+      background-color: #e1f0ff;
     }
 
     .active {
-      background-color: #1460b1;
+      background-color: #c5e1fe;
     }
 
     .separator {
       padding: 5px 0px 5px 10px;
-      color: #d6d6d6;
+      color: #1d1e20;
     }
 
     .conversation-list-scrollable {
@@ -332,10 +336,7 @@ class ConversationList extends LitElement {
       ) {
         return html`<il-conversation
           class=${"conversation " +
-          (conversation.roomName == this.activeChatName ||
-          conversation.roomName == this.selectedRoom
-            ? "active"
-            : "")}
+          (conversation.roomName == this.activeChatName ? "active" : "")}
           id=${conversation.roomName == this.selectedRoom ? "selected" : ""}
           .chat=${conversation}
           @click=${() => {
@@ -369,10 +370,7 @@ class ConversationList extends LitElement {
       let conversation = new ConversationDto(pharmacy);
       return html`<il-conversation
         class=${"conversation new-conversation " +
-        (conversation.roomName == this.activeChatName ||
-        conversation.roomName == this.selectedRoom
-          ? "active"
-          : "")}
+        (conversation.roomName == this.activeChatName ? "active" : "")}
         .chat=${conversation}
         id=${conversation.roomName == this.selectedRoom ? "selected" : ""}
         @click=${() => {
@@ -420,15 +418,6 @@ class ConversationList extends LitElement {
         composed: true,
       })
     );
-
-    let editor = document
-      .querySelector("il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("il-input-controls")
-      ?.shadowRoot.querySelector("il-editor")
-      .shadowRoot.querySelector("textarea");
-
-    editor?.focus();
   }
 
   cleanSearchInput() {
