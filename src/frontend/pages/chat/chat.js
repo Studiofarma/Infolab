@@ -282,7 +282,6 @@ export class Chat extends LitElement {
         (elem) => elem.description === event.detail.description + "\n"
       );
 
-      console.log(index);
       this.sidebarRef.value.sidebarListRef.value.activeChatName = newList[index].roomName;
       this.sidebarRef.value.sidebarListRef.value.activeDescription = newList[index].description;
 

@@ -23,7 +23,7 @@ class ConversationList extends LitElement {
     conversationListFiltered: {type: Array},
     newConversationListFiltered: {type: Array},
     indexOfSelectedChat: {type: Number},
-    selectedRoom: {type: String},
+    selectedRoom: {type: Object},
   };
 
   constructor() {
@@ -39,7 +39,7 @@ class ConversationList extends LitElement {
       CookieService.getCookieByKey(CookieService.Keys.lastDescription) || "";
     this.onLoad();
     this.indexOfSelectedChat = -1;
-    this.selectedRoom = "";
+    this.selectedRoom = {};
   }
 
   static styles = css`
@@ -130,7 +130,7 @@ class ConversationList extends LitElement {
       this.changeIndexOfSelectedChat(e.detail.key);
 
     if (this.indexOfSelectedChat <= -1) {
-      this.selectedRoom = "";
+      this.selectedRoom = {};
       return;
     }
 
@@ -163,26 +163,45 @@ class ConversationList extends LitElement {
 
   getSelectedRoom() {
     let convListLength = this.conversationListFiltered.length;
-    let room =
+    let selected =
       this.indexOfSelectedChat < convListLength
-        ? this.conversationListFiltered[this.indexOfSelectedChat].roomName
+        ? this.conversationListFiltered[this.indexOfSelectedChat]
         : this.newConversationListFiltered[
             this.indexOfSelectedChat - convListLength
-          ].roomName;
-    this.selectedRoom = room;
+          ];
+    this.selectedRoom = {...selected};
   }
 
-  changeRoom(room) {
-    this.updateMessages(room);
+  changeRoom(conversation) {
+
+    this.activeChatName = conversation.roomName;
+    this.activeDescription = conversation.description;
+    this.updateMessages(conversation);
+
+    CookieService.setCookieByKey(
+      CookieService.Keys.lastChat,
+      conversation.roomName
+    );
+
+    CookieService.setCookieByKey(
+      CookieService.Keys.lastDescription,
+      conversation.description
+    );
+
+    this.dispatchEvent(
+      new CustomEvent("change-conversation", {
+        detail: {
+          conversation: { ...conversation },
+        },
+      })
+    );
+
     this.cleanSearchInput();
-    this.activeChatName = room;
-    this.selectedRoom = "";
-    this.indexOfSelectedChat = -1;
-    CookieService.setCookieByKey(CookieService.Keys.lastChat, room);
-    this.chatClicked(room);
+    this.update();
+
   }
 
-  setQueryString(event) {
+    setQueryString(event) {
     this.query = event.detail.query;
     this.selectedRoom = "";
     this.indexOfSelectedChat = -1;
@@ -191,7 +210,7 @@ class ConversationList extends LitElement {
 
   filterConversations(list) {
     return list.filter((conversation) =>
-      conversation.description.toLowerCase().includes(this.query.toLowerCase())
+      conversation.description?.toLowerCase().includes(this.query.toLowerCase())
     );
   }
 
@@ -324,38 +343,12 @@ class ConversationList extends LitElement {
         return html`<il-conversation
           class=${"conversation " +
           (conversation.roomName == this.activeChatName ||
-          conversation.roomName == this.selectedRoom
+          conversation.roomName == this.selectedRoom.roomName
             ? "active"
             : "")}
-          id=${conversation.roomName == this.selectedRoom ? "selected" : ""}
+          id=${conversation.roomName == this.selectedRoom.roomName ? "selected" : ""}
           .chat=${conversation}
-          @click=${() => {
-            this.activeChatName = conversation.roomName;
-            this.activeDescription = conversation.description;
-            this.updateMessages(conversation);
-
-            CookieService.setCookieByKey(
-              CookieService.Keys.lastChat,
-              conversation.roomName
-            );
-
-            CookieService.setCookieByKey(
-              CookieService.Keys.lastDescription,
-              conversation.description
-            );
-
-            this.dispatchEvent(
-              new CustomEvent("change-conversation", {
-                detail: {
-                  conversation: { ...conversation },
-                },
-              })
-            );
-
-            this.cleanSearchInput();
-            this.changeRoom(conversation.roomName);
-            this.update();
-          }}
+          @click=${() => this.changeRoom(conversation)}
         ></il-conversation>`;
       } else {
         let conversationIndex = this.conversationList.findIndex(
@@ -378,37 +371,15 @@ class ConversationList extends LitElement {
       return html`<il-conversation
         class=${"conversation new-conversation " +
         (conversation.roomName == this.activeChatName ||
-        conversation.roomName == this.selectedRoom
+        conversation.roomName == this.selectedRoom.roomName
           ? "active"
           : "")}
         .chat=${conversation}
-        id=${conversation.roomName == this.selectedRoom ? "selected" : ""}
-        @click=${() => {
-          this.activeChatName = conversation.roomName;
-          this.activeDescription = conversation.description;
-          this.updateMessages(conversation);
+        id=${conversation.roomName == this.selectedRoom.roomName ? "selected" : ""}
+        @click=${() => this.changeRoom(conversation)}
 
-          CookieService.setCookieByKey(
-            CookieService.Keys.lastChat,
-            conversation.roomName
-          );
 
-          CookieService.setCookieByKey(
-            CookieService.Keys.lastDescription,
-            conversation.description
-          );
 
-          this.dispatchEvent(
-            new CustomEvent("change-conversation", {
-              detail: {
-                conversation: { ...conversation },
-              },
-            })
-          );
-
-          this.cleanSearchInput();
-          this.changeRoom(conversation.roomName);
-        }}
       ></il-conversation>`;
     });
   }
@@ -422,14 +393,6 @@ class ConversationList extends LitElement {
       })
     );
 
-    let editor = document
-      .querySelector("il-app")
-      .shadowRoot.querySelector("il-chat")
-      .shadowRoot.querySelector("il-input-controls")
-      .shadowRoot.querySelector("il-editor")
-      .shadowRoot.querySelector("textarea");
-
-    editor.focus();
   }
 
   cleanSearchInput() {

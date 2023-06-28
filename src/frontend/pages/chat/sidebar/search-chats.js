@@ -1,4 +1,4 @@
-import { LitElement, html, css, unsafeCSS } from "lit";
+import { LitElement, html, css } from "lit";
 
 import "../../../components/input-ricerca";
 
