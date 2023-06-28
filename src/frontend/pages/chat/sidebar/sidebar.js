@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { createRef, ref } from "lit/directives/ref.js";
 
 import "./conversation/conversation-list";
 
@@ -12,15 +13,20 @@ export class Sidebar extends LitElement {
     },
   };
 
+  constructor() {
+    super();
+    this.conversationsListRef = createRef();
+  }
+
   static styles = css`
     .side-bar {
-      background: #083c72;
+      background: #f2f4f7;
       color: white;
       display: flex;
       flex-direction: column;
       height: 100vh;
       width: 350px;
-      box-shadow: inset -1px 0px 0px 0px black;
+      box-shadow: 2px 0 8px #b7b9bd;
       z-index: 1100;
     }
 
@@ -32,22 +38,27 @@ export class Sidebar extends LitElement {
     }
   `;
 
-  constructor() {
-    super();
-  }
-
   render() {
     return html`
       <div class="side-bar">
-        <il-conversation-list class="conversation-list"></il-conversation-list>
+        <il-conversation-list
+          ${ref(this.conversationsListRef)}
+          class="conversation-list"
+        ></il-conversation-list>
       </div>
     `;
   }
 
-  loadChat(e) {
-    this.shadowRoot
-      .querySelector("il-conversation-list")
-      .selectChat(e.detail.selectedChatName);
+  loadChat(roomName) {
+    this.conversationsListRef.value.selectChat(roomName);
+  }
+
+  setList(message) {
+    this.conversationsListRef.value.setList(message);
+  }
+
+  scrollConversationList() {
+    this.conversationsListRef.value.scrollToTop();
   }
 }
 

@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html } from "lit";
 
 import "../../../../components/formatting-button";
 
@@ -6,12 +6,6 @@ import { MarkdownService } from "../../../../services/markdown-service";
 import { IconNames } from "../../../../enums/icon-names";
 
 export class EditorFormattingButtons extends LitElement {
-  static styles = css`
-    il-formatting-button {
-      color: #c2c0c0;
-    }
-  `;
-
   static properties = {
     editor: undefined,
   };
