@@ -1,5 +1,5 @@
 describe("search spec", () => {
-  it("filter all", () => {
+  it("filters all", () => {
     cy.login({ user: "user1", password: "password1" });
 
     cy.getLitElement(
@@ -15,7 +15,7 @@ describe("search spec", () => {
     );
   });
 
-  it("serch general", () => {
+  it("search general", () => {
     cy.login({ user: "user1", password: "password1" });
 
     cy.getLitElement(
@@ -49,7 +49,23 @@ describe("search spec", () => {
     cy.countElements(
       "il-app,il-chat,il-sidebar,il-conversation-list",
       "il-conversation",
-      11
+      9
+    );
+  });
+
+  it("search da", () => {
+    cy.login({ user: "user1", password: "password1" });
+
+    cy.getLitElement(
+      "il-app,il-chat,il-sidebar,il-conversation-list,il-search,il-input-ricerca"
+    )
+      .find("input")
+      .type("da", { force: true });
+
+    cy.countElements(
+      "il-app,il-chat,il-sidebar,il-conversation-list",
+      "il-conversation",
+      3
     );
   });
 });
