@@ -8,7 +8,7 @@ export class ChatHeader extends LitElement {
   static get properties() {
     return {
       userName: "",
-      roomName: "",
+      activeDescription: "",
       usersList: [],
     };
   }
@@ -60,22 +60,22 @@ export class ChatHeader extends LitElement {
     return html`
       <div class="chatHeader">
         <div class="contact">
-          ${this.roomName == ""
-            ? html`<div></div>` //metto un placeholder per far allineare a destra il profilo utente con il diplay flex
-            : html`<div class="profileContainer">
-                <il-avatar
-                  name=${this.roomName}
-                  .id=${this.getUserId(this.roomName)}
-                ></il-avatar>
-                <h2>${this.roomName}</h2>
-              </div>`}
+          <div class="profileContainer">
+            ${this.activeDescription !== ""
+              ? html` <il-avatar
+                    name=${this.activeDescription}
+                    .id=${this.getUserId(this.activeDescription)}
+                  ></il-avatar>
+                  <h2>${this.activeDescription}</h2>`
+              : html``}
+          </div>
 
           <div class="profileContainer">
             <il-avatar
-              name=${this.userName}
-              .id="${this.getUserId(this.userName)}"
+            name=${this.getUserDescription(this.userName)}
+            .id="${this.getUserId(this.userName)}"
             ></il-avatar>
-            <h2>${this.userName}</h2>
+            <h2>${this.getUserDescription(this.userName)}</h2>
           </div>
         </div>
       </div>
@@ -87,6 +87,13 @@ export class ChatHeader extends LitElement {
     if (userIndex < 0) return;
     let user = this.usersList[userIndex];
     return user.id;
+  }
+
+  getUserDescription(userName) {
+    let userIndex = this.usersList.findIndex((user) => user.name == userName);
+    if (userIndex < 0) return;
+    let user = this.usersList[userIndex];
+    return user.description;
   }
 
   async getAllUsers() {

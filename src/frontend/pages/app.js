@@ -1,6 +1,7 @@
 import { LitElement, html } from "lit";
 import "./login/login.js";
 import "./chat/chat.js";
+import { ref, createRef } from 'lit/directives/ref.js';
 
 export class App extends LitElement {
 	static get properties() {
@@ -11,6 +12,7 @@ export class App extends LitElement {
 				headerName: "",
 				token: "",
 			},
+			chatRef: {type: Object}
 		};
 	}
 
@@ -22,14 +24,15 @@ export class App extends LitElement {
 			headerName: "",
 			token: "",
 		};
+		this.chatRef = createRef()
 	}
 
 	render() {
 		return html`
 			${this.login.username === ""
 				? html` <il-login @login-confirm="${this.loginConfirm}"></il-login> `
-				: html` <il-chat .login=${this.login}></il-chat> `}
-		`;
+				: html` <il-chat .login=${this.login  } ${ref(this.chatRef)} .chatRef=${this.chatRef}></il-chat> `}
+		`; 
 	}
 
 	loginConfirm(e) {
