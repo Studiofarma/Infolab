@@ -421,22 +421,25 @@ class ConversationList extends LitElement {
       })
     );
 
+    // Query selectors removed in branch fe/restyling
     let editor = document
       .querySelector("il-app")
       .shadowRoot.querySelector("il-chat")
       .shadowRoot.querySelector("il-input-controls")
-      .shadowRoot.querySelector("il-editor")
+      ?.shadowRoot.querySelector("il-editor")
       .shadowRoot.querySelector("textarea");
 
-    editor.focus();
+    editor?.focus();
   }
 
   cleanSearchInput() {
     let searchInput = this.shadowRoot
       .querySelector("il-search")
       ?.shadowRoot.querySelector("il-input-ricerca");
-    if (searchInput) searchInput.clear();
-    this.query = searchInput.value;
+    if (searchInput) {
+      searchInput.clear();
+      this.query = searchInput.value;
+    }
     this.update();
   }
 

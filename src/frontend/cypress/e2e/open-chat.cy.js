@@ -1,11 +1,9 @@
-const { random } = require("lodash");
-
 describe("open chat spec", () => {
   it("open first chat", () => {
-    cy.login({ user: "user1", password: "password1" });
-
-    cy.getLitElement("il-app,il-chat,il-sidebar,il-conversation-list")
-      .find("il-conversation")
+    cy.getLitElement(
+      "il-app,il-chat,il-sidebar,il-conversation-list,il-conversation"
+    )
+      .find(".chat-box")
       .first()
       .click({ force: true });
 
@@ -13,8 +11,6 @@ describe("open chat spec", () => {
   });
 
   it("open last chat", () => {
-    cy.login({ user: "user1", password: "password1" });
-
     cy.getLitElement("il-app,il-chat,il-sidebar,il-conversation-list")
       .find("il-conversation")
       .last()
@@ -26,4 +22,8 @@ describe("open chat spec", () => {
 
 afterEach(() => {
   Cypress.session.clearAllSavedSessions();
+});
+
+beforeEach(() => {
+  cy.login({ user: "user1", password: "password1" });
 });
