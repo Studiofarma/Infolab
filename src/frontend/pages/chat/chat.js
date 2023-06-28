@@ -144,7 +144,7 @@ export class Chat extends LitElement {
       color: white;
       opacity: 0;
       transition: opacity 0.2s ease-in-out;
-      box-shadow: 0 0 7px 2px #6f7174;
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
 
     .message-box::-webkit-scrollbar {
