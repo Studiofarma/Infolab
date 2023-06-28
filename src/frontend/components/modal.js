@@ -6,35 +6,42 @@ import "./dialog.js";
 export class Modal extends LitElement {
   static properties = {
     closeByBackdropClick: { type: Boolean },
+    theme: { type: String },
+    ilDialogRef: { type: Object },
   };
 
   constructor() {
     super();
     this.closeByBackdropClick = true;
+    this.theme = "";
+    this.ilDialogRef = createRef();
   }
-
 
   render() {
     return html`
-      <il-dialog>
+      <il-dialog
+        type="modal"
+        theme=${this.theme}
+        ${ref(this.ilDialogRef)}
+        @dialog-clicked=${this.handleClick}
+      >
         <slot></slot>
       </il-dialog>
     `;
   }
 
-  
   isClickOuter(event) {
     if (event.offsetX < 0) return true;
-    if (event.offsetX > this.dialogRef.value.offsetWidth) return true;
+    if (event.offsetX > this.ilDialogRef.value.offsetWidth) return true;
     if (event.offsetY < 0) return true;
-    if (event.offsetY > this.dialogRef.value.offsetHeight) return true;
+    if (event.offsetY > this.ilDialogRef.value.offsetHeight) return true;
 
     return false;
   }
 
   handleClick(event) {
     if (this.closeByBackdropClick && this.isClickOuter(event))
-      this.isOpened = false;
+      this.ilDialogRef.value.isOpened = false;
   }
 }
 

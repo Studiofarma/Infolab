@@ -10,8 +10,9 @@ import { IconNames } from "../../../enums/icon-names";
 import "./message-options";
 import "../../../components/popover";
 
-const menuOptionLeft = "-75px"
-const menuOptionRight = "-33px"
+const menuOptionLeft = "-73px"
+const menuOptionRight = "33px"
+const lastMenuOptionTop = "-86px"
 export class Message extends LitElement {
   static properties = {
     messages: { type: Array },
@@ -230,9 +231,7 @@ export class Message extends LitElement {
         <!-- end -->
 
         <il-popover
-          .popupCoords=${this.message.sender == this.cookie.username
-            ? { top: "0px", left: menuOptionLeft }
-            : { top: "0px", right: menuOptionRight }}
+          .popupCoords=${ {...this.getPopupCoords() }}
         >
           <il-button-icon
             slot="pop-button"
@@ -266,6 +265,19 @@ export class Message extends LitElement {
         </il-popover>
       </div>
     `;
+  }
+
+  getPopupCoords( ) {
+
+    if (this.index == this.messages.length -1) {
+      return this.message.sender == this.cookie.username
+      ? { top: lastMenuOptionTop, left: menuOptionLeft }
+      : { top: lastMenuOptionTop, right: menuOptionRight }
+    } 
+
+    return this.message.sender == this.cookie.username
+    ? { top: "0px", left: menuOptionLeft }
+    : { top: "0px", right: menuOptionRight }
   }
 
   compareMessageDate(messageDate1, messageDate2) {

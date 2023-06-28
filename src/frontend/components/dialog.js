@@ -1,11 +1,11 @@
-import { LitElement, html, css, unsafeCSS } from "lit";
+import { LitElement, html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
 export class Dialog extends LitElement {
   static properties = {
     isOpened: { type: Boolean },
-    type: { type: String },
     dialogRef: { type: Object },
+    type: { type: String },
     theme: { type: String },
   };
 
@@ -16,7 +16,7 @@ export class Dialog extends LitElement {
 
   static styles = css`
     dialog {
-      width: 100%;
+      width: fit-content;
       border: none;
       outline: none;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
@@ -27,16 +27,22 @@ export class Dialog extends LitElement {
     }
 
     dialog::backdrop {
-      background-color: ${this.type === "modal"
-        ? unsafeCSS("#00000037")
-        : unsafeCSS("transparent")};
+      background-color:#00000037;
     }
 
+    .forward-blue {
+      width: 400px;
+      background: #083c72;
+      color: "white";
+      max-height: 700px;
+    }
   `;
 
   render() {
     return html`
-      <dialog ${ref(this.dialogRef)}>
+      <dialog ${ref(this.dialogRef)} class=${this.theme} @click=${(event) => {
+        this.dispatchEvent(new CustomEvent("dialog-clicked", {detail: event.detail}))
+      }}>
         <slot></slot>
       </dialog>
     `;

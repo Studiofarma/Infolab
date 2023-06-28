@@ -26,7 +26,7 @@ export class ButtonIcon extends LitElement {
 			-webkit-font-smoothing: antialiased;
 			cursor: pointer;
 			user-select: none;
-			padding: 5px;
+			padding: 5px;	
 		}
 
 		.icon-button:hover {

@@ -219,7 +219,7 @@ export class Chat extends LitElement {
                   </ul>
 
                   <il-modal
-                    theme="blue"
+                    theme="forward-blue"
                     ${ref(this.forwardListRef)}
                   >
                     <il-conversation-list
@@ -248,12 +248,12 @@ export class Chat extends LitElement {
 
   openForwardMenu(event) {
     this.messageToForward = event.detail.messageToForward;
-    this.forwardListRef.value.isOpened = true;
+    this.forwardListRef.value.ilDialogRef.value.isOpened = true;
   }
 
   forwardMessage(event) {
     // chiudo il menù di inoltro
-    this.forwardListRef.value.isOpened = false;
+    this.forwardListRef.value.ilDialogRef.value.isOpened = false;
 
     // apro la chat a cui devo inoltrare
     this.setActiveChat(event);
