@@ -96,6 +96,24 @@ describe("Editor spec", () => {
 
     textarea.should("have.value", "");
   });
+
+  it("Editor formatting buttons works", () => {
+    cy.getLitElement(
+      "il-app,il-chat,il-input-controls,il-insertion-bar,il-button-icon"
+    )
+      .find(".icon-button")
+      .eq(1)
+      .click({ force: true });
+
+    cy.getLitElement(
+      "il-app,il-chat,il-input-controls,il-insertion-bar,il-editor-formatting-buttons,il-formatting-button"
+    )
+      .find(".icon-button")
+      .eq(0)
+      .click({ force: true });
+
+    getTextarea().should("have.value", "****");
+  });
 });
 
 afterEach(() => {

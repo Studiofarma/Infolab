@@ -24,7 +24,7 @@ export class Editor extends LitElement {
     super();
     this.message = "";
     // Refs
-    this.textareaRef = createRef()
+    this.textareaRef = createRef();
   }
 
   static styles = css`
@@ -68,7 +68,7 @@ export class Editor extends LitElement {
   render() {
     return html`
       <textarea
-      ${ref(this.textareaRef)}
+        ${ref(this.textareaRef)}
         @input=${this.onInput}
         @keydown=${this.onKeyDown}
         placeholder="Scrivi un messaggio..."
@@ -197,6 +197,7 @@ export class Editor extends LitElement {
 
     this.textChanged();
     this.focusTextarea();
+    this.textEditorResize();
   }
 
   focusTextarea() {
