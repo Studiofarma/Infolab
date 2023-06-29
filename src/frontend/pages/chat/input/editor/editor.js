@@ -211,6 +211,7 @@ export class Editor extends LitElement {
 
     this.textChanged();
     this.focusTextarea();
+    this.textEditorResize();
   }
 
   focusTextarea() {
