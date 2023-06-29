@@ -1,14 +1,12 @@
 import { LitElement, html, css } from "lit";
 
-import { resolveMarkdown } from "lit-markdown";
-import { MarkdownService } from "../../../services/markdown-service";
-
 import { CookieService } from "../../../services/cookie-service";
 
 import { IconNames } from "../../../enums/icon-names";
 
 import "./message-options";
 import "../../../components/popover";
+import { HtmlParserService } from "../../../services/html-parser-service";
 
 const menuOptionLeft = "-73px";
 const menuOptionRight = "33px";
@@ -47,10 +45,6 @@ export class Message extends LitElement {
       flex-direction: row;
       align-items: center;
       gap: 10px;
-    }
-
-    .message-body:has(.receiver) {
-      justify-self: flex-start;
     }
 
     .sender,
@@ -134,7 +128,6 @@ export class Message extends LitElement {
     .message {
       overflow-wrap: break-word;
     }
-
 
     .settings-container {
       position: relative;
@@ -221,9 +214,7 @@ export class Message extends LitElement {
               </p>`
             : html``}
           <p class="message">
-            ${resolveMarkdown(
-              MarkdownService.parseMarkdown(this.message.content)
-            )}
+            ${HtmlParserService.parseFromString(this.message.content)}
           </p>
           <p class="message-timestamp">
             ${new Date(this.message.timestamp).toLocaleTimeString([], {

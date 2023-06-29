@@ -1,11 +1,10 @@
 import { LitElement, html, css } from "lit";
-import { resolveMarkdown } from "lit-markdown";
 
-import { MarkdownService } from "../../../../services/markdown-service";
 import { CookieService } from "../../../../services/cookie-service";
+import { IconNames } from "../../../../enums/icon-names";
+import { HtmlParserService } from "../../../../services/html-parser-service";
 
 import "../../../../components/icon";
-import { IconNames } from "../../../../enums/icon-names";
 
 class Conversation extends LitElement {
   static properties = {
@@ -183,17 +182,15 @@ class Conversation extends LitElement {
     if (sender == cookie.username) {
       sender = "Tu";
     }
-    return resolveMarkdown(
-      MarkdownService.parseMarkdown(
-        this.fixLastMessageLength(
-          sender ? `${sender}: ${message}` : "Nuova conversazione"
-        )
+    return HtmlParserService.parseFromString(
+      this.fixLastMessageLength(
+        sender ? `${sender}: ${message}` : "Nuova conversazione"
       )
     );
   }
 
   fixLastMessageLength(message) {
-    const messageLines = message.split("\n");
+    const messageLines = message.split("<br/>");
     if (messageLines.length > 1) {
       message = messageLines[0] + "...";
     }

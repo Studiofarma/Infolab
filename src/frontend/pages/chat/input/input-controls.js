@@ -120,7 +120,7 @@ export class InputControls extends LitElement {
   }
 
   focusEditor() {
-    this.editorRef.value.focusTextarea();
+    this.editorRef.value.focusEditor();
   }
 
   insertEmoji(event) {
@@ -133,7 +133,7 @@ export class InputControls extends LitElement {
 
   emojiPickerClick() {
     this.isEmojiPickerOpen = !this.isEmojiPickerOpen;
-    this.editorRef.value.focusTextarea();
+    this.editorRef.value.focusEditor();
   }
 
   textEditorResized(event) {

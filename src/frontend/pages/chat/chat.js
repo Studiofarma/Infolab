@@ -201,7 +201,7 @@ export class Chat extends LitElement {
                     ${ref(this.messageBoxRef)}
                     @scroll="${this.manageScrollButtonVisility}"
                     class="message-box"
-                    style="height: calc(${fullScreenHeight} - 179px);"
+                    style="height: calc(${fullScreenHeight} - 194px);"
                     ${ref(this.messageBoxRef)}
                   >
                     ${repeat(
@@ -232,7 +232,7 @@ export class Chat extends LitElement {
 
                   <il-button-icon
                     ${ref(this.scrollButtonRef)}
-                    style="bottom: 120px"
+                    style="bottom: 139px"
                     class="scroll-button"
                     @click="${this.scrollToBottom}"
                     content="${IconNames.scrollDownArrow}"
@@ -304,11 +304,7 @@ export class Chat extends LitElement {
   }
 
   focusOnEditor(event) {
-    this.inputControlsRef.value?.editorRef.value.textareaRef.value.focus();
-
-    // Bug da fixare, segnalato in proposal
-    // if(event.detail.eventType === "keyPressed")
-    // this.inputControlsRef.value.editorRef.value.textareaRef.value = ""
+    this.inputControlsRef.value?.editorRef.value.focusEditor();
   }
 
   async firstUpdated() {
@@ -389,9 +385,9 @@ export class Chat extends LitElement {
   }
 
   textEditorResized(event) {
-    this.scrollButtonRef.value.style.bottom = `${event.detail.height + 100}px`;
+    this.scrollButtonRef.value.style.bottom = `${event.detail.height + 85}px`;
     this.messageBoxRef.value.style.height = `calc(${fullScreenHeight} - ${
-      event.detail.height + 150
+      event.detail.height + 140
     }px)`;
   }
   scrollToBottom() {
@@ -475,22 +471,24 @@ export class Chat extends LitElement {
   }
 
   sendMessage(e) {
-    this.message = e.detail.message.replaceAll("\\\n", "\n");
-    const messageLines = e.detail.message.split("\n");
+    // this.message = e.detail.message.replaceAll("\\\n", "\n");
+    // const messageLines = e.detail.message.split("\n");
 
-    for (let i = 1; i < messageLines.length; i++) {
-      if (
-        MarkdownService.checkList(messageLines[i]) ||
-        MarkdownService.checkTitle(messageLines[i]) ||
-        MarkdownService.checkTitle(messageLines[i - 1])
-      )
-        continue;
-      messageLines[i - 1] += "\\";
-    }
+    // for (let i = 1; i < messageLines.length; i++) {
+    //   if (
+    //     MarkdownService.checkList(messageLines[i]) ||
+    //     MarkdownService.checkTitle(messageLines[i]) ||
+    //     MarkdownService.checkTitle(messageLines[i - 1])
+    //   )
+    //     continue;
+    //   messageLines[i - 1] += "\\";
+    // }
 
-    this.message = messageLines.join("\n");
+    // this.message = messageLines.join("\n");
 
-    let messageContent = this.message.trim();
+    // let messageContent = this.message.trim();
+
+    let messageContent = e.detail.message.replaceAll("\n", "<br/>");
 
     if (messageContent && this.stompClient) {
       const chatMessage = {

@@ -55,7 +55,7 @@ export class InsertionBar extends LitElement {
             content=${IconNames.pencil}
             @click=${() => {
               this.bEditor = !this.bEditor;
-              this.editor?.value.focusTextarea();
+              this.editor?.value.focusEditor();
             }}
           ></il-button-icon>
           ${when(
