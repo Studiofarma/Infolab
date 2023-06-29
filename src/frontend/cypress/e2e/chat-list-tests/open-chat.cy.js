@@ -1,10 +1,14 @@
-const inputRicercaSidebar =
-  "il-app,il-chat,il-sidebar,il-conversation-list,il-search,il-input-ricerca";
+const conversationListPath = "il-app,il-chat,il-sidebar,il-conversation-list";
+
+const inputRicercaSidebarPath =
+  conversationListPath + ",il-search,il-input-ricerca";
+
+const conversation = "il-conversation";
 
 describe("open chat spec", () => {
   it("open first chat", () => {
-    cy.getLitElement("il-app,il-chat,il-sidebar,il-conversation-list")
-      .find("il-conversation")
+    cy.getLitElement(conversationListPath)
+      .find("conversation")
       .first()
       .click({ force: true });
 
@@ -12,8 +16,8 @@ describe("open chat spec", () => {
   });
 
   it("open last chat", () => {
-    cy.getLitElement("il-app,il-chat,il-sidebar,il-conversation-list")
-      .find("il-conversation")
+    cy.getLitElement(conversationListPath)
+      .find("conversation")
       .last()
       .click({ force: true });
 
@@ -21,7 +25,7 @@ describe("open chat spec", () => {
   });
 
   it("open second chat with arrows", () => {
-    cy.getLitElement(inputRicercaSidebar)
+    cy.getLitElement(inputRicercaSidebarPath)
       .find("input")
       .type("{downArrow}{downArrow}{enter}", {
         force: true,
@@ -32,7 +36,7 @@ describe("open chat spec", () => {
   });
 
   it("open third chat with arrows", () => {
-    cy.getLitElement(inputRicercaSidebar)
+    cy.getLitElement(inputRicercaSidebarPath)
       .find("input")
       .type("{downArrow}{downArrow}{downArrow}{downArrow}{upArrow}{enter}", {
         force: true,
