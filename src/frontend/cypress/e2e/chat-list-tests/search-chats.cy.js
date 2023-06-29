@@ -6,6 +6,32 @@ const inputRicercaSidebarPath =
 const conversation = "il-conversation";
 
 describe("search spec", () => {
+  it("icon is magnifying glass", () => {
+    cy.getLitElement(inputRicercaSidebarPath + ",il-button-icon")
+      .find("il-icon[name*=mdiMagnify]")
+      .should("exist");
+  });
+
+  it("icon remains magnifying glass on click on input", () => {
+    cy.getLitElement(inputRicercaSidebarPath)
+      .find("input")
+      .click({ force: true });
+
+    cy.getLitElement(inputRicercaSidebarPath + ",il-button-icon")
+      .find("il-icon[name*=mdiMagnify]")
+      .should("exist");
+  });
+
+  it("icon becomes cross on typing", () => {
+    cy.getLitElement(inputRicercaSidebarPath)
+      .find("input")
+      .type("test", { force: true });
+
+    cy.getLitElement(inputRicercaSidebarPath + ",il-button-icon")
+      .find("il-icon[name*=mdiClose]")
+      .should("exist");
+  });
+
   it("filters all", () => {
     cy.getLitElement(inputRicercaSidebarPath)
       .find("input")
@@ -22,6 +48,14 @@ describe("search spec", () => {
     cy.countElements(conversationListPath, conversation, 1);
   });
 
+  it("search da", () => {
+    cy.getLitElement(inputRicercaSidebarPath)
+      .find("input")
+      .type("da", { force: true });
+
+    cy.countElements(conversationListPath, conversation, 3);
+  });
+
   it("clean search", () => {
     cy.getLitElement(inputRicercaSidebarPath)
       .find("input")
@@ -31,15 +65,37 @@ describe("search spec", () => {
       .find("div")
       .click({ force: true });
 
-    cy.countElements(conversationListPath, conversation, 9);
+    cy.getLitElement(inputRicercaSidebarPath)
+      .find("input")
+      .should("have.value", "");
   });
 
-  it("search da", () => {
+  it("input clears after chat is selected with click", () => {
     cy.getLitElement(inputRicercaSidebarPath)
       .find("input")
       .type("da", { force: true });
 
-    cy.countElements(conversationListPath, conversation, 3);
+    cy.getLitElement(conversationListPath)
+      .find(conversation)
+      .last()
+      .click({ force: true });
+
+    cy.getLitElement(inputRicercaSidebarPath)
+      .find("input")
+      .should("have.value", "");
+  });
+
+  it("input clears after chat is selected with arrows", () => {
+    cy.getLitElement(inputRicercaSidebarPath)
+      .find("input")
+      .type("d{downArrow}{enter}", {
+        force: true,
+        delay: 600,
+      });
+
+    cy.getLitElement(inputRicercaSidebarPath)
+      .find("input")
+      .should("have.value", "");
   });
 });
 
