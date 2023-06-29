@@ -9,6 +9,9 @@ const textareaDefaultHeight = 21;
 const textAreaWidthOffset = 20;
 const keys = {
   enter: "Enter",
+  alt: "Alt",
+  shift: "Shift",
+  ctrl: "Control",
   bold: "b",
   italic: "i",
   strike: "s",
@@ -123,7 +126,12 @@ export class Editor extends LitElement {
   }
 
   onKeyDown(event) {
-    this.isKeyDown = true;
+    if (
+      event.key != keys.alt &&
+      event.key != keys.ctrl &&
+      event.key != keys.shift
+    )
+      this.isKeyDown = true;
 
     if (event.key == keys.enter) {
       if (event.shiftKey) {
