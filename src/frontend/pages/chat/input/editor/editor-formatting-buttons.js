@@ -55,47 +55,59 @@ export class EditorFormattingButtons extends LitElement {
   }
 
   insertBold() {
-    const selectedText = this.editor.getSelectedText();
-    this.editor.insertInTextarea(MarkdownService.insertBold(selectedText));
+    const selectedText = this.editor.value.getSelectedText();
+    this.editor.value.insertInTextarea(
+      MarkdownService.insertBold(selectedText)
+    );
   }
 
   insertItalic() {
-    const selectedText = this.editor.getSelectedText();
-    this.editor.insertInTextarea(MarkdownService.insertItalic(selectedText));
+    const selectedText = this.editor.value.getSelectedText();
+    this.editor.value.insertInTextarea(
+      MarkdownService.insertItalic(selectedText)
+    );
   }
 
   insertStrike() {
-    const selectedText = this.editor.getSelectedText();
-    this.editor.insertInTextarea(MarkdownService.insertStrike(selectedText));
+    const selectedText = this.editor.value.getSelectedText();
+    this.editor.value.insertInTextarea(
+      MarkdownService.insertStrike(selectedText)
+    );
   }
 
   insertLink() {
-    const selectedText = this.editor.getSelectedText();
-    this.editor.insertInTextarea(MarkdownService.insertLink(selectedText));
+    const selectedText = this.editor.value.getSelectedText();
+    this.editor.value.insertInTextarea(
+      MarkdownService.insertLink(selectedText)
+    );
   }
 
   insertLine() {
-    const selectedText = this.editor.getSelectedText();
-    this.editor.insertInTextarea(MarkdownService.insertLine(selectedText));
+    const selectedText = this.editor.value.getSelectedText();
+    this.editor.value.insertInTextarea(
+      MarkdownService.insertLine(selectedText)
+    );
   }
 
   insertListBulleted() {
-    const selectedText = this.editor.getSelectedText();
-    this.editor.insertInTextarea(
+    const selectedText = this.editor.value.getSelectedText();
+    this.editor.value.insertInTextarea(
       MarkdownService.insertListBulleted(selectedText)
     );
   }
 
   insertListNumbered() {
-    const selectedText = this.editor.getSelectedText();
-    this.editor.insertInTextarea(
+    const selectedText = this.editor.value.getSelectedText();
+    this.editor.value.insertInTextarea(
       MarkdownService.insertListNumbered(selectedText)
     );
   }
 
   insertHeading() {
-    const selectedText = this.editor.getSelectedText();
-    this.editor.insertInTextarea(MarkdownService.insertHeading(selectedText));
+    const selectedText = this.editor.value.getSelectedText();
+    this.editor.value.insertInTextarea(
+      MarkdownService.insertHeading(selectedText)
+    );
   }
 }
 customElements.define("il-editor-formatting-buttons", EditorFormattingButtons);

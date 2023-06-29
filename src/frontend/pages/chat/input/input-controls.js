@@ -104,7 +104,7 @@ export class InputControls extends LitElement {
             <il-insertion-bar
               @send-message=${this.sendMessage}
               @emoji-picker-click=${this.emojiPickerClick}
-              .editor=${this.editorRef.value}
+              .editor=${this.editorRef}
             >
             </il-insertion-bar>
           </div>
