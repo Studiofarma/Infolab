@@ -6,6 +6,7 @@ import { IconNames } from "../../../enums/icon-names";
 const menuOptionLeft = "-73px";
 const menuOptionRight = "33px";
 const lastMenuOptionTop = "-86px";
+
 export class MessageMenuPopup extends LitElement {
   static properties = {
     messages: { type: Array },

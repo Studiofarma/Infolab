@@ -37,15 +37,12 @@ export class MessageContent extends LitElement {
       background-color: white;
     }
 
-    input {
-      font-family: inherit;
-    }
-
     .sender {
       border-radius: 10px 0 10px 10px;
       color: black;
       background-color: #c5e1fe;
     }
+
     .sender::after {
       content: "";
       position: absolute;
@@ -56,6 +53,7 @@ export class MessageContent extends LitElement {
       border-right: 10px solid transparent;
       z-index: 3;
     }
+
     .sender::before {
       content: "";
       position: absolute;
@@ -73,6 +71,7 @@ export class MessageContent extends LitElement {
       color: black;
       background-color: white;
     }
+
     .receiver::after {
       content: "";
       position: absolute;
@@ -83,6 +82,7 @@ export class MessageContent extends LitElement {
       border-right: 0px solid transparent;
       z-index: 3;
     }
+
     .receiver::before {
       content: "";
       position: absolute;
@@ -94,6 +94,7 @@ export class MessageContent extends LitElement {
       filter: blur(0.8px);
       z-index: 2;
     }
+
     .receiver-name {
       font-size: 13px;
       color: blue;
