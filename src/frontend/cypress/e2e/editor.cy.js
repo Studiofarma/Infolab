@@ -71,24 +71,30 @@ describe("Editor spec", () => {
     });
   });
 
-  it("Markdown buttons works", () => {
-    const textarea = getTextarea();
-    const insertionBar = cy.getLitElement(
-      "il-app,il-chat,il-input-controls,il-insertion-bar"
-    );
-    const editorButton = cy
-      .getLitElement(
-        "il-app,il-chat,il-input-controls,il-insertion-bar,il-button-icon"
-      )
+  it("Emoji works", () => {
+    cy.getLitElement(
+      "il-app,il-chat,il-input-controls,il-insertion-bar,il-button-icon"
+    )
       .find(".icon-button")
-      .eq(1);
+      .eq(0)
+      .click({ force: true });
 
-    editorButton.click({ force: true });
+    cy.getLitElement(
+      "il-app,il-chat,il-input-controls,il-emoji-picker,emoji-picker"
+    )
+      .find(".tabpanel")
+      .find(".emoji-menu")
+      .find("button")
+      .first()
+      .click({ force: true });
 
-    const editorFormattingButtons = cy.getLitElement(
-      "il-app,il-chat,il-input-controls,il-insertion-bar,il-editor-formatting-buttons"
-    );
-    editorFormattingButtons.should("exist");
+    const textarea = getTextarea();
+
+    textarea.should("have.value", "😀");
+
+    textarea.type("{enter}");
+
+    textarea.should("have.value", "");
   });
 });
 
