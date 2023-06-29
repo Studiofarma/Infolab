@@ -12,7 +12,14 @@ describe("open chat spec", () => {
       .first()
       .click({ force: true });
 
-    cy.getCookie("last-chat", { domain: "localhost" }).should("exist");
+    cy.getCookie("last-description", { domain: "localhost" }).then((cookie) => {
+      cy.getLitElement(conversationListPath)
+        .find(conversation)
+        .first()
+        .shadow()
+        .find(".chat-name")
+        .should("have.text", cookie.value);
+    });
   });
 
   it("open last chat", () => {
@@ -21,7 +28,14 @@ describe("open chat spec", () => {
       .last()
       .click({ force: true });
 
-    cy.getCookie("last-chat", { domain: "localhost" }).should("exist");
+    cy.getCookie("last-description", { domain: "localhost" }).then((cookie) => {
+      cy.getLitElement(conversationListPath)
+        .find(conversation)
+        .last()
+        .shadow()
+        .find(".chat-name")
+        .should("have.text", cookie.value);
+    });
   });
 
   it("open second chat with arrows", () => {
@@ -32,7 +46,14 @@ describe("open chat spec", () => {
         parseSpecialCharSequences: true,
       });
 
-    cy.getCookie("last-chat", { domain: "localhost" }).should("exist");
+    cy.getCookie("last-description", { domain: "localhost" }).then((cookie) => {
+      cy.getLitElement(conversationListPath)
+        .find(conversation)
+        .eq(1)
+        .shadow()
+        .find(".chat-name")
+        .should("have.text", cookie.value);
+    });
   });
 
   it("open third chat with arrows", () => {
@@ -43,7 +64,14 @@ describe("open chat spec", () => {
         parseSpecialCharSequences: true,
       });
 
-    cy.getCookie("last-chat", { domain: "localhost" }).should("exist");
+    cy.getCookie("last-description", { domain: "localhost" }).then((cookie) => {
+      cy.getLitElement(conversationListPath)
+        .find(conversation)
+        .eq(2)
+        .shadow()
+        .find(".chat-name")
+        .should("have.text", cookie.value);
+    });
   });
 });
 
