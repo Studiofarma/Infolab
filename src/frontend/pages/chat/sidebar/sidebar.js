@@ -13,7 +13,6 @@ export class Sidebar extends LitElement {
     },
   };
 
-  
   constructor() {
     super();
     // Refs
@@ -40,12 +39,11 @@ export class Sidebar extends LitElement {
     }
   `;
 
-
   render() {
     return html`
       <div class="side-bar">
         <il-conversation-list
-        ${ref(this.sidebarListRef)}
+          ${ref(this.sidebarListRef)}
           class="conversation-list"
           @update-message=${(event) =>
             this.dispatchEvent(
@@ -60,17 +58,6 @@ export class Sidebar extends LitElement {
     `;
   }
 
-  loadChat(roomName) {
-    this.conversationsListRef.value.selectChat(roomName);
-  }
-
-  setList(message) {
-    this.conversationsListRef.value.setList(message);
-  }
-
-  scrollConversationList() {
-    this.conversationsListRef.value.scrollToTop();
-  }
 }
 
 customElements.define("il-sidebar", Sidebar);
