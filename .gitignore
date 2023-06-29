@@ -42,3 +42,4 @@ src/main/resources/static
 src/frontend/node
 src/frontend/cypress/videos
 src/frontend/cypress/screenshots
+src/frontend/cypress/downloads
