@@ -8,7 +8,7 @@ const conversation = "il-conversation";
 describe("open chat spec", () => {
   it("open first chat", () => {
     cy.getLitElement(conversationListPath)
-      .find("conversation")
+      .find(conversation)
       .first()
       .click({ force: true });
 
@@ -17,7 +17,7 @@ describe("open chat spec", () => {
 
   it("open last chat", () => {
     cy.getLitElement(conversationListPath)
-      .find("conversation")
+      .find(conversation)
       .last()
       .click({ force: true });
 
