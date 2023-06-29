@@ -32,10 +32,25 @@ describe("Editor spec", () => {
     textarea.should("have.value", "ADE");
   });
 
-  it("Editor sends messages", () => {
+  it("Editor sends messages (enter)", () => {
     const textarea = getTextarea();
 
     textarea.type("Test12345{enter}");
+
+    textarea.should("have.value", "");
+  });
+
+  it("Editor sends messages (button)", () => {
+    const textarea = getTextarea();
+
+    textarea.type("Test67890");
+
+    cy.getLitElement(
+      "il-app,il-chat,il-input-controls,il-insertion-bar,il-button-icon"
+    )
+      .find(".icon-button")
+      .eq(2)
+      .click({ force: true });
 
     textarea.should("have.value", "");
   });
