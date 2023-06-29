@@ -112,34 +112,6 @@ describe("messages spec", () => {
   //   // hover on a message
   //   // holy shit, DAMN
   // });
-
-  // it("asserting that the scroll-to-button arrow works", () => {
-  //   cy.getLitElement(
-  //     "il-app,il-chat,il-sidebar,il-conversation-list,il-conversation"
-  //   )
-  //     .first()
-  //     .find(".chat-name")
-  //     .click({ force: true });
-
-  //   cy.getLitElement("il-app, il-chat").find(".prova").scrollIntoView().wait(0);
-
-  //   cy.getLitElement("il-app, il-chat")
-  //     .find(".scroll-button")
-  //     .should("be.visible");
-  // });
-
-  it("trying to do some unuseful stuff like typing text in the editor", () => {
-    cy.getLitElement(
-      "il-app,il-chat,il-sidebar,il-conversation-list,il-conversation"
-    )
-      .first()
-      .find(".chat-name")
-      .click({ force: true });
-
-    cy.getLitElement("il-app, il-chat, il-input-controls,il-editor")
-      .find("textarea")
-      .type("ciao ciao cypress!!!{enter}");
-  });
 });
 
 afterEach(() => {
