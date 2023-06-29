@@ -1,5 +1,5 @@
 describe("chat list render spec", () => {
-  it("chat list exist after login", () => {
+  it("chat list exists after login", () => {
     cy.login({ user: "user1", password: "password1" });
 
     cy.countElements(
