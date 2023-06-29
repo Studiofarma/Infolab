@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
 import "./dialog.js";
@@ -32,9 +32,11 @@ export class Modal extends LitElement {
 
   isClickOuter(event) {
     if (event.detail.x < 0) return true;
-    if (event.detail.x > this.ilDialogRef.value.dialogRef.value.offsetWidth) return true;
+    if (event.detail.x > this.ilDialogRef.value.dialogRef.value.offsetWidth)
+      return true;
     if (event.detail.y < 0) return true;
-    if (event.detail.y > this.ilDialogRef.value.dialogRef.value.offsetHeight) return true;
+    if (event.detail.y > this.ilDialogRef.value.dialogRef.value.offsetHeight)
+      return true;
 
     return false;
   }

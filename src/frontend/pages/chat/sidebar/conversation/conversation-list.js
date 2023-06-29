@@ -60,10 +60,9 @@ class ConversationList extends LitElement {
     }
 
     .container {
-      max-height: 806px;
+      height: 100%;
       display: flex;
       flex-direction: column;
-      overflow-y: scroll;
     }
 
     ::-webkit-scrollbar {
@@ -99,25 +98,35 @@ class ConversationList extends LitElement {
       color: #1d1e20;
     }
 
+    .conversation-list-scrollable {
+      overflow-y: scroll;
+      height: 100%;
+    }
   `;
 
   render() {
     return html`
-      <il-search
-        @search-chat=${this.setQueryString}
-        @keyPressed=${this.navigateSearchResultsWithArrows}
-      ></il-search>
-      <div class="conversation-list-scrollable">
-        <div>
-          <p class="separator">Conversazioni</p>
-          <div class="conversation-list">${this.renderConversationList()}</div>
-        </div>
-        <div>
-          <p class="separator">
-            ${this.newConversationList.length > 0 ? "Nuove conversazioni" : ""}
-          </p>
-          <div class="conversation-list">
-            ${this.renderNewConversationList()}
+      <div class="container">
+        <il-search
+          @search-chat=${this.setQueryString}
+          @keyPressed=${this.navigateSearchResultsWithArrows}
+        ></il-search>
+        <div class="conversation-list-scrollable">
+          <div>
+            <p class="separator">Conversazioni</p>
+            <div class="conversation-list">
+              ${this.renderConversationList()}
+            </div>
+          </div>
+          <div>
+            <p class="separator">
+              ${this.newConversationList.length > 0
+                ? "Nuove conversazioni"
+                : ""}
+            </p>
+            <div class="conversation-list">
+              ${this.renderNewConversationList()}
+            </div>
           </div>
         </div>
       </div>
@@ -136,7 +145,7 @@ class ConversationList extends LitElement {
     this.scrollToSelectedChat();
     this.getSelectedRoom();
 
-    if (e.detail.key == enter) this.changeRoom(e,this.selectedRoom);
+    if (e.detail.key == enter) this.changeRoom(e, this.selectedRoom);
   }
 
   scrollToSelectedChat() {
@@ -276,8 +285,7 @@ class ConversationList extends LitElement {
   }
 
   setList(message) {
-
-    console.log(message)
+    console.log(message);
     let index = this.conversationList.findIndex(
       (conversation) => conversation.roomName == message.roomName
     );
@@ -350,7 +358,7 @@ class ConversationList extends LitElement {
             ? "selected"
             : ""}
           .chat=${conversation}
-          @click=${(event) => this.changeRoom(event,conversation)}
+          @click=${(event) => this.changeRoom(event, conversation)}
         ></il-conversation>`;
       } else {
         let conversationIndex = this.conversationList.findIndex(
@@ -380,7 +388,7 @@ class ConversationList extends LitElement {
         id=${conversation.roomName == this.selectedRoom.roomName
           ? "selected"
           : ""}
-        @click=${(event) => this.changeRoom(event,conversation)}
+        @click=${(event) => this.changeRoom(event, conversation)}
       ></il-conversation>`;
     });
   }
