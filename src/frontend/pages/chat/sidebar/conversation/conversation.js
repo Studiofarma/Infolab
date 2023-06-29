@@ -1,15 +1,19 @@
 import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
+import { when } from "lit/directives/when.js";
 
 import { MarkdownService } from "../../../../services/markdown-service";
 import { CookieService } from "../../../../services/cookie-service";
 
 import "../../../../components/icon";
+import "../../../../components/button-icon";
 import { IconNames } from "../../../../enums/icon-names";
 
 class Conversation extends LitElement {
   static properties = {
     chat: {},
+    isSelectable: false,
+    isSelected: false,
   };
 
   static styles = css`
@@ -25,6 +29,12 @@ class Conversation extends LitElement {
       padding: 12px 12px;
       cursor: pointer;
       transition: 0.5s;
+      width: 100%;
+    }
+
+    .container {
+      display: flex;
+      align-items: flex-start;
     }
 
     .date-box {
@@ -83,6 +93,10 @@ class Conversation extends LitElement {
     .chat-name {
       color: black;
     }
+
+    il-button-icon {
+      padding-top: 20px;
+    }
   `;
 
   render() {
@@ -93,40 +107,55 @@ class Conversation extends LitElement {
     }
 
     return html`
-      <div class="chat-box">
-        <il-avatar
-          .avatarLink=${this.chat.avatarLink}
-          .name=${this.chat.description}
-          .id=${this.chat.id}
-        ></il-avatar>
-        <div class="name-box">
-          <p class="chat-name">${this.chat.description}</p>
-          <p class="last-message">
-            ${this.lastMessageTextFormatter(
-              this.chat.lastMessage.sender,
-              this.chat.lastMessage.content
-            )}
-          </p>
-        </div>
-        <div class="date-box">
-          <p
-            class="last-message-timestamp last-message-timestamp ${this.chat
-              .unreadMessages > 0
-              ? "unread"
-              : ""}"
-          >
-            ${this.compareMessageDate(this.chat.lastMessage.timestamp)}
-          </p>
-          <p class="unread-counter">
-            ${this.chat.unreadMessages > 0
-              ? html`
-                  <il-icon
-                    style="display:${this.notificationOpacity};"
-                    name="${this.getUnreadIconName(this.chat.unreadMessages)}"
-                  ></il-icon>
-                `
-              : html``}
-          </p>
+      <div class="container">
+        ${when(
+          this.isSelectable,
+          () =>
+            html`<il-button-icon
+              @click=${() => (this.isSelected = !this.isSelected)}
+              content=${this.isSelected
+                ? "mdiCheckboxMarkedOutline"
+                : "mdiCheckboxBlankOutline"}
+            ></il-button-icon>`
+        )}
+        <div
+          class="chat-box"
+          @click=${() => this.dispatchEvent(new CustomEvent("clicked"))}
+        >
+          <il-avatar
+            .avatarLink=${this.chat.avatarLink}
+            .name=${this.chat.description}
+            .id=${this.chat.id}
+          ></il-avatar>
+          <div class="name-box">
+            <p class="chat-name">${this.chat.description}</p>
+            <p class="last-message">
+              ${this.lastMessageTextFormatter(
+                this.chat.lastMessage.sender,
+                this.chat.lastMessage.content
+              )}
+            </p>
+          </div>
+          <div class="date-box">
+            <p
+              class="last-message-timestamp last-message-timestamp ${this.chat
+                .unreadMessages > 0
+                ? "unread"
+                : ""}"
+            >
+              ${this.compareMessageDate(this.chat.lastMessage.timestamp)}
+            </p>
+            <p class="unread-counter">
+              ${this.chat.unreadMessages > 0
+                ? html`
+                    <il-icon
+                      style="display:${this.notificationOpacity};"
+                      name="${this.getUnreadIconName(this.chat.unreadMessages)}"
+                    ></il-icon>
+                  `
+                : html``}
+            </p>
+          </div>
         </div>
       </div>
     `;

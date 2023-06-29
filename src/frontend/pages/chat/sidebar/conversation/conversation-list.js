@@ -24,6 +24,7 @@ class ConversationList extends LitElement {
     newConversationListFiltered: { type: Array },
     indexOfSelectedChat: { type: Number },
     selectedRoom: { type: Object },
+    isForwardList: false,
   };
 
   constructor() {
@@ -354,6 +355,7 @@ class ConversationList extends LitElement {
         conversation.roomName == this.activeChatName
       ) {
         return html`<il-conversation
+          isSelectable=${this.isForwardList}
           class=${"conversation " +
           (conversation.roomName == this.activeChatName ||
           conversation.roomName == this.selectedRoom.roomName
@@ -363,7 +365,7 @@ class ConversationList extends LitElement {
             ? "selected"
             : ""}
           .chat=${conversation}
-          @click=${(event) => this.changeRoom(event, conversation)}
+          @clicked=${(event) => this.changeRoom(event, conversation)}
         ></il-conversation>`;
       } else {
         let conversationIndex = this.conversationList.findIndex(
@@ -384,6 +386,7 @@ class ConversationList extends LitElement {
     return this.newConversationListFiltered.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
       return html`<il-conversation
+        isSelectable=${this.isForwardList}
         class=${"conversation new-conversation " +
         (conversation.roomName == this.activeChatName ||
         conversation.roomName == this.selectedRoom.roomName
@@ -393,7 +396,7 @@ class ConversationList extends LitElement {
         id=${conversation.roomName == this.selectedRoom.roomName
           ? "selected"
           : ""}
-        @click=${(event) => this.changeRoom(event, conversation)}
+        @clicked=${(event) => this.changeRoom(event, conversation)}
       ></il-conversation>`;
     });
   }

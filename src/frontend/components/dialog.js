@@ -45,7 +45,7 @@ export class Dialog extends LitElement {
     }
 
     .forward-list {
-      width: 400px;
+      width: 450px;
       height: 100%;
       color: white;
     }

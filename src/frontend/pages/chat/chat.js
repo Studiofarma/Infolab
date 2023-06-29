@@ -180,6 +180,7 @@ export class Chat extends LitElement {
 
                   <il-modal theme="forward-list" ${ref(this.forwardListRef)}>
                     <il-conversation-list
+                      isForwardList="true"
                       @change-conversation=${(event) => {
                         this.forwardMessage(event);
                         this.focusOnEditor(event);
