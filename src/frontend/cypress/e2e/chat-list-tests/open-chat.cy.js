@@ -1,9 +1,7 @@
 describe("open chat spec", () => {
   it("open first chat", () => {
-    cy.getLitElement(
-      "il-app,il-chat,il-sidebar,il-conversation-list,il-conversation"
-    )
-      .find(".chat-box")
+    cy.getLitElement("il-app,il-chat,il-sidebar,il-conversation-list")
+      .find("il-conversation")
       .first()
       .click({ force: true });
 
@@ -17,6 +15,12 @@ describe("open chat spec", () => {
       .click({ force: true });
 
     cy.countElements("il-app,il-chat,il-chat-header", "il-avatar", 2);
+  });
+
+  it("open second chat with arrows", () => {
+    cy.getLitElement("il-app,il-chat,il-sidebar,il-search,il-input-search")
+      .find("input")
+      .type("{downArrow}");
   });
 });
 
