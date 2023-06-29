@@ -77,10 +77,7 @@ export class Message extends LitElement {
         this.message.timestamp
       )}
 
-      <!-- da refactorizzare in una storia apposita -->
-
       <div class="message-body">
-        <!--  message content -->
         <il-message-content
           class=${this.message.sender == this.cookie.username
             ? "sender"
@@ -88,8 +85,6 @@ export class Message extends LitElement {
           .message=${this.message}
           .activeChatName=${this.activeChatName}
         ></il-message-content>
-
-        <!-- end -->
 
         <il-message-menu-popup
           .chatRef=${this.chatRef}
