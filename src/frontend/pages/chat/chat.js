@@ -304,7 +304,7 @@ export class Chat extends LitElement {
   }
 
   focusOnEditor(event) {
-    this.inputControlsRef.value.editorRef.value.textareaRef.value.focus();
+    this.inputControlsRef.value?.editorRef.value.textareaRef.value.focus();
 
     // Bug da fixare, segnalato in proposal
     // if(event.detail.eventType === "keyPressed")
@@ -342,7 +342,7 @@ export class Chat extends LitElement {
     this.activeChatName = e.detail.conversation.roomName;
     this.activeDescription = e.detail.conversation.description;
 
-    this.inputControlsRef.value.focusEditor();
+    this.inputControlsRef.value?.focusEditor();
   }
 
   async updated() {
