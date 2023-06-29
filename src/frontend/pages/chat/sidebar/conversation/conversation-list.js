@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../../services/cookie-service";
 import { OpenChatsService } from "../../../../services/open-chats-service";
@@ -7,6 +8,7 @@ import { UsersService } from "../../../../services/users-service";
 import "../../../../components/avatar";
 import "./conversation";
 import "../search-chats";
+import "../../../../components/button-text";
 import { ConversationDto } from "../../../../models/conversation-dto";
 
 const arrowUp = "ArrowUp";
@@ -103,6 +105,10 @@ class ConversationList extends LitElement {
       overflow-y: scroll;
       height: 100%;
     }
+
+    il-button-text {
+      padding-left: 175px;
+    }
   `;
 
   render() {
@@ -131,6 +137,10 @@ class ConversationList extends LitElement {
             </div>
           </div>
         </div>
+        ${when(
+          this.isForwardList,
+          () => html`<il-button-text text="Inoltra"></il-button-text>`
+        )}
       </div>
     `;
   }
