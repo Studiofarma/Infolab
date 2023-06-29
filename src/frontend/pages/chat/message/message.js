@@ -1,19 +1,12 @@
 import { LitElement, html, css } from "lit";
 
-import { resolveMarkdown } from "lit-markdown";
-import { MarkdownService } from "../../../services/markdown-service";
-
 import { CookieService } from "../../../services/cookie-service";
-
-import { IconNames } from "../../../enums/icon-names";
 
 import "./message-options";
 import "../../../components/popover";
 import "./message-content";
+import "./message-menu-popup";
 
-const menuOptionLeft = "-73px";
-const menuOptionRight = "33px";
-const lastMenuOptionTop = "-86px";
 export class Message extends LitElement {
   static properties = {
     messages: { type: Array },
@@ -67,18 +60,12 @@ export class Message extends LitElement {
       background-color: rgb(221, 221, 221);
     }
 
-    il-button-icon {
-      background-color: white;
-      border-radius: 6px;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-    }
-
-    il-popover {
+    il-message-menu-popup {
       opacity: 0;
       transition: 0.5s;
     }
 
-    .message-body:hover il-popover {
+    .message-body:hover il-message-menu-popup {
       opacity: 1;
     }
   `;
@@ -104,49 +91,26 @@ export class Message extends LitElement {
 
         <!-- end -->
 
-        <il-popover .popupCoords=${{ ...this.getPopupCoords() }}>
-          <il-button-icon
-            slot="pop-button"
-            content="${IconNames.dotsHorizontal}"
-            color="black"
-          >
-          </il-button-icon>
-
-          <il-message-options
-            slot="popup"
-            .chatRef=${this.chatRef}
-            .message=${this.message}
-            .cookie=${this.cookie}
-            .index=${this.index}
-            .room=${this.activeChatName}
-            .type=${this.message.sender == this.cookie.username
-              ? "sender"
-              : "receiver"}
-            @forward-message=${(event) =>
-              this.dispatchEvent(
-                new CustomEvent(event.type, { detail: event.detail })
-              )}
-            @go-to-chat=${(event) =>
-              this.dispatchEvent(
-                new CustomEvent(event.type, { detail: event.detail })
-              )}
-          >
-          </il-message-options>
-        </il-popover>
+        <il-message-menu-popup
+          .chatRef=${this.chatRef}
+          .messages=${this.messages}
+          .message=${this.message}
+          .index=${this.index}
+          .activeChatName=${this.activeChatName}
+          @forward-message=${(event) => {
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            );
+          }}
+          @go-to-chat=${(event) => {
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            );
+          }}
+        >
+        </il-message-menu-popup>
       </div>
     `;
-  }
-
-  getPopupCoords() {
-    if (this.index === this.messages.length - 1 && this.messages.length !== 1) {
-      return this.message.sender == this.cookie.username
-        ? { top: lastMenuOptionTop, left: menuOptionLeft }
-        : { top: lastMenuOptionTop, right: menuOptionRight };
-    }
-
-    return this.message.sender == this.cookie.username
-      ? { top: "0px", left: menuOptionLeft }
-      : { top: "0px", right: menuOptionRight };
   }
 
   compareMessageDate(messageDate1, messageDate2) {
