@@ -60,10 +60,9 @@ class ConversationList extends LitElement {
     }
 
     .container {
-      max-height: 806px;
+      height: 100%;
       display: flex;
       flex-direction: column;
-      overflow-y: scroll;
     }
 
     ::-webkit-scrollbar {
@@ -101,26 +100,33 @@ class ConversationList extends LitElement {
 
     .conversation-list-scrollable {
       overflow-y: scroll;
+      height: 100%;
     }
   `;
 
   render() {
     return html`
-      <il-search
-        @search-chat=${this.setQueryString}
-        @keyPressed=${this.navigateSearchResultsWithArrows}
-      ></il-search>
-      <div class="conversation-list-scrollable">
-        <div>
-          <p class="separator">Conversazioni</p>
-          <div class="conversation-list">${this.renderConversationList()}</div>
-        </div>
-        <div>
-          <p class="separator">
-            ${this.newConversationList.length > 0 ? "Nuove conversazioni" : ""}
-          </p>
-          <div class="conversation-list">
-            ${this.renderNewConversationList()}
+      <div class="container">
+        <il-search
+          @search-chat=${this.setQueryString}
+          @keyPressed=${this.navigateSearchResultsWithArrows}
+        ></il-search>
+        <div class="conversation-list-scrollable">
+          <div>
+            <p class="separator">Conversazioni</p>
+            <div class="conversation-list">
+              ${this.renderConversationList()}
+            </div>
+          </div>
+          <div>
+            <p class="separator">
+              ${this.newConversationList.length > 0
+                ? "Nuove conversazioni"
+                : ""}
+            </p>
+            <div class="conversation-list">
+              ${this.renderNewConversationList()}
+            </div>
           </div>
         </div>
       </div>
@@ -400,10 +406,8 @@ class ConversationList extends LitElement {
     let searchInput = this.shadowRoot
       .querySelector("il-search")
       ?.shadowRoot.querySelector("il-input-ricerca");
-    if (searchInput) {
-      searchInput.clear();
-      this.query = searchInput.value;
-    }
+    if (searchInput) searchInput.clear();
+    this.query = searchInput.value;
     this.update();
   }
 

@@ -342,7 +342,7 @@ export class Chat extends LitElement {
     this.activeChatName = e.detail.conversation.roomName;
     this.activeDescription = e.detail.conversation.description;
 
-    this.inputControlsRef.value?.focusEditor();
+    this.inputControlsRef?.value?.focusEditor();
   }
 
   async updated() {
