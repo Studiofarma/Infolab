@@ -1,7 +1,7 @@
-import "./commands"
+import "./commands";
 
-Cypress.on('uncaught:exception', (err, runnable) => {
+Cypress.on("uncaught:exception", (err, runnable) => {
   // returning false here prevents Cypress from
   // failing the test
-  return false
+  return false;
 });
