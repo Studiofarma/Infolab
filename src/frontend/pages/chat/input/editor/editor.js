@@ -8,6 +8,7 @@ import "../../../../components/button-text";
 const textareaDefaultHeight = 21;
 const textAreaWidthOffset = 20;
 const keys = {
+  tab: "Tab",
   enter: "Enter",
   bold: "b",
   italic: "i",
@@ -18,6 +19,7 @@ const keys = {
 export class Editor extends LitElement {
   static properties = {
     message: { type: String },
+    isKeyDown: false,
   };
 
   constructor() {
@@ -71,15 +73,19 @@ export class Editor extends LitElement {
         ${ref(this.textareaRef)}
         @input=${this.onInput}
         @keydown=${this.onKeyDown}
+        @keyup=${this.onKeyUp}
+        @blur=${this.onBlur}
         placeholder="Scrivi un messaggio..."
       ></textarea>
     `;
   }
 
   onInput(event) {
-    this.message = event.target.value;
+    if (this.isKeyDown) this.message = event.target.value;
+
     this.textChanged();
     this.textEditorResize();
+    this.isKeyDown = false;
   }
 
   textChanged() {
@@ -120,6 +126,8 @@ export class Editor extends LitElement {
   }
 
   onKeyDown(event) {
+    this.isKeyDown = true;
+
     if (event.key == keys.enter) {
       if (event.shiftKey) {
         this.checkList(event);
@@ -129,9 +137,15 @@ export class Editor extends LitElement {
       }
     }
 
-    this.focusTextarea();
-
     if (event.altKey) this.checkMarkdownKeys(event.key);
+  }
+
+  onKeyUp() {
+    this.isKeyDown = false;
+  }
+
+  onBlur(e) {
+    this.isKeyDown = false;
   }
 
   clearMessage() {
