@@ -1,10 +1,9 @@
+const inputRicercaSidebar =
+  "il-app,il-chat,il-sidebar,il-conversation-list,il-search,il-input-ricerca";
+
 describe("search spec", () => {
   it("filters all", () => {
-    cy.login({ user: "user1", password: "password1" });
-
-    cy.getLitElement(
-      "il-app,il-chat,il-sidebar,il-conversation-list,il-search,il-input-ricerca"
-    )
+    cy.getLitElement(inputRicercaSidebar)
       .find("input")
       .type("test", { force: true });
 
@@ -16,11 +15,7 @@ describe("search spec", () => {
   });
 
   it("search general", () => {
-    cy.login({ user: "user1", password: "password1" });
-
-    cy.getLitElement(
-      "il-app,il-chat,il-sidebar,il-conversation-list,il-search,il-input-ricerca"
-    )
+    cy.getLitElement(inputRicercaSidebar)
       .find("input")
       .type("general", { force: true });
 
@@ -32,17 +27,11 @@ describe("search spec", () => {
   });
 
   it("clean search", () => {
-    cy.login({ user: "user1", password: "password1" });
-
-    cy.getLitElement(
-      "il-app,il-chat,il-sidebar,il-conversation-list,il-search,il-input-ricerca"
-    )
+    cy.getLitElement(inputRicercaSidebar)
       .find("input")
       .type("test", { force: true });
 
-    cy.getLitElement(
-      "il-app,il-chat,il-sidebar,il-conversation-list,il-search,il-input-ricerca,il-button-icon"
-    )
+    cy.getLitElement(inputRicercaSidebar + ",il-button-icon")
       .find("div")
       .click({ force: true });
 
@@ -54,11 +43,7 @@ describe("search spec", () => {
   });
 
   it("search da", () => {
-    cy.login({ user: "user1", password: "password1" });
-
-    cy.getLitElement(
-      "il-app,il-chat,il-sidebar,il-conversation-list,il-search,il-input-ricerca"
-    )
+    cy.getLitElement(inputRicercaSidebar)
       .find("input")
       .type("da", { force: true });
 
@@ -68,6 +53,10 @@ describe("search spec", () => {
       3
     );
   });
+});
+
+beforeEach(() => {
+  cy.login({ user: "user1", password: "password1" });
 });
 
 afterEach(() => {
