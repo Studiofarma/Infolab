@@ -135,6 +135,7 @@ export class Message extends LitElement {
       overflow-wrap: break-word;
     }
 
+
     .settings-container {
       position: relative;
       background: white;
