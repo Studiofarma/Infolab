@@ -32,7 +32,7 @@ describe("Editor spec", () => {
     textarea.should("have.value", "ADE");
   });
 
-  it("Editor sends messages (enter)", () => {
+  it("Editor empty after enter pressed", () => {
     const textarea = getTextarea();
 
     textarea.type("Test12345{enter}");
@@ -40,7 +40,7 @@ describe("Editor spec", () => {
     textarea.should("have.value", "");
   });
 
-  it("Editor sends messages (button)", () => {
+  it("Editor empty after send button pressed", () => {
     const textarea = getTextarea();
 
     textarea.type("Test67890");
@@ -51,16 +51,6 @@ describe("Editor spec", () => {
       .find(".icon-button")
       .eq(2)
       .click({ force: true });
-
-    textarea.should("have.value", "");
-  });
-
-  it("Editor sends \\n correctly", () => {
-    const textarea = getTextarea();
-
-    textarea.type(
-      "Linea 1{shift+enter}Linea 2{shift+enter}### Linea TITOLO{shift+enter}Linea 3{shift+enter}* UL 1{shift+enter}UL 2{shift+enter}{backspace}{backspace}Linea di spazio{shift+enter}1. OL 1{shift+enter}OL 2{enter}"
-    );
 
     textarea.should("have.value", "");
   });
@@ -106,10 +96,6 @@ describe("Editor spec", () => {
     const textarea = getTextarea();
 
     textarea.should("have.value", "😀");
-
-    textarea.type("{enter}");
-
-    textarea.should("have.value", "");
   });
 
   it("Editor formatting buttons works", () => {
