@@ -51,35 +51,35 @@ describe("header component spec", () => {
       });
   });
 
-  // it("asserting that the avatar of a contact contains the correct initials ", () => {
-  //   cy.getLitElement(
-  //     "il-app,il-chat, il-sidebar, il-conversation-list, il-conversation"
-  //   )
-  //     .find(".chat-name")
-  //     .as("conversation")
-  //     .each((el, index) => {
-  //       cy.get("@conversation").eq(index).click({ force: true });
+  it("asserting that the avatar of a contact contains the correct initials ", () => {
+    cy.getLitElement(
+      "il-app,il-chat, il-sidebar, il-conversation-list, il-conversation"
+    )
+      .find(".chat-name")
+      .as("conversation")
+      .each((el, index) => {
+        cy.get("@conversation").eq(index).click({ force: true });
 
-  //       cy.getLitElement("il-app, il-chat, il-chat-header")
-  //         .find("il-avatar")
-  //         .should("have.length", 2);
+        cy.getLitElement("il-app, il-chat, il-chat-header")
+          .find("il-avatar")
+          .should("have.length", 2);
 
-  //       cy.wrap(el)
-  //         .invoke("text")
-  //         .then((text) => {
-  //           const initials = text
-  //             .split(" ")
-  //             .map((t) => t.charAt(0))
-  //             .join("")
-  //             .toUpperCase();
+        cy.wrap(el)
+          .invoke("text")
+          .then((text) => {
+            const initials = text
+              .split(" ")
+              .map((t) => t.charAt(0))
+              .join("")
+              .toUpperCase();
 
-  //           cy.getLitElement("il-app, il-chat, il-chat-header, il-avatar")
-  //             .first()
-  //             .find("#avatar-default")
-  //             .should("include.text", initials);
-  //         });
-  //     });
-  // });
+            cy.getLitElement("il-app, il-chat, il-chat-header, il-avatar")
+              .first()
+              .find("#avatar-default")
+              .should("include.text", initials);
+          });
+      });
+  });
 });
 
 afterEach(() => {
