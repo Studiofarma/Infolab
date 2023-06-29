@@ -344,7 +344,7 @@ export class Chat extends LitElement {
   }
 
   scrollToBottom() {
-    this.messagesListRef.value.scrollToBottom();
+    this.messagesListRef.value?.scrollToBottom();
   }
 
   onConnect() {
