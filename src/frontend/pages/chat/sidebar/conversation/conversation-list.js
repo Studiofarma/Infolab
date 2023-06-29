@@ -110,6 +110,7 @@ class ConversationList extends LitElement {
         <il-search
           @search-chat=${this.setQueryString}
           @keyPressed=${this.navigateSearchResultsWithArrows}
+          @blur=${this.clearSelection}
         ></il-search>
         <div class="conversation-list-scrollable">
           <div>
@@ -138,7 +139,7 @@ class ConversationList extends LitElement {
       this.changeIndexOfSelectedChat(e.detail.key);
 
     if (this.indexOfSelectedChat <= -1) {
-      this.selectedRoom = {};
+      this.clearSelection();
       return;
     }
 
@@ -146,6 +147,11 @@ class ConversationList extends LitElement {
     this.getSelectedRoom();
 
     if (e.detail.key == enter) this.changeRoom(e, this.selectedRoom);
+  }
+
+  clearSelection() {
+    this.selectedRoom = {};
+    this.indexOfSelectedChat = -1;
   }
 
   scrollToSelectedChat() {
