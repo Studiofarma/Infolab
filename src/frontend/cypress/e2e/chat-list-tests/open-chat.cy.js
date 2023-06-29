@@ -1,7 +1,6 @@
 const conversationListPath = "il-app,il-chat,il-sidebar,il-conversation-list";
 
-const inputRicercaSidebarPath =
-  conversationListPath + ",il-search,il-input-ricerca";
+const inputRicercaSidebarPath = `${conversationListPath},il-search,il-input-ricerca`;
 
 const conversation = "il-conversation";
 

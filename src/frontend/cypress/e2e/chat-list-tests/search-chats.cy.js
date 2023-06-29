@@ -1,13 +1,14 @@
 const conversationListPath = "il-app,il-chat,il-sidebar,il-conversation-list";
 
-const inputRicercaSidebarPath =
-  conversationListPath + ",il-search,il-input-ricerca";
+const inputRicercaSidebarPath = `${conversationListPath},il-search,il-input-ricerca`;
+
+const buttonIconPath = `${inputRicercaSidebarPath},il-button-icon`;
 
 const conversation = "il-conversation";
 
 describe("search spec", () => {
   it("icon is magnifying glass", () => {
-    cy.getLitElement(inputRicercaSidebarPath + ",il-button-icon")
+    cy.getLitElement(buttonIconPath)
       .find("il-icon[name*=mdiMagnify]")
       .should("exist");
   });
@@ -17,7 +18,7 @@ describe("search spec", () => {
       .find("input")
       .click({ force: true });
 
-    cy.getLitElement(inputRicercaSidebarPath + ",il-button-icon")
+    cy.getLitElement(buttonIconPath)
       .find("il-icon[name*=mdiMagnify]")
       .should("exist");
   });
@@ -27,7 +28,7 @@ describe("search spec", () => {
       .find("input")
       .type("test", { force: true });
 
-    cy.getLitElement(inputRicercaSidebarPath + ",il-button-icon")
+    cy.getLitElement(buttonIconPath)
       .find("il-icon[name*=mdiClose]")
       .should("exist");
   });
@@ -61,9 +62,7 @@ describe("search spec", () => {
       .find("input")
       .type("test", { force: true });
 
-    cy.getLitElement(inputRicercaSidebarPath + ",il-button-icon")
-      .find("div")
-      .click({ force: true });
+    cy.getLitElement(buttonIconPath).find("div").click({ force: true });
 
     cy.getLitElement(inputRicercaSidebarPath)
       .find("input")
@@ -90,7 +89,7 @@ describe("search spec", () => {
       .find("input")
       .type("d{downArrow}{enter}", {
         force: true,
-        delay: 600,
+        delay: 1000,
       });
 
     cy.getLitElement(inputRicercaSidebarPath)
