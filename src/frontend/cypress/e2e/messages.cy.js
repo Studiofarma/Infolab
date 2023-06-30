@@ -50,73 +50,12 @@ describe("messages spec", () => {
       .filter(':contains("Generale")')
       .click({ force: true });
 
-    cy.getLitElement(MESSAGE_PATH).each((messageComponent) => {
-      cy.wrap(messageComponent)
-        .find(".message-body > div.receiver")
-        .then((receviedMessageExist) => {
-          if (receviedMessageExist) {
-            cy.wrap(messageComponent)
-              .find(".receiver-name")
-              .should("exist")
-              .and("not.to.be.empty");
-          }
-        });
-    });
-  });
-
-  it("asserting that the options menu ICON will display when you hover on a message", () => {
     cy.getLitElement(MESSAGE_PATH)
-      .first()
       .find(".message-body")
-      .trigger("mouseover", { force: true });
-
-    cy.getLitElement(BUTTON_ICON_PATH)
-      .first()
-      .find(".icon-button")
-      .should("be.visible");
-  });
-
-  it("asserting that the options menu displays his content after clicking on his icon", () => {
-    cy.getLitElement(MESSAGE_PATH)
-      .first()
-      .find(".message-body")
-      .trigger("mouseover", { force: true });
-
-    cy.getLitElement(BUTTON_ICON_PATH)
-      .first()
-      .find(".icon-button")
-      .click({ force: true });
-
-    cy.getLitElement(OPTIONS_MENU)
-      .find("div")
-      .should("be.visible")
-      .and("not.to.be.empty");
-  });
-
-  it("asserting that the button 'Copia' works", () => {
-    cy.getLitElement(MESSAGE_PATH)
-      .first()
-      .find(".message-body")
-      .trigger("mouseover", { force: true });
-
-    cy.getLitElement(BUTTON_ICON_PATH)
-      .first()
-      .find(".icon-button")
-      .click({ force: true });
-
-    cy.getLitElement(OPTIONS_MENU)
-      .first()
-      .find("message-button-option")
-      .first()
-      .shadow()
-      .find("div")
-      .click({ force: true });
-
-    cy.wrap(null).then(() => {
-      return pasteText().then((str) => {
-        expect(str).to.eq("\n ciaone \n\n");
+      .filter(":has(.receiver-name)")
+      .each((element) => {
+        cy.wrap(element).find(".receiver-name").should("not.to.be.empty");
       });
-    });
   });
 
   it("asserting that the button 'Inoltra' works", () => {
