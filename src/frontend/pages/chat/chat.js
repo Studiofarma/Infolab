@@ -166,7 +166,6 @@ export class Chat extends LitElement {
               userName=${this.login.username}
               activeDescription=${this.activeDescription ?? ""}
             ></il-chat-header>
-
             ${this.activeChatName !== ""
               ? html` <il-messages-list
                     ${ref(this.messagesListRef)}
