@@ -112,7 +112,14 @@ class Conversation extends LitElement {
           this.isSelectable,
           () =>
             html`<il-button-icon
-              @click=${() => (this.isSelected = !this.isSelected)}
+              @click=${() => {
+                this.isSelected = !this.isSelected;
+                this.dispatchEvent(
+                  new CustomEvent("selected", {
+                    detail: { room: this.chat.roomName, add: this.isSelected },
+                  })
+                );
+              }}
               content=${this.isSelected
                 ? "mdiCheckboxMarkedOutline"
                 : "mdiCheckboxBlankOutline"}

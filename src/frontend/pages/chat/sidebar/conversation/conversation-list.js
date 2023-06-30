@@ -27,6 +27,7 @@ class ConversationList extends LitElement {
     indexOfSelectedChat: { type: Number },
     selectedRoom: { type: Object },
     isForwardList: false,
+    selectedChats: {},
   };
 
   constructor() {
@@ -42,6 +43,7 @@ class ConversationList extends LitElement {
     this.onLoad();
     this.indexOfSelectedChat = -1;
     this.selectedRoom = {};
+    this.selectedChats = [];
   }
 
   static styles = css`
@@ -396,6 +398,7 @@ class ConversationList extends LitElement {
     return this.newConversationListFiltered.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
       return html`<il-conversation
+        @selected=${this.selectConversation}
         isSelectable=${this.isForwardList}
         class=${"conversation new-conversation " +
         (conversation.roomName == this.activeChatName ||
@@ -409,6 +412,15 @@ class ConversationList extends LitElement {
         @clicked=${(event) => this.changeRoom(event, conversation)}
       ></il-conversation>`;
     });
+  }
+
+  selectConversation(event) {
+    if (event.detail.add) this.selectedChats.push(event.detail.room);
+    else
+      this.selectedChats = this.selectedChats.filter(
+        (chat) => chat != event.detail.room
+      );
+    console.log(this.selectedChats);
   }
 
   updateMessages(conversation) {
