@@ -95,11 +95,15 @@ class Editor extends LitElement {
       editorMaxHeight + "px";
   }
 
+  getHtml() {
+    return this.shadowRoot.querySelector(".ql-editor p").innerHTML;
+  }
+
   textChanged() {
     this.dispatchEvent(
       new CustomEvent("text-changed", {
         detail: {
-          content: this.shadowRoot.querySelector(".ql-editor p").innerHTML,
+          content: this.getHtml(),
         },
       })
     );
