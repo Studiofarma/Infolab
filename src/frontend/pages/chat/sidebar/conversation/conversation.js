@@ -121,8 +121,8 @@ class Conversation extends LitElement {
                 );
               }}
               content=${this.isSelected
-                ? "mdiCheckboxMarkedOutline"
-                : "mdiCheckboxBlankOutline"}
+                ? IconNames.checkboxMarked
+                : IconNames.checkboxEmpty}
             ></il-button-icon>`
         )}
         <div
