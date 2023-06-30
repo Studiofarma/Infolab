@@ -6,6 +6,8 @@ import Quill from "quill";
 const editorDefaultHeight = 54;
 const editorMaxHeight = 166;
 
+const enterKey = "Enter";
+
 class Editor extends LitElement {
   static styles = css`
     #editor-container {
@@ -41,13 +43,16 @@ class Editor extends LitElement {
   }
 
   render() {
-    console.log(this.quill?.getText());
     return html`
       <link
         rel="stylesheet"
         href="http://cdn.quilljs.com/1.3.6/quill.snow.css"
       />
-      <div id="editor-container" ${ref(this.quillEditorRef)}></div>
+      <div
+        id="editor-container"
+        ${ref(this.quillEditorRef)}
+        @keydown=${this.onKeyDown}
+      ></div>
     `;
   }
 
@@ -65,11 +70,14 @@ class Editor extends LitElement {
 
   textEditorResize() {
     const editor = this.shadowRoot.querySelector(".ql-editor");
+
     editor.style.height = `${editorDefaultHeight}px`;
     editor.style.height = `${editor.scrollHeight}px`;
+
     this.shadowRoot.querySelector(
       "#editor-container"
     ).style.height = `${editor.scrollHeight}px`;
+
     this.dispatchEvent(
       new CustomEvent("text-editor-resized", {
         detail: { height: editor.clientHeight },
@@ -101,6 +109,15 @@ class Editor extends LitElement {
     return this.shadowRoot.querySelector(".ql-editor p").innerHTML;
   }
 
+  onKeyDown(event) {
+    if (event.key === enterKey && !event.shiftKey) {
+      this.enterKeyPressed();
+      event.preventDefault();
+    }
+
+    this.textEditorResize();
+  }
+
   textChanged() {
     this.dispatchEvent(
       new CustomEvent("text-changed", {
@@ -109,7 +126,12 @@ class Editor extends LitElement {
         },
       })
     );
+
     this.textEditorResize();
+  }
+
+  enterKeyPressed() {
+    this.dispatchEvent(new CustomEvent("enter-key-pressed"));
   }
 }
 
