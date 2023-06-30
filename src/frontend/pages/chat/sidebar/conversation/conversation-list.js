@@ -146,6 +146,7 @@ class ConversationList extends LitElement {
           this.isForwardList,
           () =>
             html`<il-button-text
+              ?isActive=${this.selectedChats[0] !== undefined}
               text="Inoltra"
               @click=${() =>
                 this.dispatchEvent(
@@ -430,8 +431,10 @@ class ConversationList extends LitElement {
   }
 
   selectConversation(event) {
-    if (event.detail?.add) this.selectedChats.push(event.detail.room);
-    else if (event.detail != null)
+    if (event.detail?.add) {
+      this.selectedChats.push(event.detail.room);
+      this.requestUpdate();
+    } else
       this.selectedChats = this.selectedChats.filter(
         (chat) => chat != event.detail.room
       );

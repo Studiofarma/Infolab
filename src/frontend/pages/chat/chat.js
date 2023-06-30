@@ -220,6 +220,8 @@ export class Chat extends LitElement {
   }
 
   multipleForward(event) {
+    if (event.detail.list[0] == undefined) return;
+
     this.forwardListRef.value.ilDialogRef.value.isOpened = false;
 
     const chatMessage = {

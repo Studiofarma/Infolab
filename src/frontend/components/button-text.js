@@ -5,6 +5,7 @@ export class ButtonText extends LitElement {
     return {
       text: { type: String },
       isActive: { type: Boolean },
+      isDisadled: false,
     };
   }
 
@@ -16,22 +17,20 @@ export class ButtonText extends LitElement {
       background: #206cf7;
       text-align: center;
       border: 1px solid #616870;
-      border-bottom: 0;
       color: white;
       height: 40px;
       cursor: pointer;
     }
 
-    .active {
-      border: 1px solid transparent;
-      background: none;
-      transform: translateY(1px);
+    .inactive {
+      background-color: #dbdde0;
+      color: black;
     }
   `;
 
   render() {
     return html`
-      <button class="${this.isActive ? "active" : ""}">${this.text}</button>
+      <button class="${this.isActive ? "" : "inactive"}">${this.text}</button>
     `;
   }
 }
