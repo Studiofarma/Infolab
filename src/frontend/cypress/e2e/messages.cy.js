@@ -20,9 +20,11 @@ beforeEach(() => {
 });
 
 function pasteText() {
-  return new Cypress.Promise((resolve) =>
-    resolve(navigator.clipboard.readText())
-  );
+  return new Cypress.Promise((resolve) => {
+    setTimeout(() => {
+      resolve(navigator.clipboard.readText());
+    }, 1000);
+  });
 }
 
 describe("messages spec", () => {
@@ -85,6 +87,47 @@ describe("messages spec", () => {
       .find("div")
       .should("be.visible")
       .and("not.to.be.empty");
+  });
+
+  it("asserting that the button 'Copia' works", () => {
+    cy.getLitElement(MESSAGE_PATH)
+      .first()
+      .find(".message-body")
+      .trigger("mouseover", { force: true });
+
+    cy.getLitElement(BUTTON_ICON_PATH)
+      .first()
+      .find(".icon-button")
+      .click({ force: true });
+
+    cy.getLitElement(OPTIONS_MENU)
+      .first()
+      .find("message-button-option")
+      .first()
+      .shadow()
+      .find("div");
+
+    cy.getLitElement(OPTIONS_MENU)
+      .first()
+      .find("message-button-option")
+      .first()
+      .shadow()
+      .find("div")
+      .realClick();
+
+    cy.getLitElement(MESSAGE_PATH)
+      .first()
+      .find(".message")
+      .invoke("text")
+      .then((txt) => {
+        cy.wrap(null).then(() => {
+          return pasteText().then((str) => {
+            expect(str).to.eq(txt);
+          });
+        });
+      });
+
+    ////////////////////////
   });
 
   it("asserting that the button 'Inoltra' works", () => {

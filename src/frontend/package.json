@@ -30,6 +30,7 @@
     "@jamescoyle/svg-icon": "^0.1.1",
     "@mdi/js": "^7.1.96",
     "axios": "^1.2.3",
+    "cypress-real-events": "^1.8.1",
     "emoji-picker-element": "^1.15.1",
     "lit": "^2.6.0",
     "lit-markdown": "^1.3.2",
