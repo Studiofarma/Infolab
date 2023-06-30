@@ -277,9 +277,10 @@ export class Chat extends LitElement {
     let newList =
       this.sidebarRef.value.sidebarListRef.value.newConversationList;
 
-    let index = list.findIndex(
-      (elem) => elem.description === event.detail.description
-    );
+    let index = list.findIndex((elem) => {
+      let names = elem.roomName.split("-");
+      return names.includes(event.detail.description);
+    });
 
     if (index === -1) {
       index = newList.findIndex(
