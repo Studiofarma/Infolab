@@ -58,6 +58,35 @@ describe("messages spec", () => {
       });
   });
 
+  it("asserting that the options menu icon will display when you hover on a message", () => {
+    cy.getLitElement(MESSAGE_PATH)
+      .first()
+      .find(".message-body")
+      .trigger("mouseover", { force: true });
+
+    cy.getLitElement(BUTTON_ICON_PATH)
+      .first()
+      .find(".icon-button")
+      .should("be.visible");
+  });
+
+  it("asserting that the options menu displays his content after clicking on his icon", () => {
+    cy.getLitElement(MESSAGE_PATH)
+      .first()
+      .find(".message-body")
+      .trigger("mouseover", { force: true });
+
+    cy.getLitElement(BUTTON_ICON_PATH)
+      .first()
+      .find(".icon-button")
+      .click({ force: true });
+
+    cy.getLitElement("il-app ,il-chat, il-message, il-message-options")
+      .find("div")
+      .should("be.visible")
+      .and("not.to.be.empty");
+  });
+
   it("asserting that the button 'Inoltra' works", () => {
     cy.getLitElement(MESSAGE_PATH)
       .first()
