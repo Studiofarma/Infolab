@@ -42,8 +42,10 @@ export class Modal extends LitElement {
   }
 
   handleClick(event) {
-    if (this.closeByBackdropClick && this.isClickOuter(event))
+    if (this.closeByBackdropClick && this.isClickOuter(event)) {
+      this.dispatchEvent(new CustomEvent("modal-closed"));
       this.ilDialogRef.value.isOpened = false;
+    }
   }
 }
 

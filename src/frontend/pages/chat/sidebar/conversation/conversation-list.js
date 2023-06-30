@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { when } from "lit/directives/when.js";
+import { repeat } from "lit/directives/repeat.js";
 
 import { CookieService } from "../../../../services/cookie-service";
 import { OpenChatsService } from "../../../../services/open-chats-service";
@@ -28,6 +29,7 @@ class ConversationList extends LitElement {
     selectedRoom: { type: Object },
     isForwardList: false,
     selectedChats: {},
+    isOpen: false,
   };
 
   constructor() {
@@ -44,6 +46,7 @@ class ConversationList extends LitElement {
     this.indexOfSelectedChat = -1;
     this.selectedRoom = {};
     this.selectedChats = [];
+    this.isOpen = false;
   }
 
   static styles = css`
@@ -360,14 +363,16 @@ class ConversationList extends LitElement {
       this.conversationList
     );
 
-    return this.conversationListFiltered.map((pharmacy) => {
+    return repeat(this.conversationListFiltered, (pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
       if (
         conversation.lastMessage.content ||
         conversation.roomName == this.activeChatName
       ) {
         return html`<il-conversation
+          @selected=${this.selectConversation}
           isSelectable=${this.isForwardList}
+          .isSelected=${this.selectedChats.includes(conversation.roomName)}
           class=${"conversation " +
           (conversation.roomName == this.activeChatName ||
           conversation.roomName == this.selectedRoom.roomName
@@ -400,6 +405,7 @@ class ConversationList extends LitElement {
       return html`<il-conversation
         @selected=${this.selectConversation}
         isSelectable=${this.isForwardList}
+        .isSelected=${this.selectedChats.includes(conversation.roomName)}
         class=${"conversation new-conversation " +
         (conversation.roomName == this.activeChatName ||
         conversation.roomName == this.selectedRoom.roomName
@@ -415,12 +421,11 @@ class ConversationList extends LitElement {
   }
 
   selectConversation(event) {
-    if (event.detail.add) this.selectedChats.push(event.detail.room);
-    else
+    if (event.detail?.add) this.selectedChats.push(event.detail.room);
+    else if (event.detail != null)
       this.selectedChats = this.selectedChats.filter(
         (chat) => chat != event.detail.room
       );
-    console.log(this.selectedChats);
   }
 
   updateMessages(conversation) {

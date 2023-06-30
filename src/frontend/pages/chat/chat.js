@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { repeat } from "lit/directives/repeat.js";
+import { when } from "lit/directives/when.js";
 import { createRef, ref } from "lit/directives/ref.js";
 
 import SockJS from "sockjs-client";
@@ -61,6 +62,7 @@ export class Chat extends LitElement {
     });
 
     // Refs
+    this.forwardListConversationListRef = createRef();
     this.forwardListRef = createRef();
     this.sidebarRef = createRef();
     this.scrollButtonRef = createRef();
@@ -178,14 +180,22 @@ export class Chat extends LitElement {
                     @go-to-chat=${this.goToChat}
                   ></il-messages-list>
 
-                  <il-modal theme="forward-list" ${ref(this.forwardListRef)}>
-                    <il-conversation-list
-                      isForwardList="true"
-                      @change-conversation=${(event) => {
-                        this.forwardMessage(event);
-                        this.focusOnEditor(event);
-                      }}
-                    ></il-conversation-list>
+                  <il-modal
+                    theme="forward-list"
+                    @modal-closed=${this.requestUpdate}
+                    ${ref(this.forwardListRef)}
+                    >${when(
+                      this.forwardListRef.value?.ilDialogRef.value.isOpened,
+                      () =>
+                        html`<il-conversation-list
+                          ${ref(this.forwardListConversationListRef)}
+                          isForwardList="true"
+                          @change-conversation=${(event) => {
+                            this.forwardMessage(event);
+                            this.focusOnEditor(event);
+                          }}
+                        ></il-conversation-list>`
+                    )}
                   </il-modal>
 
                   <il-button-icon
@@ -211,6 +221,7 @@ export class Chat extends LitElement {
   openForwardMenu(event) {
     this.messageToForward = event.detail.messageToForward;
     this.forwardListRef.value.ilDialogRef.value.isOpened = true;
+    this.requestUpdate();
   }
 
   forwardMessage(event) {
@@ -228,6 +239,8 @@ export class Chat extends LitElement {
 
     // invio il messaggio
     this.sendMessage({ detail: { message: this.messageToForward } });
+
+    this.requestUpdate();
   }
 
   goToChat(event) {
