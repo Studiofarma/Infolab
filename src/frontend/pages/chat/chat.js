@@ -278,14 +278,16 @@ export class Chat extends LitElement {
       this.sidebarRef.value.sidebarListRef.value.newConversationList;
 
     let index = list.findIndex((elem) => {
-      let names = elem.roomName.split("-");
-      return names.includes(event.detail.description);
+      return this.isUsernameInRoomName(elem.roomName, event.detail.description);
     });
 
     if (index === -1) {
-      index = newList.findIndex(
-        (elem) => elem.description === event.detail.description + "\n"
-      );
+      index = newList.findIndex((elem) => {
+        return this.isUsernameInRoomName(
+          elem.roomName,
+          event.detail.description
+        );
+      });
 
       this.sidebarRef.value.sidebarListRef.value.activeChatName =
         newList[index].roomName;
@@ -301,6 +303,11 @@ export class Chat extends LitElement {
 
       this.updateMessages({ detail: { conversation: list[index] } });
     }
+  }
+
+  isUsernameInRoomName(roomName, username) {
+    let names = roomName.split("-");
+    return names.includes(username);
   }
 
   focusOnEditor(event) {
