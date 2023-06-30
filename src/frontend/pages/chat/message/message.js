@@ -5,7 +5,7 @@ import { CookieService } from "../../../services/cookie-service";
 import "./message-options";
 import "../../../components/popover";
 import "./message-content";
-import "./message-menu-popup";
+import "./message-menu-popover";
 
 export class Message extends LitElement {
   static properties = {
@@ -60,13 +60,13 @@ export class Message extends LitElement {
       background-color: rgb(221, 221, 221);
     }
 
-    il-message-menu-popup {
+    il-message-menu-popover {
       z-index: 10;
       opacity: 0;
       transition: 0.5s;
     }
 
-    .message-body:hover il-message-menu-popup {
+    .message-body:hover il-message-menu-popover {
       opacity: 1;
     }
   `;
@@ -87,7 +87,7 @@ export class Message extends LitElement {
           .activeChatName=${this.activeChatName}
         ></il-message-content>
 
-        <il-message-menu-popup
+        <il-message-menu-popover
           .chatRef=${this.chatRef}
           .messages=${this.messages}
           .message=${this.message}
@@ -104,7 +104,7 @@ export class Message extends LitElement {
             );
           }}
         >
-        </il-message-menu-popup>
+        </il-message-menu-popover>
       </div>
     `;
   }

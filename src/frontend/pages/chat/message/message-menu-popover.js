@@ -7,7 +7,7 @@ const menuOptionLeft = "-73px";
 const menuOptionRight = "33px";
 const lastMenuOptionTop = "-86px";
 
-export class MessageMenuPopup extends LitElement {
+export class MessageMenuPopover extends LitElement {
   static properties = {
     messages: { type: Array },
     message: { type: Object },
@@ -76,4 +76,4 @@ export class MessageMenuPopup extends LitElement {
   }
 }
 
-customElements.define("il-message-menu-popup", MessageMenuPopup);
+customElements.define("il-message-menu-popover", MessageMenuPopover);
