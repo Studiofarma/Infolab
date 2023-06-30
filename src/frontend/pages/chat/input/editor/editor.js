@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
+import "../../../../styles/quill-snow.css";
 import Quill from "quill";
 
 const editorDefaultHeight = 54;
@@ -13,6 +14,7 @@ class Editor extends LitElement {
       font-size: 20px;
       padding: 0px;
       margin: 0;
+      border-radius: 10px;
     }
 
     ::-webkit-scrollbar {
