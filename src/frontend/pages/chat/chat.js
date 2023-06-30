@@ -408,8 +408,8 @@ export class Chat extends LitElement {
     if (message.content !== null) {
       if (this.activeChatName == message.roomName) {
         this.messages.push(message);
+        this.messagesListRef.value.update();
         this.update();
-        this.updated();
       }
 
       this.sidebarRef.value.sidebarListRef.value.setList(message);
