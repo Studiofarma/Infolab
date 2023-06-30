@@ -5,7 +5,6 @@ export class ButtonText extends LitElement {
     return {
       text: { type: String },
       isActive: { type: Boolean },
-      isDisadled: false,
     };
   }
 
