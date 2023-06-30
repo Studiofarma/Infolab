@@ -213,10 +213,6 @@ class ConversationList extends LitElement {
   }
 
   changeRoom(event, conversation) {
-    this.activeChatName = conversation.roomName;
-    this.activeDescription = conversation.description;
-    this.updateMessages(conversation);
-
     CookieService.setCookieByKey(
       CookieService.Keys.lastChat,
       conversation.roomName
@@ -226,6 +222,9 @@ class ConversationList extends LitElement {
       CookieService.Keys.lastDescription,
       conversation.description
     );
+    this.activeChatName = conversation.roomName;
+    this.activeDescription = conversation.description;
+    this.updateMessages(conversation);
 
     this.dispatchEvent(
       new CustomEvent("change-conversation", {
