@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { ref, createRef } from "lit/directives/ref.js";
 
 import { resolveMarkdown } from "lit-markdown";
 import { MarkdownService } from "../../../services/markdown-service";
@@ -25,6 +26,7 @@ export class Message extends LitElement {
   constructor() {
     super();
     this.cookie = CookieService.getCookie();
+    this.buttonIconRef = createRef();
   }
 
   static styles = css`
@@ -135,7 +137,6 @@ export class Message extends LitElement {
       overflow-wrap: break-word;
     }
 
-
     .settings-container {
       position: relative;
       background: white;
@@ -186,15 +187,6 @@ export class Message extends LitElement {
       border-radius: 6px;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
-
-    il-popover {
-      opacity: 0;
-      transition: 0.5s;
-    }
-
-    .message-body:hover il-popover {
-      opacity: 1;
-    }
   `;
 
   render() {
@@ -206,7 +198,7 @@ export class Message extends LitElement {
 
       <!-- da refactorizzare in una storia apposita -->
 
-      <div class="message-body">
+      <div class="message-body" @mouseover=${this.showButtonIcon}>
         <!--  message content -->
         <div
           class=${this.message.sender == this.cookie.username
@@ -237,9 +229,11 @@ export class Message extends LitElement {
 
         <il-popover .popupCoords=${{ ...this.getPopupCoords() }}>
           <il-button-icon
+            ${ref(this.buttonIconRef)}
             slot="pop-button"
             content="${IconNames.dotsHorizontal}"
             color="black"
+            style="opacity: 0"
           >
           </il-button-icon>
 
@@ -266,6 +260,10 @@ export class Message extends LitElement {
         </il-popover>
       </div>
     `;
+  }
+
+  showButtonIcon() {
+    this.buttonIconRef.value.style.opacity = "1";
   }
 
   getPopupCoords() {

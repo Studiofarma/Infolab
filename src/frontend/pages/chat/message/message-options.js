@@ -17,36 +17,38 @@ export class MessageOptions extends LitElement {
 
   render() {
     return html`
-      <message-button-option
-        iconName=${IconNames.mdiContentCopy}
-        text="Copia"
-        @click=${this.copyToClipboardHandler}
-      >
-      </message-button-option>
-
-      <message-button-option
-        iconName=${IconNames.mdiShare}
-        text="Inoltra"
-        @click=${this.forwardMessageHandler}
-      >
-      </message-button-option>
-
-      ${when(
-        this.type === "receiver",
-        () => html` <message-button-option
-          iconName=${IconNames.mdiMessage}
-          text="Scrivi in privato"
-          @click=${this.goToChatHandler}
+      <div class=${this.type}>
+        <message-button-option
+          iconName=${IconNames.mdiContentCopy}
+          text="Copia"
+          @click=${this.copyToClipboardHandler}
         >
-        </message-button-option>`
-      )}
+        </message-button-option>
 
-      <message-button-option
-        iconName=${IconNames.mdiDelete}
-        text="Elimina"
-        @click=${this.deleteMessageHandler}
-      >
-      </message-button-option>
+        <message-button-option
+          iconName=${IconNames.mdiShare}
+          text="Inoltra"
+          @click=${this.forwardMessageHandler}
+        >
+        </message-button-option>
+
+        ${when(
+          this.type === "receiver",
+          () => html` <message-button-option
+            iconName=${IconNames.mdiMessage}
+            text="Scrivi in privato"
+            @click=${this.goToChatHandler}
+          >
+          </message-button-option>`
+        )}
+
+        <message-button-option
+          iconName=${IconNames.mdiDelete}
+          text="Elimina"
+          @click=${this.deleteMessageHandler}
+        >
+        </message-button-option>
+      </div>
     `;
   }
 
@@ -76,7 +78,6 @@ export class MessageOptions extends LitElement {
   }
 
   deleteMessageHandler() {
-
     this.chatRef.value.messages.splice(this.index, 1);
     this.chatRef.value.update();
     this.requestUpdate();
