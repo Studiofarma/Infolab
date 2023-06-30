@@ -144,7 +144,16 @@ class ConversationList extends LitElement {
         </div>
         ${when(
           this.isForwardList,
-          () => html`<il-button-text text="Inoltra"></il-button-text>`
+          () =>
+            html`<il-button-text
+              text="Inoltra"
+              @click=${() =>
+                this.dispatchEvent(
+                  new CustomEvent("multiple-forward", {
+                    detail: { list: this.selectedChats },
+                  })
+                )}
+            ></il-button-text>`
         )}
       </div>
     `;

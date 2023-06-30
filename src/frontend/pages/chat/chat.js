@@ -190,6 +190,7 @@ export class Chat extends LitElement {
                         html`<il-conversation-list
                           ${ref(this.forwardListConversationListRef)}
                           isForwardList="true"
+                          @multiple-forward=${this.multipleForward}
                           @change-conversation=${(event) => {
                             this.forwardMessage(event);
                             this.focusOnEditor(event);
@@ -216,6 +217,25 @@ export class Chat extends LitElement {
         </section>
       </main>
     `;
+  }
+
+  multipleForward(event) {
+    this.forwardListRef.value.ilDialogRef.value.isOpened = false;
+
+    const chatMessage = {
+      sender: this.login.username,
+      content: this.messageToForward,
+      type: "CHAT",
+    };
+
+    event.detail.list.forEach((room) => {
+      let chatName = this.activeChatNameFormatter(room);
+      this.stompClient.send(
+        `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
+        {},
+        JSON.stringify(chatMessage)
+      );
+    });
   }
 
   openForwardMenu(event) {
