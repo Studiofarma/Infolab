@@ -143,10 +143,9 @@ class ConversationList extends LitElement {
           </div>
         </div>
         ${when(
-          this.isForwardList,
+          this.isForwardList && this.selectedChats[0] !== undefined,
           () =>
             html`<il-button-text
-              ?isActive=${this.selectedChats[0] !== undefined}
               text="Inoltra"
               @click=${() =>
                 this.dispatchEvent(

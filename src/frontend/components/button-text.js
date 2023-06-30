@@ -20,17 +20,10 @@ export class ButtonText extends LitElement {
       height: 40px;
       cursor: pointer;
     }
-
-    .inactive {
-      background-color: #dbdde0;
-      color: black;
-    }
   `;
 
   render() {
-    return html`
-      <button class="${this.isActive ? "" : "inactive"}">${this.text}</button>
-    `;
+    return html` <button>${this.text}</button> `;
   }
 }
 
