@@ -61,6 +61,7 @@ export class Message extends LitElement {
     }
 
     il-message-menu-popup {
+      z-index: 10;
       opacity: 0;
       transition: 0.5s;
     }

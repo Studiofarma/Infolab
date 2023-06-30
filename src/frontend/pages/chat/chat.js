@@ -19,7 +19,7 @@ import "./input/input-controls";
 import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
-import "./message/messages-list";
+import "./messages-list";
 
 const fullScreenHeight = "100vh";
 
