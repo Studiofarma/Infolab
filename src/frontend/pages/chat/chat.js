@@ -1,5 +1,4 @@
 import { LitElement, html, css } from "lit";
-import { repeat } from "lit/directives/repeat.js";
 import { createRef, ref } from "lit/directives/ref.js";
 
 import SockJS from "sockjs-client";

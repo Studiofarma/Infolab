@@ -21,6 +21,7 @@ export class Message extends LitElement {
     super();
     this.cookie = CookieService.getCookie();
     this.buttonIconRef = createRef();
+    this.messageMenuPopoverRef = createRef();
   }
 
   static styles = css`
@@ -49,114 +50,7 @@ export class Message extends LitElement {
       justify-self: flex-start;
     }
 
-    <<<<<<< HEAD .sender,
-    .receiver {
-      list-style-position: inside;
-      position: relative;
-      min-width: 300px;
-      max-width: 500px;
-      padding: 8px 8px 6px 10px;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-      z-index: 3;
-    }
-
-    .sender .message > p::selection {
-      color: black;
-      background-color: white;
-    }
-
-    input {
-      font-family: inherit;
-    }
-
-    .sender {
-      border-radius: 10px 0 10px 10px;
-      color: black;
-      background-color: #c5e1fe;
-    }
-    .sender::after {
-      content: "";
-      position: absolute;
-      top: 0px;
-      right: -9px;
-      border-top: 10px solid rgb(197, 225, 254);
-      border-left: 0px solid transparent;
-      border-right: 10px solid transparent;
-      z-index: 3;
-    }
-    .sender::before {
-      content: "";
-      position: absolute;
-      top: -1px;
-      right: -13px;
-      border-top: 11px solidrgb(197, 225, 254 / 34%);
-      border-left: 0px solid transparent;
-      border-right: 12px solid transparent;
-      filter: blur(0.8px);
-      z-index: 2;
-    }
-
-    .receiver {
-      border-radius: 0 10px 10px 10px;
-      color: black;
-      background-color: white;
-    }
-    .receiver::after {
-      content: "";
-      position: absolute;
-      top: 0px;
-      left: -9px;
-      border-top: 10px solid white;
-      border-left: 10px solid transparent;
-      border-right: 0px solid transparent;
-      z-index: 3;
-    }
-    .receiver::before {
-      content: "";
-      position: absolute;
-      top: -1px;
-      left: -13px;
-      border-top: 11px solid rgb(209 209 209 / 34%);
-      border-right: 0px solid transparent;
-      border-left: 12px solid transparent;
-      filter: blur(0.8px);
-      z-index: 2;
-    }
-    .receiver-name {
-      font-size: 13px;
-      color: blue;
-    }
-
-    .message {
-      overflow-wrap: break-word;
-    }
-
-    .settings-container {
-      position: relative;
-      background: white;
-      border-radius: 6px;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-      opacity: 0;
-      transition: opacity 0.5s;
-    }
-
-    .message-body:hover .settings-container {
-      opacity: 1;
-    }
-
-    .sender ~ .settings-container il-message-settings {
-      position: absolute;
-      top: 0px;
-      left: -89px;
-    }
-
-    .receiver ~ .settings-container il-message-settings {
-      position: absolute;
-      top: 0px;
-      right: 33px;
-    }
-
-    =======>>>>>>>origin/main .message-timestamp {
+    .message-timestamp {
       text-align: end;
       font-size: 11px;
       color: #1d1e20;
@@ -171,12 +65,7 @@ export class Message extends LitElement {
 
     il-message-menu-popover {
       z-index: 10;
-      opacity: 0;
       transition: 0.5s;
-    }
-
-    .message-body:hover il-message-menu-popover {
-      opacity: 1;
     }
   `;
 
@@ -187,7 +76,11 @@ export class Message extends LitElement {
         this.message.timestamp
       )}
 
-      <div class="message-body">
+      <div
+        class="message-body"
+        @mouseover=${this.showPopover}
+        @mouseleave=${this.hidePopover}
+      >
         <il-message-content
           class=${this.message.sender == this.cookie.username
             ? "sender"
@@ -197,6 +90,8 @@ export class Message extends LitElement {
         ></il-message-content>
 
         <il-message-menu-popover
+          ${ref(this.messageMenuPopoverRef)}
+          style="opacity: 0"
           .chatRef=${this.chatRef}
           .messages=${this.messages}
           .message=${this.message}
@@ -216,6 +111,14 @@ export class Message extends LitElement {
         </il-message-menu-popover>
       </div>
     `;
+  }
+
+  showPopover() {
+    this.messageMenuPopoverRef.value.style.opacity = "1";
+  }
+
+  hidePopover() {
+    this.messageMenuPopoverRef.value.style.opacity = "0";
   }
 
   compareMessageDate(messageDate1, messageDate2) {

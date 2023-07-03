@@ -1,3 +1,5 @@
+import { getCypressElementCoordinates } from "cypress-real-events/getCypressElementCoordinates";
+
 Cypress.Commands.add("getLitElement", (elementPath) => {
   let elementNames = elementPath.includes(",")
     ? elementPath.split(",")
@@ -62,3 +64,19 @@ Cypress.Commands.add(
       .should("have.length", number);
   }
 );
+
+Cypress.Commands.add("sendTestMessages", (number) => {
+  for (let i = 0; i < number; i++)
+    cy.getLitElement("il-app, il-chat, il-input-controls, il-editor")
+      .find("textarea")
+      .type(`test${i + 1}{enter}`);
+});
+
+Cypress.Commands.add("openChat", (name) => {
+  cy.getLitElement(
+    "il-app,il-chat, il-sidebar, il-conversation-list, il-conversation"
+  )
+    .find(".chat-name")
+    .filter(`:contains("${name}")`)
+    .click({ force: true });
+});
