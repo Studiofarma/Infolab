@@ -3,8 +3,11 @@ import { when } from "lit/directives/when.js";
 
 import "../../../components/button-icon";
 import "./editor/editor-formatting-buttons";
+import "../../../components/tooltip";
 
 import { IconNames } from "../../../enums/icon-names";
+
+import { TooltipTexts } from "../../../enums/tooltip-texts";
 
 export class InsertionBar extends LitElement {
   static properties = {
@@ -47,17 +50,24 @@ export class InsertionBar extends LitElement {
     return html`
       <div>
         <div class="formatting-container">
-          <il-button-icon
-            content=${IconNames.emoticon}
-            @click=${this.emojiPickerClick}
-          ></il-button-icon>
-          <il-button-icon
-            content=${IconNames.pencil}
-            @click=${() => {
-              this.bEditor = !this.bEditor;
-              this.editor?.value.focusTextarea();
-            }}
-          ></il-button-icon>
+          <div>
+            <il-button-icon
+              content=${IconNames.emoticon}
+              @click=${this.emojiPickerClick}
+            ></il-button-icon>
+            <il-tooltip>${TooltipTexts.emoticon}</il-tooltip>
+          </div>
+
+          <div>
+            <il-button-icon
+              content=${IconNames.pencil}
+              @click=${() => {
+                this.bEditor = !this.bEditor;
+                this.editor?.value.focusTextarea();
+              }}
+            ></il-button-icon>
+            <il-tooltip>${TooltipTexts.editor}</il-tooltip>
+          </div>
           ${when(
             this.bEditor,
             () =>
@@ -71,6 +81,7 @@ export class InsertionBar extends LitElement {
             @click=${this.sendMessage}
             content=${IconNames.send}
           ></il-button-icon>
+          <il-tooltip>${TooltipTexts.send}</il-tooltip>
         </div>
       </div>
     `;
