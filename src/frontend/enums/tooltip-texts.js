@@ -1,6 +1,6 @@
 export const TooltipTexts = {
   //Editor
-  emoticon: "Emoji",
+  emoticon: "Inserisci emoji",
   editor: "Formatta testo",
   send: "Invia messaggio",
   search: "Cerca nelle conversazioni",
