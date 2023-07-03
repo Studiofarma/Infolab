@@ -38,12 +38,9 @@ export class Tooltip extends LitElement {
   }
 
   static styles = css`
-    * {
-      z-index: 100000;
-    }
-
     :host {
       /* Position fixed to help ensure the tooltip is "on top" */
+      z-index: 100;
       position: fixed;
       border: 1px solid darkgray;
       background: #ccc;
