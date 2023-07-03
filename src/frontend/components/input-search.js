@@ -5,8 +5,6 @@ import { TooltipTexts } from "../enums/tooltip-texts";
 
 import { InputField } from "./input-field";
 
-import "./button-icon";
-import "../components/tooltip";
 import "./button-icon-with-tooltip";
 
 export class InputRicerca extends InputField {

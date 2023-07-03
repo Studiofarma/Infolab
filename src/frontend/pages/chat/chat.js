@@ -13,7 +13,6 @@ import { IconNames } from "../../enums/icon-names";
 import { TooltipTexts } from "../../enums/tooltip-texts";
 
 import "./message/message";
-import "../../components/button-icon";
 import "../../components/icon";
 import "../../components/modal";
 import "./input/input-controls";
@@ -21,7 +20,6 @@ import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
 import "./messages-list";
-import "../../components/tooltip";
 import "../../components/button-icon-with-tooltip";
 
 const fullScreenHeight = "100vh";

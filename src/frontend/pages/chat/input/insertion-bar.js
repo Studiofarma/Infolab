@@ -1,9 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { when } from "lit/directives/when.js";
 
-import "../../../components/button-icon";
 import "./editor/editor-formatting-buttons";
-import "../../../components/tooltip";
 import "../../../components/button-icon-with-tooltip";
 
 import { IconNames } from "../../../enums/icon-names";

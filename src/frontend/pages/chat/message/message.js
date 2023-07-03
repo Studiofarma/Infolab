@@ -2,13 +2,10 @@ import { LitElement, html, css } from "lit";
 
 import { CookieService } from "../../../services/cookie-service";
 
-import { TooltipTexts } from "../../../enums/tooltip-texts";
-
 import "./message-options";
 import "../../../components/popover";
 import "./message-content";
 import "./message-menu-popover";
-import "../../../components/tooltip";
 
 export class Message extends LitElement {
   static properties = {

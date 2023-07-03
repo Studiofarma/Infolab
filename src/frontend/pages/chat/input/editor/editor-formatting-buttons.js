@@ -7,8 +7,6 @@ import { MarkdownService } from "../../../../services/markdown-service";
 import { IconNames } from "../../../../enums/icon-names";
 import { TooltipTexts } from "../../../../enums/tooltip-texts";
 
-import "../../../../components/tooltip";
-
 export class EditorFormattingButtons extends LitElement {
   static properties = {
     editor: undefined,
