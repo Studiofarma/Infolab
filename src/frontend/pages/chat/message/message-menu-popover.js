@@ -31,11 +31,7 @@ export class MessageMenuPopover extends LitElement {
   render() {
     return html`
       <il-popover .popupCoords=${{ ...this.getPopupCoords() }}>
-        <il-button-icon
-          slot="pop-button"
-          content="${IconNames.dotsHorizontal}"
-          color="black"
-        >
+        <il-button-icon slot="pop-button" content="${IconNames.dotsHorizontal}">
         </il-button-icon>
 
         <il-message-options
