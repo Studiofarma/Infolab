@@ -42,29 +42,36 @@ export class Tooltip extends LitElement {
       /* Position fixed to help ensure the tooltip is "on top" */
       z-index: 1100;
       position: fixed;
-      border: 1px solid darkgray;
+      border: none;
       background: #206cf7;
-      color: white;
       padding: 4px;
       border-radius: 4px;
       display: inline-block;
       pointer-events: none;
+      color: white;
 
       /* Animate in */
       opacity: 0;
       transform: scale(0.75);
       transition: opacity, transform;
       transition-duration: 0.33s;
-      transition-delay: 0.75s;
     }
 
     :host([showing]) {
-      opacity: 1;
-      transform: scale(1);
+      animation: animate 0.33s forwards;
+      animation-delay: 0.75s;
     }
 
-    slot {
-      padding: 4px;
+    @keyframes animate {
+      from {
+        opacity: 0;
+        transform: scale(0.75);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
   `;
 
