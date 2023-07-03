@@ -40,7 +40,7 @@ export class Tooltip extends LitElement {
   static styles = css`
     :host {
       /* Position fixed to help ensure the tooltip is "on top" */
-      z-index: 100;
+      z-index: 1100;
       position: fixed;
       border: 1px solid darkgray;
       background: #206cf7;
@@ -55,6 +55,7 @@ export class Tooltip extends LitElement {
       transform: scale(0.75);
       transition: opacity, transform;
       transition-duration: 0.33s;
+      transition-delay: 0.75s;
     }
 
     :host([showing]) {
