@@ -134,7 +134,7 @@ export class Chat extends LitElement {
       margin-top: auto;
     }
 
-    .scroll-button {
+    il-button-icon-with-tooltip {
       z-index: 9999;
       position: absolute;
       right: 20px;
@@ -191,7 +191,6 @@ export class Chat extends LitElement {
                   <il-button-icon-with-tooltip
                     ${ref(this.scrollButtonRef)}
                     style="bottom: 120px"
-                    class="scroll-button"
                     @click="${this.scrollToBottom}"
                     .content=${IconNames.scrollDownArrow}
                     .tooltipText=${TooltipTexts.scrollToBottom}

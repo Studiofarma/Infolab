@@ -11,9 +11,12 @@ export class ButtonIconWithTooltip extends LitElement {
   };
 
   static styles = css`
+    :host {
+      box-shadow: inherit;
+    }
+
     div {
       background-color: inherit;
-      box-shadow: inherit;
       border-radius: inherit;
     }
   `;
