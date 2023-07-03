@@ -23,10 +23,6 @@ export class MessageButtonOption extends LitElement {
     div:hover {
       background-color: #dfd8d8;
     }
-
-    il-icon {
-      color: #206cf7;
-    }
   `;
 
   render() {
