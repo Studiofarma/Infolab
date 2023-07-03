@@ -3,6 +3,8 @@ import { html, css } from "lit";
 import { IconNames } from "../enums/icon-names";
 import { InputField } from "./input-field";
 import "./button-icon";
+import { TooltipTexts } from "../enums/tooltip-texts";
+import { ref, createRef } from "lit/directives/ref.js";
 
 export class InputRicerca extends InputField {
   static properties = {
@@ -12,6 +14,7 @@ export class InputRicerca extends InputField {
   constructor() {
     super();
     this.isFocus = false;
+    this.inputRef = createRef();
   }
 
   static styles = [
@@ -46,6 +49,14 @@ export class InputRicerca extends InputField {
       il-button-icon {
         padding: 5px;
       }
+
+      .visible {
+        visibility: visible;
+      }
+
+      .hidden {
+        visibility: hidden;
+      }
     `,
   ];
 
@@ -53,6 +64,7 @@ export class InputRicerca extends InputField {
     return html`
       <div class=${this.isFocus ? "focused" : "blurred"}>
         <input
+          ${ref(this.inputRef)}
           placeholder="${this.placeholder}"
           @input="${(e) => {
             this.search();
@@ -61,13 +73,18 @@ export class InputRicerca extends InputField {
           @focus="${this.toggleFocus}"
           @blur=${this.toggleFocus}
         />
-        <il-button-icon
-          @click=${() => {
-            this.clear();
-            this.search();
-          }}
-          content=${this.value !== "" ? IconNames.close : IconNames.magnify}
-        ></il-button-icon>
+        <span class="plain">
+          <il-button-icon
+            @click=${() => {
+              this.clear();
+              this.search();
+            }}
+            content=${this.value !== "" ? IconNames.close : IconNames.magnify}
+          ></il-button-icon>
+          <il-tooltip class=${this.inputRef.value?.value ? "visible" : "hidden"}
+            >${TooltipTexts.clearButton}</il-tooltip
+          >
+        </span>
       </div>
     `;
   }
