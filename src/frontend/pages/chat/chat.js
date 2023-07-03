@@ -182,7 +182,7 @@ export class Chat extends LitElement {
 
                   <il-modal
                     theme="forward-list"
-                    @modal-closed=${this.requestUpdate}
+                    @modal-closed=${() => this.requestUpdate()}
                     ${ref(this.forwardListRef)}
                     >${when(
                       this.forwardListRef.value?.ilDialogRef.value.isOpened,
