@@ -43,7 +43,8 @@ export class Tooltip extends LitElement {
       z-index: 100;
       position: fixed;
       border: 1px solid darkgray;
-      background: #ccc;
+      background: #206cf7;
+      color: white;
       padding: 4px;
       border-radius: 4px;
       display: inline-block;
@@ -59,6 +60,10 @@ export class Tooltip extends LitElement {
     :host([showing]) {
       opacity: 1;
       transform: scale(1);
+    }
+
+    slot {
+      padding: 4px;
     }
   `;
 
