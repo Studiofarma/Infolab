@@ -17,6 +17,7 @@ export class MessageButtonOption extends LitElement {
       cursor: pointer;
       white-space: nowrap;
       transition: background 0.5s;
+      color: #206cf7;
     }
 
     div:hover {
