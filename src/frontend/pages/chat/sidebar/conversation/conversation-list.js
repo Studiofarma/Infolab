@@ -30,6 +30,7 @@ class ConversationList extends LitElement {
     isForwardList: false,
     selectedChats: {},
     isOpen: false,
+    lastSlectedConversation: {},
   };
 
   constructor() {
@@ -143,14 +144,17 @@ class ConversationList extends LitElement {
           </div>
         </div>
         ${when(
-          this.isForwardList && this.selectedChats[0] !== undefined,
+          this.isForwardList && this.selectedChats.length != 0,
           () =>
             html`<il-button-text
               text="Inoltra"
               @click=${() =>
                 this.dispatchEvent(
                   new CustomEvent("multiple-forward", {
-                    detail: { list: this.selectedChats },
+                    detail: {
+                      list: this.selectedChats,
+                      conversation: this.lastSlectedConversation,
+                    },
                   })
                 )}
             ></il-button-text>`
@@ -432,6 +436,8 @@ class ConversationList extends LitElement {
 
   handleClick(e, conversation) {
     if (!this.isForwardList) this.changeRoom(e, conversation);
+
+    this.lastSlectedConversation = conversation;
     this.selectConversation(e);
   }
 
