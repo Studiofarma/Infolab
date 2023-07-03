@@ -3,6 +3,8 @@ import { ref, createRef } from "lit/directives/ref.js";
 
 import "./dialog.js";
 
+const esc = "Escape";
+
 export class Modal extends LitElement {
   static properties = {
     closeByBackdropClick: { type: Boolean },
@@ -15,6 +17,7 @@ export class Modal extends LitElement {
     this.closeByBackdropClick = true;
     this.theme = "";
     this.ilDialogRef = createRef();
+    document.addEventListener("keydown", (e) => this.onKeyDown(e));
   }
 
   render() {
@@ -30,6 +33,10 @@ export class Modal extends LitElement {
     `;
   }
 
+  onKeyDown(e) {
+    if (e.key == esc) this.ilDialogRef.value.isOpened = false;
+  }
+
   isClickOuter(event) {
     if (event.detail.x < 0) return true;
     if (event.detail.x > this.ilDialogRef.value.dialogRef.value.offsetWidth)
@@ -42,8 +49,10 @@ export class Modal extends LitElement {
   }
 
   handleClick(event) {
-    if (this.closeByBackdropClick && this.isClickOuter(event))
+    if (this.closeByBackdropClick && this.isClickOuter(event)) {
+      this.dispatchEvent(new CustomEvent("modal-closed"));
       this.ilDialogRef.value.isOpened = false;
+    }
   }
 }
 

@@ -1,15 +1,19 @@
 import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
+import { when } from "lit/directives/when.js";
 
 import { MarkdownService } from "../../../../services/markdown-service";
 import { CookieService } from "../../../../services/cookie-service";
 
 import "../../../../components/icon";
+import "../../../../components/button-icon";
 import { IconNames } from "../../../../enums/icon-names";
 
 class Conversation extends LitElement {
   static properties = {
     chat: {},
+    isSelectable: false,
+    isSelected: false,
   };
 
   static styles = css`
@@ -25,6 +29,7 @@ class Conversation extends LitElement {
       padding: 12px 12px;
       cursor: pointer;
       transition: 0.5s;
+      width: 100%;
     }
 
     .date-box {
@@ -83,6 +88,10 @@ class Conversation extends LitElement {
     .chat-name {
       color: black;
     }
+
+    il-button-icon {
+      padding-top: 10px;
+    }
   `;
 
   render() {
@@ -93,8 +102,22 @@ class Conversation extends LitElement {
     }
 
     return html`
-      <div class="chat-box">
+      <div
+        class="chat-box"
+        @click=${() => {
+          this.isSelected = !this.isSelected;
+          this.dispatchEvent(
+            new CustomEvent("clicked", {
+              detail: {
+                room: this.chat.roomName,
+                add: this.isSelected,
+              },
+            })
+          );
+        }}
+      >
         <il-avatar
+          .selected=${this.isSelected && this.isSelectable}
           .avatarLink=${this.chat.avatarLink}
           .name=${this.chat.description}
           .id=${this.chat.id}

@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { repeat } from "lit/directives/repeat.js";
+import { when } from "lit/directives/when.js";
 import { createRef, ref } from "lit/directives/ref.js";
 
 import SockJS from "sockjs-client";
@@ -62,6 +63,7 @@ export class Chat extends LitElement {
     });
 
     // Refs
+    this.forwardListConversationListRef = createRef();
     this.forwardListRef = createRef();
     this.sidebarRef = createRef();
     this.scrollButtonRef = createRef();
@@ -142,7 +144,7 @@ export class Chat extends LitElement {
       padding: 2px;
       background-color: #ffffff;
       color: white;
-      opacity: 0;
+      visibility: hidden;
       transition: opacity 0.2s ease-in-out;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
@@ -179,13 +181,23 @@ export class Chat extends LitElement {
                     @go-to-chat=${this.goToChat}
                   ></il-messages-list>
 
-                  <il-modal theme="forward-list" ${ref(this.forwardListRef)}>
-                    <il-conversation-list
-                      @change-conversation=${(event) => {
-                        this.forwardMessage(event);
-                        this.focusOnEditor(event);
-                      }}
-                    ></il-conversation-list>
+                  <il-modal
+                    theme="forward-list"
+                    @modal-closed=${() => this.requestUpdate()}
+                    ${ref(this.forwardListRef)}
+                    >${when(
+                      this.forwardListRef.value?.ilDialogRef.value.isOpened,
+                      () =>
+                        html`<il-conversation-list
+                          ${ref(this.forwardListConversationListRef)}
+                          isForwardList="true"
+                          @multiple-forward=${this.multipleForward}
+                          @change-conversation=${(event) => {
+                            this.forwardMessage(event);
+                            this.focusOnEditor(event);
+                          }}
+                        ></il-conversation-list>`
+                    )}
                   </il-modal>
 
                   <il-button-icon-with-tooltip
@@ -208,9 +220,35 @@ export class Chat extends LitElement {
     `;
   }
 
+  multipleForward(event) {
+    if (event.detail.list[0] == undefined) return;
+
+    if (event.detail.list.length == 1) {
+      this.forwardMessage(event);
+    }
+
+    this.forwardListRef.value.ilDialogRef.value.isOpened = false;
+
+    const chatMessage = {
+      sender: this.login.username,
+      content: this.messageToForward,
+      type: "CHAT",
+    };
+
+    event.detail.list.forEach((room) => {
+      let chatName = this.activeChatNameFormatter(room);
+      this.stompClient.send(
+        `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
+        {},
+        JSON.stringify(chatMessage)
+      );
+    });
+  }
+
   openForwardMenu(event) {
     this.messageToForward = event.detail.messageToForward;
     this.forwardListRef.value.ilDialogRef.value.isOpened = true;
+    this.requestUpdate();
   }
 
   forwardMessage(event) {
@@ -228,6 +266,8 @@ export class Chat extends LitElement {
 
     // invio il messaggio
     this.sendMessage({ detail: { message: this.messageToForward } });
+
+    this.requestUpdate();
   }
 
   goToChat(event) {
@@ -336,10 +376,11 @@ export class Chat extends LitElement {
 
   manageScrollButtonVisility() {
     if (this.checkScrolledToBottom()) {
-      this.scrollButtonRef.value.style.opacity = "0";
+      this.scrollButtonRef.value.style.visibility = "hidden";
       return;
     }
-    this.scrollButtonRef.value.style.opacity = "1";
+
+    this.scrollButtonRef.value.style.visibility = "visible";
   }
 
   checkScrolledToBottom() {
