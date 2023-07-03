@@ -143,7 +143,7 @@ export class Chat extends LitElement {
       padding: 2px;
       background-color: #ffffff;
       color: white;
-      opacity: 0;
+      visibility: hidden;
       transition: opacity 0.2s ease-in-out;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
@@ -375,10 +375,11 @@ export class Chat extends LitElement {
 
   manageScrollButtonVisility() {
     if (this.checkScrolledToBottom()) {
-      this.scrollButtonRef.value.style.opacity = "0";
+      this.scrollButtonRef.value.style.visibility = "hidden";
       return;
     }
-    this.scrollButtonRef.value.style.opacity = "1";
+
+    this.scrollButtonRef.value.style.visibility = "visible";
   }
 
   checkScrolledToBottom() {
