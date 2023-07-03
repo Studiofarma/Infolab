@@ -382,6 +382,7 @@ class ConversationList extends LitElement {
         conversation.roomName == this.activeChatName
       ) {
         return html`<il-conversation
+          .userList=${this.usersList}
           @selected=${this.selectConversation}
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}

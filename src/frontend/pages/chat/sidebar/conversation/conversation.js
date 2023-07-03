@@ -1,6 +1,5 @@
 import { LitElement, html, css } from "lit";
 import { resolveMarkdown } from "lit-markdown";
-import { when } from "lit/directives/when.js";
 
 import { MarkdownService } from "../../../../services/markdown-service";
 import { CookieService } from "../../../../services/cookie-service";
@@ -14,6 +13,7 @@ class Conversation extends LitElement {
     chat: {},
     isSelectable: false,
     isSelected: false,
+    userList: [],
   };
 
   static styles = css`
@@ -126,7 +126,7 @@ class Conversation extends LitElement {
           <p class="chat-name">${this.chat.description}</p>
           <p class="last-message">
             ${this.lastMessageTextFormatter(
-              this.chat.lastMessage.sender,
+              this.getUserDescription(this.chat.lastMessage.sender),
               this.chat.lastMessage.content
             )}
           </p>
@@ -199,6 +199,15 @@ class Conversation extends LitElement {
     }
 
     return "Date not available";
+  }
+
+  getUserDescription(userName) {
+    if (this.userList == undefined) return "";
+
+    let userIndex = this.userList.findIndex((user) => user.name == userName);
+    if (userIndex < 0) return;
+    let user = this.userList[userIndex];
+    return user?.description;
   }
 
   lastMessageTextFormatter(sender, message) {
