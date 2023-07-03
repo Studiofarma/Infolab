@@ -17,12 +17,12 @@ export class Modal extends LitElement {
     this.closeByBackdropClick = true;
     this.theme = "";
     this.ilDialogRef = createRef();
+    document.addEventListener("keydown", (e) => this.onKeyDown(e));
   }
 
   render() {
     return html`
       <il-dialog
-        @keydown=${this.onKeyDown}
         type="modal"
         theme=${this.theme}
         ${ref(this.ilDialogRef)}
