@@ -15,4 +15,8 @@ export const TooltipTexts = {
 
   //Search bar
   clearButton: "Cancella ricerca",
+
+  //Chat
+  scrollToBottom: "Vai in fondo",
+  popoverOptionsMenu: "Opzioni",
 };

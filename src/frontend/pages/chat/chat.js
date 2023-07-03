@@ -10,6 +10,7 @@ import { CookieService } from "../../services/cookie-service";
 import { MarkdownService } from "../../services/markdown-service";
 
 import { IconNames } from "../../enums/icon-names";
+import { TooltipTexts } from "../../enums/tooltip-texts";
 
 import "./message/message";
 import "../../components/button-icon";
@@ -20,6 +21,7 @@ import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
 import "./messages-list";
+import "../../components/tooltip";
 
 const fullScreenHeight = "100vh";
 
@@ -187,13 +189,16 @@ export class Chat extends LitElement {
                     ></il-conversation-list>
                   </il-modal>
 
-                  <il-button-icon
-                    ${ref(this.scrollButtonRef)}
-                    style="bottom: 120px"
-                    class="scroll-button"
-                    @click="${this.scrollToBottom}"
-                    content="${IconNames.scrollDownArrow}"
-                  ></il-button-icon>
+                  <div>
+                    <il-button-icon
+                      ${ref(this.scrollButtonRef)}
+                      style="bottom: 120px"
+                      class="scroll-button"
+                      @click="${this.scrollToBottom}"
+                      content="${IconNames.scrollDownArrow}"
+                    ></il-button-icon>
+                    <il-tooltip>${TooltipTexts.scrollToBottom}</il-tooltip>
+                  </div>
 
                   <il-input-controls
                     ${ref(this.inputControlsRef)}

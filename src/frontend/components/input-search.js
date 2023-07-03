@@ -1,10 +1,13 @@
 import { html, css } from "lit";
+import { ref, createRef } from "lit/directives/ref.js";
 
 import { IconNames } from "../enums/icon-names";
-import { InputField } from "./input-field";
-import "./button-icon";
 import { TooltipTexts } from "../enums/tooltip-texts";
-import { ref, createRef } from "lit/directives/ref.js";
+
+import { InputField } from "./input-field";
+
+import "./button-icon";
+import "../components/tooltip";
 
 export class InputRicerca extends InputField {
   static properties = {

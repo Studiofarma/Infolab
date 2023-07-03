@@ -2,10 +2,13 @@ import { LitElement, html, css } from "lit";
 
 import { CookieService } from "../../../services/cookie-service";
 
+import { TooltipTexts } from "../../../enums/tooltip-texts";
+
 import "./message-options";
 import "../../../components/popover";
 import "./message-content";
 import "./message-menu-popover";
+import "../../../components/tooltip";
 
 export class Message extends LitElement {
   static properties = {
@@ -87,24 +90,27 @@ export class Message extends LitElement {
           .activeChatName=${this.activeChatName}
         ></il-message-content>
 
-        <il-message-menu-popover
-          .chatRef=${this.chatRef}
-          .messages=${this.messages}
-          .message=${this.message}
-          .index=${this.index}
-          .activeChatName=${this.activeChatName}
-          @forward-message=${(event) => {
-            this.dispatchEvent(
-              new CustomEvent(event.type, { detail: event.detail })
-            );
-          }}
-          @go-to-chat=${(event) => {
-            this.dispatchEvent(
-              new CustomEvent(event.type, { detail: event.detail })
-            );
-          }}
-        >
-        </il-message-menu-popover>
+        <div>
+          <il-message-menu-popover
+            .chatRef=${this.chatRef}
+            .messages=${this.messages}
+            .message=${this.message}
+            .index=${this.index}
+            .activeChatName=${this.activeChatName}
+            @forward-message=${(event) => {
+              this.dispatchEvent(
+                new CustomEvent(event.type, { detail: event.detail })
+              );
+            }}
+            @go-to-chat=${(event) => {
+              this.dispatchEvent(
+                new CustomEvent(event.type, { detail: event.detail })
+              );
+            }}
+          >
+          </il-message-menu-popover>
+          <il-tooltip>${TooltipTexts.popoverOptionsMenu}</il-tooltip>
+        </div>
       </div>
     `;
   }
