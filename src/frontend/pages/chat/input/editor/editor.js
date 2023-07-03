@@ -48,7 +48,7 @@ class Editor extends LitElement {
     return html`
       <link
         rel="stylesheet"
-        href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
+        href="https://cdn.quilljs.com/1.3.6/quill.bubble.css"
       />
 
       <div id="editor-container" ${ref(this.quillEditorRef)}></div>
@@ -101,61 +101,61 @@ class Editor extends LitElement {
         ],
       },
       placeholder: "Compose an epic...",
-      theme: "snow",
+      theme: "bubble",
     });
 
-    const normalizeNative = (nativeRange) => {
-      // document.getSelection model has properties startContainer and endContainer
-      // shadow.getSelection model has baseNode and focusNode
-      // Unify formats to always look like document.getSelection
+    // const normalizeNative = (nativeRange) => {
+    //   // document.getSelection model has properties startContainer and endContainer
+    //   // shadow.getSelection model has baseNode and focusNode
+    //   // Unify formats to always look like document.getSelection
 
-      if (nativeRange) {
-        const range = nativeRange;
+    //   if (nativeRange) {
+    //     const range = nativeRange;
 
-        if (range.baseNode) {
-          range.startContainer = nativeRange.baseNode;
-          range.endContainer = nativeRange.focusNode;
-          range.startOffset = nativeRange.baseOffset;
-          range.endOffset = nativeRange.focusOffset;
+    //     if (range.baseNode) {
+    //       range.startContainer = nativeRange.baseNode;
+    //       range.endContainer = nativeRange.focusNode;
+    //       range.startOffset = nativeRange.baseOffset;
+    //       range.endOffset = nativeRange.focusOffset;
 
-          if (range.endOffset < range.startOffset) {
-            range.startContainer = nativeRange.focusNode;
-            range.endContainer = nativeRange.baseNode;
-            range.startOffset = nativeRange.focusOffset;
-            range.endOffset = nativeRange.baseOffset;
-          }
-        }
+    //       if (range.endOffset < range.startOffset) {
+    //         range.startContainer = nativeRange.focusNode;
+    //         range.endContainer = nativeRange.baseNode;
+    //         range.startOffset = nativeRange.focusOffset;
+    //         range.endOffset = nativeRange.baseOffset;
+    //       }
+    //     }
 
-        if (range.startContainer) {
-          return {
-            start: { node: range.startContainer, offset: range.startOffset },
-            end: { node: range.endContainer, offset: range.endOffset },
-            native: range,
-          };
-        }
-      }
+    //     if (range.startContainer) {
+    //       return {
+    //         start: { node: range.startContainer, offset: range.startOffset },
+    //         end: { node: range.endContainer, offset: range.endOffset },
+    //         native: range,
+    //       };
+    //     }
+    //   }
 
-      return null;
-    };
+    //   return null;
+    // };
 
-    // Hack Quill and replace document.getSelection with shadow.getSelection
+    // // Hack Quill and replace document.getSelection with shadow.getSelection
 
-    this.quill.selection.getNativeRange = () => {
-      const dom = this.quill.root.getRootNode();
-      const selection = dom.getSelection();
-      const range = normalizeNative(selection);
+    // this.quill.selection.getNativeRange = () => {
+    //   const dom = this.quill.root.getRootNode();
+    //   const selection = dom.getSelection();
+    //   const range = normalizeNative(selection);
 
-      return range;
-    };
+    //   return range;
+    // };
 
-    // Subscribe to selection change separately,
-    // because emitter in Quill doesn't catch this event in Shadow DOM
+    // // Subscribe to selection change separately,
+    // // because emitter in Quill doesn't catch this event in Shadow DOM
 
-    document.addEventListener("selectionchange", (...args) => {
-      // Update selection and some other properties
+    // document.addEventListener("selectionchange", (...args) => {
+    //   // Update selection and some other properties
 
-      this.quill.selection.update();
-    });
+    //   this.quill.selection.update();
+    // });
 
     this.quill.on("text-change", () => {
       this.textChanged();
