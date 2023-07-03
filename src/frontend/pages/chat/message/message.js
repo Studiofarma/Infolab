@@ -1,19 +1,13 @@
 import { LitElement, html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
-import { resolveMarkdown } from "lit-markdown";
-import { MarkdownService } from "../../../services/markdown-service";
-
 import { CookieService } from "../../../services/cookie-service";
-
-import { IconNames } from "../../../enums/icon-names";
 
 import "./message-options";
 import "../../../components/popover";
+import "./message-content";
+import "./message-menu-popover";
 
-const menuOptionLeft = "-73px";
-const menuOptionRight = "33px";
-const lastMenuOptionTop = "-86px";
 export class Message extends LitElement {
   static properties = {
     messages: { type: Array },
@@ -55,7 +49,7 @@ export class Message extends LitElement {
       justify-self: flex-start;
     }
 
-    .sender,
+    <<<<<<< HEAD .sender,
     .receiver {
       list-style-position: inside;
       position: relative;
@@ -162,7 +156,7 @@ export class Message extends LitElement {
       right: 33px;
     }
 
-    .message-timestamp {
+    =======>>>>>>>origin/main .message-timestamp {
       text-align: end;
       font-size: 11px;
       color: #1d1e20;
@@ -175,17 +169,14 @@ export class Message extends LitElement {
       background-color: rgb(221, 221, 221);
     }
 
-    .message a[href] {
-      color: blue;
-      text-underline-position: below;
-      text-underline-offset: 2px;
-      transition: color 0.5s;
+    il-message-menu-popover {
+      z-index: 10;
+      opacity: 0;
+      transition: 0.5s;
     }
 
-    il-button-icon {
-      background-color: white;
-      border-radius: 6px;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    .message-body:hover il-message-menu-popover {
+      opacity: 1;
     }
   `;
 
@@ -196,86 +187,35 @@ export class Message extends LitElement {
         this.message.timestamp
       )}
 
-      <!-- da refactorizzare in una storia apposita -->
-
-      <div class="message-body" @mouseover=${this.showButtonIcon}>
-        <!--  message content -->
-        <div
+      <div class="message-body">
+        <il-message-content
           class=${this.message.sender == this.cookie.username
             ? "sender"
             : "receiver"}
+          .message=${this.message}
+          .activeChatName=${this.activeChatName}
+        ></il-message-content>
+
+        <il-message-menu-popover
+          .chatRef=${this.chatRef}
+          .messages=${this.messages}
+          .message=${this.message}
+          .index=${this.index}
+          .activeChatName=${this.activeChatName}
+          @forward-message=${(event) => {
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            );
+          }}
+          @go-to-chat=${(event) => {
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            );
+          }}
         >
-          ${this.activeChatName.indexOf(this.cookie.username) === -1
-            ? html` <p class="receiver-name">
-                ${this.message.sender != this.cookie.username
-                  ? this.message.sender
-                  : ""}
-              </p>`
-            : html``}
-          <p class="message">
-            ${resolveMarkdown(
-              MarkdownService.parseMarkdown(this.message.content)
-            )}
-          </p>
-          <p class="message-timestamp">
-            ${new Date(this.message.timestamp).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </p>
-        </div>
-
-        <!-- end -->
-
-        <il-popover .popupCoords=${{ ...this.getPopupCoords() }}>
-          <il-button-icon
-            ${ref(this.buttonIconRef)}
-            slot="pop-button"
-            content="${IconNames.dotsHorizontal}"
-            color="black"
-            style="opacity: 0"
-          >
-          </il-button-icon>
-
-          <il-message-options
-            slot="popup"
-            .chatRef=${this.chatRef}
-            .message=${this.message}
-            .cookie=${this.cookie}
-            .index=${this.index}
-            .room=${this.activeChatName}
-            .type=${this.message.sender == this.cookie.username
-              ? "sender"
-              : "receiver"}
-            @forward-message=${(event) =>
-              this.dispatchEvent(
-                new CustomEvent(event.type, { detail: event.detail })
-              )}
-            @go-to-chat=${(event) =>
-              this.dispatchEvent(
-                new CustomEvent(event.type, { detail: event.detail })
-              )}
-          >
-          </il-message-options>
-        </il-popover>
+        </il-message-menu-popover>
       </div>
     `;
-  }
-
-  showButtonIcon() {
-    this.buttonIconRef.value.style.opacity = "1";
-  }
-
-  getPopupCoords() {
-    if (this.index === this.messages.length - 1 && this.messages.length !== 1) {
-      return this.message.sender == this.cookie.username
-        ? { top: lastMenuOptionTop, left: menuOptionLeft }
-        : { top: lastMenuOptionTop, right: menuOptionRight };
-    }
-
-    return this.message.sender == this.cookie.username
-      ? { top: "0px", left: menuOptionLeft }
-      : { top: "0px", right: menuOptionRight };
   }
 
   compareMessageDate(messageDate1, messageDate2) {

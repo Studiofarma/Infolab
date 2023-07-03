@@ -19,6 +19,7 @@ import "./input/input-controls";
 import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
+import "./messages-list";
 
 const fullScreenHeight = "100vh";
 
@@ -65,6 +66,7 @@ export class Chat extends LitElement {
     this.scrollButtonRef = createRef();
     this.messageBoxRef = createRef();
     this.inputControlsRef = createRef();
+    this.messagesListRef = createRef();
   }
 
   connectedCallback() {
@@ -131,17 +133,6 @@ export class Chat extends LitElement {
       margin-top: auto;
     }
 
-    .message-box {
-      list-style-type: none;
-      display: grid;
-      grid-auto-rows: max-content;
-      gap: 30px;
-      width: 100%;
-      overflow-y: auto;
-      padding: 20px;
-      margin-top: 71px;
-    }
-
     .scroll-button {
       z-index: 9999;
       position: absolute;
@@ -153,26 +144,6 @@ export class Chat extends LitElement {
       opacity: 0;
       transition: opacity 0.2s ease-in-out;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-    }
-
-    .message-box::-webkit-scrollbar {
-      width: 7px;
-    }
-
-    .message-box::-webkit-scrollbar-track {
-      background-color: none;
-    }
-
-    .message-box::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      background-color: #206cf7;
-      min-height: 40px;
-    }
-
-    .message-box > il-message {
-      display: grid;
-      flex-direction: column;
-      max-width: 100%;
     }
   `;
 
@@ -195,31 +166,17 @@ export class Chat extends LitElement {
               userName=${this.login.username}
               activeDescription=${this.activeDescription ?? ""}
             ></il-chat-header>
-
             ${this.activeChatName !== ""
-              ? html` <ul
-                    ${ref(this.messageBoxRef)}
-                    @scroll="${this.manageScrollButtonVisility}"
-                    class="message-box"
-                    style="height: calc(${fullScreenHeight} - 179px);"
-                    ${ref(this.messageBoxRef)}
-                  >
-                    ${repeat(
-                      this.messages,
-                      (message) => message.index,
-                      (message, index) =>
-                        html` <il-message
-                          .messages=${this.messages}
-                          .message=${message}
-                          .index=${index}
-                          .activeChatName=${this.activeChatName}
-                          .activeDescription=${this.activeDescription}
-                          .chatRef=${this.chatRef}
-                          @forward-message=${this.openForwardMenu}
-                          @go-to-chat=${this.goToChat}
-                        ></il-message>`
-                    )}
-                  </ul>
+              ? html` <il-messages-list
+                    ${ref(this.messagesListRef)}
+                    @scroll=${this.manageScrollButtonVisility}
+                    .messages=${this.messages}
+                    .activeChatName=${this.activeChatName}
+                    .activeDescription=${this.activeDescription}
+                    .chatRef=${this.chatRef}
+                    @forward-message=${this.openForwardMenu}
+                    @go-to-chat=${this.goToChat}
+                  ></il-messages-list>
 
                   <il-modal theme="forward-list" ${ref(this.forwardListRef)}>
                     <il-conversation-list
@@ -278,14 +235,17 @@ export class Chat extends LitElement {
     let newList =
       this.sidebarRef.value.sidebarListRef.value.newConversationList;
 
-    let index = list.findIndex(
-      (elem) => elem.description === event.detail.description
-    );
+    let index = list.findIndex((elem) => {
+      return this.isUsernameInRoomName(elem.roomName, event.detail.description);
+    });
 
     if (index === -1) {
-      index = newList.findIndex(
-        (elem) => elem.description === event.detail.description + "\n"
-      );
+      index = newList.findIndex((elem) => {
+        return this.isUsernameInRoomName(
+          elem.roomName,
+          event.detail.description
+        );
+      });
 
       this.sidebarRef.value.sidebarListRef.value.activeChatName =
         newList[index].roomName;
@@ -301,6 +261,11 @@ export class Chat extends LitElement {
 
       this.updateMessages({ detail: { conversation: list[index] } });
     }
+  }
+
+  isUsernameInRoomName(roomName, username) {
+    let names = roomName.split("-");
+    return names.includes(username);
   }
 
   focusOnEditor(event) {
@@ -377,29 +342,16 @@ export class Chat extends LitElement {
   }
 
   checkScrolledToBottom() {
-    try {
-      return (
-        this.messageBoxRef.value.scrollHeight -
-          this.messageBoxRef.value.offsetHeight <=
-        this.messageBoxRef.value.scrollTop + 10
-      );
-    } catch (error) {
-      return false;
-    }
+    return this.messagesListRef.value.checkScrolledToBottom();
   }
 
   textEditorResized(event) {
     this.scrollButtonRef.value.style.bottom = `${event.detail.height + 100}px`;
-    this.messageBoxRef.value.style.height = `calc(${fullScreenHeight} - ${
-      event.detail.height + 150
-    }px)`;
+    this.messagesListRef.value.textEditorResized(event);
   }
-  scrollToBottom() {
-    if (this.activeChatName === "") return;
 
-    this.messageBoxRef.value.scrollTo({
-      top: this.messageBoxRef.value.scrollHeight,
-    });
+  scrollToBottom() {
+    this.messagesListRef.value?.scrollToBottom();
   }
 
   onConnect() {
@@ -464,8 +416,8 @@ export class Chat extends LitElement {
     if (message.content !== null) {
       if (this.activeChatName == message.roomName) {
         this.messages.push(message);
+        this.messagesListRef.value.update();
         this.update();
-        this.updated();
       }
 
       this.sidebarRef.value.sidebarListRef.value.setList(message);
