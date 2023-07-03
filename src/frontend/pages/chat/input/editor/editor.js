@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 import "../../../../styles/quill-snow.css";
+import "quill/dist/quill.core.css";
 import Quill from "quill";
 
 const editorDefaultHeight = 54;
@@ -40,19 +41,24 @@ class Editor extends LitElement {
   constructor() {
     super();
     this.quillEditorRef = createRef();
+    this.quillToolbarRef = createRef();
   }
 
   render() {
     return html`
       <link
         rel="stylesheet"
-        href="http://cdn.quilljs.com/1.3.6/quill.snow.css"
+        href="https://cdn.quilljs.com/1.3.6/quill.snow.css"
       />
-      <div
-        id="editor-container"
-        ${ref(this.quillEditorRef)}
-        @keydown=${this.onKeyDown}
-      ></div>
+
+      <div id="editor-container" ${ref(this.quillEditorRef)}></div>
+      <div id="toolbar" ${ref(this.quillToolbarRef)}>
+        <button class="ql-bold">BOLD</button>
+        <button class="ql-italic"></button>
+        <button class="ql-strike"></button>
+        <button class="ql-underline"></button>
+        <button class="ql-link"></button>
+      </div>
     `;
   }
 
@@ -60,13 +66,13 @@ class Editor extends LitElement {
     this.init();
   }
 
-  clearMessage() {
-    this.quill.deleteText(0, this.quill.getLength());
-  }
+  // clearMessage() {
+  //   this.quill.deleteText(0, this.quill.getLength());
+  // }
 
-  focusEditor() {
-    this.quill.focus();
-  }
+  // focusEditor() {
+  //   this.quill.focus();
+  // }
 
   textEditorResize() {
     const editor = this.shadowRoot.querySelector(".ql-editor");
@@ -88,17 +94,74 @@ class Editor extends LitElement {
   init() {
     this.quill = new Quill(this.quillEditorRef.value, {
       modules: {
-        toolbar: "",
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ["bold", "italic", "underline"],
+          ["image", "code-block"],
+        ],
       },
-      placeholder: "Scrivi un messaggio...",
+      placeholder: "Compose an epic...",
       theme: "snow",
+    });
+
+    const normalizeNative = (nativeRange) => {
+      // document.getSelection model has properties startContainer and endContainer
+      // shadow.getSelection model has baseNode and focusNode
+      // Unify formats to always look like document.getSelection
+
+      if (nativeRange) {
+        const range = nativeRange;
+
+        if (range.baseNode) {
+          range.startContainer = nativeRange.baseNode;
+          range.endContainer = nativeRange.focusNode;
+          range.startOffset = nativeRange.baseOffset;
+          range.endOffset = nativeRange.focusOffset;
+
+          if (range.endOffset < range.startOffset) {
+            range.startContainer = nativeRange.focusNode;
+            range.endContainer = nativeRange.baseNode;
+            range.startOffset = nativeRange.focusOffset;
+            range.endOffset = nativeRange.baseOffset;
+          }
+        }
+
+        if (range.startContainer) {
+          return {
+            start: { node: range.startContainer, offset: range.startOffset },
+            end: { node: range.endContainer, offset: range.endOffset },
+            native: range,
+          };
+        }
+      }
+
+      return null;
+    };
+
+    // Hack Quill and replace document.getSelection with shadow.getSelection
+
+    this.quill.selection.getNativeRange = () => {
+      const dom = this.quill.root.getRootNode();
+      const selection = dom.getSelection();
+      const range = normalizeNative(selection);
+
+      return range;
+    };
+
+    // Subscribe to selection change separately,
+    // because emitter in Quill doesn't catch this event in Shadow DOM
+
+    document.addEventListener("selectionchange", (...args) => {
+      // Update selection and some other properties
+
+      this.quill.selection.update();
     });
 
     this.quill.on("text-change", () => {
       this.textChanged();
     });
     this.quill.on("editor-change", () => {
-      this.textChanged;
+      this.textChanged();
     });
 
     this.shadowRoot.querySelector(".ql-editor").style.maxHeight =
@@ -109,14 +172,14 @@ class Editor extends LitElement {
     return this.shadowRoot.querySelector(".ql-editor p").innerHTML;
   }
 
-  onKeyDown(event) {
-    if (event.key === enterKey && !event.shiftKey) {
-      this.enterKeyPressed();
-      event.preventDefault();
-    }
+  // onKeyDown(event) {
+  //   if (event.key === enterKey && !event.shiftKey) {
+  //     this.enterKeyPressed();
+  //     event.preventDefault();
+  //   }
 
-    this.textEditorResize();
-  }
+  //   this.textEditorResize();
+  // }
 
   textChanged() {
     this.dispatchEvent(
@@ -130,9 +193,9 @@ class Editor extends LitElement {
     this.textEditorResize();
   }
 
-  enterKeyPressed() {
-    this.dispatchEvent(new CustomEvent("enter-key-pressed"));
-  }
+  // enterKeyPressed() {
+  //   this.dispatchEvent(new CustomEvent("enter-key-pressed"));
+  // }
 }
 
 window.customElements.define("il-editor", Editor);

@@ -14,7 +14,7 @@ export class EditorFormattingButtons extends LitElement {
     return html`
       <il-formatting-button
         content=${IconNames.bold}
-        @click=${this.insertBold}
+        @click=${() => this.formatText("bold")}
       ></il-formatting-button>
 
       <il-formatting-button
@@ -54,10 +54,13 @@ export class EditorFormattingButtons extends LitElement {
     `;
   }
 
-  insertBold() {
-    const selectedText = this.editor.value.getSelectedText();
-    this.editor.value.insertInTextarea(
-      MarkdownService.insertBold(selectedText)
+  formatText() {
+    const selection = this.editor.value.quill.getSelection();
+
+    this.editor.value.quill.formatText(
+      selection.index,
+      selection.length,
+      "bold"
     );
   }
 
