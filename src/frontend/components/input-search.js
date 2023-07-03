@@ -1,5 +1,4 @@
 import { html, css } from "lit";
-import { ref, createRef } from "lit/directives/ref.js";
 
 import { IconNames } from "../enums/icon-names";
 import { TooltipTexts } from "../enums/tooltip-texts";
@@ -8,6 +7,7 @@ import { InputField } from "./input-field";
 
 import "./button-icon";
 import "../components/tooltip";
+import "./button-icon-with-tooltip";
 
 export class InputRicerca extends InputField {
   static properties = {
@@ -17,7 +17,6 @@ export class InputRicerca extends InputField {
   constructor() {
     super();
     this.isFocus = false;
-    this.inputRef = createRef();
   }
 
   static styles = [
@@ -49,7 +48,7 @@ export class InputRicerca extends InputField {
         overflow: hidden;
       }
 
-      il-button-icon {
+      il-button-icon-with-tooltip {
         padding: 5px;
       }
 
@@ -67,7 +66,6 @@ export class InputRicerca extends InputField {
     return html`
       <div class=${this.isFocus ? "focused" : "blurred"}>
         <input
-          ${ref(this.inputRef)}
           placeholder="${this.placeholder}"
           @input="${(e) => {
             this.search();
@@ -76,18 +74,16 @@ export class InputRicerca extends InputField {
           @focus="${this.toggleFocus}"
           @blur=${this.toggleFocus}
         />
-        <span class="plain">
-          <il-button-icon
-            @click=${() => {
-              this.clear();
-              this.search();
-            }}
-            content=${this.value !== "" ? IconNames.close : IconNames.magnify}
-          ></il-button-icon>
-          <il-tooltip class=${this.inputRef.value?.value ? "visible" : "hidden"}
-            >${TooltipTexts.clearButton}</il-tooltip
-          >
-        </span>
+
+        <il-button-icon-with-tooltip
+          @click=${() => {
+            this.clear();
+            this.search();
+          }}
+          .content=${this.value !== "" ? IconNames.close : IconNames.magnify}
+          .tooltipText=${TooltipTexts.clearButton}
+          .condition=${this.value}
+        ></il-button-icon-with-tooltip>
       </div>
     `;
   }

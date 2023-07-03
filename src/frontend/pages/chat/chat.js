@@ -22,6 +22,7 @@ import "./header/chat-header";
 import "./empty-chat";
 import "./messages-list";
 import "../../components/tooltip";
+import "../../components/button-icon-with-tooltip";
 
 const fullScreenHeight = "100vh";
 
@@ -189,16 +190,14 @@ export class Chat extends LitElement {
                     ></il-conversation-list>
                   </il-modal>
 
-                  <div>
-                    <il-button-icon
-                      ${ref(this.scrollButtonRef)}
-                      style="bottom: 120px"
-                      class="scroll-button"
-                      @click="${this.scrollToBottom}"
-                      content="${IconNames.scrollDownArrow}"
-                    ></il-button-icon>
-                    <il-tooltip>${TooltipTexts.scrollToBottom}</il-tooltip>
-                  </div>
+                  <il-button-icon-with-tooltip
+                    ${ref(this.scrollButtonRef)}
+                    style="bottom: 120px"
+                    class="scroll-button"
+                    @click="${this.scrollToBottom}"
+                    .content=${IconNames.scrollDownArrow}
+                    .tooltipText=${TooltipTexts.scrollToBottom}
+                  ></il-button-icon-with-tooltip>
 
                   <il-input-controls
                     ${ref(this.inputControlsRef)}

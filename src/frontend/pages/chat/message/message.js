@@ -90,27 +90,24 @@ export class Message extends LitElement {
           .activeChatName=${this.activeChatName}
         ></il-message-content>
 
-        <div>
-          <il-message-menu-popover
-            .chatRef=${this.chatRef}
-            .messages=${this.messages}
-            .message=${this.message}
-            .index=${this.index}
-            .activeChatName=${this.activeChatName}
-            @forward-message=${(event) => {
-              this.dispatchEvent(
-                new CustomEvent(event.type, { detail: event.detail })
-              );
-            }}
-            @go-to-chat=${(event) => {
-              this.dispatchEvent(
-                new CustomEvent(event.type, { detail: event.detail })
-              );
-            }}
-          >
-          </il-message-menu-popover>
-          <il-tooltip>${TooltipTexts.popoverOptionsMenu}</il-tooltip>
-        </div>
+        <il-message-menu-popover
+          .chatRef=${this.chatRef}
+          .messages=${this.messages}
+          .message=${this.message}
+          .index=${this.index}
+          .activeChatName=${this.activeChatName}
+          @forward-message=${(event) => {
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            );
+          }}
+          @go-to-chat=${(event) => {
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            );
+          }}
+        >
+        </il-message-menu-popover>
       </div>
     `;
   }

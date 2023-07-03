@@ -4,6 +4,7 @@ import { when } from "lit/directives/when.js";
 import "../../../components/button-icon";
 import "./editor/editor-formatting-buttons";
 import "../../../components/tooltip";
+import "../../../components/button-icon-with-tooltip";
 
 import { IconNames } from "../../../enums/icon-names";
 
@@ -50,24 +51,21 @@ export class InsertionBar extends LitElement {
     return html`
       <div>
         <div class="formatting-container">
-          <div>
-            <il-button-icon
-              content=${IconNames.emoticon}
-              @click=${this.emojiPickerClick}
-            ></il-button-icon>
-            <il-tooltip>${TooltipTexts.emoticon}</il-tooltip>
-          </div>
+          <il-button-icon-with-tooltip
+            @click=${this.emojiPickerClick}
+            .content=${IconNames.emoticon}
+            .tooltipText=${TooltipTexts.emoticon}
+            .condition=${true}
+          ></il-button-icon-with-tooltip>
 
-          <div>
-            <il-button-icon
-              content=${IconNames.pencil}
-              @click=${() => {
-                this.bEditor = !this.bEditor;
-                this.editor?.value.focusTextarea();
-              }}
-            ></il-button-icon>
-            <il-tooltip>${TooltipTexts.editor}</il-tooltip>
-          </div>
+          <il-button-icon-with-tooltip
+            @click=${() => {
+              this.bEditor = !this.bEditor;
+              this.editor?.value.focusTextarea();
+            }}
+            .content=${IconNames.pencil}
+            .tooltipText=${TooltipTexts.editor}
+          ></il-button-icon-with-tooltip>
           ${when(
             this.bEditor,
             () =>
@@ -77,11 +75,11 @@ export class InsertionBar extends LitElement {
           )}
         </div>
         <div id="submitContainer">
-          <il-button-icon
+          <il-button-icon-with-tooltip
             @click=${this.sendMessage}
-            content=${IconNames.send}
-          ></il-button-icon>
-          <il-tooltip>${TooltipTexts.send}</il-tooltip>
+            .content=${IconNames.send}
+            .tooltipText=${TooltipTexts.send}
+          ></il-button-icon-with-tooltip>
         </div>
       </div>
     `;

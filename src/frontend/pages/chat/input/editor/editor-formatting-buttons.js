@@ -16,69 +16,53 @@ export class EditorFormattingButtons extends LitElement {
 
   render() {
     return html`
-      <div>
-        <il-formatting-button
-          content=${IconNames.bold}
-          @click=${this.insertBold}
-        ></il-formatting-button>
-        <il-tooltip>${TooltipTexts.bold}</il-tooltip>
-      </div>
+      <il-button-icon-with-tooltip
+        .content=${IconNames.bold}
+        @click=${this.insertBold}
+        .tooltipText=${TooltipTexts.bold}
+      ></il-button-icon-with-tooltip>
 
-      <div>
-        <il-formatting-button
-          content=${IconNames.italic}
-          @click=${this.insertItalic}
-        ></il-formatting-button>
-        <il-tooltip>${TooltipTexts.italic}</il-tooltip>
-      </div>
+      <il-button-icon-with-tooltip
+        .content=${IconNames.italic}
+        @click=${this.insertItalic}
+        .tooltipText=${TooltipTexts.italic}
+      ></il-button-icon-with-tooltip>
 
-      <div>
-        <il-formatting-button
-          content=${IconNames.strikethrough}
-          @click=${this.insertStrike}
-        ></il-formatting-button>
-        <il-tooltip>${TooltipTexts.strikethrough}</il-tooltip>
-      </div>
+      <il-button-icon-with-tooltip
+        .content=${IconNames.strikethrough}
+        @click=${this.insertStrike}
+        .tooltipText=${TooltipTexts.strikethrough}
+      ></il-button-icon-with-tooltip>
 
-      <div>
-        <il-formatting-button
-          content=${IconNames.link}
-          @click=${this.insertLink}
-        ></il-formatting-button>
-        <il-tooltip>${TooltipTexts.link}</il-tooltip>
-      </div>
+      <il-button-icon-with-tooltip
+        .content=${IconNames.link}
+        @click=${this.insertLink}
+        .tooltipText=${TooltipTexts.link}
+      ></il-button-icon-with-tooltip>
 
-      <div>
-        <il-formatting-button
-          content=${IconNames.minus}
-          @click=${this.insertLine}
-        ></il-formatting-button>
-        <il-tooltip>${TooltipTexts.line}</il-tooltip>
-      </div>
+      <il-button-icon-with-tooltip
+        .content=${IconNames.minus}
+        @click=${this.insertLine}
+        .tooltipText=${TooltipTexts.line}
+      ></il-button-icon-with-tooltip>
 
-      <div>
-        <il-formatting-button
-          content=${IconNames.listBulleted}
-          @click=${this.insertListBulleted}
-        ></il-formatting-button>
-        <il-tooltip>${TooltipTexts.listBulleted}</il-tooltip>
-      </div>
+      <il-button-icon-with-tooltip
+        .content=${IconNames.listBulleted}
+        @click=${this.insertListBulleted}
+        .tooltipText=${TooltipTexts.listBulleted}
+      ></il-button-icon-with-tooltip>
 
-      <div>
-        <il-formatting-button
-          content=${IconNames.listNumbered}
-          @click=${this.insertListNumbered}
-        ></il-formatting-button>
-        <il-tooltip>${TooltipTexts.listNumbered}</il-tooltip>
-      </div>
+      <il-button-icon-with-tooltip
+        .content=${IconNames.listNumbered}
+        @click=${this.insertListNumbered}
+        .tooltipText=${TooltipTexts.listNumbered}
+      ></il-button-icon-with-tooltip>
 
-      <div>
-        <il-formatting-button
-          content=${IconNames.title}
-          @click=${MarkdownService.insertHeading}
-        ></il-formatting-button>
-        <il-tooltip>${TooltipTexts.title}</il-tooltip>
-      </div>
+      <il-button-icon-with-tooltip
+        .content=${IconNames.title}
+        @click=${MarkdownService.insertHeading}
+        .tooltipText=${TooltipTexts.title}
+      ></il-button-icon-with-tooltip>
     `;
   }
 
