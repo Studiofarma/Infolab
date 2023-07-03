@@ -3,6 +3,8 @@ import { ref, createRef } from "lit/directives/ref.js";
 
 import "./dialog.js";
 
+const esc = "Escape";
+
 export class Modal extends LitElement {
   static properties = {
     closeByBackdropClick: { type: Boolean },
@@ -20,6 +22,7 @@ export class Modal extends LitElement {
   render() {
     return html`
       <il-dialog
+        @keydown=${this.onKeyDown}
         type="modal"
         theme=${this.theme}
         ${ref(this.ilDialogRef)}
@@ -28,6 +31,10 @@ export class Modal extends LitElement {
         <slot></slot>
       </il-dialog>
     `;
+  }
+
+  onKeyDown(e) {
+    if (e.key == esc) this.ilDialogRef.value.isOpened = false;
   }
 
   isClickOuter(event) {
