@@ -383,8 +383,7 @@ class ConversationList extends LitElement {
       ) {
         return html`<il-conversation
           @selected=${this.selectConversation}
-          .isSelectable=${this.isForwardList &&
-          this.selectedChats[0] !== undefined}
+          .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
           class=${"conversation " +
           (conversation.roomName == this.activeChatName ||
@@ -417,8 +416,7 @@ class ConversationList extends LitElement {
       let conversation = new ConversationDto(pharmacy);
       return html`<il-conversation
         @selected=${this.selectConversation}
-        .isSelectable=${this.isForwardList &&
-        this.selectedChats[0] !== undefined}
+        .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
         .isSelected=${this.selectedChats.includes(conversation.roomName)}
         class=${"conversation new-conversation " +
         (conversation.roomName == this.activeChatName ||
