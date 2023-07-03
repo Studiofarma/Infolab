@@ -34,7 +34,7 @@ export class MessageMenuPopover extends LitElement {
         <il-button-icon
           slot="pop-button"
           content="${IconNames.dotsHorizontal}"
-          color="black"
+          color="#206cf7"
         >
         </il-button-icon>
 
