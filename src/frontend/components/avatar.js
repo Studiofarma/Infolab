@@ -27,9 +27,9 @@ export class Avatar extends LitElement {
     }
 
     .icon-button {
-      height: 23px;
+      height: 24px;
       width: 23px;
-      border-radius: 25px;
+      border-radius: 23px;
       background-color: white;
       display: flex;
       justify-content: center;
