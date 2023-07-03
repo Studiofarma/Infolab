@@ -379,7 +379,8 @@ class ConversationList extends LitElement {
       ) {
         return html`<il-conversation
           @selected=${this.selectConversation}
-          isSelectable=${this.isForwardList}
+          .isSelectable=${this.isForwardList &&
+          this.selectedChats[0] !== undefined}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
           class=${"conversation " +
           (conversation.roomName == this.activeChatName ||
@@ -390,7 +391,7 @@ class ConversationList extends LitElement {
             ? "selected"
             : ""}
           .chat=${conversation}
-          @clicked=${(event) => this.changeRoom(event, conversation)}
+          @clicked=${(event) => this.handleClick(event, conversation)}
         ></il-conversation>`;
       } else {
         let conversationIndex = this.conversationList.findIndex(
@@ -412,7 +413,8 @@ class ConversationList extends LitElement {
       let conversation = new ConversationDto(pharmacy);
       return html`<il-conversation
         @selected=${this.selectConversation}
-        isSelectable=${this.isForwardList}
+        .isSelectable=${this.isForwardList &&
+        this.selectedChats[0] !== undefined}
         .isSelected=${this.selectedChats.includes(conversation.roomName)}
         class=${"conversation new-conversation " +
         (conversation.roomName == this.activeChatName ||
@@ -423,9 +425,14 @@ class ConversationList extends LitElement {
         id=${conversation.roomName == this.selectedRoom.roomName
           ? "selected"
           : ""}
-        @clicked=${(event) => this.changeRoom(event, conversation)}
+        @clicked=${(event) => this.handleClick(event, conversation)}
       ></il-conversation>`;
     });
+  }
+
+  handleClick(e, conversation) {
+    if (!this.isForwardList) this.changeRoom(e, conversation);
+    this.selectConversation(e);
   }
 
   selectConversation(event) {

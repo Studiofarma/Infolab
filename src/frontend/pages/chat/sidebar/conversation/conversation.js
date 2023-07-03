@@ -32,11 +32,6 @@ class Conversation extends LitElement {
       width: 100%;
     }
 
-    .container {
-      display: flex;
-      align-items: flex-start;
-    }
-
     .date-box {
       margin-left: auto;
       text-align: right;
@@ -95,7 +90,7 @@ class Conversation extends LitElement {
     }
 
     il-button-icon {
-      padding-top: 20px;
+      padding-top: 10px;
     }
   `;
 
@@ -107,62 +102,54 @@ class Conversation extends LitElement {
     }
 
     return html`
-      <div class="container">
-        ${when(
-          this.isSelectable,
-          () =>
-            html`<il-button-icon
-              @click=${() => {
-                this.isSelected = !this.isSelected;
-                this.dispatchEvent(
-                  new CustomEvent("selected", {
-                    detail: { room: this.chat.roomName, add: this.isSelected },
-                  })
-                );
-              }}
-              content=${this.isSelected
-                ? IconNames.checkboxMarked
-                : IconNames.checkboxEmpty}
-            ></il-button-icon>`
-        )}
-        <div
-          class="chat-box"
-          @click=${() => this.dispatchEvent(new CustomEvent("clicked"))}
-        >
-          <il-avatar
-            .avatarLink=${this.chat.avatarLink}
-            .name=${this.chat.description}
-            .id=${this.chat.id}
-          ></il-avatar>
-          <div class="name-box">
-            <p class="chat-name">${this.chat.description}</p>
-            <p class="last-message">
-              ${this.lastMessageTextFormatter(
-                this.chat.lastMessage.sender,
-                this.chat.lastMessage.content
-              )}
-            </p>
-          </div>
-          <div class="date-box">
-            <p
-              class="last-message-timestamp last-message-timestamp ${this.chat
-                .unreadMessages > 0
-                ? "unread"
-                : ""}"
-            >
-              ${this.compareMessageDate(this.chat.lastMessage.timestamp)}
-            </p>
-            <p class="unread-counter">
-              ${this.chat.unreadMessages > 0
-                ? html`
-                    <il-icon
-                      style="display:${this.notificationOpacity};"
-                      name="${this.getUnreadIconName(this.chat.unreadMessages)}"
-                    ></il-icon>
-                  `
-                : html``}
-            </p>
-          </div>
+      <div
+        class="chat-box"
+        @click=${() => {
+          this.isSelected = !this.isSelected;
+          this.dispatchEvent(
+            new CustomEvent("clicked", {
+              detail: {
+                room: this.chat.roomName,
+                add: this.isSelected,
+              },
+            })
+          );
+        }}
+      >
+        <il-avatar
+          .selected=${this.isSelected && this.isSelectable}
+          .avatarLink=${this.chat.avatarLink}
+          .name=${this.chat.description}
+          .id=${this.chat.id}
+        ></il-avatar>
+        <div class="name-box">
+          <p class="chat-name">${this.chat.description}</p>
+          <p class="last-message">
+            ${this.lastMessageTextFormatter(
+              this.chat.lastMessage.sender,
+              this.chat.lastMessage.content
+            )}
+          </p>
+        </div>
+        <div class="date-box">
+          <p
+            class="last-message-timestamp last-message-timestamp ${this.chat
+              .unreadMessages > 0
+              ? "unread"
+              : ""}"
+          >
+            ${this.compareMessageDate(this.chat.lastMessage.timestamp)}
+          </p>
+          <p class="unread-counter">
+            ${this.chat.unreadMessages > 0
+              ? html`
+                  <il-icon
+                    style="display:${this.notificationOpacity};"
+                    name="${this.getUnreadIconName(this.chat.unreadMessages)}"
+                  ></il-icon>
+                `
+              : html``}
+          </p>
         </div>
       </div>
     `;

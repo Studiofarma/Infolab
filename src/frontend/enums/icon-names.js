@@ -32,6 +32,5 @@ export const IconNames = {
   numeric8: "mdiNumeric8Circle",
   numeric9: "mdiNumeric9Circle",
   numericPlus: "mdiNumeric9PlusCircle",
-  checkboxMarked: "mdiCheckboxMarkedOutline",
-  checkboxEmpty: "mdiCheckboxBlankOutline",
+  checkCircle: "mdiCheckCircle",
 };
