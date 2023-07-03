@@ -9,6 +9,8 @@ describe("open chat spec", () => {
     cy.getLitElement(conversationListPath)
       .find(conversation)
       .first()
+      .shadow()
+      .find(".chat-box")
       .click({ force: true });
 
     cy.getCookie("last-description", { domain: "localhost" }).then((cookie) => {
@@ -25,6 +27,8 @@ describe("open chat spec", () => {
     cy.getLitElement(conversationListPath)
       .find(conversation)
       .last()
+      .shadow()
+      .find(".chat-box")
       .click({ force: true });
 
     cy.getCookie("last-description", { domain: "localhost" }).then((cookie) => {
