@@ -16,6 +16,8 @@ const arrowUp = "ArrowUp";
 const arrowDown = "ArrowDown";
 const enter = "Enter";
 
+const noResult = html`<p class="no-result">Nessun risultato</p>`;
+
 class ConversationList extends LitElement {
   static properties = {
     conversationList: { type: Array },
@@ -115,6 +117,11 @@ class ConversationList extends LitElement {
     il-button-text {
       padding-left: 175px;
     }
+
+    .no-result {
+      color: #3d3f41;
+      text-align: center;
+    }
   `;
 
   render() {
@@ -133,11 +140,7 @@ class ConversationList extends LitElement {
             </div>
           </div>
           <div>
-            <p class="separator">
-              ${this.newConversationList.length > 0
-                ? "Nuove conversazioni"
-                : ""}
-            </p>
+            <p class="separator">Nuove conversazioni</p>
             <div class="conversation-list">
               ${this.renderNewConversationList()}
             </div>
@@ -375,6 +378,8 @@ class ConversationList extends LitElement {
       this.conversationList
     );
 
+    if (this.conversationListFiltered.length === 0) return noResult;
+
     return repeat(this.conversationListFiltered, (pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
       if (
@@ -412,6 +417,8 @@ class ConversationList extends LitElement {
     this.newConversationListFiltered = this.filterConversations(
       this.newConversationList
     );
+
+    if (this.newConversationListFiltered.length === 0) return noResult;
 
     return this.newConversationListFiltered.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
