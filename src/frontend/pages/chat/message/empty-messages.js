@@ -22,7 +22,7 @@ export class EmptyMessages extends LitElement {
   render() {
     return html`
       <div>
-        <h1>Conversazione vuota</h1>
+        <h1>Nuova conversazione selezionata</h1>
         <h2>Per iniziare invia un messaggio</h2>
       </div>
     `;
