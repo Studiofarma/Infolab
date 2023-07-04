@@ -222,6 +222,7 @@ export class Chat extends LitElement {
                     ${ref(this.inputControlsRef)}
                     @send-message=${this.sendMessage}
                     @text-editor-resized=${this.textEditorResized}
+                    @confirm-edit=${this.confirmEdit}
                   ></il-input-controls>`
               : html`<il-empty-chat></il-empty-chat>`}
           </div>
@@ -316,10 +317,10 @@ export class Chat extends LitElement {
   }
 
   editMessage(event) {
-    this.inputControlsRef.value?.setEditorTextToEditMessage(
-      event.detail.message
-    );
+    this.inputControlsRef.value?.editMessage(event.detail.message);
   }
+
+  confirmEdit() {}
 
   isUsernameInRoomName(roomName, username) {
     let names = roomName.split("-");

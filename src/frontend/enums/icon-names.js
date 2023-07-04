@@ -1,3 +1,4 @@
+// To add icons search the name at the Material Design Icons website and paste it here.
 export const IconNames = {
   mdiContentCopy: "mdiContentCopy",
   mdiShare: "mdiShare",
@@ -33,4 +34,5 @@ export const IconNames = {
   numeric9: "mdiNumeric9Circle",
   numericPlus: "mdiNumeric9PlusCircle",
   checkCircle: "mdiCheckCircle",
+  check: "mdiCheck",
 };

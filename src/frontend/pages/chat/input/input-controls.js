@@ -16,6 +16,7 @@ export class InputControls extends LitElement {
     isEmojiPickerOpen: false,
     picker: {},
     selectedText: { startingPoint: NaN, endingPoint: NaN },
+    isEditing: { type: Boolean },
   };
 
   constructor() {
@@ -104,7 +105,10 @@ export class InputControls extends LitElement {
             <il-insertion-bar
               @send-message=${this.sendMessage}
               @emoji-picker-click=${this.emojiPickerClick}
+              @confirm-edit=${this.confirmEdit}
+              @cancel-edit=${this.cancelEdit}
               .editor=${this.editorRef}
+              .isEditing=${this.isEditing}
             >
             </il-insertion-bar>
           </div>
@@ -117,6 +121,11 @@ export class InputControls extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  clearMessage() {
+    this.message = "";
+    this.editorRef.value?.clearMessage();
   }
 
   focusEditor() {
@@ -155,16 +164,27 @@ export class InputControls extends LitElement {
         },
       })
     );
-    this.message = "";
-    this.shadowRoot.querySelector("il-editor").clearMessage();
+    this.clearMessage();
   }
 
   updateMessage(event) {
     this.message = event.detail.content;
   }
 
-  setEditorTextToEditMessage(message) {
+  editMessage(message) {
     this.editorRef.value?.setEditorText(message.content);
+    this.isEditing = true;
+  }
+
+  confirmEdit(event) {
+    this.dispatchEvent(new CustomEvent(event.type));
+    this.isEditing = false;
+    this.clearMessage();
+  }
+
+  cancelEdit(event) {
+    this.isEditing = false;
+    this.clearMessage();
   }
 }
 
