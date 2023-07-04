@@ -186,9 +186,7 @@ export class Chat extends LitElement {
                         "info",
                         2000
                       )}
-                    @edit-message=${(event) => {
-                      this.editMessage(event);
-                    }}
+                    @edit-message=${this.editMessage}
                   ></il-messages-list>
 
                   <il-modal

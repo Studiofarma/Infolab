@@ -17,7 +17,7 @@ export class InputControls extends LitElement {
     picker: {},
     selectedText: { startingPoint: NaN, endingPoint: NaN },
     isEditing: { type: Boolean },
-    messageBeingEdited: {},
+    messageBeingEdited: { type: Object },
     indexBeingEdited: { type: Number },
   };
 
