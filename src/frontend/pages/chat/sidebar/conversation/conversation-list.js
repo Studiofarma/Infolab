@@ -138,11 +138,7 @@ class ConversationList extends LitElement {
             </div>
           </div>
           <div>
-            <p class="separator">
-              ${this.newConversationList.length > 0
-                ? "Nuove conversazioni"
-                : ""}
-            </p>
+            <p class="separator">Nuove conversazioni</p>
             <div class="conversation-list">
               ${this.renderNewConversationList()}
             </div>
