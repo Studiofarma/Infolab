@@ -5,7 +5,7 @@ import { TooltipTexts } from "../enums/tooltip-texts";
 
 import { InputField } from "./input-field";
 
-import "./button-icon-with-tooltip";
+import "./button-icon";
 
 export class InputRicerca extends InputField {
   static properties = {
@@ -46,7 +46,7 @@ export class InputRicerca extends InputField {
         overflow: hidden;
       }
 
-      il-button-icon-with-tooltip {
+      il-button-icon {
         padding: 5px;
       }
 
@@ -73,7 +73,7 @@ export class InputRicerca extends InputField {
           @blur=${this.toggleFocus}
         />
 
-        <il-button-icon-with-tooltip
+        <il-button-icon
           @click=${() => {
             this.clear();
             this.search();
@@ -81,7 +81,7 @@ export class InputRicerca extends InputField {
           .content=${this.value !== "" ? IconNames.close : IconNames.magnify}
           .tooltipText=${TooltipTexts.clearButton}
           .condition=${this.value}
-        ></il-button-icon-with-tooltip>
+        ></il-button-icon>
       </div>
     `;
   }

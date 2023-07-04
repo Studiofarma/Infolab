@@ -4,7 +4,7 @@ import { CookieService } from "../../../services/cookie-service";
 import { IconNames } from "../../../enums/icon-names";
 import { TooltipTexts } from "../../../enums/tooltip-texts";
 
-import "../../../components/button-icon-with-tooltip";
+import "../../../components/button-icon";
 
 const menuOptionLeft = "-73px";
 const menuOptionRight = "33px";
@@ -24,7 +24,7 @@ export class MessageMenuPopover extends LitElement {
   }
 
   static styles = css`
-    il-button-icon-with-tooltip {
+    il-button-icon {
       background-color: white;
       border-radius: 6px;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
@@ -34,11 +34,11 @@ export class MessageMenuPopover extends LitElement {
   render() {
     return html`
       <il-popover .popupCoords=${{ ...this.getPopupCoords() }}>
-        <il-button-icon-with-tooltip
+        <il-button-icon
           slot="pop-button"
           .content="${IconNames.dotsHorizontal}"
           .tooltipText=${TooltipTexts.popoverOptionsMenu}
-        ></il-button-icon-with-tooltip>
+        ></il-button-icon>
 
         <il-message-options
           slot="popup"

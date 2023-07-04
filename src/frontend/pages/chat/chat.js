@@ -21,7 +21,7 @@ import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
 import "./messages-list";
-import "../../components/button-icon-with-tooltip";
+import "../../components/button-icon";
 
 const fullScreenHeight = "100vh";
 
@@ -136,7 +136,7 @@ export class Chat extends LitElement {
       margin-top: auto;
     }
 
-    il-button-icon-with-tooltip {
+    il-button-icon {
       z-index: 9999;
       position: absolute;
       right: 20px;
@@ -200,13 +200,13 @@ export class Chat extends LitElement {
                     )}
                   </il-modal>
 
-                  <il-button-icon-with-tooltip
+                  <il-button-icon
                     ${ref(this.scrollButtonRef)}
                     style="bottom: 120px"
                     @click="${this.scrollToBottom}"
                     .content=${IconNames.scrollDownArrow}
                     .tooltipText=${TooltipTexts.scrollToBottom}
-                  ></il-button-icon-with-tooltip>
+                  ></il-button-icon>
 
                   <il-input-controls
                     ${ref(this.inputControlsRef)}

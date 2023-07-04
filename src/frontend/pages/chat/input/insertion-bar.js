@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 import { when } from "lit/directives/when.js";
 
 import "./editor/editor-formatting-buttons";
-import "../../../components/button-icon-with-tooltip";
+import "../../../components/button-icon";
 
 import { IconNames } from "../../../enums/icon-names";
 
@@ -37,7 +37,6 @@ export class InsertionBar extends LitElement {
       margin-top: 0px;
       border: none;
       color: white !important;
-      font-size: 20px;
       cursor: pointer;
       display: flex;
       justify-content: center;
@@ -49,21 +48,21 @@ export class InsertionBar extends LitElement {
     return html`
       <div>
         <div class="formatting-container">
-          <il-button-icon-with-tooltip
+          <il-button-icon
             @click=${this.emojiPickerClick}
             .content=${IconNames.emoticon}
             .tooltipText=${TooltipTexts.emoticon}
             .condition=${true}
-          ></il-button-icon-with-tooltip>
+          ></il-button-icon>
 
-          <il-button-icon-with-tooltip
+          <il-button-icon
             @click=${() => {
               this.bEditor = !this.bEditor;
               this.editor?.value.focusTextarea();
             }}
             .content=${IconNames.pencil}
             .tooltipText=${TooltipTexts.editor}
-          ></il-button-icon-with-tooltip>
+          ></il-button-icon>
           ${when(
             this.bEditor,
             () =>
@@ -73,11 +72,11 @@ export class InsertionBar extends LitElement {
           )}
         </div>
         <div id="submitContainer">
-          <il-button-icon-with-tooltip
+          <il-button-icon
             @click=${this.sendMessage}
             .content=${IconNames.send}
             .tooltipText=${TooltipTexts.send}
-          ></il-button-icon-with-tooltip>
+          ></il-button-icon>
         </div>
       </div>
     `;

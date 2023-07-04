@@ -1,11 +1,12 @@
 import { LitElement, html } from "lit";
 
-import "../../../../components/formatting-button";
-
 import { MarkdownService } from "../../../../services/markdown-service";
 
 import { IconNames } from "../../../../enums/icon-names";
 import { TooltipTexts } from "../../../../enums/tooltip-texts";
+
+import "../../../../components/formatting-button";
+import "../../../../components/button-icon";
 
 export class EditorFormattingButtons extends LitElement {
   static properties = {
@@ -14,53 +15,53 @@ export class EditorFormattingButtons extends LitElement {
 
   render() {
     return html`
-      <il-button-icon-with-tooltip
+      <il-button-icon
         .content=${IconNames.bold}
         @click=${this.insertBold}
         .tooltipText=${TooltipTexts.bold}
-      ></il-button-icon-with-tooltip>
+      ></il-button-icon>
 
-      <il-button-icon-with-tooltip
+      <il-button-icon
         .content=${IconNames.italic}
         @click=${this.insertItalic}
         .tooltipText=${TooltipTexts.italic}
-      ></il-button-icon-with-tooltip>
+      ></il-button-icon>
 
-      <il-button-icon-with-tooltip
+      <il-button-icon
         .content=${IconNames.strikethrough}
         @click=${this.insertStrike}
         .tooltipText=${TooltipTexts.strikethrough}
-      ></il-button-icon-with-tooltip>
+      ></il-button-icon>
 
-      <il-button-icon-with-tooltip
+      <il-button-icon
         .content=${IconNames.link}
         @click=${this.insertLink}
         .tooltipText=${TooltipTexts.link}
-      ></il-button-icon-with-tooltip>
+      ></il-button-icon>
 
-      <il-button-icon-with-tooltip
+      <il-button-icon
         .content=${IconNames.minus}
         @click=${this.insertLine}
         .tooltipText=${TooltipTexts.line}
-      ></il-button-icon-with-tooltip>
+      ></il-button-icon>
 
-      <il-button-icon-with-tooltip
+      <il-button-icon
         .content=${IconNames.listBulleted}
         @click=${this.insertListBulleted}
         .tooltipText=${TooltipTexts.listBulleted}
-      ></il-button-icon-with-tooltip>
+      ></il-button-icon>
 
-      <il-button-icon-with-tooltip
+      <il-button-icon
         .content=${IconNames.listNumbered}
         @click=${this.insertListNumbered}
         .tooltipText=${TooltipTexts.listNumbered}
-      ></il-button-icon-with-tooltip>
+      ></il-button-icon>
 
-      <il-button-icon-with-tooltip
+      <il-button-icon
         .content=${IconNames.title}
         @click=${MarkdownService.insertHeading}
         .tooltipText=${TooltipTexts.title}
-      ></il-button-icon-with-tooltip>
+      ></il-button-icon>
     `;
   }
 
