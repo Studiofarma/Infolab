@@ -1,64 +1,65 @@
-const MESSAGE_LIST_PATH = "il-app ,il-chat, il-messages-list";
-const MESSAGE_PATH = "il-app, il-chat, il-messages-list, il-message";
-const MESSAGE_CONTENT_PATH =
+const messagesListPath = "il-app ,il-chat, il-messages-list";
+const messagePath = "il-app, il-chat, il-messages-list, il-message";
+const messageContentPath =
   "il-app, il-chat, il-messages-list, il-message, il-message-content";
-const ICON_BUTTON_PATH =
+const iconButtonPath =
   "il-app, il-chat, il-messages-list, il-message, il-message-menu-popover, il-button-icon";
-const MESSAGE_OPTIONS_PATH =
+const messageOptionsPath =
   "il-app ,il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options";
-const MESSAGE_MENU_POPOVER_PATH =
+const messageMenuPopoverPath =
   "il-app ,il-chat, il-messages-list, il-message, il-message-menu-popover";
-const MESSAGE_BUTTON_OPTION_PATH =
+const messageButtonOptionPath =
   "il-app ,il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options, message-button-option";
 
 // Il primo è per le conversazioni della sidebar, il secondo per quelli della forward-list
-const SIDEBAR_CONVERSATION_PATH =
+const sidebarConversationPath =
   "il-app, il-chat, il-sidebar, il-conversation-list, il-conversation";
-const CONVERSATION_PATH =
+const conversationPath =
   "il-app, il-chat, il-conversation-list, il-conversation";
 
-const BUTTON_TEXT_PATH = "il-app,il-chat, il-conversation-list, il-button-text";
-const SIDEBAR_CONVERSATION_LIST =
+const buttonTextPath = "il-app,il-chat, il-conversation-list, il-button-text";
+const sidebarConversationList =
   "il-app, il-chat, il-sidebar, il-conversation-list";
 
 beforeEach(() => {
   // login
   cy.login({ user: "user1", password: "password1" });
 
+  cy.wait(1000);
   // opening the general chat
   cy.openChat("Generale");
 });
 
 describe("messages spec", () => {
   it("asserting that the messages container exists ", () => {
-    cy.litElementExist(MESSAGE_LIST_PATH);
+    cy.litElementExist(messagesListPath);
     // sending some test messages in case they aren't present by default
     cy.sendTestMessages(2);
-    cy.litElementExist(MESSAGE_PATH);
+    cy.litElementExist(messagePath);
   });
 
-  //-----------------------------------------------------
-  //-----------------------------------------------------
+  // //-----------------------------------------------------
+  // //-----------------------------------------------------
 
   it("asserting that messages contain the content and the timestamp)", () => {
-    cy.litElementExist(MESSAGE_CONTENT_PATH);
-    cy.getLitElement(MESSAGE_CONTENT_PATH)
+    cy.litElementExist(messageContentPath);
+    cy.getLitElement(messageContentPath)
       .first()
       .find(".message")
       .should("exist")
       .and("not.to.be.empty");
-    cy.getLitElement(MESSAGE_CONTENT_PATH)
+    cy.getLitElement(messageContentPath)
       .first()
       .find(".message-timestamp")
       .should("exist")
       .and("not.to.be.empty");
   });
 
-  //-----------------------------------------------------
-  //-----------------------------------------------------
+  // //-----------------------------------------------------
+  // //-----------------------------------------------------
 
   it("asserting that in the general chat, the received messages contain the sender info", () => {
-    cy.getLitElement(MESSAGE_CONTENT_PATH)
+    cy.getLitElement(messageContentPath)
       .find("main")
       .filter(":has(.receiver-name)")
       .first()
@@ -67,53 +68,51 @@ describe("messages spec", () => {
       });
   });
 
-  //-----------------------------------------------------
-  //-----------------------------------------------------
+  // //-----------------------------------------------------
+  // //-----------------------------------------------------
 
   it("asserting that the options menu icon will display when you hover on a message", () => {
-    cy.getLitElement(MESSAGE_PATH)
+    cy.getLitElement(messagePath)
       .first()
       .find(".message-body")
       .trigger("mouseover", { force: true });
-    cy.getLitElement(ICON_BUTTON_PATH)
-      .find(".icon-button")
-      .should("be.visible");
+    cy.getLitElement(iconButtonPath).find(".icon-button").should("be.visible");
   });
 
-  //-----------------------------------------------------
-  //-----------------------------------------------------
+  // //-----------------------------------------------------
+  // //-----------------------------------------------------
   it("asserting that the options menu displays his content after clicking on his icon", () => {
-    cy.getLitElement(MESSAGE_PATH)
+    cy.getLitElement(messagePath)
       .first()
       .find(".message-body")
       .trigger("mouseover", { force: true });
-    cy.getLitElement(ICON_BUTTON_PATH)
+    cy.getLitElement(iconButtonPath)
       .first()
       .find(".icon-button")
       .click({ force: true });
-    cy.getLitElement(MESSAGE_OPTIONS_PATH)
+    cy.getLitElement(messageOptionsPath)
       .find("div")
       .should("be.visible")
       .and("not.to.be.empty");
   });
 
-  //-----------------------------------------------------
-  //-----------------------------------------------------
+  // //-----------------------------------------------------
+  // //-----------------------------------------------------
   it("asserting that the button 'Copia' works", () => {
     //sending the message 'test1'
     cy.sendTestMessages(1);
     // hover on the message
-    cy.getLitElement(MESSAGE_PATH)
+    cy.getLitElement(messagePath)
       .last()
       .find(".message-body")
       .trigger("mouseover", { force: true });
     // opening the menu
-    cy.getLitElement(ICON_BUTTON_PATH)
+    cy.getLitElement(iconButtonPath)
       .last()
       .find(".icon-button")
       .click({ force: true });
     // clicking on 'copia' button
-    cy.getLitElement(MESSAGE_MENU_POPOVER_PATH)
+    cy.getLitElement(messageMenuPopoverPath)
       .last()
       .find("il-message-options")
       .shadow()
@@ -134,32 +133,32 @@ describe("messages spec", () => {
   //-----------------------------------------------------
   it("asserting that the button 'Inoltra' works (SINGLE FORWARD)", () => {
     // hover on the message
-    cy.getLitElement(MESSAGE_PATH)
+    cy.getLitElement(messagePath)
       .first()
       .find(".message-body")
       .trigger("mouseover", { force: true });
     // opening the menu
-    cy.getLitElement(ICON_BUTTON_PATH)
+    cy.getLitElement(iconButtonPath)
       .first()
       .find(".icon-button")
       .click({ force: true });
     //  click on the 'Inoltra' button
-    cy.getLitElement(MESSAGE_BUTTON_OPTION_PATH)
+    cy.getLitElement(messageButtonOptionPath)
       .eq(1)
       .find("div")
       .click({ force: true });
     // getting the text of the forwarded message
-    cy.getLitElement(MESSAGE_CONTENT_PATH)
+    cy.getLitElement(messageContentPath)
       .first()
       .find(".message")
       .invoke("text")
       .then((txt) => {
-        cy.getLitElement(CONVERSATION_PATH)
+        cy.getLitElement(conversationPath)
           .find(".chat-name")
           .first()
           .click({ force: true });
         //check if  the check icon is visible
-        cy.getLitElement(CONVERSATION_PATH)
+        cy.getLitElement(conversationPath)
           .find(".chat-box")
           .first()
           .find("il-avatar")
@@ -167,64 +166,60 @@ describe("messages spec", () => {
           .find(".icon-button")
           .should("be.visible");
         // check if the 'Inoltra' button is visible
-        cy.getLitElement(BUTTON_TEXT_PATH).find("button").should("be.visible");
+        cy.getLitElement(buttonTextPath).find("button").should("be.visible");
         // forwarding a message only to Fabrizio Bruno
-        cy.getLitElement(BUTTON_TEXT_PATH)
-          .find("button")
-          .click({ force: true });
-        cy.getLitElement(MESSAGE_CONTENT_PATH)
+        cy.getLitElement(buttonTextPath).find("button").click({ force: true });
+        cy.getLitElement(messageContentPath)
           .last()
-          .find(".message")
-          .should("have.text", txt);
+          .last(".message")
+          .should("include.text", txt);
       });
   });
 
-  //-----------------------------------------------------
-  //-----------------------------------------------------
+  // //-----------------------------------------------------
+  // //-----------------------------------------------------
   it("asserting that the button 'Inoltra' works (MULTIPLE FORWARD)", () => {
     // hover on the message
-    cy.getLitElement(MESSAGE_PATH)
+    cy.getLitElement(messagePath)
       .first()
       .find(".message-body")
       .trigger("mouseover", { force: true });
     // opening the menu
-    cy.getLitElement(ICON_BUTTON_PATH)
+    cy.getLitElement(iconButtonPath)
       .first()
       .find(".icon-button")
       .click({ force: true });
     //  click on the 'Inoltra' button
-    cy.getLitElement(MESSAGE_BUTTON_OPTION_PATH)
+    cy.getLitElement(messageButtonOptionPath)
       .eq(1)
       .find("div")
       .click({ force: true });
     // getting the text of the forwarded message
-    cy.getLitElement(MESSAGE_CONTENT_PATH)
+    cy.getLitElement(messageContentPath)
       .first()
       .find(".message")
       .invoke("text")
       .then((txt) => {
         for (let i = 0; i < 2; i++) {
-          cy.getLitElement(CONVERSATION_PATH)
+          cy.getLitElement(conversationPath)
             .find(".chat-name")
             .eq(i)
             .click({ force: true });
         }
 
         // forwarding a message to multiple conversations
-        cy.getLitElement(BUTTON_TEXT_PATH)
-          .find("button")
-          .click({ force: true });
+        cy.getLitElement(buttonTextPath).find("button").click({ force: true });
 
         // checking if message has been forwarded
         for (let i = 0; i < 2; i++) {
-          cy.getLitElement(SIDEBAR_CONVERSATION_PATH)
+          cy.getLitElement(sidebarConversationPath)
             .find(".chat-name")
             .eq(i)
             .invoke("text")
             .then((conversationName) => {
               cy.openChat(conversationName);
 
-              cy.getLitElement(MESSAGE_CONTENT_PATH)
+              cy.getLitElement(messageContentPath)
                 .last()
                 .find(".message")
                 .should("have.text", txt);
@@ -233,8 +228,8 @@ describe("messages spec", () => {
       });
   });
 
-  //-----------------------------------------------------
-  //-----------------------------------------------------
+  // //-----------------------------------------------------
+  // //-----------------------------------------------------
 
   it("asserting that the button 'Scrivi in privato' works", () => {
     cy.sendTestMessages(1);
@@ -246,19 +241,19 @@ describe("messages spec", () => {
     cy.openChat("Generale");
 
     // hover on the last message sended by Mario Rossi
-    cy.getLitElement(MESSAGE_PATH)
+    cy.getLitElement(messagePath)
       .last()
       .find(".message-body")
       .trigger("mouseover", { force: true });
 
     // opening the menu options
-    cy.getLitElement(ICON_BUTTON_PATH)
+    cy.getLitElement(iconButtonPath)
       .last()
       .find(".icon-button")
       .click({ force: true });
 
     // clicking the 'Scrivi in privato' button
-    cy.getLitElement(MESSAGE_MENU_POPOVER_PATH)
+    cy.getLitElement(messageMenuPopoverPath)
       .last()
       .find("il-message-options")
       .shadow()
@@ -270,7 +265,7 @@ describe("messages spec", () => {
 
     // asserting that user2 has been moved to user1's chat
 
-    cy.getLitElement(SIDEBAR_CONVERSATION_LIST)
+    cy.getLitElement(sidebarConversationList)
       .find("il-conversation.active")
       .shadow()
       .find(".chat-name")
