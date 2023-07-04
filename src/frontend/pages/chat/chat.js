@@ -19,7 +19,7 @@ import "./input/input-controls";
 import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
-import "./messages-list";
+import "./message/messages-list";
 import "../../components/snackbar";
 import "../../components/button-icon";
 
