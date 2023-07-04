@@ -88,6 +88,7 @@ export class MessagesList extends LitElement {
               .activeChatName=${this.activeChatName}
               .activeDescription=${this.activeDescription}
               .chatRef=${this.chatRef}
+              @message-copy=${this.messageCopy}
               @forward-message=${(event) => {
                 this.dispatchEvent(
                   new CustomEvent(event.type, { detail: event.detail })
@@ -102,6 +103,10 @@ export class MessagesList extends LitElement {
         )}
       </ul>
     `;
+  }
+
+  messageCopy() {
+    this.dispatchEvent(new CustomEvent("message-copy"));
   }
 
   async getAllUsers() {
