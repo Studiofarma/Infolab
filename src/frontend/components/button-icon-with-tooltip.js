@@ -1,4 +1,5 @@
 import { LitElement, css, html } from "lit";
+import { when } from "lit/directives/when.js";
 
 import "./button-icon";
 import "./tooltip";
@@ -24,9 +25,11 @@ export class ButtonIconWithTooltip extends LitElement {
   render() {
     return html`<div>
       <il-button-icon content=${this.content}></il-button-icon>
-      ${this.tooltipText && (this.condition === undefined || this.condition)
-        ? html`<il-tooltip>${this.tooltipText}</il-tooltip>`
-        : html``}
+      ${when(
+        this.tooltipText && (this.condition === undefined || this.condition),
+        () => html`<il-tooltip>${this.tooltipText}</il-tooltip>`,
+        () => html``
+      )}
     </div> `;
   }
 }
