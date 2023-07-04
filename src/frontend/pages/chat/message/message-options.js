@@ -98,7 +98,7 @@ export class MessageOptions extends LitElement {
     this.dispatchEvent(
       new CustomEvent("edit-message", {
         detail: {
-          message: this.message.content,
+          message: this.message,
         },
       })
     );

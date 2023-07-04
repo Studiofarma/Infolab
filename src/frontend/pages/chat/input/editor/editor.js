@@ -149,9 +149,7 @@ export class Editor extends LitElement {
   }
 
   clearMessage() {
-    this.message = "";
-    this.shadowRoot.querySelector("textarea").value = "";
-    this.textEditorResize();
+    this.setEditorText("");
   }
 
   // checkList(event) {
@@ -226,6 +224,12 @@ export class Editor extends LitElement {
     const selection = this.getSelection();
 
     return textarea.value.slice(selection.start, selection.end);
+  }
+
+  setEditorText(text) {
+    this.message = text;
+    this.textareaRef.value.value = text;
+    this.textEditorResize();
   }
 }
 customElements.define("il-editor", Editor);

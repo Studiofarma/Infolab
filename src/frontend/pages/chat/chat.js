@@ -187,9 +187,7 @@ export class Chat extends LitElement {
                         2000
                       )}
                     @edit-message=${(event) => {
-                      this.dispatchEvent(
-                        new CustomEvent(event.type, { detail: event.detail })
-                      );
+                      this.editMessage(event);
                     }}
                   ></il-messages-list>
 
@@ -315,6 +313,12 @@ export class Chat extends LitElement {
 
       this.updateMessages({ detail: { conversation: list[index] } });
     }
+  }
+
+  editMessage(event) {
+    this.inputControlsRef.value?.setEditorTextToEditMessage(
+      event.detail.message
+    );
   }
 
   isUsernameInRoomName(roomName, username) {

@@ -162,6 +162,10 @@ export class InputControls extends LitElement {
   updateMessage(event) {
     this.message = event.detail.content;
   }
+
+  setEditorTextToEditMessage(message) {
+    this.editorRef.value?.setEditorText(message.content);
+  }
 }
 
 customElements.define("il-input-controls", InputControls);
