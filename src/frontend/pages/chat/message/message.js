@@ -93,6 +93,7 @@ export class Message extends LitElement {
 
         <il-message-menu-popover
           .chatRef=${this.chatRef}
+          @message-copy=${this.messageCopy}
           .messages=${this.messages}
           .message=${this.message}
           .index=${this.index}
@@ -111,6 +112,10 @@ export class Message extends LitElement {
         </il-message-menu-popover>
       </div>
     `;
+  }
+
+  messageCopy() {
+    this.dispatchEvent(new CustomEvent("message-copy"));
   }
 
   compareMessageDate(messageDate1, messageDate2) {
