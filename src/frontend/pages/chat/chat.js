@@ -178,9 +178,14 @@ export class Chat extends LitElement {
                     .activeChatName=${this.activeChatName}
                     .activeDescription=${this.activeDescription}
                     .chatRef=${this.chatRef}
-                    .snackbarRef=${this.snackbarRef}
                     @forward-message=${this.openForwardMenu}
                     @go-to-chat=${this.goToChat}
+                    @message-copy=${() =>
+                      this.snackbarRef.value.openSnackbar(
+                        "MESSAGGIO COPIATO",
+                        "info",
+                        2000
+                      )}
                   ></il-messages-list>
 
                   <il-modal

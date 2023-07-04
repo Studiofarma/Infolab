@@ -52,7 +52,7 @@ export class MessageOptions extends LitElement {
 
   copyToClipboardHandler() {
     navigator.clipboard.writeText(this.message.content);
-    this.snackbarRef.value.openSnackbar("MESSAGGIO COPIATO", "info", 2000);
+    this.dispatchEvent(new CustomEvent("message-copy"));
   }
 
   forwardMessageHandler() {
