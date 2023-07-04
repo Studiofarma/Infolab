@@ -329,6 +329,7 @@ export class Chat extends LitElement {
     this.messages[index] = {
       ...message,
       content: message.content,
+      hasBeenEdited: true,
     };
 
     console.log(this.messages);
@@ -491,6 +492,11 @@ export class Chat extends LitElement {
     let message = JSON.parse(payload.body);
 
     if (message.content !== null) {
+      // TODO: rimuovere questa riga quando hasBeenEdited verrà dal db
+      message.hasBeenEdited = message.hasBeenEdited
+        ? message.hasBeenEdited
+        : false;
+
       if (this.activeChatName == message.roomName) {
         this.messages.push(message);
         this.messagesListRef.value.requestUpdate();
