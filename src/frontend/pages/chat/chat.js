@@ -207,6 +207,16 @@ export class Chat extends LitElement {
                     )}
                   </il-modal>
 
+                  <il-modal @modal-closed=${() => this.requestUpdate()}>
+                    <h3>Sei sicuro?</h3>
+                    <p>
+                      Una volta elminato il messaggio non potrai più tornare
+                      indietro!
+                    </p>
+                    <il-button-text text="Cancella messaggio"></il-button-text>
+                    <il-button-icon text="Annulla"></il-button-icon>
+                  </il-modal>
+
                   <il-button-icon
                     ${ref(this.scrollButtonRef)}
                     style="bottom: 120px"
