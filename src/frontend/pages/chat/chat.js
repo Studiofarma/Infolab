@@ -152,6 +152,8 @@ export class Chat extends LitElement {
   `;
 
   render() {
+    console.log("Render");
+    console.log(this.messages);
     return html`
       <main>
         <section>
@@ -317,10 +319,25 @@ export class Chat extends LitElement {
   }
 
   editMessage(event) {
-    this.inputControlsRef.value?.editMessage(event.detail.message);
+    this.inputControlsRef.value?.editMessage(event.detail);
   }
 
-  confirmEdit() {}
+  confirmEdit(event) {
+    let message = event.detail.message;
+    let index = event.detail.index;
+
+    this.messages[index] = {
+      ...message,
+      content: message.content,
+    };
+
+    console.log(this.messages);
+
+    if (index === this.messages.length - 1)
+      this.sidebarRef.value.sidebarListRef.value.setList(message);
+
+    this.messagesListRef.value?.requestUpdate();
+  }
 
   isUsernameInRoomName(roomName, username) {
     let names = roomName.split("-");
@@ -486,7 +503,7 @@ export class Chat extends LitElement {
     this.messageNotification(message);
   }
 
-  sendMessage(e) {
+  parseMarkdown(e) {
     this.message = e.detail.message.replaceAll("\\\n", "\n");
     const messageLines = e.detail.message.split("\n");
 
@@ -502,13 +519,15 @@ export class Chat extends LitElement {
 
     this.message = messageLines.join("\n");
 
-    let messageContent = this.message.trim();
+    return this.message.trim();
+  }
 
+  buildMessageAndSend(messageContent, type) {
     if (messageContent && this.stompClient) {
       const chatMessage = {
         sender: this.login.username,
         content: messageContent,
-        type: "CHAT",
+        type: type,
       };
 
       let activeChatName = this.activeChatNameFormatter(this.activeChatName);
@@ -521,6 +540,12 @@ export class Chat extends LitElement {
         JSON.stringify(chatMessage)
       );
     }
+  }
+
+  sendMessage(e) {
+    let messageContent = this.parseMarkdown(e);
+
+    this.buildMessageAndSend(messageContent, "CHAT");
   }
 
   onError(error) {

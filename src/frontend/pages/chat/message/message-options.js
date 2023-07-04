@@ -99,6 +99,7 @@ export class MessageOptions extends LitElement {
       new CustomEvent("edit-message", {
         detail: {
           message: this.message,
+          index: this.index,
         },
       })
     );

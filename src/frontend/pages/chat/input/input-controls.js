@@ -17,6 +17,8 @@ export class InputControls extends LitElement {
     picker: {},
     selectedText: { startingPoint: NaN, endingPoint: NaN },
     isEditing: { type: Boolean },
+    messageBeingEdited: {},
+    indexBeingEdited: { type: Number },
   };
 
   constructor() {
@@ -171,18 +173,32 @@ export class InputControls extends LitElement {
     this.message = event.detail.content;
   }
 
-  editMessage(message) {
-    this.editorRef.value?.setEditorText(message.content);
+  editMessage(detail) {
+    this.editorRef.value?.setEditorText(detail.message.content);
     this.isEditing = true;
+    this.messageBeingEdited = detail.message;
+    this.indexBeingEdited = detail.index;
   }
 
   confirmEdit(event) {
-    this.dispatchEvent(new CustomEvent(event.type));
+    this.messageBeingEdited.content = this.editorRef.value?.getText();
+
+    this.dispatchEvent(
+      new CustomEvent(event.type, {
+        detail: {
+          message: this.messageBeingEdited,
+          index: this.indexBeingEdited,
+        },
+      })
+    );
     this.isEditing = false;
+    this.messageBeingEdited = {};
+    this.indexBeingEdited = undefined;
     this.clearMessage();
   }
 
-  cancelEdit(event) {
+  cancelEdit() {
+    this.messageBeingEdited = {};
     this.isEditing = false;
     this.clearMessage();
   }

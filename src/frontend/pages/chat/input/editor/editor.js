@@ -80,6 +80,10 @@ export class Editor extends LitElement {
     `;
   }
 
+  getText() {
+    return this.textareaRef.value?.value;
+  }
+
   onInput(event) {
     if (this.isKeyDown) this.message = event.target.value;
 
