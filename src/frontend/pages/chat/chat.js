@@ -11,9 +11,9 @@ import { CookieService } from "../../services/cookie-service";
 import { MarkdownService } from "../../services/markdown-service";
 
 import { IconNames } from "../../enums/icon-names";
+import { TooltipTexts } from "../../enums/tooltip-texts";
 
 import "./message/message";
-import "../../components/button-icon";
 import "../../components/icon";
 import "../../components/modal";
 import "./input/input-controls";
@@ -21,6 +21,7 @@ import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
 import "./messages-list";
+import "../../components/button-icon";
 
 const fullScreenHeight = "100vh";
 
@@ -135,7 +136,7 @@ export class Chat extends LitElement {
       margin-top: auto;
     }
 
-    .scroll-button {
+    il-button-icon {
       z-index: 9999;
       position: absolute;
       right: 20px;
@@ -202,9 +203,9 @@ export class Chat extends LitElement {
                   <il-button-icon
                     ${ref(this.scrollButtonRef)}
                     style="bottom: 120px"
-                    class="scroll-button"
                     @click="${this.scrollToBottom}"
-                    content="${IconNames.scrollDownArrow}"
+                    .content=${IconNames.scrollDownArrow}
+                    .tooltipText=${TooltipTexts.scrollToBottom}
                   ></il-button-icon>
 
                   <il-input-controls

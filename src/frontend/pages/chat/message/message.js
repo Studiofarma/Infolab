@@ -65,6 +65,8 @@ export class Message extends LitElement {
       z-index: 10;
       opacity: 0;
       transition: 0.5s;
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      border-radius: 5px;
     }
 
     .message-body:hover il-message-menu-popover {
