@@ -119,7 +119,7 @@ class ConversationList extends LitElement {
     }
 
     .no-result {
-      color: #666666;
+      color: #3d3f41;
       text-align: center;
     }
   `;
