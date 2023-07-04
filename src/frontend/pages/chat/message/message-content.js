@@ -3,7 +3,6 @@ import { resolveMarkdown } from "lit-markdown";
 
 import { CookieService } from "../../../services/cookie-service";
 import { MarkdownService } from "../../../services/markdown-service";
-import { MarkdownService } from "./../../../services/markdown-service";
 
 export class MessageContent extends LitElement {
   static properties = {
