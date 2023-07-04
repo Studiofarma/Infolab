@@ -88,10 +88,10 @@ export class Snackbar extends LitElement {
     this.snackbarRef.value.style.bottom = "10px";
   }
 
-  openSnackbar() {
+  openSnackbar(time) {
     this.snackbarRef.value.style.opacity = 1.0;
     this.snackbarRef.value.style.bottom = "20px";
-    setTimeout(() => this.closeSnackbar(), 5000);
+    setTimeout(() => this.closeSnackbar(), time);
   }
 }
 customElements.define("il-snackbar", Snackbar);

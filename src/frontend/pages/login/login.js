@@ -327,7 +327,7 @@ export class Login extends LitElement {
       .catch((e) => {
         this.emptyUsernameField = false;
         this.emptyPasswordField = false;
-        this.snackbarRef.value.openSnackbar();
+        this.snackbarRef.value.openSnackbar(5000);
       });
   }
 }
