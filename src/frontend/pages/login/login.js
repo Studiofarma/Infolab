@@ -245,11 +245,7 @@ export class Login extends LitElement {
           </div>
         </div>
 
-        <il-snackbar
-          content="CREDENZIALI NON VALIDE"
-          type="error"
-          ${ref(this.snackbarRef)}
-        ></il-snackbar>
+        <il-snackbar ${ref(this.snackbarRef)}></il-snackbar>
       </div>
     `;
   }
@@ -319,7 +315,11 @@ export class Login extends LitElement {
       .catch((e) => {
         this.emptyUsernameField = false;
         this.emptyPasswordField = false;
-        this.snackbarRef.value.openSnackbar(5000);
+        this.snackbarRef.value.openSnackbar(
+          "CREDENZIALI NON VALIDE",
+          "error",
+          5000
+        );
       });
   }
 }

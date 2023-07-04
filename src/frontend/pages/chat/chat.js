@@ -217,11 +217,7 @@ export class Chat extends LitElement {
               : html`<il-empty-chat></il-empty-chat>`}
           </div>
         </section>
-        <il-snackbar
-          ${ref(this.snackbarRef)}
-          content="Messaggio copiato"
-          type="info"
-        ></il-snackbar>
+        <il-snackbar ${ref(this.snackbarRef)}></il-snackbar>
       </main>
     `;
   }
