@@ -1,10 +1,16 @@
 import { LitElement, html, css } from "lit";
+import { when } from "lit/directives/when.js";
+
+import "./icon";
+import { IconNames } from "../enums/icon-names";
+
 export class Avatar extends LitElement {
   static get properties() {
     return {
       avatarLink: "",
       name: "",
       id: 0,
+      selected: false,
     };
   }
 
@@ -18,6 +24,27 @@ export class Avatar extends LitElement {
       justify-content: center;
       align-items: center;
       overflow: hidden;
+    }
+
+    .icon-button {
+      height: 24px;
+      width: 23px;
+      border-radius: 23px;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 0px;
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      color: #206cf7;
+      position: relative;
+      left: 30px;
+      bottom: 15px;
+    }
+
+    .avatar {
+      height: 50px;
     }
   `;
 
@@ -66,7 +93,7 @@ export class Avatar extends LitElement {
         this.color = "#CF7A04";
         break;
       case 6:
-        this.color = "#206CF7";
+        this.color = "#003366";
         break;
       case 7:
         this.color = "#5C5E60";
@@ -86,6 +113,12 @@ export class Avatar extends LitElement {
             >
               ${this.initials}
             </div>`}
+        ${when(
+          this.selected,
+          () => html`<div class="icon-button">
+            <il-icon name=${IconNames.checkCircle}></il-icon>
+          </div>`
+        )}
       </div>
     `;
   }

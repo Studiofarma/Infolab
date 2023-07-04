@@ -5,11 +5,15 @@ import { MarkdownService } from "../../../../services/markdown-service";
 import { CookieService } from "../../../../services/cookie-service";
 
 import "../../../../components/icon";
+import "../../../../components/button-icon";
 import { IconNames } from "../../../../enums/icon-names";
 
 class Conversation extends LitElement {
   static properties = {
     chat: {},
+    isSelectable: false,
+    isSelected: false,
+    userList: [],
   };
 
   static styles = css`
@@ -25,6 +29,7 @@ class Conversation extends LitElement {
       padding: 12px 12px;
       cursor: pointer;
       transition: 0.5s;
+      width: 100%;
     }
 
     .date-box {
@@ -83,6 +88,10 @@ class Conversation extends LitElement {
     .chat-name {
       color: black;
     }
+
+    il-button-icon {
+      padding-top: 10px;
+    }
   `;
 
   render() {
@@ -93,8 +102,22 @@ class Conversation extends LitElement {
     }
 
     return html`
-      <div class="chat-box">
+      <div
+        class="chat-box"
+        @click=${() => {
+          this.isSelected = !this.isSelected;
+          this.dispatchEvent(
+            new CustomEvent("clicked", {
+              detail: {
+                room: this.chat.roomName,
+                add: this.isSelected,
+              },
+            })
+          );
+        }}
+      >
         <il-avatar
+          .selected=${this.isSelected && this.isSelectable}
           .avatarLink=${this.chat.avatarLink}
           .name=${this.chat.description}
           .id=${this.chat.id}
@@ -103,7 +126,7 @@ class Conversation extends LitElement {
           <p class="chat-name">${this.chat.description}</p>
           <p class="last-message">
             ${this.lastMessageTextFormatter(
-              this.chat.lastMessage.sender,
+              this.getUserDescription(this.chat.lastMessage.sender),
               this.chat.lastMessage.content
             )}
           </p>
@@ -176,6 +199,15 @@ class Conversation extends LitElement {
     }
 
     return "Date not available";
+  }
+
+  getUserDescription(userName) {
+    if (this.userList == undefined) return "";
+
+    let userIndex = this.userList.findIndex((user) => user.name == userName);
+    if (userIndex < 0) return;
+    let user = this.userList[userIndex];
+    return user?.description;
   }
 
   lastMessageTextFormatter(sender, message) {

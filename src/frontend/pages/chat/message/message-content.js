@@ -3,11 +3,13 @@ import { resolveMarkdown } from "lit-markdown";
 
 import { CookieService } from "../../../services/cookie-service";
 import { MarkdownService } from "../../../services/markdown-service";
+import { MarkdownService } from "./../../../services/markdown-service";
 
 export class MessageContent extends LitElement {
   static properties = {
     message: { type: Object },
     activeChatName: { type: String },
+    userList: { type: Array },
   };
 
   constructor() {
@@ -161,7 +163,7 @@ export class MessageContent extends LitElement {
           ${this.activeChatName.indexOf(this.cookie.username) === -1
             ? html` <p class="receiver-name">
                 ${this.message.sender != this.cookie.username
-                  ? this.message.sender
+                  ? this.getUserDescription(this.message.sender)
                   : ""}
               </p>`
             : html``}
@@ -179,6 +181,15 @@ export class MessageContent extends LitElement {
         </div>
       </main>
     `;
+  }
+
+  getUserDescription(userName) {
+    if (this.userList == undefined) return "";
+
+    let userIndex = this.userList.findIndex((user) => user.name == userName);
+    if (userIndex < 0) return;
+    let user = this.userList[userIndex];
+    return user?.description;
   }
 }
 
