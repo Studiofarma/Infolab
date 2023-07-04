@@ -1,5 +1,3 @@
-import { getCypressElementCoordinates } from "cypress-real-events/getCypressElementCoordinates";
-
 Cypress.Commands.add("getLitElement", (elementPath) => {
   let elementNames = elementPath.includes(",")
     ? elementPath.split(",")
