@@ -1,7 +1,10 @@
 import { html, css } from "lit";
 
 import { IconNames } from "../enums/icon-names";
+import { TooltipTexts } from "../enums/tooltip-texts";
+
 import { InputField } from "./input-field";
+
 import "./button-icon";
 
 export class InputRicerca extends InputField {
@@ -46,6 +49,14 @@ export class InputRicerca extends InputField {
       il-button-icon {
         padding: 5px;
       }
+
+      .visible {
+        visibility: visible;
+      }
+
+      .hidden {
+        visibility: hidden;
+      }
     `,
   ];
 
@@ -61,12 +72,15 @@ export class InputRicerca extends InputField {
           @focus="${this.toggleFocus}"
           @blur=${this.toggleFocus}
         />
+
         <il-button-icon
           @click=${() => {
             this.clear();
             this.search();
           }}
-          content=${this.value !== "" ? IconNames.close : IconNames.magnify}
+          .content=${this.value !== "" ? IconNames.close : IconNames.magnify}
+          .tooltipText=${TooltipTexts.clearButton}
+          .condition=${this.value}
         ></il-button-icon>
       </div>
     `;
