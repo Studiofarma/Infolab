@@ -72,9 +72,21 @@ Cypress.Commands.add("sendTestMessages", (number) => {
 
 Cypress.Commands.add("openChat", (name) => {
   cy.getLitElement(
-    "il-app,il-chat, il-sidebar, il-conversation-list, il-conversation"
+    "il-app, il-chat, il-sidebar, il-conversation-list, il-conversation"
   )
     .find(".chat-name")
-    .filter(`:contains("${name}")`)
-    .click({ force: true });
+    .each((element, index) => {
+      cy.wrap(element)
+        .invoke("text")
+        .then((txt) => {
+          if (txt === name) {
+            cy.getLitElement(
+              "il-app, il-chat, il-sidebar, il-conversation-list, il-conversation"
+            )
+              .find(".chat-name")
+              .eq(index)
+              .click({ force: true });
+          }
+        });
+    });
 });
