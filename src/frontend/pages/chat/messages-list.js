@@ -79,6 +79,7 @@ export class MessagesList extends LitElement {
               .activeChatName=${this.activeChatName}
               .activeDescription=${this.activeDescription}
               .chatRef=${this.chatRef}
+              .snackbarRef=${this.snackbarRef}
               @forward-message=${(event) => {
                 this.dispatchEvent(
                   new CustomEvent(event.type, { detail: event.detail })

@@ -254,14 +254,6 @@ export class Login extends LitElement {
     `;
   }
 
-  getDivInSnackbar() {
-    return (
-      this.renderRoot
-        .querySelector("il-snackbar")
-        .shadowRoot.querySelector("#snackbar") ?? null
-    );
-  }
-
   onUsernameInput(e) {
     const inputEl = e.target;
     this.username = inputEl.value;

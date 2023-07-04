@@ -89,6 +89,7 @@ export class Message extends LitElement {
 
         <il-message-menu-popover
           .chatRef=${this.chatRef}
+          .snackbarRef=${this.snackbarRef}
           .messages=${this.messages}
           .message=${this.message}
           .index=${this.index}

@@ -52,6 +52,7 @@ export class MessageOptions extends LitElement {
 
   copyToClipboardHandler() {
     navigator.clipboard.writeText(this.message.content);
+    this.snackbarRef.value.openSnackbar(1000);
   }
 
   forwardMessageHandler() {
@@ -76,7 +77,6 @@ export class MessageOptions extends LitElement {
   }
 
   deleteMessageHandler() {
-
     this.chatRef.value.messages.splice(this.index, 1);
     this.chatRef.value.update();
     this.requestUpdate();

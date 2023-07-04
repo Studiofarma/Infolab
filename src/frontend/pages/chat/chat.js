@@ -1,5 +1,4 @@
 import { LitElement, html, css } from "lit";
-import { repeat } from "lit/directives/repeat.js";
 import { when } from "lit/directives/when.js";
 import { createRef, ref } from "lit/directives/ref.js";
 
@@ -21,6 +20,7 @@ import "./sidebar/sidebar";
 import "./header/chat-header";
 import "./empty-chat";
 import "./messages-list";
+import "../../components/snackbar";
 
 const fullScreenHeight = "100vh";
 
@@ -69,6 +69,7 @@ export class Chat extends LitElement {
     this.messageBoxRef = createRef();
     this.inputControlsRef = createRef();
     this.messagesListRef = createRef();
+    this.snackbarRef = createRef();
   }
 
   connectedCallback() {
@@ -176,6 +177,7 @@ export class Chat extends LitElement {
                     .activeChatName=${this.activeChatName}
                     .activeDescription=${this.activeDescription}
                     .chatRef=${this.chatRef}
+                    .snackbarRef=${this.snackbarRef}
                     @forward-message=${this.openForwardMenu}
                     @go-to-chat=${this.goToChat}
                   ></il-messages-list>
@@ -215,6 +217,11 @@ export class Chat extends LitElement {
               : html`<il-empty-chat></il-empty-chat>`}
           </div>
         </section>
+        <il-snackbar
+          ${ref(this.snackbarRef)}
+          content="Messaggio copiato"
+          type="info"
+        ></il-snackbar>
       </main>
     `;
   }
