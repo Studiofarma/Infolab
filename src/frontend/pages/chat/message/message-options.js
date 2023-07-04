@@ -40,13 +40,18 @@ export class MessageOptions extends LitElement {
         >
         </message-button-option>`
       )}
-
-      <message-button-option
-        iconName=${IconNames.mdiDelete}
-        text="Elimina"
-        @click=${this.deleteMessageHandler}
-      >
-      </message-button-option>
+      ${when(
+        this.type === "sender",
+        () => html`
+          <message-button-option
+            iconName=${IconNames.mdiDelete}
+            text="Elimina"
+            @click=${this.deleteMessageHandler}
+          >
+          </message-button-option>
+        `,
+        () => html``
+      )}
     `;
   }
 
