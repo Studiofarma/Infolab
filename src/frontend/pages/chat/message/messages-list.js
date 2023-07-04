@@ -1,9 +1,12 @@
 import { LitElement, css, html } from "lit";
 import { repeat } from "lit/directives/repeat.js";
+import { when } from "lit/directives/when.js";
 import { createRef, ref } from "lit/directives/ref.js";
 
-import { CookieService } from "../../services/cookie-service";
-import { UsersService } from "../../services/users-service";
+import { CookieService } from "../../../services/cookie-service";
+import { UsersService } from "../../../services/users-service";
+
+import "./empty-messages";
 
 const fullScreenHeight = "100vh";
 
@@ -61,47 +64,60 @@ export class MessagesList extends LitElement {
       flex-direction: column;
       max-width: 100%;
     }
+
+    il-empty-messages {
+      height: 100%;
+    }
   `;
 
   render() {
     return html`
-      <ul
-        ${ref(this.messageBoxRef)}
-        @scroll=${(event) => {
-          this.dispatchEvent(
-            new CustomEvent(event.type, { detail: event.detail })
-          );
-        }}
-        class="message-box"
-        style="height: calc(${fullScreenHeight} - 179px);"
-        ${ref(this.messageBoxRef)}
-      >
-        ${repeat(
-          this.messages,
-          (message) => message.index,
-          (message, index) =>
-            html` <il-message
-              .userList=${this.users}
-              .messages=${this.messages}
-              .message=${message}
-              .index=${index}
-              .activeChatName=${this.activeChatName}
-              .activeDescription=${this.activeDescription}
-              .chatRef=${this.chatRef}
-              @forward-message=${(event) => {
-                this.dispatchEvent(
-                  new CustomEvent(event.type, { detail: event.detail })
-                );
-              }}
-              @go-to-chat=${(event) => {
-                this.dispatchEvent(
-                  new CustomEvent(event.type, { detail: event.detail })
-                );
-              }}
-            ></il-message>`
-        )}
-      </ul>
+      ${when(
+        this.messages.length > 0,
+        () => html`<ul
+          ${ref(this.messageBoxRef)}
+          @scroll=${(event) => {
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            );
+          }}
+          class="message-box"
+          style="height: calc(${fullScreenHeight} - 179px);"
+          ${ref(this.messageBoxRef)}
+        >
+          ${repeat(
+            this.messages,
+            (message) => message.index,
+            (message, index) =>
+              html` <il-message
+                .userList=${this.users}
+                .messages=${this.messages}
+                .message=${message}
+                .index=${index}
+                .activeChatName=${this.activeChatName}
+                .activeDescription=${this.activeDescription}
+                .chatRef=${this.chatRef}
+                @message-copy=${this.messageCopy}
+                @forward-message=${(event) => {
+                  this.dispatchEvent(
+                    new CustomEvent(event.type, { detail: event.detail })
+                  );
+                }}
+                @go-to-chat=${(event) => {
+                  this.dispatchEvent(
+                    new CustomEvent(event.type, { detail: event.detail })
+                  );
+                }}
+              ></il-message>`
+          )}
+        </ul>`,
+        () => html`<il-empty-messages></il-empty-messages>`
+      )}
     `;
+  }
+
+  messageCopy() {
+    this.dispatchEvent(new CustomEvent("message-copy"));
   }
 
   async getAllUsers() {
@@ -118,13 +134,16 @@ export class MessagesList extends LitElement {
   }
 
   textEditorResized(event) {
+    if (this.messageBoxRef.value === undefined) return;
+
     this.messageBoxRef.value.style.height = `calc(${fullScreenHeight} - ${
       event.detail.height + 150
     }px)`;
   }
 
   scrollToBottom() {
-    if (this.activeChatName === "") return;
+    if (this.activeChatName === "" || this.messageBoxRef.value === undefined)
+      return;
 
     this.messageBoxRef.value.scrollTo({
       top: this.messageBoxRef.value.scrollHeight,

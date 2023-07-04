@@ -16,6 +16,11 @@ class Conversation extends LitElement {
     userList: [],
   };
 
+  constructor() {
+    super();
+    this.cookie = CookieService.getCookie();
+  }
+
   static styles = css`
     * {
       box-sizing: border-box;
@@ -207,18 +212,22 @@ class Conversation extends LitElement {
     let userIndex = this.userList.findIndex((user) => user.name == userName);
     if (userIndex < 0) return;
     let user = this.userList[userIndex];
-    return user?.description;
+    return {
+      username: userName,
+      description: user?.description,
+    };
   }
 
   lastMessageTextFormatter(sender, message) {
-    let cookie = CookieService.getCookie();
-    if (sender == cookie.username) {
-      sender = "Tu";
+    if (sender.username == this.cookie.username) {
+      sender.description = "Tu";
     }
     return resolveMarkdown(
       MarkdownService.parseMarkdown(
         this.fixLastMessageLength(
-          sender ? `${sender}: ${message}` : "Nuova conversazione"
+          sender.description
+            ? `${sender.description}: ${message}`
+            : "Nuova conversazione"
         )
       )
     );

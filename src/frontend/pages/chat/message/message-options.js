@@ -53,7 +53,10 @@ export class MessageOptions extends LitElement {
   }
 
   copyToClipboardHandler() {
-    navigator.clipboard.writeText(this.message.content);
+    navigator.clipboard.writeText(
+      this.message.content.replaceAll("\\\n", "\n")
+    );
+    this.dispatchEvent(new CustomEvent("message-copy"));
   }
 
   forwardMessageHandler() {

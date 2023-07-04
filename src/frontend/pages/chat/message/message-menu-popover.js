@@ -2,6 +2,9 @@ import { LitElement, css, html } from "lit";
 import { CookieService } from "../../../services/cookie-service";
 
 import { IconNames } from "../../../enums/icon-names";
+import { TooltipTexts } from "../../../enums/tooltip-texts";
+
+import "../../../components/button-icon";
 
 const menuOptionLeft = "-73px";
 const menuOptionRight = "33px";
@@ -31,11 +34,15 @@ export class MessageMenuPopover extends LitElement {
   render() {
     return html`
       <il-popover .popupCoords=${{ ...this.getPopupCoords() }}>
-        <il-button-icon slot="pop-button" content="${IconNames.dotsHorizontal}">
-        </il-button-icon>
+        <il-button-icon
+          slot="pop-button"
+          .content="${IconNames.dotsHorizontal}"
+          .tooltipText=${TooltipTexts.popoverOptionsMenu}
+        ></il-button-icon>
 
         <il-message-options
           slot="popup"
+          @message-copy=${this.messageCopy}
           .chatRef=${this.chatRef}
           .message=${this.message}
           .cookie=${this.cookie}
@@ -57,6 +64,10 @@ export class MessageMenuPopover extends LitElement {
         </il-message-options>
       </il-popover>
     `;
+  }
+
+  messageCopy() {
+    this.dispatchEvent(new CustomEvent("message-copy"));
   }
 
   getPopupCoords() {

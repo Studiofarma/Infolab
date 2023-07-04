@@ -67,6 +67,8 @@ export class Message extends LitElement {
     il-message-menu-popover {
       z-index: 10;
       transition: 0.5s;
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      border-radius: 5px;
     }
   `;
 
@@ -95,6 +97,7 @@ export class Message extends LitElement {
           ${ref(this.messageMenuPopoverRef)}
           style="opacity: 0"
           .chatRef=${this.chatRef}
+          @message-copy=${this.messageCopy}
           .messages=${this.messages}
           .message=${this.message}
           .index=${this.index}
@@ -121,6 +124,10 @@ export class Message extends LitElement {
 
   hidePopover() {
     this.messageMenuPopoverRef.value.style.opacity = "0";
+  }
+
+  messageCopy() {
+    this.dispatchEvent(new CustomEvent("message-copy"));
   }
 
   compareMessageDate(messageDate1, messageDate2) {

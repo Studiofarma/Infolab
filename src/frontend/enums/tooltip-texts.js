@@ -1,0 +1,22 @@
+export const TooltipTexts = {
+  //Editor
+  emoticon: "Inserisci emoji",
+  editor: "Formatta testo",
+  send: "Invia messaggio",
+  search: "Cerca nelle conversazioni",
+  bold: "Grassetto",
+  italic: "Corsivo",
+  strikethrough: "Barrato",
+  link: "Collegamento",
+  line: "Divisore",
+  listBulleted: "Lista puntata",
+  listNumbered: "Lista numerata",
+  title: "Titolo",
+
+  //Search bar
+  clearButton: "Cancella ricerca",
+
+  //Chat
+  scrollToBottom: "Vai in fondo",
+  popoverOptionsMenu: "Opzioni",
+};

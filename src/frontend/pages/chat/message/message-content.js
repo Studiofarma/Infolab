@@ -153,32 +153,31 @@ export class MessageContent extends LitElement {
 
   render() {
     return html`
-      <main>
-        <div
-          class=${this.message.sender == this.cookie.username
-            ? "sender"
-            : "receiver"}
-        >
-          ${this.activeChatName.indexOf(this.cookie.username) === -1
-            ? html` <p class="receiver-name">
-                ${this.message.sender != this.cookie.username
-                  ? this.getUserDescription(this.message.sender)
-                  : ""}
-              </p>`
-            : html``}
-          <p class="message">
-            ${resolveMarkdown(
-              MarkdownService.parseMarkdown(this.message.content)
-            )}
-          </p>
-          <p class="message-timestamp">
-            ${new Date(this.message.timestamp).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </p>
-        </div>
-      </main>
+      <div
+        class=${this.message.sender == this.cookie.username
+          ? "sender"
+          : "receiver"}
+      >
+        ${this.activeChatName.indexOf(this.cookie.username) === -1
+          ? html` <p class="receiver-name">
+              ${this.message.sender != this.cookie.username
+                ? this.getUserDescription(this.message.sender)
+                : ""}
+            </p>`
+          : html``}
+        <p class="message">
+          ${resolveMarkdown(
+            // MarkdownService.parseMarkdown(this.message.content)
+            this.message.content
+          )}
+        </p>
+        <p class="message-timestamp">
+          ${new Date(this.message.timestamp).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </p>
+      </div>
     `;
   }
 

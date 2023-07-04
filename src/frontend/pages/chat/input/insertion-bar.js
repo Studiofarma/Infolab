@@ -5,6 +5,7 @@ import "../../../components/button-icon";
 import "./editor/editor-formatting-buttons";
 
 import { IconNames } from "../../../enums/icon-names";
+import { TooltipTexts } from "../../../enums/tooltip-texts";
 
 export class InsertionBar extends LitElement {
   static properties = {
@@ -35,46 +36,68 @@ export class InsertionBar extends LitElement {
       margin-top: 0px;
       border: none;
       color: white !important;
-      font-size: 20px;
       cursor: pointer;
       display: flex;
       justify-content: center;
       align-items: center;
     }
   `;
-
+  // PER REINSERIRE L'EDITOR CAMBIARE IL METODO render CON QUELLO COMMENTATO
   render() {
     return html`
       <div>
         <div class="formatting-container">
           <il-button-icon
-            content=${IconNames.emoticon}
+            .content=${IconNames.emoticon}
             @click=${this.emojiPickerClick}
+            .tooltipText=${TooltipTexts.emoticon}
           ></il-button-icon>
-          <il-button-icon
-            content=${IconNames.pencil}
-            @click=${() => {
-              this.bEditor = !this.bEditor;
-              this.editor?.value.focusTextarea();
-            }}
-          ></il-button-icon>
-          ${when(
-            this.bEditor,
-            () =>
-              html`<il-editor-formatting-buttons
-                .editor=${this.editor}
-              ></il-editor-formatting-buttons>`
-          )}
         </div>
         <div id="submitContainer">
           <il-button-icon
             @click=${this.sendMessage}
             content=${IconNames.send}
+            .tooltipText=${TooltipTexts.send}
           ></il-button-icon>
         </div>
       </div>
     `;
   }
+  // render() {
+  //   return html`
+  //     <div>
+  //       <div class="formatting-container">
+  //         <il-button-icon
+  //           .content=${IconNames.emoticon}
+  //           @click=${this.emojiPickerClick}
+  //           .tooltipText=${TooltipTexts.emoticon}
+  //         ></il-button-icon>
+  //         <il-button-icon
+  //           .content=${IconNames.pencil}
+  //           .tooltipText=${TooltipTexts.editor}
+  //           @click=${() => {
+  //             this.bEditor = !this.bEditor;
+  //             this.editor?.value.focusTextarea();
+  //           }}
+  //         ></il-button-icon>
+  //         ${when(
+  //           this.bEditor,
+  //           () =>
+  //             html`<il-editor-formatting-buttons
+  //               .editor=${this.editor}
+  //             ></il-editor-formatting-buttons>`
+  //         )}
+  //       </div>
+  //       <div id="submitContainer">
+  //         <il-button-icon
+  //           @click=${this.sendMessage}
+  //           .content=${IconNames.send}
+  //           .tooltipText=${TooltipTexts.send}
+  //         ></il-button-icon>
+  //       </div>
+  //     </div>
+  //   `;
+  // }
 
   sendMessage() {
     this.dispatchEvent(new CustomEvent("send-message"));
