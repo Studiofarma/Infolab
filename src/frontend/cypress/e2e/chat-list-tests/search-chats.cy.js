@@ -100,6 +100,32 @@ describe("search spec", () => {
       .find("input")
       .should("have.value", "");
   });
+
+  it('"Nessun risultato" appears in "Conversazioni" when there are no results', () => {
+    cy.getLitElement(inputRicercaSidebarPath)
+      .find("input")
+      .type("abc123", { force: true });
+
+    cy.getLitElement(conversationListPath)
+      .find("div")
+      .contains("Conversazioni")
+      .parent()
+      .find(".no-result")
+      .should("exist");
+  });
+
+  it('"Nessun risultato" appears in "Nuove Conversazioni" when there are no results', () => {
+    cy.getLitElement(inputRicercaSidebarPath)
+      .find("input")
+      .type("abc123", { force: true });
+
+    cy.getLitElement(conversationListPath)
+      .find("div")
+      .contains("Nuove conversazioni")
+      .parent()
+      .find(".no-result")
+      .should("exist");
+  });
 });
 
 beforeEach(() => {
