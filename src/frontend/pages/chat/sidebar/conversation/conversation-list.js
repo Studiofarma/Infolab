@@ -115,6 +115,11 @@ class ConversationList extends LitElement {
     il-button-text {
       padding-left: 175px;
     }
+
+    .no-result {
+      color: lightgray;
+      text-align: center;
+    }
   `;
 
   render() {
