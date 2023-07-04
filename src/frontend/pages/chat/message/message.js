@@ -14,6 +14,7 @@ export class Message extends LitElement {
     index: { type: Number },
     activeChatName: { type: String },
     activeDescription: { type: String },
+    userList: { type: Array },
   };
 
   constructor() {
@@ -80,6 +81,7 @@ export class Message extends LitElement {
 
       <div class="message-body">
         <il-message-content
+          .userList=${this.userList}
           class=${this.message.sender == this.cookie.username
             ? "sender"
             : "receiver"}

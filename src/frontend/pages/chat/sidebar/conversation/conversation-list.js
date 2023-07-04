@@ -239,14 +239,14 @@ class ConversationList extends LitElement {
     );
 
     this.cleanSearchInput();
-    this.update();
+    this.requestUpdate();
   }
 
   setQueryString(event) {
     this.query = event.detail.query;
     this.selectedRoom = "";
     this.indexOfSelectedChat = -1;
-    this.update();
+    this.requestUpdate();
   }
 
   filterConversations(list) {
@@ -259,7 +259,7 @@ class ConversationList extends LitElement {
     await this.getAllUsers();
     await this.getAllRooms();
     this.setNewConversationList();
-    this.update();
+    this.requestUpdate();
   }
 
   async getAllRooms() {
@@ -331,7 +331,7 @@ class ConversationList extends LitElement {
 
     this.conversationList.sort(this.compareTimestamp);
 
-    this.update();
+    this.requestUpdate();
   }
 
   setUsersList(user) {
@@ -382,6 +382,7 @@ class ConversationList extends LitElement {
         conversation.roomName == this.activeChatName
       ) {
         return html`<il-conversation
+          .userList=${this.usersList}
           @selected=${this.selectConversation}
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
@@ -465,7 +466,7 @@ class ConversationList extends LitElement {
       ?.shadowRoot.querySelector("il-input-ricerca");
     if (searchInput) searchInput.clear();
     this.query = searchInput.value;
-    this.update();
+    this.requestUpdate();
   }
 
   chatNameRecomposer(user1, user2) {

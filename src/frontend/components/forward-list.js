@@ -123,7 +123,7 @@ export class ForwardList extends LitElement {
       user.roomName.toLowerCase().includes(value)
     );
 
-    this.update();
+    this.requestUpdate();
   }
 
   goToChat(roomName) {

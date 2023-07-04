@@ -2,6 +2,9 @@ import { LitElement, css, html } from "lit";
 import { repeat } from "lit/directives/repeat.js";
 import { createRef, ref } from "lit/directives/ref.js";
 
+import { CookieService } from "../../services/cookie-service";
+import { UsersService } from "../../services/users-service";
+
 const fullScreenHeight = "100vh";
 
 export class MessagesList extends LitElement {
@@ -9,10 +12,15 @@ export class MessagesList extends LitElement {
     messages: { type: Array },
     activeChatName: { type: String },
     activeDescription: { type: String },
+    users: { type: Array },
   };
 
   constructor() {
     super();
+
+    this.cookie = CookieService.getCookie();
+
+    this.getAllUsers();
 
     // Refs
     this.messageBoxRef = createRef();
@@ -73,6 +81,7 @@ export class MessagesList extends LitElement {
           (message) => message.index,
           (message, index) =>
             html` <il-message
+              .userList=${this.users}
               .messages=${this.messages}
               .message=${message}
               .index=${index}
@@ -94,6 +103,19 @@ export class MessagesList extends LitElement {
         )}
       </ul>
     `;
+  }
+
+  async getAllUsers() {
+    let cookie = this.cookie;
+    try {
+      await UsersService.GetUsers("", cookie.username, cookie.password).then(
+        (users) => {
+          this.users = users["data"];
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   textEditorResized(event) {
