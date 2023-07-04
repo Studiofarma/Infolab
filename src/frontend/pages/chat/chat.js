@@ -186,6 +186,11 @@ export class Chat extends LitElement {
                         "info",
                         2000
                       )}
+                    @edit-message=${(event) => {
+                      this.dispatchEvent(
+                        new CustomEvent(event.type, { detail: event.detail })
+                      );
+                    }}
                   ></il-messages-list>
 
                   <il-modal

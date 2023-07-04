@@ -108,6 +108,11 @@ export class Message extends LitElement {
               new CustomEvent(event.type, { detail: event.detail })
             );
           }}
+          @edit-message=${(event) => {
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            );
+          }}
         >
         </il-message-menu-popover>
       </div>
