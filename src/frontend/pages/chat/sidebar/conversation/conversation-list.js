@@ -375,6 +375,9 @@ class ConversationList extends LitElement {
       this.conversationList
     );
 
+    if (this.conversationListFiltered.length === 0)
+      return html`<p class="no-result">Nessun risultato</p>`;
+
     return repeat(this.conversationListFiltered, (pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
       if (
@@ -412,6 +415,9 @@ class ConversationList extends LitElement {
     this.newConversationListFiltered = this.filterConversations(
       this.newConversationList
     );
+
+    if (this.newConversationListFiltered.length === 0)
+      return html`<p class="no-result">Nessun risultato</p>`;
 
     return this.newConversationListFiltered.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);

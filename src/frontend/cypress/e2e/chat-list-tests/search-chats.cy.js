@@ -62,7 +62,9 @@ describe("search spec", () => {
       .find("input")
       .type("test", { force: true });
 
-    cy.getLitElement(buttonIconPath).find("div").click({ force: true });
+    cy.getLitElement(inputRicercaSidebarPath)
+      .find("il-button-icon")
+      .click({ force: true });
 
     cy.getLitElement(inputRicercaSidebarPath)
       .find("input")
