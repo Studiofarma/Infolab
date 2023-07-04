@@ -8,6 +8,7 @@ import {
   autoPlacement,
   offset,
   shift,
+  flip,
 } from "@floating-ui/dom";
 
 // Events to turn on/off the tooltip
@@ -120,11 +121,7 @@ export class Tooltip extends LitElement {
     this.style.cssText = "";
     computePosition(this.target, this, {
       strategy: "fixed",
-      middleware: [
-        offset(this.offset),
-        shift(),
-        autoPlacement({ allowedPlacements: ["top", "bottom"] }),
-      ],
+      middleware: [offset(this.offset), shift(), flip(), autoPlacement()],
     }).then(({ x, y }) => {
       this.style.left = `${x}px`;
       this.style.top = `${y}px`;
