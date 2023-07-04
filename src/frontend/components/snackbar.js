@@ -85,5 +85,11 @@ export class Snackbar extends LitElement {
     this.shadowRoot.querySelector("#snackbar").style.opacity = 0.0;
     this.shadowRoot.querySelector("#snackbar").style.bottom = "10px";
   }
+
+  openSnackbar() {
+    this.shadowRoot.querySelector("#snackbar").style.opacity = 1.0;
+    this.shadowRoot.querySelector("#snackbar").style.bottom = "20px";
+    setTimeout(() => this.closeSnackbar(), 5000);
+  }
 }
 customElements.define("il-snackbar", Snackbar);
