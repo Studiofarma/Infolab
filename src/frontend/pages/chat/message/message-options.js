@@ -79,10 +79,11 @@ export class MessageOptions extends LitElement {
   }
 
   deleteMessageHandler() {
-    this.chatRef.value.messages = this.chatRef.value.messages.filter(
-      (_, index) => index != this.index
-    );
-    this.chatRef.value.requestUpdate();
+    this.chatRef.value.messages[this.index] = {
+      ...this.chatRef.value.messages[this.index],
+      hasBeenDeleted: true,
+    };
+    this.chatRef.value.messagesListRef.value.requestUpdate();
     this.requestUpdate();
   }
 }

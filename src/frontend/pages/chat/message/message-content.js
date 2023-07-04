@@ -1,5 +1,6 @@
 import { LitElement, css, html } from "lit";
 import { resolveMarkdown } from "lit-markdown";
+import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
 import { MarkdownService } from "../../../services/markdown-service";
@@ -136,6 +137,33 @@ export class MessageContent extends LitElement {
       color: #1d1e20;
     }
 
+    .edited {
+      text-align: end;
+      font-size: 11px;
+      color: #1d1e20;
+      margin-right: 10px;
+    }
+
+    .deleted {
+      text-align: end;
+      font-size: 11px;
+      color: #1d1e20;
+    }
+
+    .timestamp-edited-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: right;
+      align-items: center;
+    }
+
+    .timestamp-deleted-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
     .message-date {
       justify-self: center;
       padding: 5px;
@@ -165,18 +193,42 @@ export class MessageContent extends LitElement {
                 : ""}
             </p>`
           : html``}
-        <p class="message">
-          ${resolveMarkdown(
-            // MarkdownService.parseMarkdown(this.message.content)
-            this.message.content
+        ${when(
+          !this.message.hasBeenDeleted,
+          () => html`
+            <p class="message">
+              ${resolveMarkdown(
+                // MarkdownService.parseMarkdown(this.message.content)
+                this.message.content
+              )}
+            </p>
+          `,
+          () => html``
+        )}
+
+        <div
+          class=${this.message.hasBeenDeleted
+            ? "timestamp-deleted-container"
+            : "timestamp-edited-container"}
+        >
+          ${when(
+            this.message.hasBeenEdited && !this.message.hasBeenDeleted,
+            () => html`<p class="edited">Modificato</p>`,
+            () => html``
           )}
-        </p>
-        <p class="message-timestamp">
-          ${new Date(this.message.timestamp).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </p>
+          ${when(
+            this.message.hasBeenDeleted,
+            () =>
+              html`<p class="deleted">Questo messaggio è stato eliminato</p>`,
+            () => html``
+          )}
+          <p class="message-timestamp">
+            ${new Date(this.message.timestamp).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        </div>
       </div>
     `;
   }
