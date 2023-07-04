@@ -1,14 +1,17 @@
+const chatPath = "il-app,il-chat";
+const inputControlsPath = `${chatPath},il-input-controls`;
+const editorPath = `${inputControlsPath},il-editor`;
+const buttonIconPath = `${inputControlsPath},il-insertion-bar,il-button-icon`;
+
 function getTextarea() {
-  return cy
-    .getLitElement("il-app,il-chat,il-input-controls,il-editor")
-    .find("textarea");
+  return cy.getLitElement(editorPath).find("textarea");
 }
 
 beforeEach(() => {
   cy.login({ user: "user1", password: "password1" });
 
   cy.getLitElement(
-    "il-app,il-chat,il-sidebar,il-conversation-list,il-conversation"
+    `${chatPath},il-sidebar,il-conversation-list,il-conversation`
   )
     .find(".chat-box")
     .first()
@@ -17,7 +20,7 @@ beforeEach(() => {
 
 describe("Editor spec", () => {
   it("Editor exists", () => {
-    cy.litElementExist("il-app,il-chat,il-input-controls,il-editor");
+    cy.litElementExist(editorPath);
   });
 
   it("Editor types", () => {
@@ -45,9 +48,7 @@ describe("Editor spec", () => {
 
     textarea.type("Test67890");
 
-    cy.getLitElement(
-      "il-app,il-chat,il-input-controls,il-insertion-bar,il-button-icon"
-    )
+    cy.getLitElement(buttonIconPath)
       .find(".icon-button")
       .last()
       .click({ force: true });
@@ -77,16 +78,12 @@ describe("Editor spec", () => {
   // });
 
   it("Emoji works", () => {
-    cy.getLitElement(
-      "il-app,il-chat,il-input-controls,il-insertion-bar,il-button-icon"
-    )
+    cy.getLitElement(buttonIconPath)
       .find(".icon-button")
       .eq(0)
       .click({ force: true });
 
-    cy.getLitElement(
-      "il-app,il-chat,il-input-controls,il-emoji-picker,emoji-picker"
-    )
+    cy.getLitElement(`${inputControlsPath},il-emoji-picker,emoji-picker`)
       .find(".tabpanel")
       .find(".emoji-menu")
       .find("button")
@@ -99,9 +96,7 @@ describe("Editor spec", () => {
   });
 
   // it("Editor formatting buttons works", () => {
-  //   cy.getLitElement(
-  //     "il-app,il-chat,il-input-controls,il-insertion-bar,il-button-icon"
-  //   )
+  //   cy.getLitElement(buttonIconPath)
   //     .find(".icon-button")
   //     .eq(1)
   //     .click({ force: true });
