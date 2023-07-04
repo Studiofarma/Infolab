@@ -19,11 +19,10 @@ export class Snackbar extends LitElement {
     }
 
     #snackbar {
-      display: block;
       position: fixed;
       transform: translate(-50%, -50%);
       left: 50%;
-      bottom: 10px;
+      bottom: -80px;
       min-width: 500px;
       min-height: 40px;
       color: black;
@@ -79,10 +78,14 @@ export class Snackbar extends LitElement {
 
   closeSnackbar(type) {
     this.snackbarRef.value.style.opacity = 0.0;
-    this.snackbarRef.value.style.bottom = "10px";
+    this.snackbarRef.value.style.bottom = `-${
+      this.snackbarRef.value.clientHeight * 2
+    }px`;
   }
 
   openSnackbar(content, type, time) {
+    this.snackbarRef.value.style.display = "flex";
+
     this.snackbarRef.value.className = type;
     this.textRef.value.innerText = content;
 

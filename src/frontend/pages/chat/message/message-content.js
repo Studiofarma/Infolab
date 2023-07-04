@@ -167,7 +167,8 @@ export class MessageContent extends LitElement {
           : html``}
         <p class="message">
           ${resolveMarkdown(
-            MarkdownService.parseMarkdown(this.message.content)
+            // MarkdownService.parseMarkdown(this.message.content)
+            this.message.content
           )}
         </p>
         <p class="message-timestamp">
