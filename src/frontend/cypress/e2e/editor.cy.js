@@ -107,9 +107,9 @@ describe("Editor spec", () => {
       .click({ force: true });
 
     cy.getLitElement(
-      "il-app,il-chat,il-input-controls,il-insertion-bar,il-editor-formatting-buttons,il-formatting-button"
+      "il-app,il-chat,il-input-controls,il-insertion-bar,il-editor-formatting-buttons"
     )
-      .find(".icon-button")
+      .find("il-button-icon")
       .eq(0)
       .click({ force: true });
 
