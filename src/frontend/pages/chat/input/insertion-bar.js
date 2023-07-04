@@ -5,6 +5,7 @@ import "../../../components/button-icon";
 import "./editor/editor-formatting-buttons";
 
 import { IconNames } from "../../../enums/icon-names";
+import { TooltipTexts } from "../../../enums/tooltip-texts";
 
 export class InsertionBar extends LitElement {
   static properties = {
@@ -35,7 +36,6 @@ export class InsertionBar extends LitElement {
       margin-top: 0px;
       border: none;
       color: white !important;
-      font-size: 20px;
       cursor: pointer;
       display: flex;
       justify-content: center;
@@ -48,14 +48,16 @@ export class InsertionBar extends LitElement {
       <div>
         <div class="formatting-container">
           <il-button-icon
-            content=${IconNames.emoticon}
+            .content=${IconNames.emoticon}
             @click=${this.emojiPickerClick}
+            .tooltipText=${TooltipTexts.emoticon}
           ></il-button-icon>
         </div>
         <div id="submitContainer">
           <il-button-icon
             @click=${this.sendMessage}
             content=${IconNames.send}
+            .tooltipText=${TooltipTexts.send}
           ></il-button-icon>
         </div>
       </div>
@@ -66,11 +68,13 @@ export class InsertionBar extends LitElement {
   //     <div>
   //       <div class="formatting-container">
   //         <il-button-icon
-  //           content=${IconNames.emoticon}
+  //           .content=${IconNames.emoticon}
   //           @click=${this.emojiPickerClick}
+  //           .tooltipText=${TooltipTexts.emoticon}
   //         ></il-button-icon>
   //         <il-button-icon
-  //           content=${IconNames.pencil}
+  //           .content=${IconNames.pencil}
+  //           .tooltipText=${TooltipTexts.editor}
   //           @click=${() => {
   //             this.bEditor = !this.bEditor;
   //             this.editor?.value.focusTextarea();
@@ -87,7 +91,8 @@ export class InsertionBar extends LitElement {
   //       <div id="submitContainer">
   //         <il-button-icon
   //           @click=${this.sendMessage}
-  //           content=${IconNames.send}
+  //           .content=${IconNames.send}
+  //           .tooltipText=${TooltipTexts.send}
   //         ></il-button-icon>
   //       </div>
   //     </div>
