@@ -10,10 +10,10 @@ const textAreaWidthOffset = 20;
 const keys = {
   tab: "Tab",
   enter: "Enter",
-  bold: "b",
-  italic: "i",
-  strike: "s",
-  link: "l",
+  // bold: "b",
+  // italic: "i",
+  // strike: "s",
+  // link: "l",
 };
 
 export class Editor extends LitElement {
@@ -130,7 +130,7 @@ export class Editor extends LitElement {
 
     if (event.key == keys.enter) {
       if (event.shiftKey) {
-        this.checkList(event);
+        // this.checkList(event);
       } else {
         this.dispatchEvent(new CustomEvent("enter-key-pressed"));
         event.preventDefault();
@@ -154,47 +154,47 @@ export class Editor extends LitElement {
     this.textEditorResize();
   }
 
-  checkList(event) {
-    const rows = this.message.split("\n");
-    let lastRow = rows[rows.length - 1].trimStart();
-    let indexOfDot;
+  // checkList(event) {
+  //   const rows = this.message.split("\n");
+  //   let lastRow = rows[rows.length - 1].trimStart();
+  //   let indexOfDot;
 
-    if (MarkdownService.checkUnorderedList(lastRow)) {
-      this.message += "\n* ";
-      event.preventDefault();
-    } else if (
-      (indexOfDot = MarkdownService.checkOrderedList(lastRow)) !== -1
-    ) {
-      const lineNumber = Number(lastRow.substring(0, indexOfDot)) + 1;
-      this.message += `\n${lineNumber}. `;
-      event.preventDefault();
-    }
+  //   if (MarkdownService.checkUnorderedList(lastRow)) {
+  //     this.message += "\n* ";
+  //     event.preventDefault();
+  //   } else if (
+  //     (indexOfDot = MarkdownService.checkOrderedList(lastRow)) !== -1
+  //   ) {
+  //     const lineNumber = Number(lastRow.substring(0, indexOfDot)) + 1;
+  //     this.message += `\n${lineNumber}. `;
+  //     event.preventDefault();
+  //   }
 
-    this.textChanged();
-    this.textEditorResize();
-  }
+  //   this.textChanged();
+  //   this.textEditorResize();
+  // }
 
-  checkMarkdownKeys(currentKeyPressed) {
-    const selectedText = this.getSelectedText();
-    let textToInsert = selectedText;
+  // checkMarkdownKeys(currentKeyPressed) {
+  //   const selectedText = this.getSelectedText();
+  //   let textToInsert = selectedText;
 
-    switch (currentKeyPressed) {
-      case keys.bold:
-        textToInsert = MarkdownService.insertBold(selectedText);
-        break;
-      case keys.italic:
-        textToInsert = MarkdownService.insertItalic(selectedText);
-        break;
-      case keys.strike:
-        textToInsert = MarkdownService.insertStrike(selectedText);
-        break;
-      case keys.link:
-        textToInsert = MarkdownService.insertLink(selectedText);
-        break;
-    }
+  //   switch (currentKeyPressed) {
+  //     case keys.bold:
+  //       textToInsert = MarkdownService.insertBold(selectedText);
+  //       break;
+  //     case keys.italic:
+  //       textToInsert = MarkdownService.insertItalic(selectedText);
+  //       break;
+  //     case keys.strike:
+  //       textToInsert = MarkdownService.insertStrike(selectedText);
+  //       break;
+  //     case keys.link:
+  //       textToInsert = MarkdownService.insertLink(selectedText);
+  //       break;
+  //   }
 
-    this.insertInTextarea(textToInsert);
-  }
+  //   this.insertInTextarea(textToInsert);
+  // }
 
   getTextarea() {
     return this.shadowRoot.querySelector("textarea");
