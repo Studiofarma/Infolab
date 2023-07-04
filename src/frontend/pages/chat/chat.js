@@ -152,8 +152,6 @@ export class Chat extends LitElement {
   `;
 
   render() {
-    console.log("Render");
-    console.log(this.messages);
     return html`
       <main>
         <section>
@@ -331,8 +329,6 @@ export class Chat extends LitElement {
       content: message.content,
       hasBeenEdited: true,
     };
-
-    console.log(this.messages);
 
     if (index === this.messages.length - 1)
       this.sidebarRef.value.sidebarListRef.value.setList(message);
