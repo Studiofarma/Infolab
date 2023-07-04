@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { createRef, ref } from "lit/directives/ref.js";
 
 import { LoginService } from "../../services/login-service";
 import { CookieService } from "../../services/cookie-service";
@@ -30,6 +31,7 @@ export class Login extends LitElement {
     this.emptyPasswordField = false;
     this.header = "";
     this.token = "";
+    this.snackbarRef = createRef();
     this.cookie = CookieService.getCookie();
     if (this.cookie.isValid) this.loginConfirm();
   }
@@ -243,20 +245,9 @@ export class Login extends LitElement {
           </div>
         </div>
 
-        <il-snackbar
-          content="CREDENZIALI NON VALIDE"
-          type="error"
-        ></il-snackbar>
+        <il-snackbar ${ref(this.snackbarRef)}></il-snackbar>
       </div>
     `;
-  }
-
-  getDivInSnackbar() {
-    return (
-      this.renderRoot
-        .querySelector("il-snackbar")
-        .shadowRoot.querySelector("#snackbar") ?? null
-    );
   }
 
   onUsernameInput(e) {
@@ -324,8 +315,11 @@ export class Login extends LitElement {
       .catch((e) => {
         this.emptyUsernameField = false;
         this.emptyPasswordField = false;
-        this.getDivInSnackbar().style.opacity = 1.0;
-        this.getDivInSnackbar().style.bottom = "20px";
+        this.snackbarRef.value.openSnackbar(
+          "CREDENZIALI NON VALIDE",
+          "error",
+          5000
+        );
       });
   }
 }

@@ -42,6 +42,7 @@ export class MessageMenuPopover extends LitElement {
 
         <il-message-options
           slot="popup"
+          @message-copy=${this.messageCopy}
           .chatRef=${this.chatRef}
           .message=${this.message}
           .cookie=${this.cookie}
@@ -63,6 +64,10 @@ export class MessageMenuPopover extends LitElement {
         </il-message-options>
       </il-popover>
     `;
+  }
+
+  messageCopy() {
+    this.dispatchEvent(new CustomEvent("message-copy"));
   }
 
   getPopupCoords() {

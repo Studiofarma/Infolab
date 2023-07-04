@@ -1,18 +1,14 @@
 import { LitElement, html, css } from "lit";
+import { createRef, ref } from "lit/directives/ref.js";
 
 import "./button-icon";
 import { IconNames } from "../enums/icon-names";
 
 export class Snackbar extends LitElement {
-  static properties = {
-    content: "",
-    type: "",
-  };
-
   constructor() {
     super();
-    this.content = "";
-    this.type = "";
+    this.snackbarRef = createRef();
+    this.textRef = createRef();
   }
 
   static styles = css`
@@ -71,8 +67,8 @@ export class Snackbar extends LitElement {
 
   render() {
     return html`
-      <div id="snackbar" class=${this.type}>
-        <p>${this.content}</p>
+      <div id="snackbar" ${ref(this.snackbarRef)}>
+        <p ${ref(this.textRef)}></p>
         <il-button-icon
           content=${IconNames.close}
           @click=${this.closeSnackbar}
@@ -81,9 +77,19 @@ export class Snackbar extends LitElement {
     `;
   }
 
-  closeSnackbar() {
-    this.shadowRoot.querySelector("#snackbar").style.opacity = 0.0;
-    this.shadowRoot.querySelector("#snackbar").style.bottom = "10px";
+  closeSnackbar(type) {
+    this.snackbarRef.value.style.opacity = 0.0;
+    this.snackbarRef.value.style.bottom = "10px";
+  }
+
+  openSnackbar(content, type, time) {
+    this.snackbarRef.value.className = type;
+    this.textRef.value.innerText = content;
+
+    this.snackbarRef.value.style.opacity = 1.0;
+    this.snackbarRef.value.style.bottom = "20px";
+
+    setTimeout(() => this.closeSnackbar(type), time);
   }
 }
 customElements.define("il-snackbar", Snackbar);
