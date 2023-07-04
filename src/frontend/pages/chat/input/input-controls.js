@@ -100,7 +100,7 @@ export class InputControls extends LitElement {
           <div class="inputContainer">
             <il-editor
               ${ref(this.editorRef)}
-              @enter-key-pressed=${this.sendMessage}
+              @enter-key-pressed=${this.manageEnterKey}
               @text-changed=${this.updateMessage}
               @text-editor-resized=${this.textEditorResized}
             ></il-editor>
@@ -167,6 +167,14 @@ export class InputControls extends LitElement {
       })
     );
     this.clearMessage();
+  }
+
+  manageEnterKey() {
+    if (this.isEditing) {
+      this.confirmEdit(new CustomEvent("confirm-edit"));
+    } else {
+      this.sendMessage();
+    }
   }
 
   updateMessage(event) {
