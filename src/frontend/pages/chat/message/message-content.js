@@ -229,19 +229,6 @@ export class MessageContent extends LitElement {
                 minute: "2-digit",
               })}
             </p>
-            <div class="timestamp-edited-container">
-              ${when(
-                this.message.hasBeenEdited,
-                () => html`<p class="edited">Modificato</p>`,
-                () => html``
-              )}
-              <p class="message-timestamp">
-                ${new Date(this.message.timestamp).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </p>
-            </div>
           </div>
         </div>
       </main>
