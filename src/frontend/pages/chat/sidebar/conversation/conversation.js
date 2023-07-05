@@ -219,13 +219,13 @@ class Conversation extends LitElement {
   }
 
   lastMessageTextFormatter(sender, message) {
-    if (sender.username == this.cookie.username) {
+    if (sender?.username == this.cookie.username) {
       sender.description = "Tu";
     }
     return resolveMarkdown(
       MarkdownService.parseMarkdown(
         this.fixLastMessageLength(
-          sender.description
+          sender?.description
             ? `${sender.description}: ${message}`
             : "Nuova conversazione"
         )
