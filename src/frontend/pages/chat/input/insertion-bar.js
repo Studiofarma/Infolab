@@ -11,6 +11,7 @@ export class InsertionBar extends LitElement {
   static properties = {
     bEditor: false,
     editor: undefined,
+    isEditing: { type: Boolean },
   };
 
   static styles = css`
@@ -54,11 +55,29 @@ export class InsertionBar extends LitElement {
           ></il-button-icon>
         </div>
         <div id="submitContainer">
-          <il-button-icon
-            @click=${this.sendMessage}
-            content=${IconNames.send}
-            .tooltipText=${TooltipTexts.send}
-          ></il-button-icon>
+          ${when(
+            this.isEditing,
+            () => html`
+              <il-button-icon
+                @click=${this.cancelEdit}
+                content=${IconNames.close}
+                .tooltipText=${TooltipTexts.discardChanges}
+              ></il-button-icon>
+
+              <il-button-icon
+                @click=${this.confirmEdit}
+                content=${IconNames.check}
+                .tooltipText=${TooltipTexts.confirmChanges}
+              ></il-button-icon>
+            `,
+            () => html`
+              <il-button-icon
+                @click=${this.sendMessage}
+                content=${IconNames.send}
+                .tooltipText=${TooltipTexts.send}
+              ></il-button-icon>
+            `
+          )}
         </div>
       </div>
     `;
@@ -105,6 +124,14 @@ export class InsertionBar extends LitElement {
 
   emojiPickerClick() {
     this.dispatchEvent(new CustomEvent("emoji-picker-click"));
+  }
+
+  confirmEdit() {
+    this.dispatchEvent(new CustomEvent("confirm-edit"));
+  }
+
+  cancelEdit() {
+    this.dispatchEvent(new CustomEvent("cancel-edit"));
   }
 }
 

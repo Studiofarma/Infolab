@@ -1,5 +1,6 @@
 import { LitElement, css, html } from "lit";
 import { resolveMarkdown } from "lit-markdown";
+import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
 import { MarkdownService } from "../../../services/markdown-service";
@@ -136,6 +137,20 @@ export class MessageContent extends LitElement {
       color: #1d1e20;
     }
 
+    .edited {
+      text-align: end;
+      font-size: 11px;
+      color: #1d1e20;
+      margin-right: 10px;
+    }
+
+    .timestamp-edited-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: right;
+      align-items: center;
+    }
+
     .message-date {
       justify-self: center;
       padding: 5px;
@@ -172,12 +187,19 @@ export class MessageContent extends LitElement {
               this.message.content
             )}
           </p>
-          <p class="message-timestamp">
-            ${new Date(this.message.timestamp).toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </p>
+          <div class="timestamp-edited-container">
+            ${when(
+              this.message.hasBeenEdited,
+              () => html`<p class="edited">Modificato</p>`,
+              () => html``
+            )}
+            <p class="message-timestamp">
+              ${new Date(this.message.timestamp).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </p>
+          </div>
         </div>
       </main>
     `;

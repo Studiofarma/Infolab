@@ -25,6 +25,15 @@ export class MessageOptions extends LitElement {
         >
         </message-button-option>
 
+        ${when(
+          this.type === "sender",
+          () => html`<message-button-option
+            iconName=${IconNames.pencil}
+            text="Modifica"
+            @click=${this.editHandler}
+          ></message-button-option>`
+        )}
+
         <message-button-option
           iconName=${IconNames.mdiShare}
           text="Inoltra"
@@ -86,6 +95,17 @@ export class MessageOptions extends LitElement {
     );
     this.chatRef.value.requestUpdate();
     this.requestUpdate();
+  }
+
+  editHandler() {
+    this.dispatchEvent(
+      new CustomEvent("edit-message", {
+        detail: {
+          message: this.message,
+          index: this.index,
+        },
+      })
+    );
   }
 }
 
