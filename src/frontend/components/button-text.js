@@ -5,6 +5,7 @@ export class ButtonText extends LitElement {
     return {
       text: { type: String },
       isActive: { type: Boolean },
+      color: { type: String },
     };
   }
 
@@ -13,7 +14,6 @@ export class ButtonText extends LitElement {
       padding: 0px 24px;
       font-family: inherit;
       border-radius: 10px;
-      background: #206cf7;
       text-align: center;
       border: 1px solid #616870;
       color: white;
@@ -23,7 +23,15 @@ export class ButtonText extends LitElement {
   `;
 
   render() {
-    return html` <button part="button">${this.text}</button> `;
+    return html`
+      <button
+        style=${this.color
+          ? `background: ${this.color}`
+          : "background: #206cf7;"}
+      >
+        ${this.text}
+      </button>
+    `;
   }
 }
 

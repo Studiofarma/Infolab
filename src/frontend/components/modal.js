@@ -54,6 +54,14 @@ export class Modal extends LitElement {
       this.ilDialogRef.value.isOpened = false;
     }
   }
+
+  openModal() {
+    this.ilDialogRef.value?.openDialog();
+  }
+
+  closeModal() {
+    this.ilDialogRef.value?.closeDialog();
+  }
 }
 
 customElements.define("il-modal", Modal);

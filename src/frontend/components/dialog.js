@@ -88,5 +88,13 @@ export class Dialog extends LitElement {
         ? this.dialogRef.value.show()
         : this.dialogRef.value.close();
   }
+
+  openDialog() {
+    this.isOpened = true;
+  }
+
+  closeDialog() {
+    this.isOpened = false;
+  }
 }
 customElements.define("il-dialog", Dialog);
