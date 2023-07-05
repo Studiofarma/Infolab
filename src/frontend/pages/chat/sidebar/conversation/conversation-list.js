@@ -274,7 +274,6 @@ class ConversationList extends LitElement {
         cookie.password
       );
       rooms["data"].forEach((room) => {
-        console.log(room);
         let userIndex = this.usersList.findIndex(
           (user) => user.description == room.description
         );
@@ -289,7 +288,7 @@ class ConversationList extends LitElement {
             lastMessage: room.lastMessage || "",
             id: this.usersList[userIndex].id,
           };
-          this.conversationList = [...this.conversationList, room];
+          this.conversationList = [...this.conversationList, conversation];
         }
       });
 
@@ -327,13 +326,27 @@ class ConversationList extends LitElement {
       (conversation) => conversation.roomName == message.roomName
     );
 
-    this.conversationList[index].lastMessage = {
-      content: message.content,
-      timestamp: message.timestamp,
-      sender: message.sender,
-    };
+    if (index === -1) {
+      index = this.newConversationList.findIndex(
+        (conversation) => conversation.roomName == message.roomName
+      );
 
-    this.conversationList.sort(this.compareTimestamp);
+      this.newConversationList[index].lastMessage = {
+        content: message.content,
+        timestamp: message.timestamp,
+        sender: message.sender,
+      };
+
+      this.newConversationList.sort(this.compareTimestamp);
+    } else {
+      this.conversationList[index].lastMessage = {
+        content: message.content,
+        timestamp: message.timestamp,
+        sender: message.sender,
+      };
+
+      this.conversationList.sort(this.compareTimestamp);
+    }
 
     this.requestUpdate();
   }
@@ -383,6 +396,7 @@ class ConversationList extends LitElement {
 
     return repeat(this.conversationListFiltered, (pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
+
       if (
         conversation.lastMessage?.content ||
         conversation.roomName == this.activeChatName

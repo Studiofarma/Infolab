@@ -79,7 +79,6 @@ export class MessageOptions extends LitElement {
   }
 
   goToChatHandler() {
-    console.log(this.message);
     this.dispatchEvent(
       new CustomEvent("go-to-chat", {
         detail: {
