@@ -1,3 +1,7 @@
+const messagePath = "il-app, il-chat, il-messages-list, il-message";
+const iconButtonPath =
+  "il-app,il-chat, il-messages-list, il-message, il-message-menu-popover, il-button-icon";
+
 Cypress.Commands.add("getLitElement", (elementPath) => {
   let elementNames = elementPath.includes(",")
     ? elementPath.split(",")
@@ -89,4 +93,30 @@ Cypress.Commands.add("openChat", (name) => {
           }
         });
     });
+});
+
+Cypress.Commands.add("hoverOnTheLast", () => {
+  cy.getLitElement(messagePath)
+    .last()
+    .find(".message-body")
+    .trigger("mouseover", { force: true });
+});
+
+Cypress.Commands.add("clickOnTheLastOptionsMenu", () => {
+  cy.getLitElement(iconButtonPath)
+    .last()
+    .find(".icon-button")
+    .click({ force: true });
+});
+
+Cypress.Commands.add("clickOptionButton", (option) => {
+  cy.getLitElement(
+    "il-app, il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options"
+  )
+    .last()
+    .find("message-button-option")
+    .shadow()
+    .find("div")
+    .filter(`:contains("${option}")`)
+    .click({ force: true });
 });
