@@ -50,11 +50,11 @@ export class Avatar extends LitElement {
     }
 
     .online {
-      color: #007928;
+      color: #68c47e;
     }
 
     .offline {
-      color: #6f7174;
+      color: #dbdde0;
     }
   `;
 
