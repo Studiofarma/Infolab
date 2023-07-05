@@ -1,12 +1,11 @@
 import { LitElement, html, css } from "lit";
-import { resolveMarkdown } from "lit-markdown";
 
-import { MarkdownService } from "../../../../services/markdown-service";
+import { IconNames } from "../../../../enums/icon-names";
 import { CookieService } from "../../../../services/cookie-service";
+import { HtmlParserService } from "../../../../services/html-parser-service";
 
 import "../../../../components/icon";
 import "../../../../components/button-icon";
-import { IconNames } from "../../../../enums/icon-names";
 
 class Conversation extends LitElement {
   static properties = {
@@ -222,13 +221,11 @@ class Conversation extends LitElement {
     if (sender.username == this.cookie.username) {
       sender.description = "Tu";
     }
-    return resolveMarkdown(
-      MarkdownService.parseMarkdown(
-        this.fixLastMessageLength(
-          sender.description
-            ? `${sender.description}: ${message}`
-            : "Nuova conversazione"
-        )
+    return HtmlParserService.parseFromString(
+      this.fixLastMessageLength(
+        sender.description
+          ? `${sender.description}: ${message}`
+          : "Nuova conversazione"
       )
     );
   }

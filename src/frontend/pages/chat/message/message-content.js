@@ -1,9 +1,8 @@
 import { LitElement, css, html } from "lit";
-import { resolveMarkdown } from "lit-markdown";
 import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
-import { MarkdownService } from "../../../services/markdown-service";
+import { HtmlParserService } from "./../../../services/html-parser-service";
 
 export class MessageContent extends LitElement {
   static properties = {
@@ -181,10 +180,7 @@ export class MessageContent extends LitElement {
             </p>`
           : html``}
         <p class="message">
-          ${resolveMarkdown(
-            // MarkdownService.parseMarkdown(this.message.content)
-            this.message.content
-          )}
+          ${HtmlParserService.parseFromString(this.message.content)}
         </p>
         <div class="timestamp-edited-container">
           ${when(

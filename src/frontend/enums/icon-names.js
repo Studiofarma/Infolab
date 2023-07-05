@@ -18,11 +18,8 @@ export const IconNames = {
   italic: "mdiFormatItalic",
   magnify: "mdiMagnify",
   strikethrough: "mdiFormatStrikethroughVariant",
-  link: "mdiLink",
-  minus: "mdiMinus",
   listBulleted: "mdiFormatListBulleted",
   listNumbered: "mdiFormatListNumbered",
-  title: "mdiFormatTitle",
   numeric1: "mdiNumeric1Circle",
   numeric2: "mdiNumeric2Circle",
   numeric3: "mdiNumeric3Circle",
@@ -35,4 +32,6 @@ export const IconNames = {
   numericPlus: "mdiNumeric9PlusCircle",
   checkCircle: "mdiCheckCircle",
   check: "mdiCheck",
+  undo: "mdiUndoVariant",
+  redo: "mdiRedoVariant",
 };

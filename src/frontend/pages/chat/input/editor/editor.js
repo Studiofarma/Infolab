@@ -1,239 +1,93 @@
-import { LitElement, html, css } from "lit";
-import { ref, createRef } from "lit/directives/ref.js";
+import { LitElement, html, customElement, css } from "lit";
+import { createRef, ref } from "lit/directives/ref.js";
 
-import { MarkdownService } from "../../../../services/markdown-service";
-
-import "../../../../components/button-text";
-
-const textareaDefaultHeight = 21;
-const textAreaWidthOffset = 20;
-const keys = {
-  tab: "Tab",
-  enter: "Enter",
-  // bold: "b",
-  // italic: "i",
-  // strike: "s",
-  // link: "l",
-};
+const enterKey = "Enter";
 
 export class Editor extends LitElement {
-  static properties = {
-    message: { type: String },
-    isKeyDown: false,
-  };
-
-  constructor() {
-    super();
-    this.message = "";
-    // Refs
-    this.textareaRef = createRef();
-  }
-
   static styles = css`
-    textarea {
-      width: calc(100% - ${textAreaWidthOffset}px);
-      resize: none;
-      font-size: ${textareaDefaultHeight}px;
-      outline: none;
-      background: none;
-      color: black;
-      border: 0;
-      font-family: inherit;
-      padding-left: 10px;
-      max-height: 100px;
-      height: ${textareaDefaultHeight}px;
-      padding-bottom: 0;
+    #editor {
+      background-color: white;
+      flex: 1;
+      padding: 20px;
+      outline: 0px solid transparent;
+      padding: 5px;
+      line-height: 20px;
+      font-size: 20px;
+      max-height: 90px;
+      border-radius: 5px;
+      overflow-y: auto;
     }
 
-    textarea::placeholder {
-      color: #6f7174;
-    }
-
-    ::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background-color: none;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      background-color: #206cf7;
-    }
-
-    ::-webkit-scrollbar:vertical {
-      margin-right: 10px;
+    #editor[placeholder]:empty:before {
+      content: attr(placeholder);
     }
   `;
 
+  constructor() {
+    super();
+    this.editorRef = createRef();
+  }
+
   render() {
     return html`
-      <textarea
-        ${ref(this.textareaRef)}
-        @input=${this.onInput}
+      <div
+        id="editor"
+        contenteditable="true"
+        ${ref(this.editorRef)}
         @keydown=${this.onKeyDown}
-        @keyup=${this.onKeyUp}
-        @blur=${this.onBlur}
-        placeholder="Scrivi un messaggio..."
-      ></textarea>
+        @input=${this.onInput}
+        placeholder="Inserisci un messaggio..."
+      ></div>
     `;
   }
 
-  getText() {
-    return this.textareaRef.value?.value;
-  }
-
-  onInput(event) {
-    if (this.isKeyDown) this.message = event.target.value;
-
-    this.textChanged();
-    this.textEditorResize();
-    this.isKeyDown = false;
-  }
-
-  textChanged() {
-    this.shadowRoot.querySelector("textarea").value = this.message;
-    this.dispatchEvent(
-      new CustomEvent("text-changed", {
-        detail: { content: this.message },
-      })
-    );
-  }
-
-  textEditorResize() {
-    const textarea = this.shadowRoot.querySelector("textarea");
-    textarea.style.height = `${textareaDefaultHeight}px`;
-    textarea.style.height = `${textarea.scrollHeight}px`;
-    this.dispatchEvent(
-      new CustomEvent("text-editor-resized", {
-        detail: { height: textarea.clientHeight },
-      })
-    );
-  }
-
-  firstUpdated() {
-    this.textEditorResize();
-  }
-
-  focusTextArea() {
-    this.textAreaRef.value.focus();
-  }
-
-  getSelection() {
-    const textarea = this.shadowRoot.querySelector("textarea");
-    return {
-      start: textarea.selectionStart,
-      end: textarea.selectionEnd,
-      direction: textarea.selectionDirection,
-    };
-  }
-
-  onKeyDown(event) {
-    this.isKeyDown = true;
-
-    if (event.key == keys.enter) {
-      if (event.shiftKey) {
-        // this.checkList(event);
-      } else {
-        this.dispatchEvent(new CustomEvent("enter-key-pressed"));
-        event.preventDefault();
-      }
-    }
-
-    if (event.altKey) this.checkMarkdownKeys(event.key);
-  }
-
-  onKeyUp() {
-    this.isKeyDown = false;
-  }
-
-  onBlur(e) {
-    this.isKeyDown = false;
+  focusEditor() {
+    this.editorRef.value.focus();
   }
 
   clearMessage() {
-    this.setEditorText("");
+    this.editorRef.value.innerHTML = "";
   }
 
-  // checkList(event) {
-  //   const rows = this.message.split("\n");
-  //   let lastRow = rows[rows.length - 1].trimStart();
-  //   let indexOfDot;
-
-  //   if (MarkdownService.checkUnorderedList(lastRow)) {
-  //     this.message += "\n* ";
-  //     event.preventDefault();
-  //   } else if (
-  //     (indexOfDot = MarkdownService.checkOrderedList(lastRow)) !== -1
-  //   ) {
-  //     const lineNumber = Number(lastRow.substring(0, indexOfDot)) + 1;
-  //     this.message += `\n${lineNumber}. `;
-  //     event.preventDefault();
-  //   }
-
-  //   this.textChanged();
-  //   this.textEditorResize();
-  // }
-
-  // checkMarkdownKeys(currentKeyPressed) {
-  //   const selectedText = this.getSelectedText();
-  //   let textToInsert = selectedText;
-
-  //   switch (currentKeyPressed) {
-  //     case keys.bold:
-  //       textToInsert = MarkdownService.insertBold(selectedText);
-  //       break;
-  //     case keys.italic:
-  //       textToInsert = MarkdownService.insertItalic(selectedText);
-  //       break;
-  //     case keys.strike:
-  //       textToInsert = MarkdownService.insertStrike(selectedText);
-  //       break;
-  //     case keys.link:
-  //       textToInsert = MarkdownService.insertLink(selectedText);
-  //       break;
-  //   }
-
-  //   this.insertInTextarea(textToInsert);
-  // }
-
-  getTextarea() {
-    return this.shadowRoot.querySelector("textarea");
+  insertInEditor(text) {
+    this.focusEditor();
+    document.execCommand("insertText", false, text);
   }
 
-  insertInTextarea(text) {
-    const textarea = this.getTextarea();
-    const selection = this.getSelection();
+  onKeyDown(event) {
+    if (event.key === enterKey) {
+      event.preventDefault();
+      if (event.shiftKey) document.execCommand("insertLineBreak");
+      else this.sendMessage();
+    }
+  }
 
-    this.message =
-      textarea.value.slice(0, selection.start) +
-      text +
-      textarea.value.slice(selection.end);
-
+  onInput() {
+    this.textEditorResized();
     this.textChanged();
-    this.focusTextarea();
-    this.textEditorResize();
   }
 
-  focusTextarea() {
-    const textarea = this.getTextarea();
+  textChanged() {
+    const text = this.editorRef.value.innerHTML;
 
-    textarea.blur();
-    textarea.focus();
+    this.dispatchEvent(
+      new CustomEvent("text-changed", {
+        detail: { content: text },
+      })
+    );
   }
 
-  getSelectedText() {
-    const textarea = this.getTextarea();
-    const selection = this.getSelection();
+  textEditorResized() {
+    const height = this.editorRef.value.clientHeight;
 
-    return textarea.value.slice(selection.start, selection.end);
+    this.dispatchEvent(new CustomEvent("text-editor-resized"), {
+      detail: { height: height },
+    });
   }
 
-  setEditorText(text) {
-    this.message = text;
-    this.textareaRef.value.value = text;
-    this.textEditorResize();
+  sendMessage() {
+    this.dispatchEvent(new CustomEvent("enter-key-pressed"));
   }
 }
+
 customElements.define("il-editor", Editor);
