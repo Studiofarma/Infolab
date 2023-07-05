@@ -186,6 +186,7 @@ export class Chat extends LitElement {
                         "info",
                         2000
                       )}
+                    @edit-message=${this.editMessage}
                   ></il-messages-list>
 
                   <il-modal
@@ -219,6 +220,7 @@ export class Chat extends LitElement {
                     ${ref(this.inputControlsRef)}
                     @send-message=${this.sendMessage}
                     @text-editor-resized=${this.textEditorResized}
+                    @confirm-edit=${this.confirmEdit}
                   ></il-input-controls>`
               : html`<il-empty-chat></il-empty-chat>`}
           </div>
@@ -310,6 +312,26 @@ export class Chat extends LitElement {
 
       this.updateMessages({ detail: { conversation: list[index] } });
     }
+  }
+
+  editMessage(event) {
+    this.inputControlsRef.value?.editMessage(event.detail);
+  }
+
+  confirmEdit(event) {
+    let message = event.detail.message;
+    let index = event.detail.index;
+
+    this.messages[index] = {
+      ...message,
+      content: message.content,
+      hasBeenEdited: true,
+    };
+
+    if (index === this.messages.length - 1)
+      this.sidebarRef.value.sidebarListRef.value.setList(message);
+
+    this.messagesListRef.value?.requestUpdate();
   }
 
   isUsernameInRoomName(roomName, username) {
@@ -464,6 +486,11 @@ export class Chat extends LitElement {
     let message = JSON.parse(payload.body);
 
     if (message.content !== null) {
+      // TODO: rimuovere questa riga quando hasBeenEdited verrà dal db
+      message.hasBeenEdited = message.hasBeenEdited
+        ? message.hasBeenEdited
+        : false;
+
       if (this.activeChatName == message.roomName) {
         this.messages.push(message);
         this.messagesListRef.value.requestUpdate();
@@ -476,7 +503,7 @@ export class Chat extends LitElement {
     this.messageNotification(message);
   }
 
-  sendMessage(e) {
+  parseMarkdown(e) {
     this.message = e.detail.message.replaceAll("\\\n", "\n");
     const messageLines = e.detail.message.split("\n");
 
@@ -492,13 +519,15 @@ export class Chat extends LitElement {
 
     this.message = messageLines.join("\n");
 
-    let messageContent = this.message.trim();
+    return this.message.trim();
+  }
 
+  buildMessageAndSend(messageContent, type) {
     if (messageContent && this.stompClient) {
       const chatMessage = {
         sender: this.login.username,
         content: messageContent,
-        type: "CHAT",
+        type: type,
       };
 
       let activeChatName = this.activeChatNameFormatter(this.activeChatName);
@@ -511,6 +540,12 @@ export class Chat extends LitElement {
         JSON.stringify(chatMessage)
       );
     }
+  }
+
+  sendMessage(e) {
+    let messageContent = this.parseMarkdown(e);
+
+    this.buildMessageAndSend(messageContent, "CHAT");
   }
 
   onError(error) {

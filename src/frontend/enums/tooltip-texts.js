@@ -12,6 +12,8 @@ export const TooltipTexts = {
   listBulleted: "Lista puntata",
   listNumbered: "Lista numerata",
   title: "Titolo",
+  confirmChanges: "Conferma modifiche",
+  discardChanges: "Annulla modifiche",
 
   //Search bar
   clearButton: "Cancella ricerca",
