@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
+import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
 
@@ -98,32 +99,41 @@ export class Message extends LitElement {
           .activeChatName=${this.activeChatName}
         ></il-message-content>
 
-        <il-message-menu-popover
-          ${ref(this.messageMenuPopoverRef)}
-          style="opacity: 0"
-          .chatRef=${this.chatRef}
-          @message-copy=${this.messageCopy}
-          .messages=${this.messages}
-          .message=${this.message}
-          .index=${this.index}
-          .activeChatName=${this.activeChatName}
-          @forward-message=${(event) => {
-            this.dispatchEvent(
-              new CustomEvent(event.type, { detail: event.detail })
-            );
-          }}
-          @go-to-chat=${(event) => {
-            this.dispatchEvent(
-              new CustomEvent(event.type, { detail: event.detail })
-            );
-          }}
-          @edit-message=${(event) => {
-            this.dispatchEvent(
-              new CustomEvent(event.type, { detail: event.detail })
-            );
-          }}
-        >
-        </il-message-menu-popover>
+        ${when(
+          this.message.hasBeenDeleted,
+          () => html``,
+          () => html`
+            <il-message-menu-popover
+              .chatRef=${this.chatRef}
+              @message-copy=${this.messageCopy}
+              .messages=${this.messages}
+              .message=${this.message}
+              .index=${this.index}
+              .activeChatName=${this.activeChatName}
+              @forward-message=${(event) => {
+                this.dispatchEvent(
+                  new CustomEvent(event.type, { detail: event.detail })
+                );
+              }}
+              @go-to-chat=${(event) => {
+                this.dispatchEvent(
+                  new CustomEvent(event.type, { detail: event.detail })
+                );
+              }}
+              @edit-message=${(event) => {
+                this.dispatchEvent(
+                  new CustomEvent(event.type, { detail: event.detail })
+                );
+              }}
+              @delete-message=${(event) => {
+                this.dispatchEvent(
+                  new CustomEvent(event.type, { detail: event.detail })
+                );
+              }}
+            >
+            </il-message-menu-popover>
+          `
+        )}
       </div>
     `;
   }

@@ -144,10 +144,23 @@ export class MessageContent extends LitElement {
       margin-right: 10px;
     }
 
+    .deleted {
+      text-align: end;
+      font-size: 11px;
+      color: #1d1e20;
+    }
+
     .timestamp-edited-container {
       display: flex;
       flex-direction: row;
       justify-content: right;
+      align-items: center;
+    }
+
+    .timestamp-deleted-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
       align-items: center;
     }
 
@@ -181,16 +194,33 @@ export class MessageContent extends LitElement {
                   : ""}
               </p>`
             : html``}
-          <p class="message">
-            ${resolveMarkdown(
-              // MarkdownService.parseMarkdown(this.message.content)
-              this.message.content
-            )}
-          </p>
-          <div class="timestamp-edited-container">
+          ${when(
+            !this.message.hasBeenDeleted,
+            () => html`
+              <p class="message">
+                ${resolveMarkdown(
+                  // MarkdownService.parseMarkdown(this.message.content)
+                  this.message.content
+                )}
+              </p>
+            `,
+            () => html``
+          )}
+
+          <div
+            class=${this.message.hasBeenDeleted
+              ? "timestamp-deleted-container"
+              : "timestamp-edited-container"}
+          >
             ${when(
-              this.message.hasBeenEdited,
+              this.message.hasBeenEdited && !this.message.hasBeenDeleted,
               () => html`<p class="edited">Modificato</p>`,
+              () => html``
+            )}
+            ${when(
+              this.message.hasBeenDeleted,
+              () =>
+                html`<p class="deleted">Questo messaggio è stato eliminato</p>`,
               () => html``
             )}
             <p class="message-timestamp">
@@ -199,6 +229,19 @@ export class MessageContent extends LitElement {
                 minute: "2-digit",
               })}
             </p>
+            <div class="timestamp-edited-container">
+              ${when(
+                this.message.hasBeenEdited,
+                () => html`<p class="edited">Modificato</p>`,
+                () => html``
+              )}
+              <p class="message-timestamp">
+                ${new Date(this.message.timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
+            </div>
           </div>
         </div>
       </main>
