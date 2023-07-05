@@ -71,6 +71,7 @@ export class Chat extends LitElement {
     this.inputControlsRef = createRef();
     this.messagesListRef = createRef();
     this.snackbarRef = createRef();
+    this.deletionConfirmationDialogRef = createRef();
   }
 
   connectedCallback() {
@@ -149,6 +150,16 @@ export class Chat extends LitElement {
       transition: opacity 0.2s ease-in-out;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
+
+    .deletion-confirmation {
+      padding: 10px;
+    }
+
+    .deletion-confirmation-buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
   `;
 
   render() {
@@ -186,6 +197,7 @@ export class Chat extends LitElement {
                         "info",
                         2000
                       )}
+                    @delete-message=${this.askDeletionConfirmation}
                   ></il-messages-list>
 
                   <il-modal
@@ -207,14 +219,30 @@ export class Chat extends LitElement {
                     )}
                   </il-modal>
 
-                  <il-modal @modal-closed=${() => this.requestUpdate()}>
-                    <h3>Sei sicuro?</h3>
-                    <p>
-                      Una volta elminato il messaggio non potrai più tornare
-                      indietro!
-                    </p>
-                    <il-button-text text="Cancella messaggio"></il-button-text>
-                    <il-button-icon text="Annulla"></il-button-icon>
+                  <il-modal
+                    ${ref(this.deletionConfirmationDialogRef)}
+                    @modal-closed=${() => this.requestUpdate()}
+                  >
+                    <div class="deletion-confirmation">
+                      <h3>Sei sicuro?</h3>
+                      <br />
+                      <p>
+                        Una volta eliminato il messaggio non potrai più tornare
+                        indietro!
+                      </p>
+                      <br />
+                      <div class="deletion-confirmation-buttons">
+                        <il-button-text
+                          text="Annulla"
+                          @click=${() =>
+                            (this.deletionConfirmationDialogRef.value.ilDialogRef.value.isOpened = false)}
+                        ></il-button-text>
+                        <il-button-text
+                          @click=${this.deleteMessage}
+                          text="Elimina messaggio"
+                        ></il-button-text>
+                      </div>
+                    </div>
                   </il-modal>
 
                   <il-button-icon
@@ -320,6 +348,20 @@ export class Chat extends LitElement {
 
       this.updateMessages({ detail: { conversation: list[index] } });
     }
+  }
+
+  askDeletionConfirmation(event) {
+    this.indexToBeDeleted = event.detail.index;
+    this.deletionConfirmationDialogRef.value.ilDialogRef.value.isOpened = true;
+  }
+
+  deleteMessage() {
+    this.messages[this.indexToBeDeleted] = {
+      ...this.messages[this.indexToBeDeleted],
+      hasBeenDeleted: true,
+    };
+    this.messagesListRef.value?.requestUpdate();
+    this.deletionConfirmationDialogRef.value.ilDialogRef.value.isOpened = false;
   }
 
   isUsernameInRoomName(roomName, username) {

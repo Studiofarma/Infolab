@@ -84,12 +84,20 @@ export class MessageOptions extends LitElement {
   }
 
   deleteMessageHandler() {
-    this.chatRef.value.messages[this.index] = {
-      ...this.chatRef.value.messages[this.index],
-      hasBeenDeleted: true,
-    };
-    this.chatRef.value.messagesListRef.value.requestUpdate();
-    this.requestUpdate();
+    // this.chatRef.value.messages[this.index] = {
+    //   ...this.chatRef.value.messages[this.index],
+    //   hasBeenDeleted: true,
+    // };
+    // this.chatRef.value.messagesListRef.value.requestUpdate();
+    // this.requestUpdate();
+    this.dispatchEvent(
+      new CustomEvent("delete-message", {
+        detail: {
+          messageToDelete: this.message,
+          index: this.index,
+        },
+      })
+    );
   }
 }
 
