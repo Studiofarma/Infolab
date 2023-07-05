@@ -225,12 +225,9 @@ export class Chat extends LitElement {
                     @modal-closed=${() => this.requestUpdate()}
                   >
                     <div class="deletion-confirmation">
-                      <h3>Sei sicuro?</h3>
+                      <h3>Eliminazione messaggio</h3>
                       <br />
-                      <p>
-                        Una volta eliminato il messaggio non potrai più tornare
-                        indietro!
-                      </p>
+                      <p>Confermare l'eliminazione del messaggio?</p>
                       <br />
                       <div class="deletion-confirmation-buttons">
                         <il-button-text
@@ -239,8 +236,9 @@ export class Chat extends LitElement {
                             this.deletionConfirmationDialogRef.value?.closeModal()}
                         ></il-button-text>
                         <il-button-text
+                          color="#DC2042"
                           @click=${this.deleteMessage}
-                          text="Elimina messaggio"
+                          text="Elimina"
                         ></il-button-text>
                       </div>
                     </div>
