@@ -70,6 +70,11 @@ export class Message extends LitElement {
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
       border-radius: 5px;
     }
+
+    .message-body:hover il-message-menu-popover {
+      z-index: 11;
+      opacity: 1;
+    }
   `;
 
   render() {
