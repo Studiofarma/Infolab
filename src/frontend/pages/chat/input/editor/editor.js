@@ -13,13 +13,30 @@ export class Editor extends LitElement {
       padding: 5px;
       line-height: 20px;
       font-size: 20px;
-      max-height: 90px;
+      max-height: 100px;
       border-radius: 5px;
       overflow-y: auto;
     }
 
     #editor[placeholder]:empty:before {
       content: attr(placeholder);
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: none;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #206cf7;
+    }
+
+    ::-webkit-scrollbar:vertical {
+      margin-right: 10px;
     }
   `;
 
@@ -80,9 +97,11 @@ export class Editor extends LitElement {
   textEditorResized() {
     const height = this.editorRef.value.clientHeight;
 
-    this.dispatchEvent(new CustomEvent("text-editor-resized"), {
-      detail: { height: height },
-    });
+    this.dispatchEvent(
+      new CustomEvent("text-editor-resized", {
+        detail: { height: height },
+      })
+    );
   }
 
   sendMessage() {
