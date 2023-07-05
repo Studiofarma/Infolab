@@ -194,6 +194,27 @@ describe("messages spec", () => {
   });
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
+  it("asserting that the button 'Elimina' works", () => {
+    cy.hoverOnTheLast();
+    cy.clickOnTheLastOptionsMenu();
+    cy.clickOptionButton("Elimina");
+
+    //confirming the elimination of the message
+    cy.getLitElement("il-app, il-chat")
+      .find(".deletion-confirmation-buttons il-button-text")
+      .last()
+      .shadow()
+      .find("button")
+      .click({ force: true });
+
+    // asserting that the last message content has been deleted
+
+    cy.getLitElement(messageContentPath)
+      .last()
+      .find(".deleted")
+      .should("exist")
+      .and("include.text", "Questo messaggio è stato eliminato");
+  });
 });
 
 afterEach(() => {
