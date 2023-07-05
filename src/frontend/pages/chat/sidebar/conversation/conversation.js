@@ -208,25 +208,44 @@ class Conversation extends LitElement {
   }
 
   getUserDescription(userName) {
-    if (this.user == undefined) return "";
-    return {
+    if (userName === undefined)
+      return { username: undefined, description: undefined };
+    if (this.userList === undefined)
+      return { username: undefined, description: undefined };
+
+    let userIndex = this.userList.findIndex((user) => user.name == userName);
+    if (userIndex < 0) return;
+    let user = this.userList[userIndex];
+
+    let obj = {
       username: userName,
-      description: this.user?.description,
+      description: user?.description,
     };
+    console.log(obj);
+    return obj;
+
+    // if (userName == undefined) return "";
+    // return {
+    //   username: userName,
+    //   description: this.user?.description,
+    // };
   }
 
   lastMessageTextFormatter(sender, message) {
-    if (sender.username == this.cookie.username) {
-      sender.description = "Tu";
+    console.log(sender);
+
+    let lastMessage = "";
+
+    if (sender === undefined) {
+      lastMessage = "Nuova conversazione";
+    } else {
+      if (sender.username == this.cookie.username) {
+        sender.description = "Tu";
+      }
+      lastMessage = `${sender.description}: ${message}`;
     }
     return resolveMarkdown(
-      MarkdownService.parseMarkdown(
-        this.fixLastMessageLength(
-          sender.description
-            ? `${sender.description}: ${message}`
-            : "Nuova conversazione"
-        )
-      )
+      MarkdownService.parseMarkdown(this.fixLastMessageLength(lastMessage))
     );
   }
 

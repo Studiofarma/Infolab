@@ -390,6 +390,7 @@ class ConversationList extends LitElement {
         let user = this.findUser(this.conversationListFiltered, conversation);
 
         return html`<il-conversation
+          .userList=${this.usersList}
           .user=${user}
           @selected=${this.selectConversation}
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
@@ -429,6 +430,7 @@ class ConversationList extends LitElement {
       let user = this.findUser(this.newConversationListFiltered, conversation);
 
       return html`<il-conversation
+        .userList=${this.usersList}
         .user=${user}
         @selected=${this.selectConversation}
         .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
