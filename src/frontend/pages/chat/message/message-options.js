@@ -42,14 +42,18 @@ export class MessageOptions extends LitElement {
       )}
       ${when(
         this.type === "sender",
-        () => html`
+        () => html`<message-button-option
+            iconName=${IconNames.pencil}
+            text="Modifica"
+            @click=${this.editHandler}
+          ></message-button-option>
+
           <message-button-option
             iconName=${IconNames.mdiDelete}
             text="Elimina"
             @click=${this.deleteMessageHandler}
           >
-          </message-button-option>
-        `,
+          </message-button-option>`,
         () => html``
       )}
     `;
@@ -84,16 +88,21 @@ export class MessageOptions extends LitElement {
   }
 
   deleteMessageHandler() {
-    // this.chatRef.value.messages[this.index] = {
-    //   ...this.chatRef.value.messages[this.index],
-    //   hasBeenDeleted: true,
-    // };
-    // this.chatRef.value.messagesListRef.value.requestUpdate();
-    // this.requestUpdate();
     this.dispatchEvent(
       new CustomEvent("delete-message", {
         detail: {
           messageToDelete: this.message,
+          index: this.index,
+        },
+      })
+    );
+  }
+
+  editHandler() {
+    this.dispatchEvent(
+      new CustomEvent("edit-message", {
+        detail: {
+          message: this.message,
           index: this.index,
         },
       })

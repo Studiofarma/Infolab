@@ -16,6 +16,9 @@ export class InputControls extends LitElement {
     isEmojiPickerOpen: false,
     picker: {},
     selectedText: { startingPoint: NaN, endingPoint: NaN },
+    isEditing: { type: Boolean },
+    messageBeingEdited: { type: Object },
+    indexBeingEdited: { type: Number },
   };
 
   constructor() {
@@ -97,14 +100,17 @@ export class InputControls extends LitElement {
           <div class="inputContainer">
             <il-editor
               ${ref(this.editorRef)}
-              @enter-key-pressed=${this.sendMessage}
+              @enter-key-pressed=${this.manageEnterKey}
               @text-changed=${this.updateMessage}
               @text-editor-resized=${this.textEditorResized}
             ></il-editor>
             <il-insertion-bar
               @send-message=${this.sendMessage}
               @emoji-picker-click=${this.emojiPickerClick}
+              @confirm-edit=${this.confirmEdit}
+              @cancel-edit=${this.cancelEdit}
               .editor=${this.editorRef}
+              .isEditing=${this.isEditing}
             >
             </il-insertion-bar>
           </div>
@@ -117,6 +123,11 @@ export class InputControls extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  clearMessage() {
+    this.message = "";
+    this.editorRef.value?.clearMessage();
   }
 
   focusEditor() {
@@ -155,12 +166,49 @@ export class InputControls extends LitElement {
         },
       })
     );
-    this.message = "";
-    this.shadowRoot.querySelector("il-editor").clearMessage();
+    this.clearMessage();
+  }
+
+  manageEnterKey() {
+    if (this.isEditing) {
+      this.confirmEdit(new CustomEvent("confirm-edit"));
+    } else {
+      this.sendMessage();
+    }
   }
 
   updateMessage(event) {
     this.message = event.detail.content;
+  }
+
+  editMessage(detail) {
+    this.editorRef.value?.setEditorText(detail.message.content);
+    this.isEditing = true;
+    this.messageBeingEdited = detail.message;
+    this.indexBeingEdited = detail.index;
+  }
+
+  confirmEdit(event) {
+    this.messageBeingEdited.content = this.editorRef.value?.getText();
+
+    this.dispatchEvent(
+      new CustomEvent(event.type, {
+        detail: {
+          message: this.messageBeingEdited,
+          index: this.indexBeingEdited,
+        },
+      })
+    );
+    this.isEditing = false;
+    this.messageBeingEdited = {};
+    this.indexBeingEdited = undefined;
+    this.clearMessage();
+  }
+
+  cancelEdit() {
+    this.messageBeingEdited = {};
+    this.isEditing = false;
+    this.clearMessage();
   }
 }
 

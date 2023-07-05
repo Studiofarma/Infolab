@@ -60,6 +60,11 @@ export class MessageMenuPopover extends LitElement {
               new CustomEvent(event.type, { detail: event.detail })
             );
           }}
+          @edit-message=${(event) => {
+            this.dispatchEvent(
+              new CustomEvent(event.type, { detail: event.detail })
+            );
+          }}
           @delete-message=${(event) => {
             this.dispatchEvent(
               new CustomEvent(event.type, { detail: event.detail })
