@@ -23,7 +23,7 @@ export class ButtonText extends LitElement {
   `;
 
   render() {
-    return html` <button>${this.text}</button> `;
+    return html` <button part="button">${this.text}</button> `;
   }
 }
 

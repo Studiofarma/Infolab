@@ -108,6 +108,7 @@ export class Avatar extends LitElement {
         ${this.defaultAvatar
           ? html`<img src=${this.avatarLink} />`
           : html`<div
+              part="avatar-default"
               id="avatar-default"
               style="background-color:${this.color}"
             >
