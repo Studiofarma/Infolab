@@ -274,11 +274,12 @@ class ConversationList extends LitElement {
         cookie.password
       );
       rooms["data"].forEach((room) => {
+        console.log(room);
         let userIndex = this.usersList.findIndex(
           (user) => user.description == room.description
         );
         if (userIndex == -1) {
-          this.conversationList.push(room);
+          this.conversationList = [...this.conversationList, room];
         } else {
           let conversation = {
             roomName: room.roomName,
@@ -288,7 +289,7 @@ class ConversationList extends LitElement {
             lastMessage: room.lastMessage,
             id: this.usersList[userIndex].id,
           };
-          this.conversationList.push(conversation);
+          this.conversationList = [...this.conversationList, room];
         }
       });
 
