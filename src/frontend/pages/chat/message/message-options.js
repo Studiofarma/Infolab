@@ -17,44 +17,48 @@ export class MessageOptions extends LitElement {
 
   render() {
     return html`
-      <message-button-option
-        iconName=${IconNames.mdiContentCopy}
-        text="Copia"
-        @click=${this.copyToClipboardHandler}
-      >
-      </message-button-option>
-
-      <message-button-option
-        iconName=${IconNames.mdiShare}
-        text="Inoltra"
-        @click=${this.forwardMessageHandler}
-      >
-      </message-button-option>
-
-      ${when(
-        this.type === "receiver",
-        () => html` <message-button-option
-          iconName=${IconNames.mdiMessage}
-          text="Scrivi in privato"
-          @click=${this.goToChatHandler}
+      <div class=${this.type}>
+        <message-button-option
+          iconName=${IconNames.mdiContentCopy}
+          text="Copia"
+          @click=${this.copyToClipboardHandler}
         >
-        </message-button-option>`
-      )}
-      ${when(
-        this.type === "sender",
-        () => html`<message-button-option
-          iconName=${IconNames.pencil}
-          text="Modifica"
-          @click=${this.editHandler}
-        ></message-button-option>`
-      )}
+        </message-button-option>
 
-      <message-button-option
-        iconName=${IconNames.mdiDelete}
-        text="Elimina"
-        @click=${this.deleteMessageHandler}
-      >
-      </message-button-option>
+        ${when(
+          this.type === "receiver",
+          () => html` <message-button-option
+            iconName=${IconNames.mdiMessage}
+            text="Scrivi in privato"
+            @click=${this.goToChatHandler}
+          >
+          </message-button-option>`
+        )}
+
+        <message-button-option
+          iconName=${IconNames.mdiShare}
+          text="Inoltra"
+          @click=${this.forwardMessageHandler}
+        >
+        </message-button-option>
+
+        ${when(
+          this.type === "sender",
+          () => html`<message-button-option
+              iconName=${IconNames.pencil}
+              text="Modifica"
+              @click=${this.editHandler}
+            ></message-button-option>
+
+            <message-button-option
+              iconName=${IconNames.mdiDelete}
+              text="Elimina"
+              @click=${this.deleteMessageHandler}
+            >
+            </message-button-option>`,
+          () => html``
+        )}
+      </div>
     `;
   }
 
@@ -76,7 +80,6 @@ export class MessageOptions extends LitElement {
   }
 
   goToChatHandler() {
-    console.log(this.message);
     this.dispatchEvent(
       new CustomEvent("go-to-chat", {
         detail: {
@@ -87,11 +90,14 @@ export class MessageOptions extends LitElement {
   }
 
   deleteMessageHandler() {
-    this.chatRef.value.messages = this.chatRef.value.messages.filter(
-      (_, index) => index != this.index
+    this.dispatchEvent(
+      new CustomEvent("delete-message", {
+        detail: {
+          messageToDelete: this.message,
+          index: this.index,
+        },
+      })
     );
-    this.chatRef.value.requestUpdate();
-    this.requestUpdate();
   }
 
   editHandler() {

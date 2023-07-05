@@ -1,4 +1,6 @@
 import { LitElement, html, css } from "lit";
+import { ref, createRef } from "lit/directives/ref.js";
+import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
 
@@ -20,6 +22,8 @@ export class Message extends LitElement {
   constructor() {
     super();
     this.cookie = CookieService.getCookie();
+    this.buttonIconRef = createRef();
+    this.messageMenuPopoverRef = createRef();
   }
 
   static styles = css`
@@ -63,7 +67,6 @@ export class Message extends LitElement {
 
     il-message-menu-popover {
       z-index: 10;
-      opacity: 0;
       transition: 0.5s;
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
       border-radius: 5px;
@@ -71,7 +74,6 @@ export class Message extends LitElement {
 
     .message-body:hover il-message-menu-popover {
       z-index: 11;
-      opacity: 1;
     }
   `;
 
@@ -82,7 +84,11 @@ export class Message extends LitElement {
         this.message.timestamp
       )}
 
-      <div class="message-body">
+      <div
+        class="message-body"
+        @mouseover=${this.showPopover}
+        @mouseleave=${this.hidePopover}
+      >
         <il-message-content
           .userList=${this.userList}
           class=${this.message.sender == this.cookie.username
@@ -92,32 +98,53 @@ export class Message extends LitElement {
           .activeChatName=${this.activeChatName}
         ></il-message-content>
 
-        <il-message-menu-popover
-          .chatRef=${this.chatRef}
-          @message-copy=${this.messageCopy}
-          .messages=${this.messages}
-          .message=${this.message}
-          .index=${this.index}
-          .activeChatName=${this.activeChatName}
-          @forward-message=${(event) => {
-            this.dispatchEvent(
-              new CustomEvent(event.type, { detail: event.detail })
-            );
-          }}
-          @go-to-chat=${(event) => {
-            this.dispatchEvent(
-              new CustomEvent(event.type, { detail: event.detail })
-            );
-          }}
-          @edit-message=${(event) => {
-            this.dispatchEvent(
-              new CustomEvent(event.type, { detail: event.detail })
-            );
-          }}
-        >
-        </il-message-menu-popover>
+        ${when(
+          this.message.hasBeenDeleted,
+          () => html``,
+          () => html`
+            <il-message-menu-popover
+              style="opacity: 0"
+              ${ref(this.messageMenuPopoverRef)}
+              .chatRef=${this.chatRef}
+              @message-copy=${this.messageCopy}
+              .messages=${this.messages}
+              .message=${this.message}
+              .index=${this.index}
+              .activeChatName=${this.activeChatName}
+              @forward-message=${(event) => {
+                this.dispatchEvent(
+                  new CustomEvent(event.type, { detail: event.detail })
+                );
+              }}
+              @go-to-chat=${(event) => {
+                this.dispatchEvent(
+                  new CustomEvent(event.type, { detail: event.detail })
+                );
+              }}
+              @edit-message=${(event) => {
+                this.dispatchEvent(
+                  new CustomEvent(event.type, { detail: event.detail })
+                );
+              }}
+              @delete-message=${(event) => {
+                this.dispatchEvent(
+                  new CustomEvent(event.type, { detail: event.detail })
+                );
+              }}
+            >
+            </il-message-menu-popover>
+          `
+        )}
       </div>
     `;
+  }
+
+  showPopover() {
+    this.messageMenuPopoverRef.value.style.opacity = "1";
+  }
+
+  hidePopover() {
+    this.messageMenuPopoverRef.value.style.opacity = "0";
   }
 
   messageCopy() {

@@ -125,17 +125,12 @@ class Conversation extends LitElement {
           .user=${this.user}
           .selected=${this.isSelected && this.isSelectable}
           .avatarLink=${this.chat.avatarLink}
-          .name=${this.chat.description}
+          .name=${this.chat?.description}
           .id=${this.chat.id}
         ></il-avatar>
         <div class="name-box">
-          <p class="chat-name">${this.chat.description}</p>
-          <p class="last-message">
-            ${this.lastMessageTextFormatter(
-              this.getUserDescription(this.chat.lastMessage.sender),
-              this.chat.lastMessage.content
-            )}
-          </p>
+          <p class="chat-name">${this.chat?.description}</p>
+          <p class="last-message">${this.lastMessageTextFormatter()}</p>
         </div>
         <div class="date-box">
           <p
@@ -144,7 +139,7 @@ class Conversation extends LitElement {
               ? "unread"
               : ""}"
           >
-            ${this.compareMessageDate(this.chat.lastMessage.timestamp)}
+            ${this.compareMessageDate(this.chat.lastMessage?.timestamp)}
           </p>
           <p class="unread-counter">
             ${this.chat.unreadMessages > 0
@@ -214,38 +209,35 @@ class Conversation extends LitElement {
       return { username: undefined, description: undefined };
 
     let userIndex = this.userList.findIndex((user) => user.name == userName);
-    if (userIndex < 0) return;
+    if (userIndex < 0) return "";
     let user = this.userList[userIndex];
-
-    let obj = {
-      username: userName,
-      description: user?.description,
-    };
-    console.log(obj);
-    return obj;
-
-    // if (userName == undefined) return "";
-    // return {
-    //   username: userName,
-    //   description: this.user?.description,
-    // };
+    return user.description;
   }
 
-  lastMessageTextFormatter(sender, message) {
-    console.log(sender);
+  lastMessageTextFormatter() {
+    let text = "";
+    const lastMessage = this.chat.lastMessage;
+    const content = lastMessage.content;
+    const sender = lastMessage.sender;
+    const description = this.chat.description;
+    const username = this.cookie.username;
 
-    let lastMessage = "";
-
-    if (sender === undefined) {
-      lastMessage = "Nuova conversazione";
-    } else {
-      if (sender.username == this.cookie.username) {
-        sender.description = "Tu";
+    if (content) {
+      if (description !== "Generale") {
+        text = sender === username ? `Tu: ${content}` : content;
+      } else {
+        const userDescription = this.getUserDescription(sender);
+        text =
+          sender === username
+            ? `Tu: ${content}`
+            : `${userDescription}: ${content}`;
       }
-      lastMessage = `${sender.description}: ${message}`;
+    } else {
+      text = "Nuova conversazione";
     }
+
     return resolveMarkdown(
-      MarkdownService.parseMarkdown(this.fixLastMessageLength(lastMessage))
+      MarkdownService.parseMarkdown(this.fixLastMessageLength(text))
     );
   }
 

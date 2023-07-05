@@ -278,17 +278,17 @@ class ConversationList extends LitElement {
           (user) => user.description == room.description
         );
         if (userIndex == -1) {
-          this.conversationList.push(room);
+          this.conversationList = [...this.conversationList, room];
         } else {
           let conversation = {
             roomName: room.roomName,
             avatarLink: room.avatarlink,
             unreadMessages: room.unreadMessages,
             description: room.description,
-            lastMessage: room.lastMessage,
+            lastMessage: room.lastMessage || "",
             id: this.usersList[userIndex].id,
           };
-          this.conversationList.push(conversation);
+          this.conversationList = [...this.conversationList, conversation];
         }
       });
 
@@ -326,13 +326,27 @@ class ConversationList extends LitElement {
       (conversation) => conversation.roomName == message.roomName
     );
 
-    this.conversationList[index].lastMessage = {
-      content: message.content,
-      timestamp: message.timestamp,
-      sender: message.sender,
-    };
+    if (index === -1) {
+      index = this.newConversationList.findIndex(
+        (conversation) => conversation.roomName == message.roomName
+      );
 
-    this.conversationList.sort(this.compareTimestamp);
+      this.newConversationList[index].lastMessage = {
+        content: message.content,
+        timestamp: message.timestamp,
+        sender: message.sender,
+      };
+
+      this.newConversationList.sort(this.compareTimestamp);
+    } else {
+      this.conversationList[index].lastMessage = {
+        content: message.content,
+        timestamp: message.timestamp,
+        sender: message.sender,
+      };
+
+      this.conversationList.sort(this.compareTimestamp);
+    }
 
     this.requestUpdate();
   }
@@ -369,8 +383,8 @@ class ConversationList extends LitElement {
   }
 
   compareTimestamp(a, b) {
-    var timestampA = Date.parse(a.lastMessage.timestamp);
-    var timestampB = Date.parse(b.lastMessage.timestamp);
+    var timestampA = Date.parse(a.lastMessage?.timestamp);
+    var timestampB = Date.parse(b.lastMessage?.timestamp);
     return timestampB - timestampA;
   }
 
@@ -383,8 +397,9 @@ class ConversationList extends LitElement {
 
     return repeat(this.conversationListFiltered, (pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
+
       if (
-        conversation.lastMessage.content ||
+        conversation.lastMessage?.content ||
         conversation.roomName == this.activeChatName
       ) {
         let user = this.findUser(this.conversationListFiltered, conversation);
