@@ -71,6 +71,7 @@ export class Message extends LitElement {
     }
 
     .message-body:hover il-message-menu-popover {
+      z-index: 11;
       opacity: 1;
     }
   `;
