@@ -186,6 +186,7 @@ export class InputControls extends LitElement {
     this.isEditing = true;
     this.messageBeingEdited = detail.message;
     this.indexBeingEdited = detail.index;
+    this.focusEditor();
   }
 
   confirmEdit(event) {
@@ -203,12 +204,14 @@ export class InputControls extends LitElement {
     this.messageBeingEdited = {};
     this.indexBeingEdited = undefined;
     this.clearMessage();
+    this.focusEditor();
   }
 
   cancelEdit() {
     this.messageBeingEdited = {};
     this.isEditing = false;
     this.clearMessage();
+    this.focusEditor();
   }
 }
 
