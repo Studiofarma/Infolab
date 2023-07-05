@@ -113,8 +113,6 @@ export class Avatar extends LitElement {
   render() {
     this.createIcon();
 
-    let userStatus = this.user?.status;
-
     return html`
       <div class="avatar">
         ${this.defaultAvatar
@@ -132,7 +130,7 @@ export class Avatar extends LitElement {
           </div>`,
           () =>
             choose(
-              userStatus, // Needed becuase if user is undefine this line throws error
+              this.user?.status,
               [
                 [
                   "online",
