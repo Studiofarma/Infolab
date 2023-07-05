@@ -1,6 +1,9 @@
 import { LitElement, html, css } from "lit";
+import { ref, createRef } from "lit/directives/ref.js";
 
+import "./profile-settings";
 import "../../../components/button-icon";
+import "../../../components/modal";
 import { UsersService } from "../../../services/users-service";
 import { CookieService } from "../../../services/cookie-service";
 
@@ -17,6 +20,7 @@ export class ChatHeader extends LitElement {
     super();
     this.getAllUsers();
     this.usersList = [];
+    this.modalRef = createRef();
   }
 
   static styles = css`
@@ -54,6 +58,10 @@ export class ChatHeader extends LitElement {
       vertical-align: center;
       padding: 15px;
     }
+
+    il-modal {
+      position: fixed;
+    }
   `;
 
   render() {
@@ -70,16 +78,24 @@ export class ChatHeader extends LitElement {
               : html``}
           </div>
 
-          <div class="profileContainer">
+          <div class="profileContainer" @click=${this.openSettingsMenu}>
             <il-avatar
               name=${this.getUserDescription(this.userName)}
               .id="${this.getUserId(this.userName)}"
             ></il-avatar>
             <h2>${this.getUserDescription(this.userName)}</h2>
           </div>
+
+          <il-modal ${ref(this.modalRef)} theme="profile-settings">
+            <il-profile-settings></il-profile-settings>
+          </il-modal>
         </div>
       </div>
     `;
+  }
+
+  openSettingsMenu() {
+    this.modalRef.value.ilDialogRef.value.isOpened = true;
   }
 
   getUserId(userName) {

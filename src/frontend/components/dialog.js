@@ -49,6 +49,12 @@ export class Dialog extends LitElement {
       height: 100%;
       color: white;
     }
+
+    .profile-settings {
+      width: 700px;
+      height: 500px;
+      max-height: 100%;
+    }
   `;
 
   render() {
