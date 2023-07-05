@@ -390,10 +390,6 @@ export class Chat extends LitElement {
 
   focusOnEditor(event) {
     this.inputControlsRef.value?.editorRef.value.textareaRef.value.focus();
-
-    // Bug da fixare, segnalato in proposal
-    // if(event.detail.eventType === "keyPressed")
-    // this.inputControlsRef.value.editorRef.value.textareaRef.value = ""
   }
 
   async firstUpdated() {

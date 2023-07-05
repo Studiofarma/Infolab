@@ -17,6 +17,7 @@ export const IconNames = {
   bold: "mdiFormatBold",
   italic: "mdiFormatItalic",
   magnify: "mdiMagnify",
+  underline: "mdiFormatUnderline",
   strikethrough: "mdiFormatStrikethroughVariant",
   listBulleted: "mdiFormatListBulleted",
   listNumbered: "mdiFormatListNumbered",

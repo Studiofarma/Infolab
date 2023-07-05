@@ -85,7 +85,7 @@ export class Editor extends LitElement {
   }
 
   textChanged() {
-    const text = this.editorRef.value.innerHTML;
+    const text = this.getText();
 
     this.dispatchEvent(
       new CustomEvent("text-changed", {
@@ -106,6 +106,14 @@ export class Editor extends LitElement {
 
   sendMessage() {
     this.dispatchEvent(new CustomEvent("enter-key-pressed"));
+  }
+
+  getText() {
+    return this.editorRef.value.innerHTML;
+  }
+
+  setEditorText(text) {
+    this.editorRef.value.innerHTML = text;
   }
 }
 

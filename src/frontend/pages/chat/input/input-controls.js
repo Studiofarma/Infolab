@@ -208,8 +208,9 @@ export class InputControls extends LitElement {
   }
 
   cancelEdit() {
-    this.messageBeingEdited = {};
     this.isEditing = false;
+    this.messageBeingEdited = {};
+    this.indexBeingEdited = undefined;
     this.clearMessage();
     this.focusEditor();
   }

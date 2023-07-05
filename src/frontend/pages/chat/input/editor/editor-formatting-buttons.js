@@ -32,6 +32,12 @@ export class EditorFormattingButtons extends LitElement {
       ></il-button-icon>
 
       <il-button-icon
+        .content=${IconNames.underline}
+        @click=${() => this.formatText("underline")}
+        .tooltipText=${TooltipTexts.underline}
+      ></il-button-icon>
+
+      <il-button-icon
         .content=${IconNames.listBulleted}
         @click=${() => this.formatText("insertunorderedlist")}
         .tooltipText=${TooltipTexts.listBulleted}

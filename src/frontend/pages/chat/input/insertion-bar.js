@@ -43,45 +43,7 @@ export class InsertionBar extends LitElement {
       align-items: center;
     }
   `;
-  // PER REINSERIRE L'EDITOR CAMBIARE IL METODO render CON QUELLO COMMENTATO
-  // render() {
-  //   return html`
-  //     <div>
-  //       <div class="formatting-container">
-  //         <il-button-icon
-  //           .content=${IconNames.emoticon}
-  //           @click=${this.emojiPickerClick}
-  //           .tooltipText=${TooltipTexts.emoticon}
-  //         ></il-button-icon>
-  //       </div>
-  //       <div id="submitContainer">
-  //         ${when(
-  //           this.isEditing,
-  //           () => html`
-  //             <il-button-icon
-  //               @click=${this.cancelEdit}
-  //               content=${IconNames.close}
-  //               .tooltipText=${TooltipTexts.discardChanges}
-  //             ></il-button-icon>
 
-  //             <il-button-icon
-  //               @click=${this.confirmEdit}
-  //               content=${IconNames.check}
-  //               .tooltipText=${TooltipTexts.confirmChanges}
-  //             ></il-button-icon>
-  //           `,
-  //           () => html`
-  //             <il-button-icon
-  //               @click=${this.sendMessage}
-  //               content=${IconNames.send}
-  //               .tooltipText=${TooltipTexts.send}
-  //             ></il-button-icon>
-  //           `
-  //         )}
-  //       </div>
-  //     </div>
-  //   `;
-  // }
   render() {
     return html`
       <div>
@@ -108,11 +70,29 @@ export class InsertionBar extends LitElement {
           )}
         </div>
         <div id="submitContainer">
-          <il-button-icon
-            @click=${this.sendMessage}
-            .content=${IconNames.send}
-            .tooltipText=${TooltipTexts.send}
-          ></il-button-icon>
+          ${when(
+            this.isEditing,
+            () => html`
+              <il-button-icon
+                @click=${this.cancelEdit}
+                content=${IconNames.close}
+                .tooltipText=${TooltipTexts.discardChanges}
+              ></il-button-icon>
+
+              <il-button-icon
+                @click=${this.confirmEdit}
+                content=${IconNames.check}
+                .tooltipText=${TooltipTexts.confirmChanges}
+              ></il-button-icon>
+            `,
+            () => html`
+              <il-button-icon
+                @click=${this.sendMessage}
+                content=${IconNames.send}
+                .tooltipText=${TooltipTexts.send}
+              ></il-button-icon>
+            `
+          )}
         </div>
       </div>
     `;
