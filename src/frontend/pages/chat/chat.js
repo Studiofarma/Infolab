@@ -334,6 +334,7 @@ export class Chat extends LitElement {
     this.messagesListRef.value?.requestUpdate();
   }
 
+  // TODO: rimuovere quando gli utenti in una stanza arriveranno dal backend
   isUsernameInRoomName(roomName, username) {
     let names = roomName.split("-");
     return names.includes(username);

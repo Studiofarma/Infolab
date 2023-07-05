@@ -307,6 +307,7 @@ class ConversationList extends LitElement {
         cookie.password
       );
       this.usersList = users["data"];
+      console.log(this.usersList);
     } catch (error) {
       console.error(error);
     }
@@ -364,6 +365,7 @@ class ConversationList extends LitElement {
       },
       description: user.description === "" ? user.name : user.description,
       id: user.id,
+      status: user.status,
     };
   }
 
@@ -386,8 +388,10 @@ class ConversationList extends LitElement {
         conversation.lastMessage.content ||
         conversation.roomName == this.activeChatName
       ) {
+        let user = this.findUser(this.conversationListFiltered, conversation);
+
         return html`<il-conversation
-          .userList=${this.usersList}
+          .user=${user}
           @selected=${this.selectConversation}
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
@@ -422,7 +426,11 @@ class ConversationList extends LitElement {
 
     return this.newConversationListFiltered.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
+
+      let user = this.findUser(this.newConversationListFiltered, conversation);
+
       return html`<il-conversation
+        .user=${user}
         @selected=${this.selectConversation}
         .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
         .isSelected=${this.selectedChats.includes(conversation.roomName)}
@@ -438,6 +446,24 @@ class ConversationList extends LitElement {
         @clicked=${(event) => this.handleClick(event, conversation)}
       ></il-conversation>`;
     });
+  }
+
+  findUser(list, conversation) {
+    // TODO: semplificare quando arriverà dal backend (questo fa un giro assurdo perché nelle room non ci sono gli utenti che le compongono)
+    let cookie = CookieService.getCookie();
+
+    let convIndex = list.findIndex((elem) => {
+      return elem.roomName === conversation.roomName;
+    });
+
+    let roomName = list[convIndex].roomName;
+
+    let usernames = roomName.split("-");
+    let username = usernames.filter((elem) => elem !== cookie.username)[0];
+
+    let userIndex = this.usersList.findIndex((elem) => elem.name === username);
+
+    return this.usersList[userIndex];
   }
 
   handleClick(e, conversation) {

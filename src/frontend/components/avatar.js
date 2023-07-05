@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { when } from "lit/directives/when.js";
+import { choose } from "lit/directives/choose.js";
 
 import "./icon";
 import { IconNames } from "../enums/icon-names";
@@ -11,6 +12,7 @@ export class Avatar extends LitElement {
       name: "",
       id: 0,
       selected: false,
+      user: {},
     };
   }
 
@@ -45,6 +47,14 @@ export class Avatar extends LitElement {
 
     .avatar {
       height: 50px;
+    }
+
+    .online {
+      color: #007928;
+    }
+
+    .offline {
+      color: #6f7174;
     }
   `;
 
@@ -103,6 +113,8 @@ export class Avatar extends LitElement {
   render() {
     this.createIcon();
 
+    let userStatus = this.user?.status;
+
     return html`
       <div class="avatar">
         ${this.defaultAvatar
@@ -118,6 +130,28 @@ export class Avatar extends LitElement {
           () => html`<div class="icon-button">
             <il-icon name=${IconNames.checkCircle}></il-icon>
           </div>`
+        )}
+        ${choose(
+          userStatus, // Needed becuase if user is undefine this line throws error
+          [
+            [
+              "online",
+              () =>
+                html`<il-icon
+                  class="icon-button online"
+                  name=${IconNames.circle}
+                ></il-icon>`,
+            ], // TODO: change name and color
+            [
+              "offline",
+              () =>
+                html`<il-icon
+                  class="icon-button offline"
+                  name=${IconNames.circle}
+                ></il-icon>`,
+            ],
+          ],
+          () => html``
         )}
       </div>
     `;
