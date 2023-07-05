@@ -143,7 +143,7 @@ class Conversation extends LitElement {
               ? "unread"
               : ""}"
           >
-            ${this.compareMessageDate(this.chat.lastMessage.timestamp)}
+            ${this.compareMessageDate(this.chat.lastMessage?.timestamp)}
           </p>
           <p class="unread-counter">
             ${this.chat.unreadMessages > 0

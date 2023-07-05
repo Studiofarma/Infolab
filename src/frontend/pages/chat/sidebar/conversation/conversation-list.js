@@ -286,7 +286,7 @@ class ConversationList extends LitElement {
             avatarLink: room.avatarlink,
             unreadMessages: room.unreadMessages,
             description: room.description,
-            lastMessage: room.lastMessage,
+            lastMessage: room.lastMessage || "",
             id: this.usersList[userIndex].id,
           };
           this.conversationList = [...this.conversationList, room];
@@ -369,8 +369,8 @@ class ConversationList extends LitElement {
   }
 
   compareTimestamp(a, b) {
-    var timestampA = Date.parse(a.lastMessage.timestamp);
-    var timestampB = Date.parse(b.lastMessage.timestamp);
+    var timestampA = Date.parse(a.lastMessage?.timestamp);
+    var timestampB = Date.parse(b.lastMessage?.timestamp);
     return timestampB - timestampA;
   }
 
@@ -384,7 +384,7 @@ class ConversationList extends LitElement {
     return repeat(this.conversationListFiltered, (pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
       if (
-        conversation.lastMessage.content ||
+        conversation.lastMessage?.content ||
         conversation.roomName == this.activeChatName
       ) {
         return html`<il-conversation
