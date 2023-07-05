@@ -236,7 +236,7 @@ export class Chat extends LitElement {
                         <il-button-text
                           text="Annulla"
                           @click=${() =>
-                            (this.deletionConfirmationDialogRef.value.ilDialogRef.value.isOpened = false)}
+                            this.deletionConfirmationDialogRef.value?.closeModal()}
                         ></il-button-text>
                         <il-button-text
                           @click=${this.deleteMessage}
@@ -275,7 +275,7 @@ export class Chat extends LitElement {
       this.forwardMessage(event);
     }
 
-    this.forwardListRef.value.ilDialogRef.value.isOpened = false;
+    this.forwardListRef.value?.closeModal();
 
     const chatMessage = {
       sender: this.login.username,
@@ -295,13 +295,13 @@ export class Chat extends LitElement {
 
   openForwardMenu(event) {
     this.messageToForward = event.detail.messageToForward;
-    this.forwardListRef.value.ilDialogRef.value.isOpened = true;
+    this.forwardListRef.value?.openModal();
     this.requestUpdate();
   }
 
   forwardMessage(event) {
     // chiudo il menù di inoltro
-    this.forwardListRef.value.ilDialogRef.value.isOpened = false;
+    this.forwardListRef.value?.closeModal();
 
     // apro la chat a cui devo inoltrare
     this.setActiveChat(event);
@@ -354,7 +354,7 @@ export class Chat extends LitElement {
 
   askDeletionConfirmation(event) {
     this.indexToBeDeleted = event.detail.index;
-    this.deletionConfirmationDialogRef.value.ilDialogRef.value.isOpened = true;
+    this.deletionConfirmationDialogRef.value?.openModal();
   }
 
   deleteMessage() {
@@ -363,7 +363,7 @@ export class Chat extends LitElement {
       hasBeenDeleted: true,
     };
     this.messagesListRef.value?.requestUpdate();
-    this.deletionConfirmationDialogRef.value.ilDialogRef.value.isOpened = false;
+    this.deletionConfirmationDialogRef.value?.closeModal();
   }
 
   editMessage(event) {
