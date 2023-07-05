@@ -129,29 +129,30 @@ export class Avatar extends LitElement {
           this.selected,
           () => html`<div class="icon-button">
             <il-icon name=${IconNames.checkCircle}></il-icon>
-          </div>`
-        )}
-        ${choose(
-          userStatus, // Needed becuase if user is undefine this line throws error
-          [
-            [
-              "online",
-              () =>
-                html`<il-icon
-                  class="icon-button online"
-                  name=${IconNames.circle}
-                ></il-icon>`,
-            ], // TODO: change name and color
-            [
-              "offline",
-              () =>
-                html`<il-icon
-                  class="icon-button offline"
-                  name=${IconNames.circle}
-                ></il-icon>`,
-            ],
-          ],
-          () => html``
+          </div>`,
+          () =>
+            choose(
+              userStatus, // Needed becuase if user is undefine this line throws error
+              [
+                [
+                  "online",
+                  () =>
+                    html`<il-icon
+                      class="icon-button online"
+                      name=${IconNames.circle}
+                    ></il-icon>`,
+                ], // TODO: change name and color
+                [
+                  "offline",
+                  () =>
+                    html`<il-icon
+                      class="icon-button offline"
+                      name=${IconNames.circle}
+                    ></il-icon>`,
+                ],
+              ],
+              () => html``
+            )
         )}
       </div>
     `;
