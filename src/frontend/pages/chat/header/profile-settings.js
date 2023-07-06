@@ -7,6 +7,7 @@ import "../../../components/avatar";
 import "../../../components/button-text";
 import "../../../components/icon";
 import "../../../components/snackbar";
+import "../../../components/input-with-icon";
 
 const maxLength = 30;
 export class profileSettings extends LitElement {
@@ -167,22 +168,14 @@ export class profileSettings extends LitElement {
         <div class="fieldset">
           <p>Nome Utente:</p>
 
-          <div class="inputContainer">
-            <input
-              type="text"
-              id="username"
-              @input=${this.setUsername}
-              value=${this.username}
-              ${ref(this.usernameInputRef)}
-            />
-            <il-icon
-              name=${IconNames.pencil}
-              @click=${() => {
-                this.usernameInputRef.value.focus();
-                this.usernameInputRef.value.select();
-              }}
-            ></il-icon>
-          </div>
+          <il-input-with-icon
+            ${ref(this.usernameInputRef)}
+            .iconName=${IconNames.pencil}
+            @input=${this.setUsername}
+            @icon-click=${this.onIconClick}
+            placeholder="Inserisci un nome utente"
+            value=${this.username}
+          ></il-input-with-icon>
         </div>
       </section>
 
@@ -194,12 +187,17 @@ export class profileSettings extends LitElement {
         ></il-button-text>
         <il-button-text
           text="Conferma"
-          @click=${this.closeMenu}
+          @click=${this.confirmEdit}
         ></il-button-text>
       </footer>
 
       <il-snackbar ${ref(this.snackbarRef)}></il-snackbar>
     `;
+  }
+
+  onIconClick() {
+    this.usernameInputRef.value.focus();
+    this.usernameInputRef.value.select();
   }
 
   setUsername(event) {
@@ -218,12 +216,15 @@ export class profileSettings extends LitElement {
   }
 
   restoreDefault() {
+    console.error(this.username, this.currentUsername);
     this.username = this.currentUsername;
     this.usernameInputRef.value.value = this.currentUsername;
+    this.usernameInputRef.value.requestUpdate();
+    this.requestUpdate();
     this.closeMenu();
   }
 
-  closeMenu() {
+  confirmEdit() {
     if (this.username.trim() === "") {
       this.snackbarRef.value.openSnackbar(
         "INSERIRE UN NOME UTENTE NON VUOTO",
@@ -241,6 +242,12 @@ export class profileSettings extends LitElement {
         },
       })
     );
+
+    this.closeMenu();
+  }
+
+  closeMenu() {
+    this.dispatchEvent(new CustomEvent("close-menu"));
   }
 }
 

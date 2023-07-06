@@ -64,6 +64,7 @@ export class InputWithIcon extends InputField {
           @focus="${this.toggleFocus}"
           @blur=${this.toggleFocus}
           @input=${this.setValue}
+          value=${this.value}
         />
 
         <il-button-icon

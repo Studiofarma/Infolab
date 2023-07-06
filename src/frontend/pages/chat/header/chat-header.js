@@ -102,7 +102,8 @@ export class ChatHeader extends LitElement {
             <il-profile-settings
               currentUsername=${this.getDescription()}
               username=${this.getDescription()}
-              @set-new-description=${this.closeProfileMenu}
+              @set-new-description=${this.setNewDescription}
+              @close-menu=${this.closeProfileMenu}
             ></il-profile-settings>
           </il-modal>
         </div>
@@ -116,7 +117,6 @@ export class ChatHeader extends LitElement {
 
   closeProfileMenu(event) {
     this.modalRef.value.ilDialogRef.value.closeDialog();
-    this.setNewDescription(event);
   }
 
   setNewDescription(event) {
