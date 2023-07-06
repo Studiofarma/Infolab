@@ -4,6 +4,10 @@ import { createRef, ref } from "lit/directives/ref.js";
 const enterKey = "Enter";
 
 export class Editor extends LitElement {
+  static properties = {
+    isEditMode: false,
+  };
+
   static styles = css`
     #editor {
       background-color: white;
@@ -73,7 +77,7 @@ export class Editor extends LitElement {
   }
 
   onKeyDown(event) {
-    if (event.key === enterKey) {
+    if (!this.isEditMode && event.key === enterKey) {
       event.preventDefault();
       if (event.shiftKey) document.execCommand("insertLineBreak");
       else this.sendMessage();

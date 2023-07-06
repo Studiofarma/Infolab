@@ -22,6 +22,7 @@ export class InsertionBar extends LitElement {
       justify-content: space-between;
       color: white;
     }
+
     .formatting-container {
       justify-content: left;
       gap: 1px;
@@ -56,10 +57,7 @@ export class InsertionBar extends LitElement {
           <il-button-icon
             .content=${IconNames.pencil}
             .tooltipText=${TooltipTexts.editor}
-            @click=${() => {
-              this.bEditor = !this.bEditor;
-              this.editor?.value.focusEditor();
-            }}
+            @click=${this.editorClick}
           ></il-button-icon>
           ${when(
             this.bEditor,
@@ -96,6 +94,17 @@ export class InsertionBar extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  editorClick() {
+    this.bEditor = !this.bEditor;
+    this.editor?.value.focusEditor();
+
+    this.dispatchEvent(
+      new CustomEvent("change-editor-mode", {
+        detail: { isOpen: this.bEditor },
+      })
+    );
   }
 
   sendMessage() {

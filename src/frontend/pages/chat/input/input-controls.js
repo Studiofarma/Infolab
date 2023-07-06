@@ -27,6 +27,7 @@ export class InputControls extends LitElement {
     this.isEmojiPickerOpen = false;
     this.selectedText = null;
     this.editorRef = createRef();
+    this.isEditMode = false;
   }
 
   static styles = css`
@@ -103,12 +104,14 @@ export class InputControls extends LitElement {
               @enter-key-pressed=${this.manageEnterKey}
               @text-changed=${this.updateMessage}
               @text-editor-resized=${this.textEditorResized}
+              .isEditMode=${this.isEditMode}
             ></il-editor>
             <il-insertion-bar
               @send-message=${this.sendMessage}
               @emoji-picker-click=${this.emojiPickerClick}
               @confirm-edit=${this.confirmEdit}
               @cancel-edit=${this.cancelEdit}
+              @change-editor-mode=${this.changeEditorMode}
               .editor=${this.editorRef}
               .isEditing=${this.isEditing}
             >
@@ -187,6 +190,11 @@ export class InputControls extends LitElement {
     this.messageBeingEdited = detail.message;
     this.indexBeingEdited = detail.index;
     this.focusEditor();
+  }
+
+  changeEditorMode(event) {
+    this.isEditMode = event.detail.isOpen;
+    this.requestUpdate();
   }
 
   confirmEdit(event) {
