@@ -389,7 +389,7 @@ export class Chat extends LitElement {
   }
 
   focusOnEditor(event) {
-    this.inputControlsRef.value?.editorRef.value.textareaRef.value.focus();
+    this.inputControlsRef.value?.editorRef.value.editorRef.value.focus();
   }
 
   async firstUpdated() {

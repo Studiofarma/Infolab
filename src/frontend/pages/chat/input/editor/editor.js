@@ -80,6 +80,10 @@ export class Editor extends LitElement {
     }
   }
 
+  focusEditor() {
+    this.editorRef.value.focus();
+  }
+
   onInput() {
     this.textEditorResized();
     this.textChanged();
