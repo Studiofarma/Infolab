@@ -73,9 +73,7 @@ describe("Editor spec", () => {
       .first()
       .click({ force: true });
 
-    getEditor().then(($div) => {
-      expect($div.text()).equal("😀");
-    });
+    getEditor().invoke("text").should("be.equal", "😀");
   });
 
   it("Editor formatting buttons works", () => {
