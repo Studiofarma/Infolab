@@ -6,16 +6,21 @@ import { IconNames } from "../../../enums/icon-names";
 import "../../../components/avatar";
 import "../../../components/button-text";
 import "../../../components/icon";
+import "../../../components/snackbar";
+
+const maxLength = 30;
 export class profileSettings extends LitElement {
   static properties = {
+    currentUsername: { type: String },
     username: { type: String },
-    isEditing: { type: Boolean },
   };
 
   constructor() {
     super();
-    this.isEditing = false;
+    this.temp = "";
+    this.usernameInputRef = createRef();
     this.inputFileRef = createRef();
+    this.snackbarRef = createRef();
   }
 
   static styles = css`
@@ -86,18 +91,17 @@ export class profileSettings extends LitElement {
       outline: none;
     }
 
-    input[disabled] {
-      background-color: #f1f1f1aa;
-    }
-
-    .inputContainer input[disabled] ~ span {
+    .inputContainer il-icon {
       position: absolute;
       transform: translateY(-50%);
       top: 50%;
       right: 5px;
       transition: 0.5s;
-      color: #206cf7;
       cursor: pointer;
+    }
+
+    .inputContainer input:focus ~ il-icon {
+      display: none;
     }
 
     input[type="text"]:focus {
@@ -125,7 +129,11 @@ export class profileSettings extends LitElement {
 
       <section>
         <div class="avatarContainer">
-          <il-avatar id="0" name=${this.username} sizeClass="large"></il-avatar>
+          <il-avatar
+            id="0"
+            name=${this.username ?? ""}
+            sizeClass="large"
+          ></il-avatar>
           <button
             @click=${() => {
               this.inputFileRef.value.click();
@@ -148,22 +156,70 @@ export class profileSettings extends LitElement {
             <input
               type="text"
               id="username"
+              @input=${this.setUsername}
               value=${this.username}
-              ?disabled=${!this.isEditing}
+              ${ref(this.usernameInputRef)}
             />
-
-            <span>
-              <il-icon name=${IconNames.pencil}></il-icon>
-            </span>
+            <il-icon name=${IconNames.pencil}></il-icon>
           </div>
         </div>
       </section>
 
       <footer>
-        <il-button-text text="Annulla" color="#dc2042"></il-button-text>
-        <il-button-text text="Conferma"></il-button-text>
+        <il-button-text
+          text="Annulla"
+          color="#dc2042"
+          @click=${this.restoreDefault}
+        ></il-button-text>
+        <il-button-text
+          text="Conferma"
+          @click=${this.closeMenu}
+        ></il-button-text>
       </footer>
+
+      <il-snackbar ${ref(this.snackbarRef)}></il-snackbar>
     `;
+  }
+
+  setUsername(event) {
+    if (event.target.value.length > maxLength) {
+      this.snackbarRef.value.openSnackbar(
+        `NON E' POSSIBILE SUPERARE I ${maxLength} CARATTERI`,
+        "error",
+        5000
+      );
+
+      this.usernameInputRef.value.value = event.target.value.slice(0, -1);
+      return;
+    }
+
+    this.username = event.target.value;
+  }
+
+  restoreDefault() {
+    this.username = this.currentUsername;
+    this.usernameInputRef.value.value = this.currentUsername;
+    this.closeMenu();
+  }
+
+  closeMenu() {
+    if (this.username === "") {
+      this.snackbarRef.value.openSnackbar(
+        "INSERIRE UN NOME UTENTE NON VUOTO",
+        "error",
+        5000
+      );
+
+      return;
+    }
+
+    this.dispatchEvent(
+      new CustomEvent("set-new-description", {
+        detail: {
+          newDescription: this.username,
+        },
+      })
+    );
   }
 }
 

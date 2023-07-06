@@ -20,6 +20,7 @@ export class ChatHeader extends LitElement {
     super();
     this.getAllUsers();
     this.usersList = [];
+    this.customDescription = "";
     this.modalRef = createRef();
   }
 
@@ -80,15 +81,17 @@ export class ChatHeader extends LitElement {
 
           <div class="profileContainer" @click=${this.openSettingsMenu}>
             <il-avatar
-              name=${this.getUserDescription(this.userName)}
+              name=${this.getDescription()}
               .id="${this.getUserId(this.userName)}"
             ></il-avatar>
-            <h2>${this.getUserDescription(this.userName)}</h2>
+            <h2>${this.getDescription()}</h2>
           </div>
 
           <il-modal ${ref(this.modalRef)} theme="profile-settings">
             <il-profile-settings
-              username=${this.getUserDescription(this.userName)}
+              currentUsername=${this.getDescription()}
+              username=${this.getDescription()}
+              @set-new-description=${this.closeProfileMenu}
             ></il-profile-settings>
           </il-modal>
         </div>
@@ -97,7 +100,21 @@ export class ChatHeader extends LitElement {
   }
 
   openSettingsMenu() {
-    this.modalRef.value.ilDialogRef.value.isOpened = true;
+    this.modalRef.value.ilDialogRef.value.openDialog();
+  }
+
+  closeProfileMenu(event) {
+    this.modalRef.value.ilDialogRef.value.closeDialog();
+    this.setNewDescription(event);
+  }
+
+  setNewDescription(event) {
+    if (
+      this.getUserDescription(this.userName) !== event.detail.newDescription
+    ) {
+      this.customDescription = event.detail.newDescription;
+      this.requestUpdate();
+    }
   }
 
   getUserId(userName) {
@@ -107,6 +124,12 @@ export class ChatHeader extends LitElement {
     if (userIndex < 0) return;
     let user = this.usersList[userIndex];
     return user.id;
+  }
+
+  getDescription() {
+    return this.customDescription !== ""
+      ? this.customDescription
+      : this.getUserDescription(this.userName);
   }
 
   getUserDescription(userName) {
