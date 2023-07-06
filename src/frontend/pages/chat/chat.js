@@ -270,24 +270,24 @@ export class Chat extends LitElement {
 
     if (event.detail.list.length == 1) {
       this.forwardMessage(event);
+    } else {
+      const chatMessage = {
+        sender: this.login.username,
+        content: this.messageToForward,
+        type: "CHAT",
+      };
+
+      event.detail.list.forEach((room) => {
+        let chatName = this.activeChatNameFormatter(room);
+        this.stompClient.send(
+          `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
+          {},
+          JSON.stringify(chatMessage)
+        );
+      });
     }
 
     this.forwardListRef.value?.closeModal();
-
-    const chatMessage = {
-      sender: this.login.username,
-      content: this.messageToForward,
-      type: "CHAT",
-    };
-
-    event.detail.list.forEach((room) => {
-      let chatName = this.activeChatNameFormatter(room);
-      this.stompClient.send(
-        `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
-        {},
-        JSON.stringify(chatMessage)
-      );
-    });
   }
 
   openForwardMenu(event) {
@@ -383,6 +383,7 @@ export class Chat extends LitElement {
     this.messagesListRef.value?.requestUpdate();
   }
 
+  // TODO: rimuovere quando gli utenti in una stanza arriveranno dal backend
   isUsernameInRoomName(roomName, username) {
     let names = roomName.split("-");
     return names.includes(username);

@@ -12,7 +12,7 @@ class Conversation extends LitElement {
     chat: {},
     isSelectable: false,
     isSelected: false,
-    userList: [],
+    user: { type: Object },
   };
 
   constructor() {
@@ -121,6 +121,7 @@ class Conversation extends LitElement {
         }}
       >
         <il-avatar
+          .user=${this.user}
           .selected=${this.isSelected && this.isSelectable}
           .avatarLink=${this.chat.avatarLink}
           .name=${this.chat?.description}
@@ -201,7 +202,10 @@ class Conversation extends LitElement {
   }
 
   getUserDescription(userName) {
-    if (this.userList == undefined) return "";
+    if (userName === undefined)
+      return { username: undefined, description: undefined };
+    if (this.userList === undefined)
+      return { username: undefined, description: undefined };
 
     let userIndex = this.userList.findIndex((user) => user.name == userName);
     if (userIndex < 0) return "";

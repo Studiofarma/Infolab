@@ -35,4 +35,5 @@ export const IconNames = {
   check: "mdiCheck",
   undo: "mdiUndoVariant",
   redo: "mdiRedoVariant",
+  circle: "mdiCircle",
 };
