@@ -253,7 +253,7 @@ class Conversation extends LitElement {
     }
     let maxLength = 20;
     if (message.length > maxLength) {
-      message = message.substring(0, maxLength);
+      message = message.substring(0, maxLength).trim();
       message += "...";
     }
 
