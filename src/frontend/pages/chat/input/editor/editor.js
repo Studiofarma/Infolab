@@ -47,6 +47,8 @@ export class Editor extends LitElement {
   constructor() {
     super();
     this.editorRef = createRef();
+    this.isKeyDown = false;
+    this.message = "";
   }
 
   render() {
@@ -56,7 +58,9 @@ export class Editor extends LitElement {
         contenteditable="true"
         ${ref(this.editorRef)}
         @keydown=${this.onKeyDown}
+        @keyup=${this.onKeyUp}
         @input=${this.onInput}
+        @blur=${this.onBlur}
         placeholder="Inserisci un messaggio..."
       ></div>
     `;
@@ -73,6 +77,8 @@ export class Editor extends LitElement {
   }
 
   onKeyDown(event) {
+    this.isKeyDown = true;
+
     if (!this.isEditMode && event.key === enterKey) {
       event.preventDefault();
       if (event.shiftKey) document.execCommand("insertLineBreak");
@@ -80,13 +86,27 @@ export class Editor extends LitElement {
     }
   }
 
+  onKeyUp(event) {
+    this.isKeyDown = false;
+  }
+
+  onBlur(event) {
+    this.isKeyDown = false;
+  }
+
   focusEditor() {
     this.editorRef.value.focus();
   }
 
-  onInput() {
+  onInput(event) {
+    if (!this.isKeyDown) {
+      this.editorRef.value.innerHTML = this.message;
+      return;
+    }
+
     this.textEditorResized();
     this.textChanged();
+    this.message = this.getText();
   }
 
   textChanged() {
