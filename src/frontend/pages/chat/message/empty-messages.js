@@ -11,11 +11,11 @@ export class EmptyMessages extends LitElement {
       align-items: center;
     }
     h1 {
-      color: darkgray;
+      color: #3d3f41;
     }
 
     h2 {
-      color: lightgray;
+      color: #5c5e60;
     }
   `;
 
