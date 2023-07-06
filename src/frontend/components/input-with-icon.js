@@ -16,49 +16,47 @@ export class InputWithIcon extends InputField {
     this.inputRef = createRef();
   }
 
-  static styles = [
-    css`
-      div {
-        width: 100%;
-        display: flex;
-        color: white;
-        border-radius: 10px;
-        border: solid 2px;
-        align-items: center;
-      }
+  static styles = css`
+    div {
+      width: 100%;
+      display: flex;
+      color: white;
+      border-radius: 10px;
+      border: solid 2px;
+      align-items: center;
+    }
 
-      .focused {
-        border-color: #206cf7;
-      }
+    .focused {
+      border-color: #206cf7;
+    }
 
-      .blurred {
-        border-color: #989a9d;
-      }
+    .blurred {
+      border-color: #989a9d;
+    }
 
-      input {
-        width: 100%;
-        height: 40px;
-        padding: 0 10px;
-        border: none;
-        outline: none;
-        background-color: rgba(0, 0, 0, 0);
-        position: relative;
-        overflow: hidden;
-      }
+    input {
+      width: 100%;
+      height: 40px;
+      padding: 0 10px;
+      border: none;
+      outline: none;
+      background-color: rgba(0, 0, 0, 0);
+      position: relative;
+      overflow: hidden;
+    }
 
-      il-button-icon {
-        padding: 5px;
-      }
+    il-button-icon {
+      padding: 5px;
+    }
 
-      .visible {
-        visibility: visible;
-      }
+    .visible {
+      visibility: visible;
+    }
 
-      .hidden {
-        visibility: hidden;
-      }
-    `,
-  ];
+    .hidden {
+      visibility: hidden;
+    }
+  `;
 
   render() {
     return html`
@@ -92,6 +90,10 @@ export class InputWithIcon extends InputField {
   setInputValue(text) {
     this.value = text;
     this.inputRef.value.value = text;
+  }
+
+  getInputValue() {
+    return this.inputRef.value.value;
   }
 }
 

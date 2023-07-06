@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 import { repeat } from "lit/directives/repeat.js";
 
@@ -50,6 +51,7 @@ class ConversationList extends LitElement {
     this.selectedRoom = {};
     this.selectedChats = [];
     this.isOpen = false;
+    this.inputRef = createRef();
   }
 
   static styles = css`
@@ -128,6 +130,7 @@ class ConversationList extends LitElement {
     return html`
       <div class="container">
         <il-search
+          ${ref(this.inputRef)}
           @search-chat=${this.setQueryString}
           @keyPressed=${this.navigateSearchResultsWithArrows}
           @blur=${this.clearSelection}
@@ -510,11 +513,8 @@ class ConversationList extends LitElement {
   }
 
   cleanSearchInput() {
-    let searchInput = this.shadowRoot
-      .querySelector("il-search")
-      ?.shadowRoot.querySelector("il-input-ricerca");
-    if (searchInput) searchInput.clear();
-    this.query = searchInput.value;
+    this.inputRef.value?.clear();
+    this.query = "";
     this.requestUpdate();
   }
 

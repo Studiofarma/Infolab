@@ -28,8 +28,12 @@ export class InputRicerca extends LitElement {
     `;
   }
 
-  onIconClick() {
+  clear() {
     this.inputRef.value?.clear();
+  }
+
+  onIconClick() {
+    this.clear();
     this.search();
     this.requestUpdate();
   }
@@ -39,18 +43,16 @@ export class InputRicerca extends LitElement {
     this.requestUpdate();
   }
 
-  firstUpdated(c) {
-    console.log(this.inputRef.value?.value === "");
+  getInputValue() {
+    this.inputRef.value?.getInputValue();
   }
 
   search() {
     this.dispatchEvent(
       new CustomEvent("search", {
         detail: {
-          query: this.inputRef.value?.value,
+          query: this.inputRef.value?.getInputValue(),
         },
-        bubbles: true,
-        composed: true,
       })
     );
 
