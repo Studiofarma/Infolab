@@ -71,7 +71,7 @@ export class profileSettings extends LitElement {
       flex-grow: 1;
     }
 
-    label {
+    p {
       display: block;
       font-size: 20px;
       margin-bottom: 15px;
@@ -93,6 +93,7 @@ export class profileSettings extends LitElement {
 
     .inputContainer il-icon {
       position: absolute;
+      color: #206cf7;
       transform: translateY(-50%);
       top: 50%;
       right: 5px;
@@ -125,6 +126,7 @@ export class profileSettings extends LitElement {
     super.connectedCallback();
     this.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
+        this.username = this.currentUsername;
         this.usernameInputRef.value.value = this.currentUsername;
         this.requestUpdate();
       }
@@ -149,7 +151,10 @@ export class profileSettings extends LitElement {
               this.inputFileRef.value.click();
             }}
           >
-            <il-icon name=${IconNames.update}></il-icon>
+            <il-icon
+              @click=${() => this.usernameInputRef.value.focus()}
+              name=${IconNames.update}
+            ></il-icon>
             carica un'immagine
           </button>
           <input
@@ -160,7 +165,7 @@ export class profileSettings extends LitElement {
         </div>
 
         <div class="fieldset">
-          <label for="username">Nome Utente:</label>
+          <p>Nome Utente:</p>
 
           <div class="inputContainer">
             <input
@@ -170,7 +175,13 @@ export class profileSettings extends LitElement {
               value=${this.username}
               ${ref(this.usernameInputRef)}
             />
-            <il-icon name=${IconNames.pencil}></il-icon>
+            <il-icon
+              name=${IconNames.pencil}
+              @click=${() => {
+                this.usernameInputRef.value.focus();
+                this.usernameInputRef.value.select();
+              }}
+            ></il-icon>
           </div>
         </div>
       </section>
