@@ -35,4 +35,5 @@ export const IconNames = {
   numericPlus: "mdiNumeric9PlusCircle",
   checkCircle: "mdiCheckCircle",
   check: "mdiCheck",
+  circle: "mdiCircle",
 };
