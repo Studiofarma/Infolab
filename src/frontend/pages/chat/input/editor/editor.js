@@ -73,7 +73,9 @@ export class Editor extends LitElement {
 
   insertInEditor(text) {
     this.focusEditor();
+    this.isKeyDown = true;
     document.execCommand("insertText", false, text);
+    this.isKeyDown = false;
   }
 
   onKeyDown(event) {
@@ -99,7 +101,7 @@ export class Editor extends LitElement {
   }
 
   onInput(event) {
-    if (!this.isKeyDown) {
+    if (!this.isKeyDown && event.inputType == "insertText") {
       this.editorRef.value.innerHTML = this.message;
       return;
     }
