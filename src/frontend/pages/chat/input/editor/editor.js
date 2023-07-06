@@ -1,4 +1,4 @@
-import { LitElement, html, customElement, css } from "lit";
+import { LitElement, html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
 const enterKey = "Enter";
