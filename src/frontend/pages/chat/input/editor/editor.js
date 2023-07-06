@@ -141,7 +141,7 @@ export class Editor extends LitElement {
       }
     }
 
-    if (event.altKey) this.checkMarkdownKeys(event.key);
+    // if (event.altKey) this.checkMarkdownKeys(event.key);
   }
 
   onKeyUp() {

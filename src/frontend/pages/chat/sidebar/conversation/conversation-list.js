@@ -278,17 +278,17 @@ class ConversationList extends LitElement {
           (user) => user.description == room.description
         );
         if (userIndex == -1) {
-          this.conversationList.push(room);
+          this.conversationList = [...this.conversationList, room];
         } else {
           let conversation = {
             roomName: room.roomName,
             avatarLink: room.avatarlink,
             unreadMessages: room.unreadMessages,
             description: room.description,
-            lastMessage: room.lastMessage,
+            lastMessage: room.lastMessage || "",
             id: this.usersList[userIndex].id,
           };
-          this.conversationList.push(conversation);
+          this.conversationList = [...this.conversationList, conversation];
         }
       });
 
@@ -326,13 +326,27 @@ class ConversationList extends LitElement {
       (conversation) => conversation.roomName == message.roomName
     );
 
-    this.conversationList[index].lastMessage = {
-      content: message.content,
-      timestamp: message.timestamp,
-      sender: message.sender,
-    };
+    if (index === -1) {
+      index = this.newConversationList.findIndex(
+        (conversation) => conversation.roomName == message.roomName
+      );
 
-    this.conversationList.sort(this.compareTimestamp);
+      this.newConversationList[index].lastMessage = {
+        content: message.content,
+        timestamp: message.timestamp,
+        sender: message.sender,
+      };
+
+      this.newConversationList.sort(this.compareTimestamp);
+    } else {
+      this.conversationList[index].lastMessage = {
+        content: message.content,
+        timestamp: message.timestamp,
+        sender: message.sender,
+      };
+
+      this.conversationList.sort(this.compareTimestamp);
+    }
 
     this.requestUpdate();
   }
@@ -364,12 +378,13 @@ class ConversationList extends LitElement {
       },
       description: user.description === "" ? user.name : user.description,
       id: user.id,
+      status: user.status,
     };
   }
 
   compareTimestamp(a, b) {
-    var timestampA = Date.parse(a.lastMessage.timestamp);
-    var timestampB = Date.parse(b.lastMessage.timestamp);
+    var timestampA = Date.parse(a.lastMessage?.timestamp);
+    var timestampB = Date.parse(b.lastMessage?.timestamp);
     return timestampB - timestampA;
   }
 
@@ -382,12 +397,16 @@ class ConversationList extends LitElement {
 
     return repeat(this.conversationListFiltered, (pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
+
       if (
-        conversation.lastMessage.content ||
+        conversation.lastMessage?.content ||
         conversation.roomName == this.activeChatName
       ) {
+        let user = this.findUser(this.conversationListFiltered, conversation);
+
         return html`<il-conversation
           .userList=${this.usersList}
+          .user=${user}
           @selected=${this.selectConversation}
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
@@ -422,7 +441,12 @@ class ConversationList extends LitElement {
 
     return this.newConversationListFiltered.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
+
+      let user = this.findUser(this.newConversationListFiltered, conversation);
+
       return html`<il-conversation
+        .userList=${this.usersList}
+        .user=${user}
         @selected=${this.selectConversation}
         .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
         .isSelected=${this.selectedChats.includes(conversation.roomName)}
@@ -438,6 +462,24 @@ class ConversationList extends LitElement {
         @clicked=${(event) => this.handleClick(event, conversation)}
       ></il-conversation>`;
     });
+  }
+
+  findUser(list, conversation) {
+    // TODO: semplificare quando arriverà dal backend (questo fa un giro assurdo perché nelle room non ci sono gli utenti che le compongono)
+    let cookie = CookieService.getCookie();
+
+    let convIndex = list.findIndex((elem) => {
+      return elem.roomName === conversation.roomName;
+    });
+
+    let roomName = list[convIndex].roomName;
+
+    let usernames = roomName.split("-");
+    let username = usernames.filter((elem) => elem !== cookie.username)[0];
+
+    let userIndex = this.usersList.findIndex((elem) => elem.name === username);
+
+    return this.usersList[userIndex];
   }
 
   handleClick(e, conversation) {

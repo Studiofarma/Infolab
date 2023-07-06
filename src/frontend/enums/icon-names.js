@@ -36,4 +36,5 @@ export const IconNames = {
   checkCircle: "mdiCheckCircle",
   check: "mdiCheck",
   update: "mdiUpload",
+  circle: "mdiCircle",
 };

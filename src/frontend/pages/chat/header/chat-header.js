@@ -13,15 +13,21 @@ export class ChatHeader extends LitElement {
       userName: "",
       activeDescription: "",
       usersList: [],
+      otherUser: {},
     };
   }
 
   constructor() {
     super();
+    this.cookie = CookieService.getCookie();
     this.getAllUsers();
     this.usersList = [];
     this.customDescription = "";
     this.modalRef = createRef();
+  }
+
+  updated() {
+    this.getUserByDesc(this.activeDescription);
   }
 
   static styles = css`
@@ -72,6 +78,7 @@ export class ChatHeader extends LitElement {
           <div class="profileContainer">
             ${this.activeDescription !== ""
               ? html` <il-avatar
+                    .user=${this.otherUser}
                     name=${this.activeDescription}
                     .id=${this.getUserId(this.activeDescription)}
                   ></il-avatar>
@@ -142,16 +149,28 @@ export class ChatHeader extends LitElement {
   }
 
   async getAllUsers() {
-    let cookie = CookieService.getCookie();
     try {
-      await UsersService.GetUsers("", cookie.username, cookie.password).then(
-        (users) => {
-          this.usersList = users["data"];
-        }
-      );
+      await UsersService.GetUsers(
+        "",
+        this.cookie.username,
+        this.cookie.password
+      ).then((users) => {
+        this.usersList = users["data"];
+      });
     } catch (error) {
       console.error(error);
     }
+  }
+
+  getUserByDesc(description) {
+    let userIndex = this.usersList.findIndex(
+      (user) => user.description == description
+    );
+    if (userIndex < 0) {
+      this.otherUser = undefined;
+      return;
+    }
+    this.otherUser = this.usersList[userIndex];
   }
 }
 
