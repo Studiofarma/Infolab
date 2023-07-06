@@ -66,6 +66,10 @@ export class ChatHeader extends LitElement {
       padding: 15px;
     }
 
+    .profileContainer:last-of-type {
+      cursor: pointer;
+    }
+
     il-modal {
       position: fixed;
     }
@@ -119,7 +123,7 @@ export class ChatHeader extends LitElement {
     this.customDescription = event.detail.newDescription;
     this.requestUpdate();
 
-    this.dispatchEvent(event.type, { detail: event.detail });
+    this.dispatchEvent(new CustomEvent(event.type, { detail: event.detail }));
   }
 
   getUserId(userName) {

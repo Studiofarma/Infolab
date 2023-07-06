@@ -121,6 +121,16 @@ export class profileSettings extends LitElement {
     }
   `;
 
+  connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        this.usernameInputRef.value.value = this.currentUsername;
+        this.requestUpdate();
+      }
+    });
+  }
+
   render() {
     return html`
       <header>
