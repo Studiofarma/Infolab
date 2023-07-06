@@ -3,8 +3,8 @@ const inputControlsPath = `${chatPath},il-input-controls`;
 const editorPath = `${inputControlsPath},il-editor`;
 const buttonIconPath = `${inputControlsPath},il-insertion-bar,il-button-icon`;
 
-function getTextarea() {
-  return cy.getLitElement(editorPath).find("textarea");
+function getEditor() {
+  return cy.getLitElement(editorPath).find("#editor");
 }
 
 beforeEach(() => {
@@ -24,58 +24,41 @@ describe("Editor spec", () => {
   });
 
   it("Editor types", () => {
-    const textarea = getTextarea();
+    const editor = getEditor();
 
-    textarea.type("ABC");
+    editor.type("ABC");
 
-    textarea.should("have.value", "ABC");
+    getEditor().then(($div) => {
+      expect($div.text()).equal("ABC");
+    });
 
-    textarea.type("{backspace}{backspace}DE");
+    editor.type("{backspace}{backspace}DE");
 
-    textarea.should("have.value", "ADE");
+    getEditor().then(($div) => {
+      expect($div.text()).equal("ADE");
+    });
   });
 
   it("Editor empty after enter pressed", () => {
-    const textarea = getTextarea();
+    const editor = getEditor();
 
-    textarea.type("Test12345{enter}");
+    editor.type("Test12345{enter}");
 
-    textarea.should("have.value", "");
+    editor.should("have.value", "");
   });
 
   it("Editor empty after send button pressed", () => {
-    const textarea = getTextarea();
+    const editor = getEditor();
 
-    textarea.type("Test67890");
+    editor.type("Test67890");
 
     cy.getLitElement(buttonIconPath)
       .find(".icon-button")
       .last()
       .click({ force: true });
 
-    textarea.should("have.value", "");
+    editor.should("have.value", "");
   });
-
-  // it("Markdown shortcuts works", () => {
-  //   const textarea = getTextarea();
-
-  //   const markdowns = [
-  //     { key: "b", result: "****" },
-  //     { key: "s", result: "~~~~" },
-  //     { key: "i", result: "**" },
-  //     { key: "l", result: "[](insert link)" },
-  //   ];
-
-  //   let result = "";
-
-  //   markdowns.forEach((markdown) => {
-  //     textarea.type(`{alt+${markdown.key}}`);
-
-  //     result += markdown.result;
-
-  //     textarea.should("have.value", result);
-  //   });
-  // });
 
   it("Emoji works", () => {
     cy.getLitElement(buttonIconPath)
@@ -90,26 +73,30 @@ describe("Editor spec", () => {
       .first()
       .click({ force: true });
 
-    const textarea = getTextarea();
-
-    textarea.should("have.value", "😀");
+    getEditor().then(($div) => {
+      expect($div.text()).equal("😀");
+    });
   });
 
-  // it("Editor formatting buttons works", () => {
-  //   cy.getLitElement(buttonIconPath)
-  //     .find(".icon-button")
-  //     .eq(1)
-  //     .click({ force: true });
+  it("Editor formatting buttons works", () => {
+    cy.getLitElement(buttonIconPath)
+      .find(".icon-button")
+      .eq(1)
+      .click({ force: true });
 
-  //   cy.getLitElement(
-  //     "il-app,il-chat,il-input-controls,il-insertion-bar,il-editor-formatting-buttons,il-formatting-button"
-  //   )
-  //     .find(".icon-button")
-  //     .eq(0)
-  //     .click({ force: true });
+    cy.getLitElement(
+      "il-app,il-chat,il-input-controls,il-insertion-bar,il-editor-formatting-buttons,il-button-icon"
+    )
+      .find(".icon-button")
+      .eq(0)
+      .click({ force: true });
 
-  //   getTextarea().should("have.value", "****");
-  // });
+    const editor = getEditor();
+
+    editor.type("bold");
+
+    editor.find("b").should("exist");
+  });
 });
 
 afterEach(() => {

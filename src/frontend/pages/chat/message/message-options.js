@@ -4,6 +4,7 @@ import { when } from "lit/directives/when.js";
 import { CookieService } from "../../../services/cookie-service.js";
 
 import { IconNames } from "../../../enums/icon-names.js";
+import { HtmlParserService } from "../../../services/html-parser-service.js";
 
 import "./message-button-option.js";
 
@@ -71,7 +72,7 @@ export class MessageOptions extends LitElement {
 
   copyToClipboardHandler() {
     navigator.clipboard.writeText(
-      this.message.content.replaceAll("\\\n", "\n")
+      HtmlParserService.parseToString(this.message.content)
     );
     this.dispatchEvent(new CustomEvent("message-copy"));
   }
