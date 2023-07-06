@@ -235,7 +235,15 @@ class Conversation extends LitElement {
   }
 
   fixLastMessageLength(message) {
-    const messageLines = message.split("<br>");
+    const messageLines = message
+      .split("<br>")
+      .join("\n")
+      .split("<ul>")
+      .join("\n")
+      .split("<ol>")
+      .join("\n")
+      .split("\n");
+
     if (messageLines.length > 1) {
       message = messageLines[0] + "...";
     }
