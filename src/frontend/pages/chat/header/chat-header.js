@@ -116,14 +116,10 @@ export class ChatHeader extends LitElement {
   }
 
   setNewDescription(event) {
-    if (
-      this.getUserDescription(this.userName) !== event.detail.newDescription
-    ) {
-      this.customDescription = event.detail.newDescription;
-      this.requestUpdate();
+    this.customDescription = event.detail.newDescription;
+    this.requestUpdate();
 
-      this.dispatchEvent(event.type, { detail: event.detail });
-    }
+    this.dispatchEvent(event.type, { detail: event.detail });
   }
 
   getUserId(userName) {
