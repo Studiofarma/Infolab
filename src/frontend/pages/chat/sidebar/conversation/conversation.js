@@ -223,7 +223,8 @@ class Conversation extends LitElement {
 
     if (content) {
       if (description !== "Generale") {
-        text = sender === username ? `Tu: ${content}` : content;
+        text =
+          sender === username ? `Tu: ${content}` : `${description}: ${content}`;
       } else {
         const userDescription = this.getUserDescription(sender);
         text =
@@ -249,11 +250,13 @@ class Conversation extends LitElement {
       .split("\n");
 
     if (messageLines.length > 1) {
-      message = messageLines[0].trim() + "...";
+      message = messageLines[0].replaceAll("&nbsp;", "") + "...";
     }
+
     let maxLength = 20;
+
     if (message.length > maxLength) {
-      message = message.substring(0, maxLength).trim();
+      message = message.replaceAll("&nbsp;", "").substring(0, maxLength);
       message += "...";
     }
 
