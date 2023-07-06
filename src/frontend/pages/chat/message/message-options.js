@@ -1,6 +1,8 @@
 import { LitElement, html } from "lit";
 import { when } from "lit/directives/when.js";
 
+import { CookieService } from "../../../services/cookie-service.js";
+
 import { IconNames } from "../../../enums/icon-names.js";
 
 import "./message-button-option.js";
@@ -15,6 +17,11 @@ export class MessageOptions extends LitElement {
     };
   }
 
+  constructor() {
+    super();
+    this.cookie = CookieService.getCookie();
+  }
+
   render() {
     return html`
       <div class=${this.type}>
@@ -26,7 +33,7 @@ export class MessageOptions extends LitElement {
         </message-button-option>
 
         ${when(
-          this.type === "receiver",
+          this.type === "receiver" && this.cookie.lastChat === "general",
           () => html` <message-button-option
             iconName=${IconNames.mdiMessage}
             text="Scrivi in privato"
