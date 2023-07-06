@@ -7,7 +7,6 @@ import Stomp from "stompjs";
 
 import { MessagesService } from "../../services/messages-service";
 import { CookieService } from "../../services/cookie-service";
-import { MarkdownService } from "../../services/markdown-service";
 
 import { IconNames } from "../../enums/icon-names";
 import { TooltipTexts } from "../../enums/tooltip-texts";
@@ -398,11 +397,7 @@ export class Chat extends LitElement {
   }
 
   focusOnEditor(event) {
-    this.inputControlsRef.value?.editorRef.value.textareaRef.value.focus();
-
-    // Bug da fixare, segnalato in proposal
-    // if(event.detail.eventType === "keyPressed")
-    // this.inputControlsRef.value.editorRef.value.textareaRef.value = ""
+    this.inputControlsRef.value?.focusEditor();
   }
 
   async firstUpdated() {
@@ -565,25 +560,6 @@ export class Chat extends LitElement {
     this.messageNotification(message);
   }
 
-  parseMarkdown(e) {
-    this.message = e.detail.message.replaceAll("\\\n", "\n");
-    const messageLines = e.detail.message.split("\n");
-
-    for (let i = 1; i < messageLines.length; i++) {
-      if (
-        MarkdownService.checkList(messageLines[i]) ||
-        MarkdownService.checkTitle(messageLines[i]) ||
-        MarkdownService.checkTitle(messageLines[i - 1])
-      )
-        continue;
-      messageLines[i - 1] += "\\";
-    }
-
-    this.message = messageLines.join("\n");
-
-    return this.message.trim();
-  }
-
   buildMessageAndSend(messageContent, type) {
     if (messageContent && this.stompClient) {
       const chatMessage = {
@@ -604,10 +580,8 @@ export class Chat extends LitElement {
     }
   }
 
-  sendMessage(e) {
-    let messageContent = this.parseMarkdown(e);
-
-    this.buildMessageAndSend(messageContent, "CHAT");
+  sendMessage(event) {
+    this.buildMessageAndSend(event.detail.message, "CHAT");
   }
 
   onError(error) {

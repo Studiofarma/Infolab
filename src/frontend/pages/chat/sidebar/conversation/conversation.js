@@ -1,12 +1,11 @@
 import { LitElement, html, css } from "lit";
-import { resolveMarkdown } from "lit-markdown";
 
-import { MarkdownService } from "../../../../services/markdown-service";
+import { IconNames } from "../../../../enums/icon-names";
 import { CookieService } from "../../../../services/cookie-service";
+import { HtmlParserService } from "../../../../services/html-parser-service";
 
 import "../../../../components/icon";
 import "../../../../components/button-icon";
-import { IconNames } from "../../../../enums/icon-names";
 
 class Conversation extends LitElement {
   static properties = {
@@ -224,7 +223,8 @@ class Conversation extends LitElement {
 
     if (content) {
       if (description !== "Generale") {
-        text = sender === username ? `Tu: ${content}` : content;
+        text =
+          sender === username ? `Tu: ${content}` : `${description}: ${content}`;
       } else {
         const userDescription = this.getUserDescription(sender);
         text =
@@ -236,19 +236,27 @@ class Conversation extends LitElement {
       text = "Nuova conversazione";
     }
 
-    return resolveMarkdown(
-      MarkdownService.parseMarkdown(this.fixLastMessageLength(text))
-    );
+    return HtmlParserService.parseFromString(this.fixLastMessageLength(text));
   }
 
   fixLastMessageLength(message) {
-    const messageLines = message.split("\n");
+    const messageLines = message
+      .split("<br>")
+      .join("\n")
+      .split("<ul>")
+      .join("\n")
+      .split("<ol>")
+      .join("\n")
+      .split("\n");
+
     if (messageLines.length > 1) {
-      message = messageLines[0] + "...";
+      message = messageLines[0].replaceAll("&nbsp;", "") + "...";
     }
+
     let maxLength = 20;
+
     if (message.length > maxLength) {
-      message = message.substring(0, maxLength);
+      message = message.replaceAll("&nbsp;", "").substring(0, maxLength);
       message += "...";
     }
 

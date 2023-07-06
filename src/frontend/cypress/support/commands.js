@@ -70,7 +70,7 @@ Cypress.Commands.add(
 Cypress.Commands.add("sendTestMessages", (number) => {
   for (let i = 0; i < number; i++)
     cy.getLitElement("il-app, il-chat, il-input-controls, il-editor")
-      .find("textarea")
+      .find("#editor")
       .type(`test${i + 1}{enter}`);
 });
 

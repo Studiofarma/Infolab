@@ -27,6 +27,7 @@ export class InputControls extends LitElement {
     this.isEmojiPickerOpen = false;
     this.selectedText = null;
     this.editorRef = createRef();
+    this.isEditMode = false;
   }
 
   static styles = css`
@@ -103,12 +104,14 @@ export class InputControls extends LitElement {
               @enter-key-pressed=${this.manageEnterKey}
               @text-changed=${this.updateMessage}
               @text-editor-resized=${this.textEditorResized}
+              .isEditMode=${this.isEditMode}
             ></il-editor>
             <il-insertion-bar
               @send-message=${this.sendMessage}
               @emoji-picker-click=${this.emojiPickerClick}
               @confirm-edit=${this.confirmEdit}
               @cancel-edit=${this.cancelEdit}
+              @change-editor-mode=${this.changeEditorMode}
               .editor=${this.editorRef}
               .isEditing=${this.isEditing}
             >
@@ -131,11 +134,11 @@ export class InputControls extends LitElement {
   }
 
   focusEditor() {
-    this.editorRef.value.focusTextarea();
+    this.editorRef.value.focusEditor();
   }
 
   insertEmoji(event) {
-    this.editorRef.value.insertInTextarea(event.detail.unicode);
+    this.editorRef.value.insertInEditor(event.detail.unicode);
   }
 
   checkEnterKey(event) {
@@ -144,7 +147,7 @@ export class InputControls extends LitElement {
 
   emojiPickerClick() {
     this.isEmojiPickerOpen = !this.isEmojiPickerOpen;
-    this.editorRef.value.focusTextarea();
+    this.editorRef.value.focusEditor();
   }
 
   textEditorResized(event) {
@@ -189,6 +192,11 @@ export class InputControls extends LitElement {
     this.focusEditor();
   }
 
+  changeEditorMode(event) {
+    this.isEditMode = event.detail.isOpen;
+    this.requestUpdate();
+  }
+
   confirmEdit(event) {
     this.messageBeingEdited.content = this.editorRef.value?.getText();
 
@@ -208,8 +216,9 @@ export class InputControls extends LitElement {
   }
 
   cancelEdit() {
-    this.messageBeingEdited = {};
     this.isEditing = false;
+    this.messageBeingEdited = {};
+    this.indexBeingEdited = undefined;
     this.clearMessage();
     this.focusEditor();
   }

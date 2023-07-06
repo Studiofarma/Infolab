@@ -14,6 +14,8 @@ export const TooltipTexts = {
   title: "Titolo",
   confirmChanges: "Conferma modifiche",
   discardChanges: "Annulla modifiche",
+  undo: "Annulla ultima modifica",
+  redo: "Ripeti ultima modifica",
 
   //Search bar
   clearButton: "Cancella ricerca",
