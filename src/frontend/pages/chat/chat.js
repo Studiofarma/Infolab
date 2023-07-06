@@ -213,7 +213,6 @@ export class Chat extends LitElement {
                           isForwardList="true"
                           @multiple-forward=${this.multipleForward}
                           @change-conversation=${(event) => {
-                            console.log("change conversation event");
                             this.forwardMessage(event);
                             this.focusOnEditor(event);
                           }}
@@ -268,8 +267,6 @@ export class Chat extends LitElement {
   }
 
   multipleForward(event) {
-    console.log("Multiple forward");
-
     if (event.detail.list[0] == undefined) return;
 
     if (event.detail.list.length == 1) {
@@ -301,9 +298,6 @@ export class Chat extends LitElement {
   }
 
   forwardMessage(event) {
-    console.log("Forward message");
-    console.log(event);
-
     // chiudo il menù di inoltro
     this.forwardListRef.value?.closeModal();
 
@@ -583,7 +577,6 @@ export class Chat extends LitElement {
   }
 
   buildMessageAndSend(messageContent, type) {
-    console.log("Build message and send");
     if (messageContent && this.stompClient) {
       const chatMessage = {
         sender: this.login.username,
@@ -604,10 +597,6 @@ export class Chat extends LitElement {
   }
 
   sendMessage(e) {
-    console.log("Send forward message");
-
-    console.log(e);
-
     let messageContent = this.parseMarkdown(e);
 
     this.buildMessageAndSend(messageContent, "CHAT");
