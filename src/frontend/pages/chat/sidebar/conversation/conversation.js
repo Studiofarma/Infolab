@@ -249,7 +249,7 @@ class Conversation extends LitElement {
       .split("\n");
 
     if (messageLines.length > 1) {
-      message = messageLines[0] + "...";
+      message = messageLines[0].trim() + "...";
     }
     let maxLength = 20;
     if (message.length > maxLength) {
