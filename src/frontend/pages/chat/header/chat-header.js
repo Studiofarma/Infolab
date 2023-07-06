@@ -73,6 +73,11 @@ export class ChatHeader extends LitElement {
     il-modal {
       position: fixed;
     }
+
+    .profile-modal {
+      width: 700px;
+      height: fit-content;
+    }
   `;
 
   render() {
@@ -98,17 +103,15 @@ export class ChatHeader extends LitElement {
             <h2>${this.getDescription()}</h2>
           </div>
 
-          <il-modal
-            ${ref(this.modalRef)}
-            theme="profile-settings"
-            .closeByBackdropClick=${false}
-          >
-            <il-profile-settings
-              currentUsername=${this.getDescription()}
-              username=${this.getDescription()}
-              @set-new-description=${this.setNewDescription}
-              @close-menu=${this.closeProfileMenu}
-            ></il-profile-settings>
+          <il-modal ${ref(this.modalRef)} .closeByBackdropClick=${false}>
+            <div class="profile-modal">
+              <il-profile-settings
+                currentUsername=${this.getDescription()}
+                username=${this.getDescription()}
+                @set-new-description=${this.setNewDescription}
+                @close-menu=${this.closeProfileMenu}
+              ></il-profile-settings>
+            </div>
           </il-modal>
         </div>
       </div>

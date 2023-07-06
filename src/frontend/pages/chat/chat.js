@@ -160,6 +160,12 @@ export class Chat extends LitElement {
       flex-direction: row;
       justify-content: space-between;
     }
+
+    .forward-list {
+      width: 400px;
+      height: 100%;
+      color: white;
+    }
   `;
 
   render() {
@@ -204,22 +210,24 @@ export class Chat extends LitElement {
                   ></il-messages-list>
 
                   <il-modal
-                    theme="forward-list"
                     @modal-closed=${() => this.requestUpdate()}
                     ${ref(this.forwardListRef)}
-                    >${when(
-                      this.forwardListRef.value?.ilDialogRef.value.isOpened,
-                      () =>
-                        html`<il-conversation-list
-                          ${ref(this.forwardListConversationListRef)}
-                          isForwardList="true"
-                          @multiple-forward=${this.multipleForward}
-                          @change-conversation=${(event) => {
-                            this.forwardMessage(event);
-                            this.focusOnEditor(event);
-                          }}
-                        ></il-conversation-list>`
-                    )}
+                  >
+                    <div class="forward-list">
+                      ${when(
+                        this.forwardListRef.value?.ilDialogRef.value.isOpened,
+                        () =>
+                          html`<il-conversation-list
+                            ${ref(this.forwardListConversationListRef)}
+                            isForwardList="true"
+                            @multiple-forward=${this.multipleForward}
+                            @change-conversation=${(event) => {
+                              this.forwardMessage(event);
+                              this.focusOnEditor(event);
+                            }}
+                          ></il-conversation-list>`
+                      )}
+                    </div>
                   </il-modal>
 
                   <il-modal

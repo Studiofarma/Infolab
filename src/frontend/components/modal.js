@@ -8,14 +8,12 @@ const esc = "Escape";
 export class Modal extends LitElement {
   static properties = {
     closeByBackdropClick: { type: Boolean },
-    theme: { type: String },
     ilDialogRef: { type: Object },
   };
 
   constructor() {
     super();
     this.closeByBackdropClick = true;
-    this.theme = "";
     this.ilDialogRef = createRef();
     document.addEventListener("keydown", (e) => this.onKeyDown(e));
   }
@@ -24,7 +22,6 @@ export class Modal extends LitElement {
     return html`
       <il-dialog
         type="modal"
-        theme=${this.theme}
         ${ref(this.ilDialogRef)}
         @dialog-clicked=${this.handleClick}
       >
