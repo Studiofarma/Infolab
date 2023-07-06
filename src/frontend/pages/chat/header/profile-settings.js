@@ -153,7 +153,7 @@ export class profileSettings extends LitElement {
               @click=${() => this.usernameInputRef.value.focus()}
               name=${IconNames.update}
             ></il-icon>
-            carica un'immagine
+            Carica un'immagine
           </button>
           <input
             type="file"
