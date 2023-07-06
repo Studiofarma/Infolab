@@ -231,9 +231,7 @@ class Conversation extends LitElement {
       text = "Nuova conversazione";
     }
 
-    return resolveMarkdown(
-      HtmlParserService.parseFromString(this.fixLastMessageLength(text))
-    );
+    return HtmlParserService.parseFromString(this.fixLastMessageLength(text));
   }
 
   fixLastMessageLength(message) {
