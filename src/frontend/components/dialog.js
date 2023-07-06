@@ -52,7 +52,7 @@ export class Dialog extends LitElement {
 
     .profile-settings {
       width: 700px;
-      min-height: 400px;
+      height: fit-content;
     }
   `;
 

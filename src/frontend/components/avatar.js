@@ -3,7 +3,6 @@ import { when } from "lit/directives/when.js";
 
 import "./icon";
 import { IconNames } from "../enums/icon-names";
-
 export class Avatar extends LitElement {
   static get properties() {
     return {
@@ -11,6 +10,7 @@ export class Avatar extends LitElement {
       name: "",
       id: 0,
       selected: false,
+      sizeClass: "",
     };
   }
 
@@ -45,6 +45,13 @@ export class Avatar extends LitElement {
 
     .avatar {
       height: 50px;
+    }
+
+    .large {
+      width: 150px !important;
+      height: 150px !important;
+      color: white;
+      font-size: 50px;
     }
   `;
 
@@ -104,11 +111,11 @@ export class Avatar extends LitElement {
     this.createIcon();
 
     return html`
-      <div class="avatar">
+      <div class=${"avatar " + this.sizeClass}>
         ${this.defaultAvatar
           ? html`<img src=${this.avatarLink} />`
           : html`<div
-              part="avatar-default"
+              class=${this.sizeClass}
               id="avatar-default"
               style="background-color:${this.color}"
             >

@@ -87,7 +87,9 @@ export class ChatHeader extends LitElement {
           </div>
 
           <il-modal ${ref(this.modalRef)} theme="profile-settings">
-            <il-profile-settings></il-profile-settings>
+            <il-profile-settings
+              username=${this.getUserDescription(this.userName)}
+            ></il-profile-settings>
           </il-modal>
         </div>
       </div>
