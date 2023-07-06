@@ -19,7 +19,7 @@ export class MessageOptions extends LitElement {
 
   constructor() {
     super();
-    this.cookie = CookieService.getCookie;
+    this.cookie = CookieService.getCookie();
   }
 
   render() {
