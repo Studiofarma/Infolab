@@ -6,6 +6,10 @@ export class HtmlParserService {
   }
 
   static parseToString(html) {
-    return html.replaceAll("<br>", "\n").replace(/<[^>]*>/g, "");
+    return html
+      .replaceAll("<br>", "\n")
+      .replaceAll("</li>", "\n")
+      .replace(/<[^>]*>/g, "")
+      .trimEnd();
   }
 }
