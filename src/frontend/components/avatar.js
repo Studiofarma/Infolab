@@ -54,6 +54,8 @@ export class Avatar extends LitElement {
       height: 150px !important;
       color: white;
       font-size: 50px;
+    }
+
     .online {
       color: #68c47e;
     }
