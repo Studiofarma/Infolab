@@ -62,8 +62,76 @@ export class Editor extends LitElement {
     `;
   }
 
+  getText() {
+    return this.textareaRef.value?.value;
+  }
+
+  onInput(event) {
+    if (this.isKeyDown) this.message = event.target.value;
+
+    this.textChanged();
+    this.textEditorResize();
+    this.isKeyDown = false;
+  }
+
+  textChanged() {
+    this.shadowRoot.querySelector("textarea").value = this.message;
+    this.dispatchEvent(
+      new CustomEvent("text-changed", {
+        detail: { content: this.message },
+      })
+    );
+  }
+
+  textEditorResize() {
+    const textarea = this.shadowRoot.querySelector("textarea");
+    textarea.style.height = `${textareaDefaultHeight}px`;
+    textarea.style.height = `${textarea.scrollHeight}px`;
+    this.dispatchEvent(
+      new CustomEvent("text-editor-resized", {
+        detail: { height: textarea.clientHeight },
+      })
+    );
+  }
+
+  firstUpdated() {
+    this.textEditorResize();
+  }
+
   focusEditor() {
-    this.editorRef.value.focus();
+    this.textAreaRef.value.focus();
+  }
+
+  getSelection() {
+    const textarea = this.shadowRoot.querySelector("textarea");
+    return {
+      start: textarea.selectionStart,
+      end: textarea.selectionEnd,
+      direction: textarea.selectionDirection,
+    };
+  }
+
+  onKeyDown(event) {
+    this.isKeyDown = true;
+
+    if (event.key == keys.enter) {
+      if (event.shiftKey) {
+        // this.checkList(event);
+      } else {
+        this.dispatchEvent(new CustomEvent("enter-key-pressed"));
+        event.preventDefault();
+      }
+    }
+
+    // if (event.altKey) this.checkMarkdownKeys(event.key);
+  }
+
+  onKeyUp() {
+    this.isKeyDown = false;
+  }
+
+  onBlur(e) {
+    this.isKeyDown = false;
   }
 
   clearMessage() {
