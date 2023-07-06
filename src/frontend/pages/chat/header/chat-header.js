@@ -98,7 +98,11 @@ export class ChatHeader extends LitElement {
             <h2>${this.getDescription()}</h2>
           </div>
 
-          <il-modal ${ref(this.modalRef)} theme="profile-settings">
+          <il-modal
+            ${ref(this.modalRef)}
+            theme="profile-settings"
+            .closeByBackdropClick=${false}
+          >
             <il-profile-settings
               currentUsername=${this.getDescription()}
               username=${this.getDescription()}

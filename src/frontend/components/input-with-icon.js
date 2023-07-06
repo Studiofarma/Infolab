@@ -1,4 +1,6 @@
 import { html, css } from "lit";
+import { createRef, ref } from "lit/directives/ref.js";
+
 import { InputField } from "./input-field";
 
 export class InputWithIcon extends InputField {
@@ -11,6 +13,7 @@ export class InputWithIcon extends InputField {
   constructor() {
     super();
     this.isFocus = false;
+    this.inputRef = createRef();
   }
 
   static styles = [
@@ -21,6 +24,7 @@ export class InputWithIcon extends InputField {
         color: white;
         border-radius: 10px;
         border: solid 2px;
+        align-items: center;
       }
 
       .focused {
@@ -60,6 +64,7 @@ export class InputWithIcon extends InputField {
     return html`
       <div class=${this.isFocus ? "focused" : "blurred"}>
         <input
+          ${ref(this.inputRef)}
           placeholder="${this.placeholder}"
           @focus="${this.toggleFocus}"
           @blur=${this.toggleFocus}
@@ -82,6 +87,11 @@ export class InputWithIcon extends InputField {
 
   iconClick() {
     this.dispatchEvent(new CustomEvent("icon-click"));
+  }
+
+  setInputValue(text) {
+    this.value = text;
+    this.inputRef.value.value = text;
   }
 }
 

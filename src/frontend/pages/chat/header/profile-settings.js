@@ -126,11 +126,8 @@ export class profileSettings extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        this.username = this.currentUsername;
-        this.usernameInputRef.value.value = this.currentUsername;
-        this.requestUpdate();
-      }
+      if (event.key === "Escape") this.restoreDefault();
+      if (event.key === "Enter") this.confirmEdit();
     });
   }
 
@@ -216,11 +213,8 @@ export class profileSettings extends LitElement {
   }
 
   restoreDefault() {
-    console.error(this.username, this.currentUsername);
     this.username = this.currentUsername;
-    this.usernameInputRef.value.value = this.currentUsername;
-    this.usernameInputRef.value.requestUpdate();
-    this.requestUpdate();
+    this.usernameInputRef.value?.setInputValue(this.currentUsername);
     this.closeMenu();
   }
 
