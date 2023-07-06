@@ -114,6 +114,8 @@ export class ChatHeader extends LitElement {
     ) {
       this.customDescription = event.detail.newDescription;
       this.requestUpdate();
+
+      this.dispatchEvent(event.type, { detail: event.detail });
     }
   }
 

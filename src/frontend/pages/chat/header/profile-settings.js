@@ -203,7 +203,7 @@ export class profileSettings extends LitElement {
   }
 
   closeMenu() {
-    if (this.username === "") {
+    if (this.username.trim() === "") {
       this.snackbarRef.value.openSnackbar(
         "INSERIRE UN NOME UTENTE NON VUOTO",
         "error",

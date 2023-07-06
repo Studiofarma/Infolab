@@ -15,6 +15,7 @@ export class MessagesList extends LitElement {
     messages: { type: Array },
     activeChatName: { type: String },
     activeDescription: { type: String },
+    customDescription: { type: String },
     users: { type: Array },
   };
 
@@ -96,6 +97,7 @@ export class MessagesList extends LitElement {
                 .index=${index}
                 .activeChatName=${this.activeChatName}
                 .activeDescription=${this.activeDescription}
+                .customDescription=${this.customDescription}
                 .chatRef=${this.chatRef}
                 @message-copy=${this.messageCopy}
                 @forward-message=${(event) => {

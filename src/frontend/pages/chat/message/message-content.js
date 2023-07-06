@@ -9,6 +9,7 @@ export class MessageContent extends LitElement {
   static properties = {
     message: { type: Object },
     activeChatName: { type: String },
+    customDescription: { type: String },
     userList: { type: Array },
   };
 
@@ -189,7 +190,7 @@ export class MessageContent extends LitElement {
         ${this.activeChatName.indexOf(this.cookie.username) === -1
           ? html` <p class="receiver-name">
               ${this.message.sender != this.cookie.username
-                ? this.getUserDescription(this.message.sender)
+                ? this.getDescription()
                 : ""}
             </p>`
           : html``}
@@ -231,6 +232,12 @@ export class MessageContent extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  getDescription() {
+    return this.customDescription !== ""
+      ? this.customDescription
+      : this.getUserDescription(this.message.sender);
   }
 
   getUserDescription(userName) {
