@@ -304,7 +304,7 @@ class ConversationList extends LitElement {
   async getAllUsers() {
     let cookie = CookieService.getCookie();
     try {
-      let users = await UsersService.GetUsers(
+      let users = await UsersService.getUsers(
         this.query,
         cookie.username,
         cookie.password

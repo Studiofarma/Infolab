@@ -154,7 +154,7 @@ export class ChatHeader extends LitElement {
 
   async getAllUsers() {
     try {
-      await UsersService.GetUsers(
+      await UsersService.getUsers(
         "",
         this.cookie.username,
         this.cookie.password

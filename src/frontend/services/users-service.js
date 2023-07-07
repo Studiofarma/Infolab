@@ -2,7 +2,7 @@ const axios = require("axios").default;
 const allUsers = "all-users";
 
 export class UsersService {
-  static async GetUsers(query, username, password) {
+  static async getUsers(query, username, password) {
     // return await axios({
     //   url: `/api/users?user=${query}`,
     //   method: "get",
