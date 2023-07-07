@@ -1,6 +1,9 @@
 import { LitElement, html, css } from "lit";
+import { ref, createRef } from "lit/directives/ref.js";
 
+import "./profile-settings";
 import "../../../components/button-icon";
+import "../../../components/modal";
 import { UsersService } from "../../../services/users-service";
 import { CookieService } from "../../../services/cookie-service";
 
@@ -19,6 +22,9 @@ export class ChatHeader extends LitElement {
     this.cookie = CookieService.getCookie();
     this.getAllUsers();
     this.usersList = [];
+    this.modalRef = createRef();
+    this.profileSettingsRef = createRef();
+    this.loggedUserAvatarRef = createRef();
   }
 
   updated() {
@@ -60,6 +66,19 @@ export class ChatHeader extends LitElement {
       vertical-align: center;
       padding: 15px;
     }
+
+    .profileContainer:last-of-type {
+      cursor: pointer;
+    }
+
+    il-modal {
+      position: fixed;
+    }
+
+    .profile-modal {
+      width: 700px;
+      height: fit-content;
+    }
   `;
 
   render() {
@@ -77,17 +96,45 @@ export class ChatHeader extends LitElement {
               : html``}
           </div>
 
-          <div class="profileContainer">
+          <div class="profileContainer" @click=${this.openSettingsMenu}>
             <il-avatar
               name=${this.getUserDescription(this.userName)}
               .id="${this.getUserId(this.userName)}"
+              ${ref(this.loggedUserAvatarRef)}
             ></il-avatar>
             <h2>${this.getUserDescription(this.userName)}</h2>
           </div>
+
+          <il-modal ${ref(this.modalRef)} .closeByBackdropClick=${false}>
+            <div class="profile-modal">
+              <il-profile-settings
+                ${ref(this.profileSettingsRef)}
+                currentUsername=${this.getUserDescription(this.userName)}
+                currentAvatarURL=${this.loggedUser?.avatarLink}
+                username=${this.getUserDescription(this.userName)}
+                @set-new-description=${this.setNewDescription}
+                @set-new-avatar=${this.setNewAvatar}
+                @close-menu=${this.closeProfileMenu}
+              ></il-profile-settings>
+            </div>
+          </il-modal>
         </div>
       </div>
     `;
   }
+
+  openSettingsMenu() {
+    this.modalRef.value?.openModal();
+    this.profileSettingsRef.value?.setIsFocus();
+  }
+
+  closeProfileMenu(event) {
+    this.modalRef.value?.closeModal();
+  }
+
+  setNewDescription() {}
+
+  setNewAvatar() {}
 
   getUserId(userName) {
     let userIndex = this.usersList.findIndex(

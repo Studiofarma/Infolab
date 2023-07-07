@@ -5,6 +5,8 @@ import { choose } from "lit/directives/choose.js";
 import "./icon";
 import { IconNames } from "../enums/icon-names";
 
+const maxInitials = 3;
+
 export class Avatar extends LitElement {
   static get properties() {
     return {
@@ -12,12 +14,19 @@ export class Avatar extends LitElement {
       name: "",
       id: 0,
       selected: false,
+      sizeClass: "",
       user: {},
     };
   }
 
   static styles = css`
-    img,
+    img {
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     #avatar-default {
       width: 50px;
       height: 50px;
@@ -49,6 +58,13 @@ export class Avatar extends LitElement {
       height: 50px;
     }
 
+    .large {
+      width: 150px !important;
+      height: 150px !important;
+      color: white;
+      font-size: 50px;
+    }
+
     .online {
       color: #68c47e;
     }
@@ -69,10 +85,14 @@ export class Avatar extends LitElement {
     const words = text.split(" ");
     let initials = "";
 
-    for (let i = 0; i < words.length; i++) {
+    const initialsCount =
+      words.length < maxInitials ? words.length : maxInitials;
+
+    for (let i = 0; i < initialsCount; i++) {
       const word = words[i];
       initials += word.charAt(0);
     }
+
     return initials.toUpperCase();
   }
 
@@ -114,15 +134,18 @@ export class Avatar extends LitElement {
     this.createIcon();
 
     return html`
-      <div class="avatar">
-        ${this.defaultAvatar
-          ? html`<img src=${this.avatarLink} />`
-          : html`<div
-              id="avatar-default"
-              style="background-color:${this.color}"
-            >
-              ${this.initials}
-            </div>`}
+      <div class=${"avatar " + this.sizeClass}>
+        ${when(
+          this.defaultAvatar,
+          () => html`<img src=${this.avatarLink} />`,
+          () => html`<div
+            class=${this.sizeClass}
+            id="avatar-default"
+            style="background-color:${this.color}"
+          >
+            ${this.initials}
+          </div>`
+        )}
         ${when(
           this.selected,
           () => html`<div class="icon-button">
@@ -154,6 +177,12 @@ export class Avatar extends LitElement {
         )}
       </div>
     `;
+  }
+
+  setAvatarLink(avatarLink) {
+    this.avatarLink = avatarLink;
+    this.defaultAvatar = false;
+    this.requestUpdate();
   }
 }
 

@@ -1,107 +1,68 @@
-import { html, css } from "lit";
-
-import { IconNames } from "../enums/icon-names";
-import { TooltipTexts } from "../enums/tooltip-texts";
+import { LitElement, html } from "lit";
+import { ref, createRef } from "lit/directives/ref.js";
 
 import { InputField } from "./input-field";
 
+import { IconNames } from "../enums/icon-names";
+
 import "./button-icon";
+import "./input-with-icon";
 
-export class InputRicerca extends InputField {
-  static properties = {
-    isFocus: { type: Boolean },
-  };
-
+export class InputRicerca extends LitElement {
   constructor() {
     super();
-    this.isFocus = false;
+    this.inputRef = createRef();
   }
-
-  static styles = [
-    css`
-      div {
-        width: 100%;
-        display: flex;
-        color: white;
-        border-radius: 10px;
-        border: solid 2px;
-      }
-
-      .focused {
-        border-color: #206cf7;
-      }
-
-      .blurred {
-        border-color: #989a9d;
-      }
-
-      input {
-        width: 100%;
-        height: 40px;
-        padding: 0 10px;
-        border: none;
-        outline: none;
-        background-color: rgba(0, 0, 0, 0);
-        position: relative;
-        overflow: hidden;
-      }
-
-      il-button-icon {
-        padding: 5px;
-      }
-
-      .visible {
-        visibility: visible;
-      }
-
-      .hidden {
-        visibility: hidden;
-      }
-    `,
-  ];
 
   render() {
     return html`
-      <div class=${this.isFocus ? "focused" : "blurred"}>
-        <input
-          placeholder="${this.placeholder}"
-          @input="${(e) => {
-            this.search();
-            this.setValue(e);
-          }}"
-          @focus="${this.toggleFocus}"
-          @blur=${this.toggleFocus}
-        />
-
-        <il-button-icon
-          @click=${() => {
-            this.clear();
-            this.search();
-          }}
-          .content=${this.value !== "" ? IconNames.close : IconNames.magnify}
-          .tooltipText=${TooltipTexts.clearButton}
-          .condition=${this.value}
-        ></il-button-icon>
-      </div>
+      <il-input-with-icon
+        ${ref(this.inputRef)}
+        .iconName=${this.inputRef.value?.value
+          ? IconNames.close
+          : IconNames.magnify}
+        @input=${this.onInput}
+        @icon-click=${this.onIconClick}
+        placeholder="Cerca o inizia una nuova conversazione"
+      ></il-input-with-icon>
     `;
   }
 
+  clear() {
+    this.inputRef.value?.clear();
+  }
+
+  onIconClick() {
+    const inputValue = this.inputRef.value?.getInputValue();
+
+    if (inputValue?.length !== 0) {
+      this.clear();
+      this.search();
+      this.requestUpdate();
+    } else {
+      this.inputRef.value?.focusInput();
+    }
+  }
+
+  onInput() {
+    this.search();
+    this.requestUpdate();
+  }
+
+  getInputValue() {
+    this.inputRef.value?.getInputValue();
+  }
+
   search() {
-    let input = this.renderRoot.querySelector("div input");
     this.dispatchEvent(
       new CustomEvent("search", {
         detail: {
-          query: input.value,
+          query: this.inputRef.value?.getInputValue(),
         },
-        bubbles: true,
-        composed: true,
       })
     );
-    input.focus();
-  }
 
-  toggleFocus() {
-    this.isFocus = !this.isFocus;
+    this.inputRef.value?.focus();
   }
 }
 

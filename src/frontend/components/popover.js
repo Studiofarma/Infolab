@@ -8,7 +8,6 @@ export class Popover extends LitElement {
   static properties = {
     leaveByDefault: { type: Boolean },
     popupCoords: { type: Object },
-    theme: { type: String },
     ilDialogRef: { type: Object },
   };
 
@@ -16,7 +15,6 @@ export class Popover extends LitElement {
     super();
     this.leaveByDefault = true;
     this.popupCoords = { top: "0px", right: "0px", left: "0px", bottom: "0px" };
-    this.theme = "";
     this.ilDialogRef = createRef();
   }
 

@@ -6,7 +6,6 @@ export class Dialog extends LitElement {
     isOpened: { type: Boolean },
     dialogRef: { type: Object },
     type: { type: String },
-    theme: { type: String },
   };
 
   constructor() {
@@ -43,19 +42,12 @@ export class Dialog extends LitElement {
       border-radius: 10px;
       background-color: rgb(54, 123, 251);
     }
-
-    .forward-list {
-      width: 400px;
-      height: 100%;
-      color: white;
-    }
   `;
 
   render() {
     return html`
       <dialog
         ${ref(this.dialogRef)}
-        class=${this.theme}
         @click=${(event) => {
           this.dispatchEvent(
             new CustomEvent("dialog-clicked", {
