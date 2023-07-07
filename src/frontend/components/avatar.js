@@ -86,6 +86,7 @@ export class Avatar extends LitElement {
       const word = words[i];
       initials += word.charAt(0);
     }
+
     return initials.toUpperCase();
   }
 
@@ -128,15 +129,17 @@ export class Avatar extends LitElement {
 
     return html`
       <div class=${"avatar " + this.sizeClass}>
-        ${this.defaultAvatar
-          ? html`<img src=${this.avatarLink} />`
-          : html`<div
-              class=${this.sizeClass}
-              id="avatar-default"
-              style="background-color:${this.color}"
-            >
-              ${this.initials}
-            </div>`}
+        ${when(
+          this.defaultAvatar,
+          () => html`<img src=${this.avatarLink} />`,
+          () => html`<div
+            class=${this.sizeClass}
+            id="avatar-default"
+            style="background-color:${this.color}"
+          >
+            ${this.initials}
+          </div>`
+        )}
         ${when(
           this.selected,
           () => html`<div class="icon-button">

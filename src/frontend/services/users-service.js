@@ -34,4 +34,12 @@ export class UsersService {
       resolve(users);
     });
   }
+
+  static setUserDescription(newDescription) {
+    // TODO: implementare la chiamata
+  }
+
+  static setUserAvatar(imageBlob) {
+    // TODO: implementare la chiamata
+  }
 }
