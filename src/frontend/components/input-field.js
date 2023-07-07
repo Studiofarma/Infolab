@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { createRef, ref } from "lit/directives/ref.js";
 
 import "./button-icon";
 
@@ -16,6 +17,9 @@ export class InputField extends LitElement {
   constructor() {
     super();
     this.value = "";
+
+    // Refs
+    this.inputRef = createRef();
   }
 
   static styles = css`
@@ -50,6 +54,7 @@ export class InputField extends LitElement {
     return html`
       ${this.title === "" ? html`` : html`<label>${this.title}</label>`}
       <input
+        ${ref(this.inputRef)}
         id="message-input"
         placeholder="${this.placeholder}"
         @input=${this.setValue}
@@ -59,7 +64,7 @@ export class InputField extends LitElement {
   }
 
   firstUpdated() {
-    this.renderRoot.querySelector("input").focus();
+    this.inputRef.value?.focus();
   }
 
   setValue(e) {
@@ -69,7 +74,7 @@ export class InputField extends LitElement {
   }
 
   clear() {
-    this.renderRoot.querySelector("input").value = "";
+    this.inputRef.value.value = "";
     this.value = "";
   }
 }
