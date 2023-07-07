@@ -24,6 +24,7 @@ export class ChatHeader extends LitElement {
     this.usersList = [];
     this.customDescription = "";
     this.modalRef = createRef();
+    this.profileSettingsRef = createRef();
   }
 
   updated() {
@@ -106,6 +107,7 @@ export class ChatHeader extends LitElement {
           <il-modal ${ref(this.modalRef)} .closeByBackdropClick=${false}>
             <div class="profile-modal">
               <il-profile-settings
+                ${ref(this.profileSettingsRef)}
                 currentUsername=${this.getDescription()}
                 username=${this.getDescription()}
                 @set-new-description=${this.setNewDescription}
@@ -119,18 +121,17 @@ export class ChatHeader extends LitElement {
   }
 
   openSettingsMenu() {
-    this.modalRef.value.ilDialogRef.value.openDialog();
+    this.modalRef.value?.openModal();
+    this.profileSettingsRef.value?.setIsFocus();
   }
 
   closeProfileMenu(event) {
-    this.modalRef.value.ilDialogRef.value.closeDialog();
+    this.modalRef.value?.closeModal();
   }
 
   setNewDescription(event) {
     this.customDescription = event.detail.newDescription;
     this.requestUpdate();
-
-    this.dispatchEvent(new CustomEvent(event.type, { detail: event.detail }));
   }
 
   getUserId(userName) {

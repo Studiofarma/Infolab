@@ -12,6 +12,7 @@ import "../../../components/input-with-icon";
 const maxLength = 30;
 export class profileSettings extends LitElement {
   static properties = {
+    isFocus: { type: Boolean },
     currentUsername: { type: String },
     username: { type: String },
   };
@@ -19,6 +20,7 @@ export class profileSettings extends LitElement {
   constructor() {
     super();
     this.temp = "";
+    this.isFocus = false;
     this.usernameInputRef = createRef();
     this.inputFileRef = createRef();
     this.snackbarRef = createRef();
@@ -193,8 +195,20 @@ export class profileSettings extends LitElement {
   }
 
   onIconClick() {
-    this.usernameInputRef.value.focus();
-    this.usernameInputRef.value.select();
+    this.focusAndSelectInput();
+  }
+
+  focusAndSelectInput() {
+    this.usernameInputRef.value.focusInput();
+    this.usernameInputRef.value.selectInput();
+  }
+
+  setIsFocus() {
+    this.isFocus = true;
+  }
+
+  updated(c) {
+    if (c.has("isFocus") && this.isFocus) this.focusAndSelectInput();
   }
 
   setUsername(event) {

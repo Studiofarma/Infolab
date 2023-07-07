@@ -33,9 +33,15 @@ export class InputRicerca extends LitElement {
   }
 
   onIconClick() {
-    this.clear();
-    this.search();
-    this.requestUpdate();
+    const inputValue = this.inputRef.value?.getInputValue();
+
+    if (inputValue?.length !== 0) {
+      this.clear();
+      this.search();
+      this.requestUpdate();
+    } else {
+      this.inputRef.value?.focusInput();
+    }
   }
 
   onInput() {

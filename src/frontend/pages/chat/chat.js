@@ -56,7 +56,6 @@ export class Chat extends LitElement {
     this.activeDescription = CookieService.getCookieByKey(
       CookieService.Keys.lastDescription
     );
-    this.customDescription = "";
     this.scrolledToBottom = false;
     window.addEventListener("resize", () => {
       this.scrollToBottom();
@@ -186,7 +185,6 @@ export class Chat extends LitElement {
             <il-chat-header
               userName=${this.login.username}
               activeDescription="${this.activeDescription ?? ""}"
-              @set-new-description=${this.setCustomDescription}
             ></il-chat-header>
             ${this.activeChatName !== ""
               ? html` <il-messages-list
@@ -195,7 +193,6 @@ export class Chat extends LitElement {
                     .messages=${this.messages}
                     .activeChatName=${this.activeChatName}
                     .activeDescription=${this.activeDescription}
-                    .customDescription=${this.customDescription}
                     .chatRef=${this.chatRef}
                     @forward-message=${this.openForwardMenu}
                     @go-to-chat=${this.goToChat}
@@ -274,10 +271,6 @@ export class Chat extends LitElement {
         <il-snackbar ${ref(this.snackbarRef)}></il-snackbar>
       </main>
     `;
-  }
-
-  setCustomDescription(event) {
-    this.customDescription = event.detail.newDescription;
   }
 
   multipleForward(event) {

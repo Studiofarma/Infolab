@@ -8,7 +8,6 @@ export class MessageContent extends LitElement {
   static properties = {
     message: { type: Object },
     activeChatName: { type: String },
-    customDescription: { type: String },
     userList: { type: Array },
   };
 
@@ -239,12 +238,6 @@ export class MessageContent extends LitElement {
         </main>
       </div>
     `;
-  }
-
-  getDescription() {
-    return this.customDescription !== ""
-      ? this.customDescription
-      : this.getUserDescription(this.message.sender);
   }
 
   getUserDescription(userName) {

@@ -26,14 +26,6 @@ export class InputWithIcon extends InputField {
       align-items: center;
     }
 
-    .focused {
-      border-color: #206cf7;
-    }
-
-    .blurred {
-      border-color: #989a9d;
-    }
-
     input {
       width: 100%;
       height: 40px;
@@ -56,16 +48,22 @@ export class InputWithIcon extends InputField {
     .hidden {
       visibility: hidden;
     }
+
+    div:has(input:focus) {
+      border-color: #206cf7;
+    }
+
+    div:not(:has(input:focus)) {
+      border-color: #989a9d;
+    }
   `;
 
   render() {
     return html`
-      <div class=${this.isFocus ? "focused" : "blurred"}>
+      <div>
         <input
           ${ref(this.inputRef)}
           placeholder="${this.placeholder}"
-          @focus="${this.toggleFocus}"
-          @blur=${this.toggleFocus}
           @input=${this.setValue}
           value=${this.value}
         />
@@ -79,8 +77,12 @@ export class InputWithIcon extends InputField {
     `;
   }
 
-  toggleFocus() {
-    this.isFocus = !this.isFocus;
+  focusInput() {
+    this.inputRef.value?.focus();
+  }
+
+  selectInput() {
+    this.inputRef.value?.select();
   }
 
   iconClick() {

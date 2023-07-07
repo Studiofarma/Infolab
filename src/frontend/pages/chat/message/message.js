@@ -16,7 +16,6 @@ export class Message extends LitElement {
     index: { type: Number },
     activeChatName: { type: String },
     activeDescription: { type: String },
-    customDescription: { type: String },
     userList: { type: Array },
   };
 
@@ -97,7 +96,6 @@ export class Message extends LitElement {
             : "receiver"}
           .message=${this.message}
           .activeChatName=${this.activeChatName}
-          .customDescription=${this.customDescription}
         ></il-message-content>
 
         ${when(
