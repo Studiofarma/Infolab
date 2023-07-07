@@ -3,7 +3,6 @@ import { LitElement, html } from "lit";
 import { IconNames } from "../../../../enums/icon-names";
 import { TooltipTexts } from "../../../../enums/tooltip-texts";
 
-import "../../../../components/formatting-button";
 import "../../../../components/button-icon";
 
 export class EditorFormattingButtons extends LitElement {
