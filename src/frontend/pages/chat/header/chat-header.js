@@ -159,7 +159,7 @@ export class ChatHeader extends LitElement {
         this.cookie.username,
         this.cookie.password
       ).then((users) => {
-        this.usersList = users["data"];
+        this.usersList = users;
       });
     } catch (error) {
       console.error(error);

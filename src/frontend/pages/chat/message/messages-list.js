@@ -135,7 +135,7 @@ export class MessagesList extends LitElement {
     try {
       await UsersService.GetUsers("", cookie.username, cookie.password).then(
         (users) => {
-          this.users = users["data"];
+          this.users = users;
         }
       );
     } catch (error) {

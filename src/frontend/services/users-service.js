@@ -1,4 +1,5 @@
 const axios = require("axios").default;
+const allUsers = "all-users";
 
 export class UsersService {
   static async GetUsers(query, username, password) {
@@ -14,29 +15,39 @@ export class UsersService {
     //   },
     // });
 
-    let users = await axios({
-      url: `/api/users?user=${query}`,
-      method: "get",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-      },
-      auth: {
-        username: username,
-        password: password,
-      },
-    });
+    let usersData;
 
-    users.data.forEach((user, index) => {
-      user.status = index % 2 === 0 ? "online" : "offline";
-    });
+    const sessionUsers = sessionStorage.getItem(allUsers);
 
-    users.data.forEach((user) => {
-      user.avatarLink = "";
-    });
+    if (sessionUsers) {
+      usersData = JSON.parse(sessionUsers);
+    } else {
+      let users = await axios({
+        url: `/api/users?user=${query}`,
+        method: "get",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+        },
+        auth: {
+          username: username,
+          password: password,
+        },
+      });
 
-    return new Promise((resolve) => {
-      resolve(users);
-    });
+      users.data.forEach((user, index) => {
+        user.status = index % 2 === 0 ? "online" : "offline";
+      });
+
+      users.data.forEach((user) => {
+        user.avatarLink = "";
+      });
+
+      usersData = users["data"];
+
+      sessionStorage.setItem(allUsers, JSON.stringify(usersData));
+    }
+
+    return usersData;
   }
 
   static setUserDescription(newDescription) {

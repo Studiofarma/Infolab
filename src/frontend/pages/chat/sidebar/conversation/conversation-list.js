@@ -309,7 +309,7 @@ class ConversationList extends LitElement {
         cookie.username,
         cookie.password
       );
-      this.usersList = users["data"];
+      this.usersList = users;
     } catch (error) {
       console.error(error);
     }
