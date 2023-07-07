@@ -4,6 +4,9 @@ import { choose } from "lit/directives/choose.js";
 
 import "./icon";
 import { IconNames } from "../enums/icon-names";
+
+const maxInitials = 3;
+
 export class Avatar extends LitElement {
   static get properties() {
     return {
@@ -76,7 +79,10 @@ export class Avatar extends LitElement {
     const words = text.split(" ");
     let initials = "";
 
-    for (let i = 0; i < words.length; i++) {
+    const initialsCount =
+      words.length < maxInitials ? words.length : maxInitials;
+
+    for (let i = 0; i < initialsCount; i++) {
       const word = words[i];
       initials += word.charAt(0);
     }
