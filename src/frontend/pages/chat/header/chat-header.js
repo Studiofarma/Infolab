@@ -22,9 +22,9 @@ export class ChatHeader extends LitElement {
     this.cookie = CookieService.getCookie();
     this.getAllUsers();
     this.usersList = [];
-    this.customDescription = "";
     this.modalRef = createRef();
     this.profileSettingsRef = createRef();
+    this.loggedUserAvatarRef = createRef();
   }
 
   updated() {
@@ -98,19 +98,22 @@ export class ChatHeader extends LitElement {
 
           <div class="profileContainer" @click=${this.openSettingsMenu}>
             <il-avatar
-              name=${this.getDescription()}
+              name=${this.getUserDescription(this.userName)}
               .id="${this.getUserId(this.userName)}"
+              ${ref(this.loggedUserAvatarRef)}
             ></il-avatar>
-            <h2>${this.getDescription()}</h2>
+            <h2>${this.getUserDescription(this.userName)}</h2>
           </div>
 
           <il-modal ${ref(this.modalRef)} .closeByBackdropClick=${false}>
             <div class="profile-modal">
               <il-profile-settings
                 ${ref(this.profileSettingsRef)}
-                currentUsername=${this.getDescription()}
-                username=${this.getDescription()}
+                currentUsername=${this.getUserDescription(this.userName)}
+                currentAvatarURL=${this.loggedUser?.avatarLink}
+                username=${this.getUserDescription(this.userName)}
                 @set-new-description=${this.setNewDescription}
+                @set-new-avatar=${this.setNewAvatar}
                 @close-menu=${this.closeProfileMenu}
               ></il-profile-settings>
             </div>
@@ -129,10 +132,9 @@ export class ChatHeader extends LitElement {
     this.modalRef.value?.closeModal();
   }
 
-  setNewDescription(event) {
-    this.customDescription = event.detail.newDescription;
-    this.requestUpdate();
-  }
+  setNewDescription() {}
+
+  setNewAvatar() {}
 
   getUserId(userName) {
     let userIndex = this.usersList.findIndex(
@@ -141,12 +143,6 @@ export class ChatHeader extends LitElement {
     if (userIndex < 0) return;
     let user = this.usersList[userIndex];
     return user.id;
-  }
-
-  getDescription() {
-    return this.customDescription !== ""
-      ? this.customDescription
-      : this.getUserDescription(this.userName);
   }
 
   getUserDescription(userName) {

@@ -1,6 +1,8 @@
 import { LitElement, html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
+import { UsersService } from "../../../services/users-service";
+
 import { IconNames } from "../../../enums/icon-names";
 
 import "../../../components/avatar";
@@ -13,17 +15,21 @@ const maxLength = 30;
 export class profileSettings extends LitElement {
   static properties = {
     isFocus: { type: Boolean },
+    imagePath: { type: String },
     currentUsername: { type: String },
+    currentAvatarURL: { type: String },
     username: { type: String },
   };
 
   constructor() {
     super();
     this.temp = "";
+    this.imagePath = "";
     this.isFocus = false;
     this.usernameInputRef = createRef();
     this.inputFileRef = createRef();
     this.snackbarRef = createRef();
+    this.avatarRef = createRef();
   }
 
   static styles = css`
@@ -145,6 +151,8 @@ export class profileSettings extends LitElement {
             id="0"
             name=${this.username ?? ""}
             sizeClass="large"
+            .avatarLink=${this.imagePath}
+            ?defaultAvatar=${this.imagePath === ""}
           ></il-avatar>
           <button
             @click=${() => {
@@ -159,6 +167,7 @@ export class profileSettings extends LitElement {
           </button>
           <input
             type="file"
+            @change=${this.onFileUpload}
             accept="image/png, image/jpeg"
             ${ref(this.inputFileRef)}
           />
@@ -192,6 +201,12 @@ export class profileSettings extends LitElement {
 
       <il-snackbar ${ref(this.snackbarRef)}></il-snackbar>
     `;
+  }
+
+  onFileUpload() {
+    let file = this.inputFileRef.value?.files[0];
+    this.imagePath = URL.createObjectURL(file);
+    this.requestUpdate();
   }
 
   onIconClick() {
@@ -229,6 +244,10 @@ export class profileSettings extends LitElement {
   restoreDefault() {
     this.username = this.currentUsername;
     this.usernameInputRef.value?.setInputValue(this.currentUsername);
+
+    this.imagePath = this.currentAvatarURL;
+    this.inputFileRef.value.value = this.currentAvatarURL;
+
     this.closeMenu();
   }
 
@@ -243,13 +262,15 @@ export class profileSettings extends LitElement {
       return;
     }
 
-    this.dispatchEvent(
-      new CustomEvent("set-new-description", {
-        detail: {
-          newDescription: this.username,
-        },
-      })
-    );
+    if (this.username !== this.currentUsername) {
+      this.dispatchEvent(new CustomEvent("set-new-description"));
+      UsersService.setUserDescription(this.username);
+    }
+
+    if (this.imagePath !== this.currentAvatarURL) {
+      this.dispatchEvent(new CustomEvent("set-new-avatar"));
+      UsersService.setUserAvatar(this.imagePath);
+    }
 
     this.closeMenu();
   }

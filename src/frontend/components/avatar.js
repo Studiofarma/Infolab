@@ -20,7 +20,13 @@ export class Avatar extends LitElement {
   }
 
   static styles = css`
-    img,
+    img {
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
     #avatar-default {
       width: 50px;
       height: 50px;
@@ -171,6 +177,12 @@ export class Avatar extends LitElement {
         )}
       </div>
     `;
+  }
+
+  setAvatarLink(avatarLink) {
+    this.avatarLink = avatarLink;
+    this.defaultAvatar = false;
+    this.requestUpdate();
   }
 }
 

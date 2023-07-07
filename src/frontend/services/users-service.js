@@ -26,8 +26,12 @@ export class UsersService {
       },
     });
 
-    users.data.forEach((_, index) => {
-      users.data[index].status = index % 2 === 0 ? "online" : "offline";
+    users.data.forEach((user, index) => {
+      user.status = index % 2 === 0 ? "online" : "offline";
+    });
+
+    users.data.forEach((user) => {
+      user.avatarLink = "";
     });
 
     return new Promise((resolve) => {
