@@ -62,7 +62,6 @@ export class Chat extends LitElement {
     });
 
     // Refs
-    this.forwardListConversationListRef = createRef();
     this.forwardListRef = createRef();
     this.sidebarRef = createRef();
     this.scrollButtonRef = createRef();
@@ -193,7 +192,6 @@ export class Chat extends LitElement {
                     .messages=${this.messages}
                     .activeChatName=${this.activeChatName}
                     .activeDescription=${this.activeDescription}
-                    .chatRef=${this.chatRef}
                     @forward-message=${this.openForwardMenu}
                     @go-to-chat=${this.goToChat}
                     @message-copy=${() =>
@@ -212,10 +210,9 @@ export class Chat extends LitElement {
                   >
                     <div class="forward-list">
                       ${when(
-                        this.forwardListRef.value?.ilDialogRef.value.isOpened,
+                        this.getForwardListRefIsOpened(),
                         () =>
                           html`<il-conversation-list
-                            ${ref(this.forwardListConversationListRef)}
                             isForwardList="true"
                             @multiple-forward=${this.multipleForward}
                             @change-conversation=${(event) => {
@@ -240,7 +237,7 @@ export class Chat extends LitElement {
                         <il-button-text
                           text="Annulla"
                           @click=${() =>
-                            this.deletionConfirmationDialogRef.value?.closeModal()}
+                            this.setDeletionConfirmationDialogRef(false)}
                         ></il-button-text>
                         <il-button-text
                           color="#DC2042"
@@ -273,6 +270,26 @@ export class Chat extends LitElement {
     `;
   }
 
+  // getters & setters
+
+  getForwardListRefIsOpened() {
+    return this.forwardListRef.value?.getDialogRefIsOpened();
+  }
+
+  setForwardListRefIsOpened(value) {
+    this.forwardListRef.value?.setDialogRefIsOpened(value);
+  }
+
+  getDeletionConfirmationDialogRef() {
+    this.deletionConfirmationDialogRef.value?.getDialogRefIsOpened();
+  }
+
+  setDeletionConfirmationDialogRef(value) {
+    this.deletionConfirmationDialogRef.value?.setDialogRefIsOpened(value);
+  }
+
+  // -------------------------------------
+
   multipleForward(event) {
     if (event.detail.list[0] == undefined) return;
 
@@ -295,18 +312,18 @@ export class Chat extends LitElement {
       });
     }
 
-    this.forwardListRef.value?.closeModal();
+    this.setForwardListRefIsOpened(false);
   }
 
   openForwardMenu(event) {
     this.messageToForward = event.detail.messageToForward;
-    this.forwardListRef.value?.openModal();
+    this.setForwardListRefIsOpened(true);
     this.requestUpdate();
   }
 
   forwardMessage(event) {
     // chiudo il menù di inoltro
-    this.forwardListRef.value?.closeModal();
+    this.setForwardListRefIsOpened(false);
 
     // apro la chat a cui devo inoltrare
     this.setActiveChat(event);
@@ -359,7 +376,7 @@ export class Chat extends LitElement {
 
   askDeletionConfirmation(event) {
     this.indexToBeDeleted = event.detail.index;
-    this.deletionConfirmationDialogRef.value?.openModal();
+    this.setDeletionConfirmationDialogRef(true);
   }
 
   deleteMessage() {
@@ -368,7 +385,7 @@ export class Chat extends LitElement {
       hasBeenDeleted: true,
     };
     this.messagesListRef.value?.requestUpdate();
-    this.deletionConfirmationDialogRef.value?.closeModal();
+    this.setDeletionConfirmationDialogRef(false);
   }
 
   editMessage(event) {
