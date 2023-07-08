@@ -106,33 +106,6 @@ export class Chat extends LitElement {
       position: relative;
     }
 
-    .chatHeader {
-      position: fixed;
-      top: 0px;
-      left: 350px;
-      background: #083c72;
-      box-shadow: 0px 1px 5px black;
-      width: calc(100% - 350px);
-      min-height: 50px;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: white;
-      z-index: 1000;
-    }
-
-    .chatHeader .settings {
-      order: 2;
-      display: flex;
-    }
-
-    .chatHeader .contact {
-      order: 1;
-      display: flex;
-      gap: 1em;
-    }
-
     il-input-controls {
       margin-top: auto;
     }
