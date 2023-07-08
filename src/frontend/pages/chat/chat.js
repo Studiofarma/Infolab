@@ -65,7 +65,6 @@ export class Chat extends LitElement {
     this.forwardListRef = createRef();
     this.sidebarRef = createRef();
     this.scrollButtonRef = createRef();
-    this.messageBoxRef = createRef();
     this.inputControlsRef = createRef();
     this.messagesListRef = createRef();
     this.snackbarRef = createRef();
