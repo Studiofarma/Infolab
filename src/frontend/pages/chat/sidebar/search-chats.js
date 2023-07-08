@@ -152,7 +152,7 @@ export class SearchChats extends LitElement {
   }
 
   getInputValue() {
-    this.inputRef.value?.getInputValue();
+    this.inputRef.value?.getInputWithIconRefValue();
   }
 
   searchChat(event) {

@@ -77,6 +77,35 @@ export class InputWithIcon extends InputField {
     `;
   }
 
+  // Funzioni ereditate da Input-Field
+
+  firstUpdated() {
+    super.firstUpdated();
+  }
+
+  setValue(e) {
+    super.setValue(e);
+  }
+
+  clear() {
+    super.clear();
+  }
+
+  // ----------------------
+
+  // Getters & Setters
+
+  getInputValue() {
+    return this.inputRef.value.value;
+  }
+
+  setInputValue(text) {
+    this.value = text;
+    this.inputRef.value.value = text;
+  }
+
+  // ------------------------
+
   focusInput() {
     this.inputRef.value?.focus();
   }
@@ -87,15 +116,6 @@ export class InputWithIcon extends InputField {
 
   iconClick() {
     this.dispatchEvent(new CustomEvent("icon-click"));
-  }
-
-  setInputValue(text) {
-    this.value = text;
-    this.inputRef.value.value = text;
-  }
-
-  getInputValue() {
-    return this.inputRef.value.value;
   }
 }
 
