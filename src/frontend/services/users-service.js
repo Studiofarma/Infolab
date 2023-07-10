@@ -8,44 +8,36 @@ export class UsersService {
   cookie = CookieService.getCookie();
 
   static async getUsers(query, username, password) {
-    let usersData;
+    let users = await axios({
+      url: `/api/users?user=${query}`,
+      method: "get",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      auth: {
+        username: username,
+        password: password,
+      },
+    });
 
-    usersData =
-      await UsersService.#tryGettingFromSessionStorageOrElseFetchAndSave(
-        allUsersKey,
-        async () => {
-          let users = await axios({
-            url: `/api/users?user=`,
-            method: "get",
-            headers: {
-              "X-Requested-With": "XMLHttpRequest",
-            },
-            auth: {
-              username: username,
-              password: password,
-            },
-          });
+    // #region Mock data
+    // TODO: remove this region when data comes from BE
+    users.data.forEach((user, index) => {
+      user.status = index % 2 === 0 ? "online" : "offline";
+    });
 
-          // #region Mock data
-          // TODO: remove this region when data comes from BE
-          users.data.forEach((user, index) => {
-            user.status = index % 2 === 0 ? "online" : "offline";
-          });
-
-          users.data.forEach((user) => {
-            user.avatarLink = "";
-          });
-          // #endregion
-
-          return users.data;
-        }
-      );
+    users.data.forEach((user) => {
+      user.avatarLink = "";
+    });
+    // #endregion
 
     if (query !== "") {
-      usersData = usersData.filter((user) => user.description.includes(query));
+      users.data = users.data.filter((user) =>
+        user.description.includes(query)
+      );
     }
 
-    return usersData;
+    return users.data;
   }
 
   static async getLoggedUser() {
