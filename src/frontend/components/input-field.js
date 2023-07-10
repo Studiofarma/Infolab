@@ -27,10 +27,6 @@ export class InputField extends LitElement {
       width: 100%;
     }
 
-    #container {
-      width: 100%;
-    }
-
     input {
       font: inherit;
       position: relative;

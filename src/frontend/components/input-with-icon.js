@@ -41,14 +41,6 @@ export class InputWithIcon extends InputField {
       padding: 5px;
     }
 
-    .visible {
-      visibility: visible;
-    }
-
-    .hidden {
-      visibility: hidden;
-    }
-
     div:has(input:focus) {
       border-color: #206cf7;
     }
