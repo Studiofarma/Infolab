@@ -14,6 +14,7 @@ export class ChatHeader extends LitElement {
       activeDescription: "",
       usersList: [],
       otherUser: {},
+      loggedUser: {},
     };
   }
 
@@ -29,6 +30,10 @@ export class ChatHeader extends LitElement {
 
   updated() {
     this.getUserByDesc(this.activeDescription);
+  }
+
+  async firstUpdated() {
+    this.loggedUser = await UsersService.getLoggedUser();
   }
 
   static styles = css`

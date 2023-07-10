@@ -103,7 +103,7 @@ export class Avatar extends LitElement {
       this.defaultAvatar = false;
     }
     this.initials = this.getInitials(this.name);
-    switch ((this.id || 0) % 8) {
+    switch ((this.user?.id || 0) % 8) {
       case 0:
         this.color = "#008A33";
         break;

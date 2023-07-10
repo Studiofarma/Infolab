@@ -1,11 +1,12 @@
+import { UserDto } from "../models/user-dto";
 import { CookieService } from "./cookie-service";
 
 const axios = require("axios").default;
-const allUsersKey = "all-users";
+
 const loggedUserKey = "logged-user";
 
 export class UsersService {
-  cookie = CookieService.getCookie();
+  static cookie = CookieService.getCookie();
 
   static async getUsers(query, username, password) {
     let users = await axios({
@@ -37,54 +38,40 @@ export class UsersService {
       );
     }
 
+    users.data = users.data.map((user) => {
+      return new UserDto(user);
+    });
+
     return users.data;
   }
 
   static async getLoggedUser() {
     let loggedUser;
 
-    loggedUser = UsersService.#tryGettingFromSessionStorageOrElseFetchAndSave(
-      loggedUserKey,
-      async () => {
-        let usersList;
-        try {
-          usersList = await UsersService.getUsers(
-            "",
-            cookie.username,
-            cookie.password
-          );
-        } catch (error) {
-          console.error(error);
-        }
+    const sessionUser = sessionStorage.getItem(loggedUserKey);
 
-        return usersList.filter((user) => user.name === cookie.username);
-      }
-    );
-
-    return loggedUser;
-  }
-
-  /**
-   * @param {Function} fetchFunction should return data (list or not) of what you want to fetch
-   */
-  static async #tryGettingFromSessionStorageOrElseFetchAndSave(
-    key,
-    fetchFunction
-  ) {
-    let data;
-
-    const sessionData = sessionStorage.getItem(key);
-
-    if (sessionData) {
-      data = JSON.parse(sessionData);
+    if (sessionUser) {
+      loggedUser = JSON.parse(sessionUser);
     } else {
-      console.log("Sos");
-      data = await fetchFunction();
+      let usersList;
+      try {
+        usersList = await UsersService.getUsers(
+          "",
+          this.cookie.username,
+          this.cookie.password
+        );
+      } catch (error) {
+        console.error(error);
+      }
 
-      sessionStorage.setItem(key, JSON.stringify(data));
+      loggedUser = usersList.filter(
+        (user) => user.name === this.cookie.username
+      );
+
+      sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
     }
 
-    return data;
+    return loggedUser;
   }
 
   static setUserDescription(newDescription) {
