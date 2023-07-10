@@ -8,7 +8,7 @@ export class UserDto {
   constructor(obj) {
     this.id = obj.id !== undefined ? obj.id : 0;
     this.name = obj.name !== undefined ? obj.name : "";
-    this.description = obj.description !== undefined ? obj.name : "";
+    this.description = obj.description !== undefined ? obj.description : "";
     this.status = obj.status !== undefined ? obj.status : "";
     this.avatarLink = obj.avatarLink !== undefined ? obj.avatarLink : "";
   }

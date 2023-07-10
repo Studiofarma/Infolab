@@ -71,7 +71,7 @@ export class UsersService {
       sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
     }
 
-    return loggedUser;
+    return loggedUser[0];
   }
 
   static setUserDescription(newDescription) {
