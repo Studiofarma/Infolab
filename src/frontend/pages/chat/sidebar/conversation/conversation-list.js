@@ -24,8 +24,6 @@ class ConversationList extends LitElement {
     conversationList: { type: Array },
     newConversationList: { type: Array },
     users: { type: Array },
-    activeChatName: { type: String },
-    activeDescription: { type: String },
     conversationListFiltered: { type: Array },
     newConversationListFiltered: { type: Array },
     indexOfSelectedChat: { type: Number },
@@ -42,10 +40,7 @@ class ConversationList extends LitElement {
     this.conversationList = [];
     this.newConversationList = [];
     this.usersList = [];
-    this.activeChatName =
-      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
-    this.activeDescription =
-      CookieService.getCookieByKey(CookieService.Keys.lastDescription) || "";
+    this.cookie = CookieService.getCookie();
     this.onLoad();
     this.indexOfSelectedChat = -1;
     this.selectedRoom = {};
@@ -231,8 +226,8 @@ class ConversationList extends LitElement {
       CookieService.Keys.lastDescription,
       conversation.description
     );
-    this.activeChatName = conversation.roomName;
-    this.activeDescription = conversation.description;
+    this.cookie.lastChat = conversation.roomName;
+    this.lastDescription = conversation.description;
     this.updateMessages(conversation);
 
     this.dispatchEvent(
@@ -302,14 +297,12 @@ class ConversationList extends LitElement {
   }
 
   async getAllUsers() {
-    let cookie = CookieService.getCookie();
     try {
-      let users = await UsersService.getUsers(
+      this.usersList = await UsersService.getUsers(
         this.query,
-        cookie.username,
-        cookie.password
+        this.cookie.username,
+        this.cookie.password
       );
-      this.usersList = users;
     } catch (error) {
       console.error(error);
     }
@@ -403,7 +396,7 @@ class ConversationList extends LitElement {
 
       if (
         conversation.lastMessage?.content ||
-        conversation.roomName == this.activeChatName
+        conversation.roomName == this.cookie.lastChat
       ) {
         let user = this.findUser(this.conversationListFiltered, conversation);
 
@@ -414,7 +407,7 @@ class ConversationList extends LitElement {
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
           class=${"conversation " +
-          (conversation.roomName == this.activeChatName ||
+          (conversation.roomName == this.cookie.lastChat ||
           conversation.roomName == this.selectedRoom.roomName
             ? "active"
             : "")}
@@ -454,7 +447,7 @@ class ConversationList extends LitElement {
         .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
         .isSelected=${this.selectedChats.includes(conversation.roomName)}
         class=${"conversation new-conversation " +
-        (conversation.roomName == this.activeChatName ||
+        (conversation.roomName == this.cookie.lastChat ||
         conversation.roomName == this.selectedRoom.roomName
           ? "active"
           : "")}

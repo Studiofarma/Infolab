@@ -154,13 +154,11 @@ export class ChatHeader extends LitElement {
 
   async getAllUsers() {
     try {
-      await UsersService.getUsers(
+      this.usersList = await UsersService.getUsers(
         "",
         this.cookie.username,
         this.cookie.password
-      ).then((users) => {
-        this.usersList = users;
-      });
+      );
     } catch (error) {
       console.error(error);
     }

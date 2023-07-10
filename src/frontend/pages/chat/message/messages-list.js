@@ -131,12 +131,11 @@ export class MessagesList extends LitElement {
   }
 
   async getAllUsers() {
-    let cookie = this.cookie;
     try {
-      await UsersService.getUsers("", cookie.username, cookie.password).then(
-        (users) => {
-          this.users = users;
-        }
+      this.usersList = await UsersService.getUsers(
+        "",
+        this.cookie.username,
+        this.cookie.password
       );
     } catch (error) {
       console.error(error);
