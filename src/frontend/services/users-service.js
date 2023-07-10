@@ -10,43 +10,40 @@ export class UsersService {
   static async getUsers(query, username, password) {
     let usersData;
 
-    const sessionUsers = sessionStorage.getItem(allUsersKey);
+    usersData =
+      await UsersService.#tryGettingFromSessionStorageOrElseFetchAndSave(
+        allUsersKey,
+        async () => {
+          let users = await axios({
+            url: `/api/users?user=`,
+            method: "get",
+            headers: {
+              "X-Requested-With": "XMLHttpRequest",
+            },
+            auth: {
+              username: username,
+              password: password,
+            },
+          });
 
-    if (sessionUsers) {
-      usersData = JSON.parse(sessionUsers);
-    } else {
-      let users = await axios({
-        url: `/api/users?user=`,
-        method: "get",
-        headers: {
-          "X-Requested-With": "XMLHttpRequest",
-        },
-        auth: {
-          username: username,
-          password: password,
-        },
-      });
+          // #region Mock data
+          // TODO: remove this region when data comes from BE
+          users.data.forEach((user, index) => {
+            user.status = index % 2 === 0 ? "online" : "offline";
+          });
 
-      // #region Mock data
-      // TODO: remove this region when data comes from BE
-      users.data.forEach((user, index) => {
-        user.status = index % 2 === 0 ? "online" : "offline";
-      });
+          users.data.forEach((user) => {
+            user.avatarLink = "";
+          });
+          // #endregion
 
-      users.data.forEach((user) => {
-        user.avatarLink = "";
-      });
-      // #endregion
-
-      usersData = users.data;
-
-      sessionStorage.setItem(allUsersKey, JSON.stringify(usersData));
-    }
+          return users.data;
+        }
+      );
 
     if (query !== "") {
       usersData = usersData.filter((user) => user.description.includes(query));
     }
-    console.log(usersData);
 
     return usersData;
   }
@@ -54,28 +51,48 @@ export class UsersService {
   static async getLoggedUser() {
     let loggedUser;
 
-    const sessionUser = sessionStorage.getItem(loggedUserKey);
+    loggedUser = UsersService.#tryGettingFromSessionStorageOrElseFetchAndSave(
+      loggedUserKey,
+      async () => {
+        let usersList;
+        try {
+          usersList = await UsersService.getUsers(
+            "",
+            cookie.username,
+            cookie.password
+          );
+        } catch (error) {
+          console.error(error);
+        }
 
-    if (sessionUser) {
-      loggedUser = JSON.parse(sessionUser);
-    } else {
-      let usersList;
-      try {
-        usersList = await UsersService.getUsers(
-          "",
-          cookie.username,
-          cookie.password
-        );
-      } catch (error) {
-        console.error(error);
+        return usersList.filter((user) => user.name === cookie.username);
       }
-
-      loggedUser = usersList.filter((user) => user.name === cookie.username);
-
-      sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
-    }
+    );
 
     return loggedUser;
+  }
+
+  /**
+   * @param {Function} fetchFunction should return data (list or not) of what you want to fetch
+   */
+  static async #tryGettingFromSessionStorageOrElseFetchAndSave(
+    key,
+    fetchFunction
+  ) {
+    let data;
+
+    const sessionData = sessionStorage.getItem(key);
+
+    if (sessionData) {
+      data = JSON.parse(sessionData);
+    } else {
+      console.log("Sos");
+      data = await fetchFunction();
+
+      sessionStorage.setItem(key, JSON.stringify(data));
+    }
+
+    return data;
   }
 
   static setUserDescription(newDescription) {
