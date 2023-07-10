@@ -16,6 +16,7 @@ export class Avatar extends LitElement {
       selected: false,
       sizeClass: "",
       user: {},
+      hasStatus: true,
     };
   }
 
@@ -79,6 +80,7 @@ export class Avatar extends LitElement {
     this.initials = "";
     this.color = "";
     this.defaultAvatar = true;
+    this.hasStatus = this.hasStatus === undefined ? true : this.hasStatus;
   }
 
   getInitials(text) {
@@ -152,27 +154,29 @@ export class Avatar extends LitElement {
             <il-icon name=${IconNames.checkCircle}></il-icon>
           </div>`,
           () =>
-            choose(
-              this.user?.status,
-              [
+            when(this.hasStatus, () =>
+              choose(
+                this.user?.status,
                 [
-                  "online",
-                  () =>
-                    html`<il-icon
-                      class="icon-button online"
-                      name=${IconNames.circle}
-                    ></il-icon>`,
-                ], // TODO: change name and color
-                [
-                  "offline",
-                  () =>
-                    html`<il-icon
-                      class="icon-button offline"
-                      name=${IconNames.circle}
-                    ></il-icon>`,
+                  [
+                    "online",
+                    () =>
+                      html`<il-icon
+                        class="icon-button online"
+                        name=${IconNames.circle}
+                      ></il-icon>`,
+                  ], // TODO: change name and color
+                  [
+                    "offline",
+                    () =>
+                      html`<il-icon
+                        class="icon-button offline"
+                        name=${IconNames.circle}
+                      ></il-icon>`,
+                  ],
                 ],
-              ],
-              () => html``
+                () => html``
+              )
             )
         )}
       </div>
@@ -180,7 +184,7 @@ export class Avatar extends LitElement {
   }
 
   setAvatarLink(avatarLink) {
-    this.avatarLink = avatarLink;
+    this.user.avatarLink = avatarLink;
     this.defaultAvatar = false;
     this.requestUpdate();
   }

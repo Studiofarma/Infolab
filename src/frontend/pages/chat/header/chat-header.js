@@ -103,6 +103,8 @@ export class ChatHeader extends LitElement {
 
           <div class="profileContainer" @click=${this.openSettingsMenu}>
             <il-avatar
+              .hasStatus=${false}
+              .user=${this.loggedUser}
               name=${this.getUserDescription(this.userName)}
               .id="${this.getUserId(this.userName)}"
               ${ref(this.loggedUserAvatarRef)}
