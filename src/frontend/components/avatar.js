@@ -16,6 +16,7 @@ export class Avatar extends LitElement {
       selected: false,
       sizeClass: "",
       user: {},
+      conversation: {},
       hasStatus: true,
     };
   }
@@ -84,6 +85,7 @@ export class Avatar extends LitElement {
   }
 
   getInitials(text) {
+    if (text === undefined) return;
     const words = text.split(" ");
     let initials = "";
 
@@ -104,8 +106,12 @@ export class Avatar extends LitElement {
     } else {
       this.defaultAvatar = false;
     }
-    this.initials = this.getInitials(this.name);
-    switch ((this.user?.id || 0) % 8) {
+    this.initials = this.getInitials(
+      this.user?.description ?? this.conversation?.description
+    );
+    switch (
+      (this.user?.id ?? this.conversation?.id) % 8 // Note that the BE doesn't return ID, yet it is inside the dto. By default it is 0.
+    ) {
       case 0:
         this.color = "#008A33";
         break;

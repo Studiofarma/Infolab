@@ -411,7 +411,11 @@ class ConversationList extends LitElement {
         conversation.lastMessage?.content ||
         conversation.roomName == this.cookie.lastChat
       ) {
-        if (conversation.roomName === this.cookie.lastChat && this.isStartup) {
+        if (
+          conversation.roomName === this.cookie.lastChat &&
+          this.isStartup &&
+          !this.isForwardList
+        ) {
           this.changeRoom(new CustomEvent("first-update"), conversation);
           this.isStartup = false;
         }
@@ -432,7 +436,7 @@ class ConversationList extends LitElement {
           id=${conversation.roomName == this.selectedRoom.roomName
             ? "selected"
             : ""}
-          .chat=${conversation}
+          .conversation=${conversation}
           @clicked=${(event) => this.handleClick(event, conversation)}
         ></il-conversation>`;
       } else {
@@ -456,7 +460,11 @@ class ConversationList extends LitElement {
     return this.newConversationListFiltered.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
 
-      if (conversation.roomName === this.cookie.lastChat && this.isStartup) {
+      if (
+        conversation.roomName === this.cookie.lastChat &&
+        this.isStartup &&
+        !this.isForwardList
+      ) {
         this.changeRoom(new CustomEvent("first-update"), conversation);
         this.isStartup = false;
       }
@@ -474,7 +482,7 @@ class ConversationList extends LitElement {
         conversation.roomName == this.selectedRoom.roomName
           ? "active"
           : "")}
-        .chat=${conversation}
+        .conversation=${conversation}
         id=${conversation.roomName == this.selectedRoom.roomName
           ? "selected"
           : ""}
