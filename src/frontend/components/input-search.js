@@ -11,14 +11,14 @@ import "./input-with-icon";
 export class InputRicerca extends LitElement {
   constructor() {
     super();
-    this.inputRef = createRef();
+    this.inputWithIconRef = createRef();
   }
 
   render() {
     return html`
       <il-input-with-icon
-        ${ref(this.inputRef)}
-        .iconName=${this.inputRef.value?.value
+        ${ref(this.inputWithIconRef)}
+        .iconName=${this.getInputWithIconRefValue()
           ? IconNames.close
           : IconNames.magnify}
         @input=${this.onInput}
@@ -28,19 +28,35 @@ export class InputRicerca extends LitElement {
     `;
   }
 
+  //  Getters & Setters
+
+  getInputWithIconRefValue() {
+    return this.inputWithIconRef.value?.getInputValue();
+  }
+
+  setInputWithIconRefValue(value) {
+    this.inputWithIconRef.value?.setInputValue(value);
+  }
+
+  //  --------------------
+
   clear() {
-    this.inputRef.value?.clear();
+    this.inputWithIconRef.value?.clear();
+  }
+
+  focusInput() {
+    this.inputWithIconRef.value?.focusInput();
   }
 
   onIconClick() {
-    const inputValue = this.inputRef.value?.getInputValue();
+    const inputValue = this.getInputWithIconRefValue();
 
     if (inputValue?.length !== 0) {
       this.clear();
       this.search();
       this.requestUpdate();
     } else {
-      this.inputRef.value?.focusInput();
+      this.focusInput();
     }
   }
 
@@ -49,20 +65,16 @@ export class InputRicerca extends LitElement {
     this.requestUpdate();
   }
 
-  getInputValue() {
-    this.inputRef.value?.getInputValue();
-  }
-
   search() {
     this.dispatchEvent(
       new CustomEvent("search", {
         detail: {
-          query: this.inputRef.value?.getInputValue(),
+          query: this.inputWithIconRef.value?.getInputValue(),
         },
       })
     );
 
-    this.inputRef.value?.focus();
+    this.focusInput();
   }
 }
 
