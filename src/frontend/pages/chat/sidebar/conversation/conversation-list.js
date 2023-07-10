@@ -46,6 +46,9 @@ class ConversationList extends LitElement {
     this.selectedRoom = {};
     this.selectedChats = [];
     this.isOpen = false;
+    this.isStartup = true;
+
+    // Refs
     this.inputRef = createRef();
   }
 
@@ -233,7 +236,8 @@ class ConversationList extends LitElement {
     this.dispatchEvent(
       new CustomEvent("change-conversation", {
         detail: {
-          conversation: { ...conversation },
+          conversation: conversation,
+          user: this.getOtherUserInRoom(conversation),
           eventType: event.type,
         },
       })
@@ -241,6 +245,15 @@ class ConversationList extends LitElement {
 
     this.cleanSearchInput();
     this.requestUpdate();
+  }
+
+  getOtherUserInRoom(conversation) {
+    let username = this.extractUsername(conversation.roomName);
+
+    let userIndex = this.usersList.findIndex((user) => user.name == username);
+    if (userIndex < 0) return undefined;
+
+    return this.usersList[userIndex];
   }
 
   setQueryString(event) {
@@ -398,6 +411,11 @@ class ConversationList extends LitElement {
         conversation.lastMessage?.content ||
         conversation.roomName == this.cookie.lastChat
       ) {
+        if (conversation.roomName === this.cookie.lastChat && this.isStartup) {
+          this.changeRoom(new CustomEvent("first-update"), conversation);
+          this.isStartup = false;
+        }
+
         let user = this.findUser(this.conversationListFiltered, conversation);
 
         return html`<il-conversation
@@ -438,6 +456,11 @@ class ConversationList extends LitElement {
     return this.newConversationListFiltered.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
 
+      if (conversation.roomName === this.cookie.lastChat && this.isStartup) {
+        this.changeRoom(new CustomEvent("first-update"), conversation);
+        this.isStartup = false;
+      }
+
       let user = this.findUser(this.newConversationListFiltered, conversation);
 
       return html`<il-conversation
@@ -462,20 +485,23 @@ class ConversationList extends LitElement {
 
   findUser(list, conversation) {
     // TODO: semplificare quando arriverà dal backend (questo fa un giro assurdo perché nelle room non ci sono gli utenti che le compongono)
-    let cookie = CookieService.getCookie();
-
     let convIndex = list.findIndex((elem) => {
       return elem.roomName === conversation.roomName;
     });
 
     let roomName = list[convIndex].roomName;
 
-    let usernames = roomName.split("-");
-    let username = usernames.filter((elem) => elem !== cookie.username)[0];
+    let username = this.extractUsername(roomName);
 
     let userIndex = this.usersList.findIndex((elem) => elem.name === username);
 
     return this.usersList[userIndex];
+  }
+
+  extractUsername(roomName) {
+    let cookie = CookieService.getCookie();
+    let usernames = roomName.split("-");
+    return usernames.filter((elem) => elem !== cookie.username)[0];
   }
 
   handleClick(e, conversation) {

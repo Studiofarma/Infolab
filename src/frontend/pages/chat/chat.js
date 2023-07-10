@@ -71,6 +71,7 @@ export class Chat extends LitElement {
     this.messagesListRef = createRef();
     this.snackbarRef = createRef();
     this.deletionConfirmationDialogRef = createRef();
+    this.headerRef = createRef();
   }
 
   connectedCallback() {
@@ -183,6 +184,7 @@ export class Chat extends LitElement {
 
           <div class="chat">
             <il-chat-header
+              ${ref(this.headerRef)}
               userName=${this.login.username}
               activeDescription="${this.activeDescription ?? ""}"
             ></il-chat-header>
@@ -590,7 +592,8 @@ export class Chat extends LitElement {
   }
 
   setActiveChat(event) {
-    this.activeChatName = event.detail.conversation.roomName;
+    this.headerRef.value?.setConversation(event.detail.conversation);
+    this.headerRef.value?.setUser(event.detail.user);
   }
 
   activeChatNameFormatter(activeChatName) {
