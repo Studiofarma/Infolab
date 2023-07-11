@@ -3,6 +3,7 @@ import { createRef, ref } from "lit/directives/ref.js";
 
 import { LoginService } from "../../services/login-service";
 import { CookieService } from "../../services/cookie-service";
+import { ThemeColorService } from "../../services/theme-color-service";
 
 import "../../components/snackbar";
 import "../../components/button-icon";
@@ -10,6 +11,7 @@ import "../../components/button-text";
 import "../../components/input-field";
 import "../../components/input-password";
 
+const layoutID = "login";
 export class Login extends LitElement {
   static properties = {
     username: "",
@@ -41,8 +43,10 @@ export class Login extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      ${ThemeColorService.applyStyle(layoutID)};
+      color: var(--text);
     }
-
+    
     #container {
       position: relative;
       width: 530px;
@@ -55,13 +59,13 @@ export class Login extends LitElement {
       align-items: center;
       gap: 1rem;
       border-radius: 10px;
-      background-color: #e4e8ee;
+      background-color: var(--loginFieldBackground);
       overflow: hidden;
     }
 
     div[class^="ring"] {
       position: absolute;
-      background: #083c72;
+      background: var(--backdrop);
       width: 250px;
       height: 250px;
       border-radius: 100%;
@@ -83,7 +87,7 @@ export class Login extends LitElement {
       transform: translate(-50%, -50%);
       width: 200px;
       height: 200px;
-      background: #e4e8ee;
+      background: var(--loginFieldBackground);
       border-radius: 100%;
     }
 

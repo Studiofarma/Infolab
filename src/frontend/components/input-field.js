@@ -1,7 +1,11 @@
 import { LitElement, html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
+import { ThemeColorService } from "../services/theme-color-service";
+
 import "./button-icon";
+
+const layoutID = "inputField";
 
 export class InputField extends LitElement {
   static get properties() {
@@ -25,6 +29,7 @@ export class InputField extends LitElement {
   static styles = css`
     * {
       width: 100%;
+      ${ThemeColorService.applyStyle(layoutID)};
     }
 
     #container {
@@ -37,7 +42,7 @@ export class InputField extends LitElement {
       width: 100%;
       height: 40px;
       padding: 5px 10px;
-      color: black;
+      color: var(--inputText);
       border: none;
       outline: none;
       font-size: 15pt;
@@ -46,7 +51,7 @@ export class InputField extends LitElement {
     }
 
     input::placeholder {
-      color: #6f7174;
+      color: var(--placeholder);
     }
   `;
 

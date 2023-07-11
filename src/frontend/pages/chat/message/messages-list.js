@@ -5,9 +5,11 @@ import { createRef, ref } from "lit/directives/ref.js";
 
 import { CookieService } from "../../../services/cookie-service";
 import { UsersService } from "../../../services/users-service";
+import { ThemeColorService } from "../../../services/theme-color-service";
 
 import "./empty-messages";
 
+const layoutID = "message";
 const fullScreenHeight = "100vh";
 
 export class MessagesList extends LitElement {
@@ -33,6 +35,7 @@ export class MessagesList extends LitElement {
     * {
       box-sizing: border-box;
       width: 100%;
+      ${ThemeColorService.applyStyle(layoutID)}
     }
     .message-box {
       list-style-type: none;
@@ -55,7 +58,7 @@ export class MessagesList extends LitElement {
 
     .message-box::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: #206cf7;
+      background-color: var(--scrollbar);
       min-height: 40px;
     }
 

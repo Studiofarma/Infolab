@@ -7,6 +7,7 @@ import Stomp from "stompjs";
 
 import { MessagesService } from "../../services/messages-service";
 import { CookieService } from "../../services/cookie-service";
+import { ThemeColorService } from "../../services/theme-color-service";
 
 import { IconNames } from "../../enums/icon-names";
 import { TooltipTexts } from "../../enums/tooltip-texts";
@@ -23,6 +24,7 @@ import "../../components/snackbar";
 import "../../components/button-icon";
 
 const fullScreenHeight = "100vh";
+const layoutID = "chat";
 
 export class Chat extends LitElement {
   static properties = {
@@ -83,6 +85,8 @@ export class Chat extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      ${ThemeColorService.applyStyle(layoutID)};
+      color: var(--text);
     }
 
     main {
@@ -91,7 +95,7 @@ export class Chat extends LitElement {
       left: 0;
       width: 100%;
       min-height: 100%;
-      background: #eaecef;
+      background: var(--chatBackground);
     }
 
     section {

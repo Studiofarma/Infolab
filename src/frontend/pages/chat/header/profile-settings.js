@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
 import { UsersService } from "../../../services/users-service";
+import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { IconNames } from "../../../enums/icon-names";
 
@@ -12,6 +13,7 @@ import "../../../components/snackbar";
 import "../../../components/input-with-icon";
 
 const maxLength = 30;
+const layoutID = "profileSettings";
 export class profileSettings extends LitElement {
   static properties = {
     isFocus: { type: Boolean },
@@ -37,6 +39,7 @@ export class profileSettings extends LitElement {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      ${ThemeColorService.applyStyle(layoutID)};
     }
 
     header h2 {
@@ -69,7 +72,7 @@ export class profileSettings extends LitElement {
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      color: #206cf7;
+      color: var(--actionText);
     }
 
     input[type="file"] {
@@ -90,19 +93,8 @@ export class profileSettings extends LitElement {
       position: relative;
     }
 
-    input[type="text"] {
-      display: block;
-      width: 100%;
-      height: 40px;
-      padding: 0 10px;
-      border: 1px solid gray;
-      border-radius: 5px;
-      outline: none;
-    }
-
     .inputContainer il-icon {
       position: absolute;
-      color: #206cf7;
       transform: translateY(-50%);
       top: 50%;
       right: 5px;
@@ -112,10 +104,6 @@ export class profileSettings extends LitElement {
 
     .inputContainer input:focus ~ il-icon {
       display: none;
-    }
-
-    input[type="text"]:focus {
-      border: 2px solid #206cf7;
     }
 
     footer {
@@ -190,7 +178,7 @@ export class profileSettings extends LitElement {
       <footer>
         <il-button-text
           text="Annulla"
-          color="#dc2042"
+          color="var(--buttonUndoBg)"
           @click=${this.restoreDefault}
         ></il-button-text>
         <il-button-text

@@ -6,7 +6,9 @@ import "../../../components/button-icon";
 import "../../../components/modal";
 import { UsersService } from "../../../services/users-service";
 import { CookieService } from "../../../services/cookie-service";
+import { ThemeColorService } from "../../../services/theme-color-service";
 
+const layoutID = "header"
 export class ChatHeader extends LitElement {
   static get properties() {
     return {
@@ -32,14 +34,19 @@ export class ChatHeader extends LitElement {
   }
 
   static styles = css`
-    .chatHeader {
-      background: #083c72;
+
+    * {
+      ${ThemeColorService.applyStyle(layoutID)};
+    }
+   
+   .chatHeader {
+      background: var(--headerBackground);
       height: 40px;
       padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: white;
+      color: var(--headerColor);
       position: fixed;
       width: calc(100vw - 400px);
       border-bottom: 1px solid black;

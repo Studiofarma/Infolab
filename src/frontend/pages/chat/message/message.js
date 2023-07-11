@@ -3,11 +3,14 @@ import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
+import {ThemeColorService} from "../../../services/theme-color-service"
 
 import "./message-options";
 import "../../../components/popover";
 import "./message-content";
 import "./message-menu-popover";
+
+const layoutID = "messages" 
 
 export class Message extends LitElement {
   static properties = {
@@ -30,6 +33,7 @@ export class Message extends LitElement {
     * {
       margin: 0;
       padding: 0;
+      ${ThemeColorService.applyStyle(layoutID)};
     }
 
     .message-body:has(.sender) {
@@ -55,14 +59,14 @@ export class Message extends LitElement {
     .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: #1d1e20;
+      color: var(--timestampMessageText);
     }
 
     .message-date {
       justify-self: center;
       padding: 5px;
       border-radius: 6px;
-      background-color: rgb(221, 221, 221);
+      background-color: var(--datetimeMessageBg);
     }
 
     il-message-menu-popover {

@@ -1,8 +1,11 @@
 import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
+import { ThemeColorService } from "../services/theme-color-service";
+
 import { InputField } from "./input-field";
 
+const layoutID = "inputWithIcon";
 export class InputWithIcon extends InputField {
   static properties = {
     isFocus: { type: Boolean },
@@ -17,6 +20,10 @@ export class InputWithIcon extends InputField {
   }
 
   static styles = css`
+    * {
+      ${ThemeColorService.applyStyle(layoutID)};
+    }
+
     div {
       width: 100%;
       display: flex;
@@ -32,7 +39,7 @@ export class InputWithIcon extends InputField {
       padding: 0 10px;
       border: none;
       outline: none;
-      background-color: rgba(0, 0, 0, 0);
+      background-color: var(--inputBackground);
       position: relative;
       overflow: hidden;
     }
@@ -50,11 +57,11 @@ export class InputWithIcon extends InputField {
     }
 
     div:has(input:focus) {
-      border-color: #206cf7;
+      border-color: var(--inputFocusedBorder);
     }
 
     div:not(:has(input:focus)) {
-      border-color: #989a9d;
+      border-color: var(--inputBorder);
     }
   `;
 

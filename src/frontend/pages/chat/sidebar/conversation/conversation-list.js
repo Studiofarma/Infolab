@@ -6,12 +6,15 @@ import { repeat } from "lit/directives/repeat.js";
 import { CookieService } from "../../../../services/cookie-service";
 import { OpenChatsService } from "../../../../services/open-chats-service";
 import { UsersService } from "../../../../services/users-service";
+import {ThemeColorService } from "../../../../services/theme-color-service"
 
 import "../../../../components/avatar";
 import "./conversation";
 import "../search-chats";
 import "../../../../components/button-text";
 import { ConversationDto } from "../../../../models/conversation-dto";
+
+const layoutID = "sidebar"
 
 const arrowUp = "ArrowUp";
 const arrowDown = "ArrowDown";
@@ -59,10 +62,11 @@ class ConversationList extends LitElement {
       box-sizing: border-box;
       padding: 0;
       margin: 0;
+      ${ThemeColorService.applyStyle(layoutID)}
     }
 
     #selected {
-      background-color: #e1f0ff;
+      background-color: var(--conversationHoverBg);
     }
 
     .conversation-list {
@@ -89,7 +93,7 @@ class ConversationList extends LitElement {
 
     ::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: #206cf7;
+      background-color: var(--scrollbar);
     }
 
     .conversation {
@@ -99,16 +103,16 @@ class ConversationList extends LitElement {
     }
 
     .conversation:hover {
-      background-color: #e1f0ff;
+      background-color:  var(--conversationHoverBg);
     }
 
     .active {
-      background-color: #c5e1fe;
+      background-color:  var(--conversationActiveBg);
     }
 
     .separator {
       padding: 5px 0px 5px 10px;
-      color: #1d1e20;
+      color: var(--sidebarSeparator);
     }
 
     .conversation-list-scrollable {
@@ -121,7 +125,7 @@ class ConversationList extends LitElement {
     }
 
     .no-result {
-      color: #3d3f41;
+      color: var(--sidebarNoResults);
       text-align: center;
     }
   `;

@@ -3,9 +3,12 @@ import { LitElement, html, css } from "lit";
 import { IconNames } from "../../../../enums/icon-names";
 import { CookieService } from "../../../../services/cookie-service";
 import { HtmlParserService } from "../../../../services/html-parser-service";
+import { ThemeColorService } from "../../../../services/theme-color-service";
 
 import "../../../../components/icon";
 import "../../../../components/button-icon";
+
+const layoutID = "sidebar";
 
 class Conversation extends LitElement {
   static properties = {
@@ -25,7 +28,9 @@ class Conversation extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      ${ThemeColorService.applyStyle(layoutID)};
     }
+
     .chat-box {
       display: flex;
       gap: 12px;
@@ -47,11 +52,11 @@ class Conversation extends LitElement {
     }
 
     .last-message {
-      color: #3d3f41;
+      color: var(--conversationLastMessageText);
     }
 
     .last-message-timestamp {
-      color: #3d3f41;
+      color: var(--conversationTimestapText);
     }
 
     il-icon {
@@ -59,7 +64,7 @@ class Conversation extends LitElement {
       display: flex;
       height: 24px;
       width: 25px;
-      color: rgb(13, 162, 255);
+      color: var(--conversationUnreadMessageCounter);
     }
 
     span {
@@ -75,22 +80,22 @@ class Conversation extends LitElement {
     }
 
     .unread {
-      color: rgb(58 179 255);
+      color: var(--conversationUnreadMessageText);
     }
 
     .last-message a[href] {
-      color: lightgray;
+      color: var(--conversationLastMessageLinkText);
       text-underline-position: below;
       text-underline-offset: 2px;
       transition: color 0.5s;
     }
 
     .last-message a[href]:hover {
-      color: white;
+      color: var(--conversationLastMessageLinkTextHover);
     }
 
     .chat-name {
-      color: black;
+      color: var(--conversationChatName);
     }
 
     il-button-icon {

@@ -3,6 +3,9 @@ import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
 import { HtmlParserService } from "./../../../services/html-parser-service";
+import {ThemeColorService } from "../../../services/theme-color-service";
+
+const layoutID = "message"
 
 export class MessageContent extends LitElement {
   static properties = {
@@ -20,6 +23,7 @@ export class MessageContent extends LitElement {
     * {
       margin: 0;
       padding: 0;
+      ${ThemeColorService.applyStyle(layoutID)};
     }
 
     .sender,
@@ -33,15 +37,10 @@ export class MessageContent extends LitElement {
       z-index: 3;
     }
 
-    .sender .message > p::selection {
-      color: black;
-      background-color: white;
-    }
-
     .sender {
       border-radius: 10px 0 10px 10px;
-      color: black;
-      background-color: #c5e1fe;
+      color: var(--messageSenderText);
+      background-color: var(--messageSenderBg);
     }
 
     .sender::after {
@@ -49,7 +48,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: 0px;
       right: -9px;
-      border-top: 10px solid rgb(197, 225, 254);
+      border-top: 10px solid var(--messageSenderBg);
       border-left: 0px solid transparent;
       border-right: 10px solid transparent;
       z-index: 3;
@@ -60,7 +59,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: -1px;
       right: -13px;
-      border-top: 11px solidrgb(197, 225, 254 / 34%);
+      border-top: 11px solid var(--messageSenderBg);
       border-left: 0px solid transparent;
       border-right: 12px solid transparent;
       filter: blur(0.8px);
@@ -69,8 +68,8 @@ export class MessageContent extends LitElement {
 
     .receiver {
       border-radius: 0 10px 10px 10px;
-      color: black;
-      background-color: white;
+      color: var(--messageReceiverText);
+      background-color: var(--messageReceiverBg);
     }
 
     .receiver::after {
@@ -78,7 +77,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: 0px;
       left: -9px;
-      border-top: 10px solid white;
+      border-top: 10px solid var(--messageReceiverBg);
       border-left: 10px solid transparent;
       border-right: 0px solid transparent;
       z-index: 3;
@@ -89,7 +88,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: -1px;
       left: -13px;
-      border-top: 11px solid rgb(209 209 209 / 34%);
+      border-top: 11px solid var(--messageReceiverBg);
       border-right: 0px solid transparent;
       border-left: 12px solid transparent;
       filter: blur(0.8px);
@@ -98,7 +97,7 @@ export class MessageContent extends LitElement {
 
     .receiver-name {
       font-size: 13px;
-      color: blue;
+      color: var(--messageSenderNameText);
     }
 
     .message {
@@ -133,20 +132,20 @@ export class MessageContent extends LitElement {
     .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: #1d1e20;
+      color: var(--timestampMessageText);
     }
 
     .edited {
       text-align: end;
       font-size: 11px;
-      color: #1d1e20;
+      color: var(--modifiedMessageText);
       margin-right: 10px;
     }
 
     .deleted {
       text-align: end;
       font-size: 11px;
-      color: #1d1e20;
+      color: var(deletedMessageText);
     }
 
     .timestamp-edited-container {
@@ -167,11 +166,11 @@ export class MessageContent extends LitElement {
       justify-self: center;
       padding: 5px;
       border-radius: 6px;
-      background-color: rgb(221, 221, 221);
+      background-color: var(--datetimeMessageBg);
     }
 
     .message a[href] {
-      color: blue;
+      color: var(--link);
       text-underline-position: below;
       text-underline-offset: 2px;
       transition: color 0.5s;

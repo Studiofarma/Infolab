@@ -1,9 +1,12 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
 import { when } from "lit/directives/when.js";
 
+import {ThemeColorService } from "../services/theme-color-service"
+
 import "./icon";
 import "./tooltip";
 
+const layoutID = "icon"
 export class ButtonIcon extends LitElement {
   static properties = {
     content: { type: String },
@@ -13,6 +16,11 @@ export class ButtonIcon extends LitElement {
   };
 
   static styles = css`
+
+* {
+  ${ThemeColorService.applyStyle(layoutID)};
+}
+
     :host {
       display: flex;
       align-items: center;
@@ -26,7 +34,7 @@ export class ButtonIcon extends LitElement {
       cursor: pointer;
       user-select: none;
       padding: 5px;
-      color: #206cf7;
+      color: var(--iconColor);
     }
 
     .contanier {

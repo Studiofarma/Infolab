@@ -1,7 +1,11 @@
 import { LitElement, html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
+import {ThemeColorService } from "../../../services/theme-color-service"
+
 import "./conversation/conversation-list";
+
+const layoutID = "sidebar"
 
 export class Sidebar extends LitElement {
   static properties = {
@@ -20,14 +24,19 @@ export class Sidebar extends LitElement {
   }
 
   static styles = css`
+
+   * {
+    ${ThemeColorService.applyStyle(layoutID)};
+   }
+
     .side-bar {
-      background: #f2f4f7;
+      background: var(--sidebarBg);
       color: white;
       display: flex;
       flex-direction: column;
       height: 100vh;
       width: 350px;
-      box-shadow: 2px 0 8px #b7b9bd;
+      box-shadow: 2px 0 8px var(--boxShadow);
       z-index: 1100;
     }
 

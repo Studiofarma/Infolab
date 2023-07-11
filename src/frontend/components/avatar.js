@@ -2,11 +2,13 @@ import { LitElement, html, css } from "lit";
 import { when } from "lit/directives/when.js";
 import { choose } from "lit/directives/choose.js";
 
+import { ThemeColorService } from "../services/theme-color-service";
+
 import "./icon";
 import { IconNames } from "../enums/icon-names";
 
 const maxInitials = 3;
-
+const layoutID = "avatar";
 export class Avatar extends LitElement {
   static get properties() {
     return {
@@ -20,6 +22,10 @@ export class Avatar extends LitElement {
   }
 
   static styles = css`
+    * {
+      ${ThemeColorService.applyStyle(layoutID)};
+    }
+
     img {
       border-radius: 50%;
       width: 100%;
@@ -41,14 +47,13 @@ export class Avatar extends LitElement {
       height: 24px;
       width: 23px;
       border-radius: 23px;
-      background-color: white;
+      background-color: var(--statusBorder);
       display: flex;
       justify-content: center;
       align-items: center;
       font-size: 0px;
       -webkit-font-smoothing: antialiased;
       user-select: none;
-      color: #206cf7;
       position: relative;
       left: 30px;
       bottom: 15px;
@@ -61,16 +66,16 @@ export class Avatar extends LitElement {
     .large {
       width: 150px !important;
       height: 150px !important;
-      color: white;
+      color: var(--initialsText);
       font-size: 50px;
     }
 
     .online {
-      color: #68c47e;
+      color: var(--onlineStatus);
     }
 
     .offline {
-      color: #dbdde0;
+      color: var(--offlineStatus);
     }
   `;
 

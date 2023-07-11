@@ -1,6 +1,9 @@
 import { LitElement, html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
+import { ThemeColorService } from "../services/theme-color-service";
+
+const layoutID = "";
 export class Dialog extends LitElement {
   static properties = {
     isOpened: { type: Boolean },
@@ -14,6 +17,10 @@ export class Dialog extends LitElement {
   }
 
   static styles = css`
+    * {
+      ${ThemeColorService.applyStyle(layoutID)};
+    }
+
     dialog {
       width: fit-content;
       border: none;
@@ -40,7 +47,7 @@ export class Dialog extends LitElement {
 
     ::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: rgb(54, 123, 251);
+      background-color: var(--scrollbar);
     }
   `;
 

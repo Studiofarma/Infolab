@@ -1,7 +1,14 @@
 import { LitElement, html, css } from "lit";
+import { ThemeColorService } from "../../services/theme-color-service";
 
+const layoutID = "emptyState"
 class EmptyChat extends LitElement {
   static styles = css`
+
+    * {
+      ${ThemeColorService.applyStyle(layoutID)};
+    }
+
     div {
       width: 100%;
       height: 100vh;
@@ -12,11 +19,11 @@ class EmptyChat extends LitElement {
     }
 
     h1 {
-      color: #3d3f41;
+      color: var(--textPrimary);
     }
 
     h2 {
-      color: #5c5e60;
+      color: var(--textSecondary);
     }
   `;
 

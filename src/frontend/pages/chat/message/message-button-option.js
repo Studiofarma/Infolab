@@ -1,6 +1,10 @@
 import { LitElement, html, css } from "lit";
 
+import {ThemeColorService} from "../../../services/theme-color-service"
+
 import "../../../components/icon";
+
+const layoutID = "message"
 
 export class MessageButtonOption extends LitElement {
   static properties = {
@@ -9,6 +13,11 @@ export class MessageButtonOption extends LitElement {
   };
 
   static styles = css`
+
+  * {
+    ${ThemeColorService.applyStyle(layoutID)}
+  }
+
     div {
       display: flex;
       align-items: center;
@@ -17,11 +26,11 @@ export class MessageButtonOption extends LitElement {
       cursor: pointer;
       white-space: nowrap;
       transition: background 0.5s;
-      color: #206cf7;
+      color: var(--actionText);
     }
 
     div:hover {
-      background-color: #dfd8d8;
+      background-color: var(--messageMenuBgHover);
     }
   `;
 
