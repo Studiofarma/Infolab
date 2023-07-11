@@ -129,12 +129,12 @@ export class ChatHeader extends LitElement {
   }
 
   openSettingsMenu() {
-    this.modalRef.value?.openModal();
+    this.modalRef.value?.setDialogRefIsOpened(true);
     this.profileSettingsRef.value?.setIsFocus();
   }
 
-  closeProfileMenu(event) {
-    this.modalRef.value?.closeModal();
+  closeProfileMenu() {
+    this.modalRef.value?.setDialogRefIsOpened(false);
   }
 
   setNewDescription() {}
