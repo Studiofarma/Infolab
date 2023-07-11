@@ -1,10 +1,8 @@
 import { LitElement, html, css } from "lit";
 
-import {ThemeColorService} from "../../../services/theme-color-service"
+import { ThemeColorService } from "../../../services/theme-color-service";
 
 import "../../../components/icon";
-
-const layoutID = "message"
 
 export class MessageButtonOption extends LitElement {
   static properties = {
@@ -13,10 +11,9 @@ export class MessageButtonOption extends LitElement {
   };
 
   static styles = css`
-
-  * {
-    ${ThemeColorService.applyStyle(layoutID)}
-  }
+    * {
+      ${ThemeColorService.applyStyle()};
+    }
 
     div {
       display: flex;

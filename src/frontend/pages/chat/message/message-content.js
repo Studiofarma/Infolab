@@ -3,9 +3,7 @@ import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
 import { HtmlParserService } from "./../../../services/html-parser-service";
-import {ThemeColorService } from "../../../services/theme-color-service";
-
-const layoutID = "message"
+import { ThemeColorService } from "../../../services/theme-color-service";
 
 export class MessageContent extends LitElement {
   static properties = {
@@ -23,7 +21,7 @@ export class MessageContent extends LitElement {
     * {
       margin: 0;
       padding: 0;
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     .sender,

@@ -9,7 +9,6 @@ import "../../../components/button-icon";
 import "../../../components/input-field";
 import "./emoji-picker";
 
-const layoutID = "inputControls";
 const emojiPickerBottomOffset = 90;
 const enterKey = "Enter";
 
@@ -41,7 +40,7 @@ export class InputControls extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     .container {

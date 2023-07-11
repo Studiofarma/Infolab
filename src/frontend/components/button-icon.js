@@ -6,7 +6,6 @@ import {ThemeColorService } from "../services/theme-color-service"
 import "./icon";
 import "./tooltip";
 
-const layoutID = "icon"
 export class ButtonIcon extends LitElement {
   static properties = {
     content: { type: String },
@@ -18,7 +17,7 @@ export class ButtonIcon extends LitElement {
   static styles = css`
 
 * {
-  ${ThemeColorService.applyStyle(layoutID)};
+  ${ThemeColorService.applyStyle()};
 }
 
     :host {

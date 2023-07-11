@@ -8,7 +8,7 @@ import "./icon";
 import { IconNames } from "../enums/icon-names";
 
 const maxInitials = 3;
-const layoutID = "avatar";
+
 export class Avatar extends LitElement {
   static get properties() {
     return {
@@ -23,7 +23,7 @@ export class Avatar extends LitElement {
 
   static styles = css`
     * {
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     img {

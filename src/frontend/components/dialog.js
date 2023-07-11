@@ -3,7 +3,6 @@ import { ref, createRef } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
-const layoutID = "";
 export class Dialog extends LitElement {
   static properties = {
     isOpened: { type: Boolean },
@@ -18,7 +17,7 @@ export class Dialog extends LitElement {
 
   static styles = css`
     * {
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     dialog {

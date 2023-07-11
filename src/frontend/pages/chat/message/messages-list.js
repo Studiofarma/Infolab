@@ -9,7 +9,6 @@ import { ThemeColorService } from "../../../services/theme-color-service";
 
 import "./empty-messages";
 
-const layoutID = "message";
 const fullScreenHeight = "100vh";
 
 export class MessagesList extends LitElement {
@@ -32,11 +31,13 @@ export class MessagesList extends LitElement {
   }
 
   static styles = css`
+    
     * {
       box-sizing: border-box;
       width: 100%;
-      ${ThemeColorService.applyStyle(layoutID)}
+      ${ThemeColorService.applyStyle()};
     }
+
     .message-box {
       list-style-type: none;
       display: grid;

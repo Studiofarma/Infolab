@@ -8,7 +8,6 @@ import { ThemeColorService } from "../../../../services/theme-color-service";
 import "../../../../components/icon";
 import "../../../../components/button-icon";
 
-const layoutID = "sidebar";
 
 class Conversation extends LitElement {
   static properties = {
@@ -28,7 +27,7 @@ class Conversation extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     .chat-box {

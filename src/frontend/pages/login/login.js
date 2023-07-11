@@ -11,7 +11,6 @@ import "../../components/button-text";
 import "../../components/input-field";
 import "../../components/input-password";
 
-const layoutID = "login";
 export class Login extends LitElement {
   static properties = {
     username: "",
@@ -43,10 +42,10 @@ export class Login extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
       color: var(--text);
     }
-    
+
     #container {
       position: relative;
       width: 530px;

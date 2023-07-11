@@ -2,7 +2,6 @@ import { LitElement, html, css } from "lit";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
-const layoutID = "buttonText";
 export class ButtonText extends LitElement {
   static get properties() {
     return {
@@ -14,7 +13,7 @@ export class ButtonText extends LitElement {
 
   static styles = css`
     * {
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     button {

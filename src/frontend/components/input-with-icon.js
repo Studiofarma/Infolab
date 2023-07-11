@@ -5,7 +5,6 @@ import { ThemeColorService } from "../services/theme-color-service";
 
 import { InputField } from "./input-field";
 
-const layoutID = "inputWithIcon";
 export class InputWithIcon extends InputField {
   static properties = {
     isFocus: { type: Boolean },
@@ -21,7 +20,7 @@ export class InputWithIcon extends InputField {
 
   static styles = css`
     * {
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     div {

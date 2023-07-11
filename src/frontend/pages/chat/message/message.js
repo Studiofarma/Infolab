@@ -10,7 +10,6 @@ import "../../../components/popover";
 import "./message-content";
 import "./message-menu-popover";
 
-const layoutID = "messages" 
 
 export class Message extends LitElement {
   static properties = {
@@ -33,7 +32,7 @@ export class Message extends LitElement {
     * {
       margin: 0;
       padding: 0;
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     .message-body:has(.sender) {

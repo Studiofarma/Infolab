@@ -1,12 +1,11 @@
 import { LitElement, css, html } from "lit";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
-const layoutID = "emptyState"
 export class EmptyMessages extends LitElement {
   static styles = css`
 
   * {
-    ${ThemeColorService.applyStyle(layoutID)};
+    ${ThemeColorService.applyStyle()};
   }
 
     div {

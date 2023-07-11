@@ -5,8 +5,6 @@ import {ThemeColorService } from "../../../services/theme-color-service"
 
 import "./conversation/conversation-list";
 
-const layoutID = "sidebar"
-
 export class Sidebar extends LitElement {
   static properties = {
     login: {
@@ -26,7 +24,7 @@ export class Sidebar extends LitElement {
   static styles = css`
 
    * {
-    ${ThemeColorService.applyStyle(layoutID)};
+    ${ThemeColorService.applyStyle()};
    }
 
     .side-bar {

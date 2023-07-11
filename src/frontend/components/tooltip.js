@@ -2,7 +2,7 @@ import { html, css, LitElement } from "lit";
 import { Directive, directive } from "lit/directive.js";
 import { render } from "lit";
 
-import {ThemeColorService} from "../services/theme-color-service"
+import { ThemeColorService } from "../services/theme-color-service";
 // Positioning library
 import {
   computePosition,
@@ -15,7 +15,6 @@ import {
 // Events to turn on/off the tooltip
 const enterEvents = ["pointerenter", "focus"];
 const leaveEvents = ["pointerleave", "blur", "keydown", "click"];
-const layoutID = "tooltip"
 
 export class Tooltip extends LitElement {
   static properties = {
@@ -41,10 +40,9 @@ export class Tooltip extends LitElement {
   }
 
   static styles = css`
-
-  * {
-    ${ThemeColorService.applyStyle(layoutID)};
-  }
+    * {
+      ${ThemeColorService.applyStyle()};
+    }
 
     :host {
       /* Position fixed to help ensure the tooltip is "on top" */

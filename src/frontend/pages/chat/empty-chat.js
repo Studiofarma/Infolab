@@ -1,12 +1,10 @@
 import { LitElement, html, css } from "lit";
 import { ThemeColorService } from "../../services/theme-color-service";
 
-const layoutID = "emptyState"
 class EmptyChat extends LitElement {
   static styles = css`
-
     * {
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     div {

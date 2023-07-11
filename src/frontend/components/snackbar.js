@@ -6,7 +6,6 @@ import { ThemeColorService } from "../services/theme-color-service";
 import "./button-icon";
 import { IconNames } from "../enums/icon-names";
 
-const layoutID = "snackbar";
 export class Snackbar extends LitElement {
   constructor() {
     super();
@@ -19,7 +18,7 @@ export class Snackbar extends LitElement {
       box-sizing: border-box;
       padding: 0px;
       margin: 0px;
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     #snackbar {

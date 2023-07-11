@@ -5,8 +5,6 @@ import { ThemeColorService } from "../services/theme-color-service";
 
 import "./button-icon";
 
-const layoutID = "inputField";
-
 export class InputField extends LitElement {
   static get properties() {
     return {
@@ -29,7 +27,7 @@ export class InputField extends LitElement {
   static styles = css`
     * {
       width: 100%;
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     input {

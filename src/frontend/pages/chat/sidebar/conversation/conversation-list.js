@@ -14,7 +14,6 @@ import "../search-chats";
 import "../../../../components/button-text";
 import { ConversationDto } from "../../../../models/conversation-dto";
 
-const layoutID = "sidebar"
 
 const arrowUp = "ArrowUp";
 const arrowDown = "ArrowDown";
@@ -64,7 +63,7 @@ class ConversationList extends LitElement {
       box-sizing: border-box;
       padding: 0;
       margin: 0;
-      ${ThemeColorService.applyStyle(layoutID)}
+      ${ThemeColorService.applyStyle()};
     }
 
     #selected {

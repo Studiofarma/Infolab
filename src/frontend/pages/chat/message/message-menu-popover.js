@@ -1,13 +1,12 @@
 import { LitElement, css, html } from "lit";
 import { CookieService } from "../../../services/cookie-service";
-import {ThemeColorService } from "../../../services/theme-color-service"
+import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { IconNames } from "../../../enums/icon-names";
 import { TooltipTexts } from "../../../enums/tooltip-texts";
 
 import "../../../components/button-icon";
 
-const layoutID = "message"
 const menuOptionLeft = "-73px";
 const menuOptionRight = "33px";
 const lastMenuOptionTop = "-86px";
@@ -26,9 +25,8 @@ export class MessageMenuPopover extends LitElement {
   }
 
   static styles = css`
-
     * {
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     il-button-icon {

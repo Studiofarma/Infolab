@@ -24,7 +24,6 @@ import "../../components/snackbar";
 import "../../components/button-icon";
 
 const fullScreenHeight = "100vh";
-const layoutID = "chat";
 
 export class Chat extends LitElement {
   static properties = {
@@ -83,7 +82,7 @@ export class Chat extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
       color: var(--text);
     }
 

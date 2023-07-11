@@ -13,7 +13,7 @@ import "../../../components/snackbar";
 import "../../../components/input-with-icon";
 
 const maxLength = 30;
-const layoutID = "profileSettings";
+
 export class profileSettings extends LitElement {
   static properties = {
     isFocus: { type: Boolean },
@@ -39,7 +39,7 @@ export class profileSettings extends LitElement {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      ${ThemeColorService.applyStyle(layoutID)};
+      ${ThemeColorService.applyStyle()};
     }
 
     header h2 {
