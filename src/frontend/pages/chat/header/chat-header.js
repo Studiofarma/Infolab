@@ -10,25 +10,27 @@ import { CookieService } from "../../../services/cookie-service";
 export class ChatHeader extends LitElement {
   static get properties() {
     return {
-      userName: "",
-      activeDescription: "",
-      usersList: [],
       otherUser: {},
+      loggedUser: {},
+      conversation: {},
     };
   }
 
   constructor() {
     super();
     this.cookie = CookieService.getCookie();
-    this.getAllUsers();
-    this.usersList = [];
+
+    // Refs
     this.modalRef = createRef();
     this.profileSettingsRef = createRef();
     this.loggedUserAvatarRef = createRef();
   }
 
-  updated() {
-    this.getUserByDesc(this.activeDescription);
+  async firstUpdated() {
+    this.loggedUser = await UsersService.getLoggedUser(
+      this.cookie.username,
+      this.cookie.password
+    );
   }
 
   static styles = css`
@@ -86,32 +88,34 @@ export class ChatHeader extends LitElement {
       <div class="chatHeader">
         <div class="contact">
           <div class="profileContainer">
-            ${this.activeDescription !== ""
+            ${this.conversation?.description !== undefined
               ? html` <il-avatar
                     .user=${this.otherUser}
-                    name=${this.activeDescription}
-                    .id=${this.getUserId(this.activeDescription)}
+                    .conversation=${this.conversation}
+                    name=${this.conversation?.description}
                   ></il-avatar>
-                  <h2>${this.activeDescription}</h2>`
+                  <h2>${this.conversation?.description}</h2>`
               : html``}
           </div>
 
           <div class="profileContainer" @click=${this.openSettingsMenu}>
             <il-avatar
-              name=${this.getUserDescription(this.userName)}
-              .id="${this.getUserId(this.userName)}"
+              .hasStatus=${false}
+              .user=${this.loggedUser}
+              name=${this.loggedUser?.description}
               ${ref(this.loggedUserAvatarRef)}
             ></il-avatar>
-            <h2>${this.getUserDescription(this.userName)}</h2>
+            <h2>${this.loggedUser?.description}</h2>
           </div>
 
           <il-modal ${ref(this.modalRef)} .closeByBackdropClick=${false}>
             <div class="profile-modal">
               <il-profile-settings
                 ${ref(this.profileSettingsRef)}
-                currentUsername=${this.getUserDescription(this.userName)}
+                .user=${this.loggedUser}
+                currentUsername=${this.loggedUser?.description}
                 currentAvatarURL=${this.loggedUser?.avatarLink}
-                username=${this.getUserDescription(this.userName)}
+                username=${this.loggedUser?.description}
                 @set-new-description=${this.setNewDescription}
                 @set-new-avatar=${this.setNewAvatar}
                 @close-menu=${this.closeProfileMenu}
@@ -124,57 +128,24 @@ export class ChatHeader extends LitElement {
   }
 
   openSettingsMenu() {
-    this.modalRef.value?.openModal();
+    this.modalRef.value?.setDialogRefIsOpened(true);
     this.profileSettingsRef.value?.setIsFocus();
   }
 
   closeProfileMenu(event) {
-    this.modalRef.value?.closeModal();
+    this.modalRef.value?.setDialogRefIsOpened(false);
   }
 
   setNewDescription() {}
 
   setNewAvatar() {}
 
-  getUserId(userName) {
-    let userIndex = this.usersList.findIndex(
-      (user) => user.description == userName
-    );
-    if (userIndex < 0) return;
-    let user = this.usersList[userIndex];
-    return user.id;
+  setConversation(conversation) {
+    this.conversation = conversation;
   }
 
-  getUserDescription(userName) {
-    let userIndex = this.usersList.findIndex((user) => user.name == userName);
-    if (userIndex < 0) return;
-    let user = this.usersList[userIndex];
-    return user.description;
-  }
-
-  async getAllUsers() {
-    try {
-      await UsersService.GetUsers(
-        "",
-        this.cookie.username,
-        this.cookie.password
-      ).then((users) => {
-        this.usersList = users["data"];
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  getUserByDesc(description) {
-    let userIndex = this.usersList.findIndex(
-      (user) => user.description == description
-    );
-    if (userIndex < 0) {
-      this.otherUser = undefined;
-      return;
-    }
-    this.otherUser = this.usersList[userIndex];
+  setUser(user) {
+    this.otherUser = user;
   }
 }
 

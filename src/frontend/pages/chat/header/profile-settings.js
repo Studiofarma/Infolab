@@ -19,6 +19,7 @@ export class profileSettings extends LitElement {
     currentUsername: { type: String },
     currentAvatarURL: { type: String },
     username: { type: String },
+    user: { type: Object },
   };
 
   constructor() {
@@ -148,11 +149,12 @@ export class profileSettings extends LitElement {
       <section>
         <div class="avatarContainer">
           <il-avatar
-            id="0"
-            name=${this.username ?? ""}
+            .user=${this.user}
             sizeClass="large"
+            name=${this.username}
             .avatarLink=${this.imagePath}
             ?defaultAvatar=${this.imagePath === ""}
+            .hasStatus=${false}
           ></il-avatar>
           <button
             @click=${() => {

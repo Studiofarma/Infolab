@@ -90,7 +90,7 @@ export class Message extends LitElement {
         @mouseleave=${this.hidePopover}
       >
         <il-message-content
-          .userList=${this.userList}
+          .user=${this.getUserByUsername(this.message.sender)}
           class=${this.message.sender == this.cookie.username
             ? "sender"
             : "receiver"}
@@ -178,6 +178,15 @@ export class Message extends LitElement {
       year: "numeric",
     });
     return html`<div class="message-date">${dayMonth}</div>`;
+  }
+
+  getUserByUsername(username) {
+    if (this.userList == undefined) return "";
+
+    let userIndex = this.userList.findIndex((user) => user.name == username);
+    if (userIndex < 0) return;
+
+    return this.userList[userIndex];
   }
 }
 

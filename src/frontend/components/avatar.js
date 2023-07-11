@@ -12,10 +12,11 @@ export class Avatar extends LitElement {
     return {
       avatarLink: "",
       name: "",
-      id: 0,
       selected: false,
       sizeClass: "",
       user: {},
+      conversation: {},
+      hasStatus: true,
     };
   }
 
@@ -79,9 +80,11 @@ export class Avatar extends LitElement {
     this.initials = "";
     this.color = "";
     this.defaultAvatar = true;
+    this.hasStatus = this.hasStatus === undefined ? true : this.hasStatus;
   }
 
   getInitials(text) {
+    if (text === undefined) return;
     const words = text.split(" ");
     let initials = "";
 
@@ -97,13 +100,17 @@ export class Avatar extends LitElement {
   }
 
   createIcon() {
-    if (this.avatarLink) {
+    if (this.avatarLink || this.user?.avatarLink) {
       this.defaultAvatar = true;
     } else {
       this.defaultAvatar = false;
     }
-    this.initials = this.getInitials(this.name);
-    switch ((this.id || 0) % 8) {
+    this.initials = this.getInitials(
+      this.name ?? this.user?.description ?? this.conversation?.description
+    );
+    switch (
+      (this.user?.id ?? this.conversation?.id) % 8 // Note that the BE doesn't return ID, yet it is inside the dto. By default it is 0.
+    ) {
       case 0:
         this.color = "#008A33";
         break;
@@ -137,7 +144,7 @@ export class Avatar extends LitElement {
       <div class=${"avatar " + this.sizeClass}>
         ${when(
           this.defaultAvatar,
-          () => html`<img src=${this.avatarLink} />`,
+          () => html`<img src=${this.avatarLink ?? this.user?.avatarLink} />`,
           () => html`<div
             class=${this.sizeClass}
             id="avatar-default"
@@ -152,27 +159,29 @@ export class Avatar extends LitElement {
             <il-icon name=${IconNames.checkCircle}></il-icon>
           </div>`,
           () =>
-            choose(
-              this.user?.status,
-              [
+            when(this.hasStatus, () =>
+              choose(
+                this.user?.status,
                 [
-                  "online",
-                  () =>
-                    html`<il-icon
-                      class="icon-button online"
-                      name=${IconNames.circle}
-                    ></il-icon>`,
-                ], // TODO: change name and color
-                [
-                  "offline",
-                  () =>
-                    html`<il-icon
-                      class="icon-button offline"
-                      name=${IconNames.circle}
-                    ></il-icon>`,
+                  [
+                    "online",
+                    () =>
+                      html`<il-icon
+                        class="icon-button online"
+                        name=${IconNames.circle}
+                      ></il-icon>`,
+                  ], // TODO: change name and color
+                  [
+                    "offline",
+                    () =>
+                      html`<il-icon
+                        class="icon-button offline"
+                        name=${IconNames.circle}
+                      ></il-icon>`,
+                  ],
                 ],
-              ],
-              () => html``
+                () => html``
+              )
             )
         )}
       </div>
@@ -180,7 +189,7 @@ export class Avatar extends LitElement {
   }
 
   setAvatarLink(avatarLink) {
-    this.avatarLink = avatarLink;
+    this.user.avatarLink = avatarLink;
     this.defaultAvatar = false;
     this.requestUpdate();
   }

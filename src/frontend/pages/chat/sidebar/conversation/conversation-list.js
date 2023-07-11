@@ -24,8 +24,6 @@ class ConversationList extends LitElement {
     conversationList: { type: Array },
     newConversationList: { type: Array },
     users: { type: Array },
-    activeChatName: { type: String },
-    activeDescription: { type: String },
     conversationListFiltered: { type: Array },
     newConversationListFiltered: { type: Array },
     indexOfSelectedChat: { type: Number },
@@ -42,15 +40,13 @@ class ConversationList extends LitElement {
     this.conversationList = [];
     this.newConversationList = [];
     this.usersList = [];
-    this.activeChatName =
-      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
-    this.activeDescription =
-      CookieService.getCookieByKey(CookieService.Keys.lastDescription) || "";
+    this.cookie = CookieService.getCookie();
     this.onLoad();
     this.indexOfSelectedChat = -1;
     this.selectedRoom = {};
     this.selectedChats = [];
     this.isOpen = false;
+    this.isStartup = true;
 
     // Refs
     this.inputRef = createRef();
@@ -156,15 +152,7 @@ class ConversationList extends LitElement {
           () =>
             html`<il-button-text
               text="Inoltra"
-              @click=${() =>
-                this.dispatchEvent(
-                  new CustomEvent("multiple-forward", {
-                    detail: {
-                      list: this.selectedChats,
-                      conversation: this.lastSlectedConversation,
-                    },
-                  })
-                )}
+              @click=${this.handleForward}
             ></il-button-text>`
         )}
       </div>
@@ -183,8 +171,17 @@ class ConversationList extends LitElement {
 
       if (
         conversation.lastMessage?.content ||
-        conversation.roomName == this.activeChatName
+        conversation.roomName == this.cookie.lastChat
       ) {
+        if (
+          conversation.roomName === this.cookie.lastChat &&
+          this.isStartup &&
+          !this.isForwardList
+        ) {
+          this.changeRoom(new CustomEvent("first-update"), conversation);
+          this.isStartup = false;
+        }
+
         let user = this.findUser(this.conversationListFiltered, conversation);
 
         return html`<il-conversation
@@ -194,14 +191,14 @@ class ConversationList extends LitElement {
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
           class=${"conversation " +
-          (conversation.roomName == this.activeChatName ||
+          (conversation.roomName == this.cookie.lastChat ||
           conversation.roomName == this.selectedRoom.roomName
             ? "active"
             : "")}
           id=${conversation.roomName == this.selectedRoom.roomName
             ? "selected"
             : ""}
-          .chat=${conversation}
+          .conversation=${conversation}
           @clicked=${(event) => this.handleClick(event, conversation)}
         ></il-conversation>`;
       } else {
@@ -225,6 +222,15 @@ class ConversationList extends LitElement {
     return this.newConversationListFiltered.map((pharmacy) => {
       let conversation = new ConversationDto(pharmacy);
 
+      if (
+        conversation.roomName === this.cookie.lastChat &&
+        this.isStartup &&
+        !this.isForwardList
+      ) {
+        this.changeRoom(new CustomEvent("first-update"), conversation);
+        this.isStartup = false;
+      }
+
       let user = this.findUser(this.newConversationListFiltered, conversation);
 
       return html`<il-conversation
@@ -234,11 +240,11 @@ class ConversationList extends LitElement {
         .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
         .isSelected=${this.selectedChats.includes(conversation.roomName)}
         class=${"conversation new-conversation " +
-        (conversation.roomName == this.activeChatName ||
+        (conversation.roomName == this.cookie.lastChat ||
         conversation.roomName == this.selectedRoom.roomName
           ? "active"
           : "")}
-        .chat=${conversation}
+        .conversation=${conversation}
         id=${conversation.roomName == this.selectedRoom.roomName
           ? "selected"
           : ""}
@@ -255,6 +261,7 @@ class ConversationList extends LitElement {
 
   setActiveChatName(value) {
     this.activeChatName = value;
+    this.cookie.lastChat = value;
   }
 
   getActiveDescription() {
@@ -263,6 +270,7 @@ class ConversationList extends LitElement {
 
   setActiveDescription(value) {
     this.activeDescription = value;
+    this.cookie.lastDescription = value;
   }
 
   getConversationList() {
@@ -274,6 +282,21 @@ class ConversationList extends LitElement {
   }
 
   // -----------------------------
+
+  handleForward() {
+    if (this.selectedChats === 1) {
+      this.changeRoom(new CustomEvent("forward"), this.lastSlectedConversation);
+    } else {
+      this.dispatchEvent(
+        new CustomEvent("multiple-forward", {
+          detail: {
+            list: this.selectedChats,
+            conversation: this.lastSlectedConversation,
+          },
+        })
+      );
+    }
+  }
 
   navigateSearchResultsWithArrows(e) {
     if (e.detail.key == arrowDown || e.detail.key == arrowUp)
@@ -337,21 +360,31 @@ class ConversationList extends LitElement {
       CookieService.Keys.lastDescription,
       conversation.description
     );
-    this.activeChatName = conversation.roomName;
-    this.activeDescription = conversation.description;
-    this.updateMessages(conversation);
+    this.cookie.lastChat = conversation.roomName;
+    this.cookie.lastDescription = conversation.description;
 
     this.dispatchEvent(
       new CustomEvent("change-conversation", {
         detail: {
-          conversation: { ...conversation },
+          conversation: conversation,
+          user: this.getOtherUserInRoom(conversation),
           eventType: event.type,
         },
       })
     );
 
+    this.updateMessages(conversation);
     this.cleanSearchInput();
     this.requestUpdate();
+  }
+
+  getOtherUserInRoom(conversation) {
+    let username = this.extractUsername(conversation.roomName);
+
+    let userIndex = this.usersList.findIndex((user) => user.name == username);
+    if (userIndex < 0) return undefined;
+
+    return this.usersList[userIndex];
   }
 
   setQueryString(event) {
@@ -408,14 +441,12 @@ class ConversationList extends LitElement {
   }
 
   async getAllUsers() {
-    let cookie = CookieService.getCookie();
     try {
-      let users = await UsersService.GetUsers(
+      this.usersList = await UsersService.getUsers(
         this.query,
-        cookie.username,
-        cookie.password
+        this.cookie.username,
+        this.cookie.password
       );
-      this.usersList = users["data"];
     } catch (error) {
       console.error(error);
     }
@@ -499,20 +530,23 @@ class ConversationList extends LitElement {
 
   findUser(list, conversation) {
     // TODO: semplificare quando arriverà dal backend (questo fa un giro assurdo perché nelle room non ci sono gli utenti che le compongono)
-    let cookie = CookieService.getCookie();
-
     let convIndex = list.findIndex((elem) => {
       return elem.roomName === conversation.roomName;
     });
 
     let roomName = list[convIndex].roomName;
 
-    let usernames = roomName.split("-");
-    let username = usernames.filter((elem) => elem !== cookie.username)[0];
+    let username = this.extractUsername(roomName);
 
     let userIndex = this.usersList.findIndex((elem) => elem.name === username);
 
     return this.usersList[userIndex];
+  }
+
+  extractUsername(roomName) {
+    let cookie = CookieService.getCookie();
+    let usernames = roomName.split("-");
+    return usernames.filter((elem) => elem !== cookie.username)[0];
   }
 
   handleClick(e, conversation) {
@@ -552,6 +586,29 @@ class ConversationList extends LitElement {
     let array = [user1, user2].sort();
 
     return array.join("-");
+  }
+
+  findConversation(username) {
+    let index = this.conversationList.findIndex((conv) =>
+      this.isUsernameInRoomName(conv.roomName, username)
+    );
+    if (index === -1) {
+      index = this.newConversationList.findIndex((conv) =>
+        this.isUsernameInRoomName(conv.roomName, username)
+      );
+
+      if (index === -1) return;
+
+      return this.newConversationList[index];
+    }
+
+    return this.conversationList[index];
+  }
+
+  // TODO: rimuovere quando gli utenti in una stanza arriveranno dal backend
+  isUsernameInRoomName(roomName, username) {
+    let names = roomName.split("-");
+    return names.includes(username);
   }
 }
 
