@@ -152,15 +152,7 @@ class ConversationList extends LitElement {
           () =>
             html`<il-button-text
               text="Inoltra"
-              @click=${() =>
-                this.dispatchEvent(
-                  new CustomEvent("multiple-forward", {
-                    detail: {
-                      list: this.selectedChats,
-                      conversation: this.lastSlectedConversation,
-                    },
-                  })
-                )}
+              @click=${this.handleForward}
             ></il-button-text>`
         )}
       </div>
@@ -269,6 +261,7 @@ class ConversationList extends LitElement {
 
   setActiveChatName(value) {
     this.activeChatName = value;
+    this.cookie.lastChat = value;
   }
 
   getActiveDescription() {
@@ -277,6 +270,7 @@ class ConversationList extends LitElement {
 
   setActiveDescription(value) {
     this.activeDescription = value;
+    this.cookie.lastDescription = value;
   }
 
   getConversationList() {
@@ -288,6 +282,21 @@ class ConversationList extends LitElement {
   }
 
   // -----------------------------
+
+  handleForward() {
+    if (this.selectedChats === 1) {
+      this.changeRoom(new CustomEvent("forward"), this.lastSlectedConversation);
+    } else {
+      this.dispatchEvent(
+        new CustomEvent("multiple-forward", {
+          detail: {
+            list: this.selectedChats,
+            conversation: this.lastSlectedConversation,
+          },
+        })
+      );
+    }
+  }
 
   navigateSearchResultsWithArrows(e) {
     if (e.detail.key == arrowDown || e.detail.key == arrowUp)

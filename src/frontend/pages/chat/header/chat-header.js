@@ -84,6 +84,7 @@ export class ChatHeader extends LitElement {
   `;
 
   render() {
+    console.log(this.otherUser);
     return html`
       <div class="chatHeader">
         <div class="contact">
