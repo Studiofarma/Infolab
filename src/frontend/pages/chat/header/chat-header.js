@@ -84,7 +84,6 @@ export class ChatHeader extends LitElement {
   `;
 
   render() {
-    console.log(this.otherUser);
     return html`
       <div class="chatHeader">
         <div class="contact">
@@ -113,6 +112,7 @@ export class ChatHeader extends LitElement {
             <div class="profile-modal">
               <il-profile-settings
                 ${ref(this.profileSettingsRef)}
+                .user=${this.loggedUser}
                 currentUsername=${this.loggedUser?.description}
                 currentAvatarURL=${this.loggedUser?.avatarLink}
                 username=${this.loggedUser?.description}
@@ -128,12 +128,12 @@ export class ChatHeader extends LitElement {
   }
 
   openSettingsMenu() {
-    this.modalRef.value?.openModal();
+    this.modalRef.value?.setDialogRefIsOpened(true);
     this.profileSettingsRef.value?.setIsFocus();
   }
 
   closeProfileMenu(event) {
-    this.modalRef.value?.closeModal();
+    this.modalRef.value?.setDialogRefIsOpened(false);
   }
 
   setNewDescription() {}

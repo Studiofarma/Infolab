@@ -12,7 +12,6 @@ export class Avatar extends LitElement {
     return {
       avatarLink: "",
       name: "",
-      id: 0,
       selected: false,
       sizeClass: "",
       user: {},
@@ -101,13 +100,13 @@ export class Avatar extends LitElement {
   }
 
   createIcon() {
-    if (this.avatarLink) {
+    if (this.avatarLink || this.user?.avatarLink) {
       this.defaultAvatar = true;
     } else {
       this.defaultAvatar = false;
     }
     this.initials = this.getInitials(
-      this.user?.description ?? this.conversation?.description
+      this.name ?? this.user?.description ?? this.conversation?.description
     );
     switch (
       (this.user?.id ?? this.conversation?.id) % 8 // Note that the BE doesn't return ID, yet it is inside the dto. By default it is 0.
@@ -145,7 +144,7 @@ export class Avatar extends LitElement {
       <div class=${"avatar " + this.sizeClass}>
         ${when(
           this.defaultAvatar,
-          () => html`<img src=${this.avatarLink} />`,
+          () => html`<img src=${this.avatarLink ?? this.user?.avatarLink} />`,
           () => html`<div
             class=${this.sizeClass}
             id="avatar-default"
