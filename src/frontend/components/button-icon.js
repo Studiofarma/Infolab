@@ -1,7 +1,9 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
 import { when } from "lit/directives/when.js";
 
-import {ThemeColorService } from "../services/theme-color-service"
+import { ThemeColorService } from "../services/theme-color-service";
+
+import { VariableNames } from "../enums/theme-colors";
 
 import "./icon";
 import "./tooltip";
@@ -15,10 +17,9 @@ export class ButtonIcon extends LitElement {
   };
 
   static styles = css`
-
-* {
-  ${ThemeColorService.applyStyle()};
-}
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
 
     :host {
       display: flex;
@@ -33,7 +34,7 @@ export class ButtonIcon extends LitElement {
       cursor: pointer;
       user-select: none;
       padding: 5px;
-      color: var(--iconColor);
+      color: ${VariableNames.iconColor};
     }
 
     .contanier {

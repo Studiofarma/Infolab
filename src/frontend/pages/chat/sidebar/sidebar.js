@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
-import {ThemeColorService } from "../../../services/theme-color-service"
+import { ThemeColorService } from "../../../services/theme-color-service";
 
 import "./conversation/conversation-list";
 
@@ -22,10 +22,9 @@ export class Sidebar extends LitElement {
   }
 
   static styles = css`
-
-   * {
-    ${ThemeColorService.applyStyle()};
-   }
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
 
     .side-bar {
       background: var(--sidebarBg);

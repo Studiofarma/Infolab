@@ -4,7 +4,7 @@ import { ThemeColorService } from "../../services/theme-color-service";
 class EmptyChat extends LitElement {
   static styles = css`
     * {
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     div {

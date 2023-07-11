@@ -8,7 +8,7 @@ export class ThemeColorService {
     return "light";
   }
 
-  static applyStyle() {
+  static getThemeVariables() {
     const theme = this.getCurrentTheme();
     const variables = ThemeColorsEnum[theme];
 

@@ -3,10 +3,9 @@ import { ThemeColorService } from "../../../services/theme-color-service";
 
 export class EmptyMessages extends LitElement {
   static styles = css`
-
-  * {
-    ${ThemeColorService.applyStyle()};
-  }
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
 
     div {
       width: 100%;

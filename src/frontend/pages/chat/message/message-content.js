@@ -21,7 +21,7 @@ export class MessageContent extends LitElement {
     * {
       margin: 0;
       padding: 0;
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     .sender,

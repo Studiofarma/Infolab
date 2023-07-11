@@ -31,11 +31,10 @@ export class MessagesList extends LitElement {
   }
 
   static styles = css`
-    
     * {
       box-sizing: border-box;
       width: 100%;
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     .message-box {

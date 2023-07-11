@@ -39,7 +39,7 @@ export class profileSettings extends LitElement {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     header h2 {

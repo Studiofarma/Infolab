@@ -40,7 +40,7 @@ export class InputControls extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     .container {

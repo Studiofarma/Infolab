@@ -6,14 +6,13 @@ import { repeat } from "lit/directives/repeat.js";
 import { CookieService } from "../../../../services/cookie-service";
 import { OpenChatsService } from "../../../../services/open-chats-service";
 import { UsersService } from "../../../../services/users-service";
-import {ThemeColorService } from "../../../../services/theme-color-service"
+import { ThemeColorService } from "../../../../services/theme-color-service";
 
 import "../../../../components/avatar";
 import "./conversation";
 import "../search-chats";
 import "../../../../components/button-text";
 import { ConversationDto } from "../../../../models/conversation-dto";
-
 
 const arrowUp = "ArrowUp";
 const arrowDown = "ArrowDown";
@@ -63,7 +62,7 @@ class ConversationList extends LitElement {
       box-sizing: border-box;
       padding: 0;
       margin: 0;
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     #selected {
@@ -104,11 +103,11 @@ class ConversationList extends LitElement {
     }
 
     .conversation:hover {
-      background-color:  var(--conversationHoverBg);
+      background-color: var(--conversationHoverBg);
     }
 
     .active {
-      background-color:  var(--conversationActiveBg);
+      background-color: var(--conversationActiveBg);
     }
 
     .separator {

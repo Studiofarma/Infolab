@@ -26,7 +26,7 @@ export class MessageMenuPopover extends LitElement {
 
   static styles = css`
     * {
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     il-button-icon {

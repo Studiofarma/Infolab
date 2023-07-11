@@ -3,6 +3,8 @@ import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
+import { VariableNames } from "../enums/theme-colors";
+
 import { InputField } from "./input-field";
 
 export class InputWithIcon extends InputField {
@@ -20,13 +22,12 @@ export class InputWithIcon extends InputField {
 
   static styles = css`
     * {
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     div {
       width: 100%;
       display: flex;
-      color: white;
       border-radius: 10px;
       border: solid 2px;
       align-items: center;
@@ -38,7 +39,7 @@ export class InputWithIcon extends InputField {
       padding: 0 10px;
       border: none;
       outline: none;
-      background-color: var(--inputBackground);
+      background-color: ${VariableNames.inputBackgroud};
       position: relative;
       overflow: hidden;
     }
@@ -48,11 +49,11 @@ export class InputWithIcon extends InputField {
     }
 
     div:has(input:focus) {
-      border-color: var(--inputFocusedBorder);
+      border-color: ${VariableNames.inputFocusedBorder};
     }
 
     div:not(:has(input:focus)) {
-      border-color: var(--inputBorder);
+      border-color: ${VariableNames.inputBorder};
     }
   `;
 

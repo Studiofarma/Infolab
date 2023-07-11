@@ -5,7 +5,7 @@ import { ThemeColorService } from "../services/theme-color-service";
 
 import "./button-icon";
 import { IconNames } from "../enums/icon-names";
-
+import { VariableNames } from "../enums/theme-colors";
 export class Snackbar extends LitElement {
   constructor() {
     super();
@@ -18,7 +18,7 @@ export class Snackbar extends LitElement {
       box-sizing: border-box;
       padding: 0px;
       margin: 0px;
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     #snackbar {
@@ -28,10 +28,10 @@ export class Snackbar extends LitElement {
       bottom: -80px;
       min-width: 500px;
       min-height: 40px;
-      color: var(--snackbarText);
+      color: ${VariableNames.snackbarText};
       border-radius: 10px;
-      background: var(--snackbarBg);
-      box-shadow: 0 0 20px black;
+      background: ${VariableNames.snackbarBg};
+      box-shadow: 0 0 20px ${VariableNames.boxShadowPrimary};
       display: flex;
       align-items: center;
       transition: all 0.5s;
@@ -41,15 +41,15 @@ export class Snackbar extends LitElement {
     }
 
     .error {
-      border-bottom: 5px solid var(--error);
+      border-bottom: 5px solid ${VariableNames.error};
     }
 
     .warning {
-      border-bottom: 5px solid var(--warning);
+      border-bottom: 5px solid ${VariableNames.warning};
     }
 
     .info {
-      border-bottom: 5px solid var(--info);
+      border-bottom: 5px solid ${VariableNames.info};
     }
 
     p {

@@ -3,6 +3,8 @@ import { ref, createRef } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
+import { VariableNames } from "../enums/theme-colors";
+
 export class Dialog extends LitElement {
   static properties = {
     isOpened: { type: Boolean },
@@ -17,22 +19,24 @@ export class Dialog extends LitElement {
 
   static styles = css`
     * {
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     dialog {
       width: fit-content;
       border: none;
       outline: none;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: ${VariableNames.boxShadowSecondary} 0px 1px 4px;
       border-radius: 6px;
       padding: 8px;
       transition: 0.5s;
       overflow-y: auto;
     }
-
+    
     dialog::backdrop {
-      background-color: #00000037;
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
+      background-color: ${VariableNames.backdrop};
     }
 
     ::-webkit-scrollbar {
@@ -46,7 +50,7 @@ export class Dialog extends LitElement {
 
     ::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: var(--scrollbar);
+      background-color: ${VariableNames.scrollbar};
     }
   `;
 

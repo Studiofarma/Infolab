@@ -3,13 +3,12 @@ import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
-import {ThemeColorService} from "../../../services/theme-color-service"
+import { ThemeColorService } from "../../../services/theme-color-service";
 
 import "./message-options";
 import "../../../components/popover";
 import "./message-content";
 import "./message-menu-popover";
-
 
 export class Message extends LitElement {
   static properties = {
@@ -32,7 +31,7 @@ export class Message extends LitElement {
     * {
       margin: 0;
       padding: 0;
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     .message-body:has(.sender) {

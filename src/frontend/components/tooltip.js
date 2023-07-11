@@ -3,6 +3,9 @@ import { Directive, directive } from "lit/directive.js";
 import { render } from "lit";
 
 import { ThemeColorService } from "../services/theme-color-service";
+
+import {VariableNames} from "../enums/theme-colors";
+
 // Positioning library
 import {
   computePosition,
@@ -41,7 +44,7 @@ export class Tooltip extends LitElement {
 
   static styles = css`
     * {
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     :host {
@@ -49,12 +52,12 @@ export class Tooltip extends LitElement {
       z-index: 1100;
       position: fixed;
       border: none;
-      background: var(--tooltipBackground);
+      background: ${VariableNames.tooltipBg};
       padding: 4px;
       border-radius: 4px;
       display: inline-block;
       pointer-events: none;
-      color: var(--tooltipText);
+      color: ${VariableNames.tooltipText};
 
       /* Animate in */
       opacity: 0;

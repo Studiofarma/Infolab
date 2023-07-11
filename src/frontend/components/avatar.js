@@ -6,6 +6,7 @@ import { ThemeColorService } from "../services/theme-color-service";
 
 import "./icon";
 import { IconNames } from "../enums/icon-names";
+import { VariableNames } from "../enums/theme-colors";
 
 const maxInitials = 3;
 
@@ -23,7 +24,7 @@ export class Avatar extends LitElement {
 
   static styles = css`
     * {
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     img {
@@ -47,7 +48,7 @@ export class Avatar extends LitElement {
       height: 24px;
       width: 23px;
       border-radius: 23px;
-      background-color: var(--statusBorder);
+      background-color: ${VariableNames.statusBorder};
       display: flex;
       justify-content: center;
       align-items: center;
@@ -66,16 +67,16 @@ export class Avatar extends LitElement {
     .large {
       width: 150px !important;
       height: 150px !important;
-      color: var(--initialsText);
+      color: ${VariableNames.initialsText};
       font-size: 50px;
     }
 
     .online {
-      color: var(--onlineStatus);
+      color: ${VariableNames.onlineStatus};
     }
 
     .offline {
-      color: var(--offlineStatus);
+      color: ${VariableNames.offlineStatus};
     }
   `;
 

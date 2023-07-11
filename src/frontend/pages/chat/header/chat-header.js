@@ -34,7 +34,7 @@ export class ChatHeader extends LitElement {
 
   static styles = css`
     * {
-      ${ThemeColorService.applyStyle()};
+      ${ThemeColorService.getThemeVariables()};
     }
 
     .chatHeader {
