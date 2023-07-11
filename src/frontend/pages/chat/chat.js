@@ -195,7 +195,6 @@ export class Chat extends LitElement {
                     .messages=${this.messages}
                     .activeChatName=${this.activeChatName}
                     .activeDescription=${this.activeDescription}
-                    .chatRef=${this.chatRef}
                     @forward-message=${this.openForwardMenu}
                     @go-to-chat=${this.goToChat}
                     @message-copy=${() =>
