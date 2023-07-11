@@ -230,8 +230,7 @@ class ConversationList extends LitElement {
       conversation.description
     );
     this.cookie.lastChat = conversation.roomName;
-    this.lastDescription = conversation.description;
-    this.updateMessages(conversation);
+    this.cookie.lastDescription = conversation.description;
 
     this.dispatchEvent(
       new CustomEvent("change-conversation", {
@@ -243,6 +242,7 @@ class ConversationList extends LitElement {
       })
     );
 
+    this.updateMessages(conversation);
     this.cleanSearchInput();
     this.requestUpdate();
   }
@@ -549,6 +549,29 @@ class ConversationList extends LitElement {
     let array = [user1, user2].sort();
 
     return array.join("-");
+  }
+
+  findConversation(username) {
+    let index = this.conversationList.findIndex((conv) =>
+      this.isUsernameInRoomName(conv.roomName, username)
+    );
+    if (index === -1) {
+      index = this.newConversationList.findIndex((conv) =>
+        this.isUsernameInRoomName(conv.roomName, username)
+      );
+
+      if (index === -1) return;
+
+      return this.newConversationList[index];
+    }
+
+    return this.conversationList[index];
+  }
+
+  // TODO: rimuovere quando gli utenti in una stanza arriveranno dal backend
+  isUsernameInRoomName(roomName, username) {
+    let names = roomName.split("-");
+    return names.includes(username);
   }
 }
 

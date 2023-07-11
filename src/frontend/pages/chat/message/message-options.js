@@ -34,7 +34,7 @@ export class MessageOptions extends LitElement {
         </message-button-option>
 
         ${when(
-          this.type === "receiver" && this.cookie.lastChat === "general",
+          this.type === "receiver" && this.message.roomName === "general",
           () => html` <message-button-option
             iconName=${IconNames.mdiMessage}
             text="Scrivi in privato"
@@ -91,7 +91,7 @@ export class MessageOptions extends LitElement {
     this.dispatchEvent(
       new CustomEvent("go-to-chat", {
         detail: {
-          description: this.message.sender,
+          user: this.message.sender,
         },
       })
     );

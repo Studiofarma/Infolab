@@ -56,6 +56,7 @@ export class Chat extends LitElement {
     this.activeDescription = CookieService.getCookieByKey(
       CookieService.Keys.lastDescription
     );
+    this.cookie = CookieService.getCookie();
     this.scrolledToBottom = false;
     window.addEventListener("resize", () => {
       this.scrollToBottom();
@@ -325,37 +326,33 @@ export class Chat extends LitElement {
   }
 
   goToChat(event) {
-    let list = this.sidebarRef.value.sidebarListRef.value.conversationList;
+    // Devo trovare il modo di prendere la conversation e di mandarla nell'evento.
+    this.sidebarRef.value?.changeRoom(
+      new CustomEvent("go-to-chat"),
+      this.sidebarRef.value?.findConversation(event.detail.user)
+    );
 
-    let newList =
-      this.sidebarRef.value.sidebarListRef.value.newConversationList;
-
-    let index = list.findIndex((elem) => {
-      return this.isUsernameInRoomName(elem.roomName, event.detail.description);
-    });
-
-    if (index === -1) {
-      index = newList.findIndex((elem) => {
-        return this.isUsernameInRoomName(
-          elem.roomName,
-          event.detail.description
-        );
-      });
-
-      this.sidebarRef.value.sidebarListRef.value.activeChatName =
-        newList[index].roomName;
-      this.sidebarRef.value.sidebarListRef.value.activeDescription =
-        newList[index].description;
-
-      this.updateMessages({ detail: { conversation: newList[index] } });
-    } else {
-      this.sidebarRef.value.sidebarListRef.value.activeChatName =
-        list[index].roomName;
-      this.sidebarRef.value.sidebarListRef.value.activeDescription =
-        list[index].description;
-
-      this.updateMessages({ detail: { conversation: list[index] } });
-    }
+    // let list = this.sidebarRef.value.sidebarListRef.value.conversationList;
+    // let newList =
+    //   this.sidebarRef.value.sidebarListRef.value.newConversationList;
+    // let index = list.findIndex((elem) => {
+    //   return this.isUsernameInRoomName(elem.roomName, event.detail.user);
+    // });
+    // if (index === -1) {
+    //   index = newList.findIndex((elem) => {
+    //     return this.isUsernameInRoomName(elem.roomName, event.detail.user);
+    //   });
+    //   this.cookie.lastChat = newList[index].roomName;
+    //   this.cookie.lastDescription = newList[index].description;
+    //   this.updateMessages({ detail: { conversation: newList[index] } });
+    //   this.headerRef.value?.setConversation(newList[index]);
+    // } else {
+    //   this.cookie.lastChat = list[index].roomName;
+    //   this.cookie.lastDescription = list[index].description;
+    //   this.updateMessages({ detail: { conversation: list[index] } });
+    //   this.headerRef.value?.setConversation(list[index]);
+    // }
+    // this.headerRef.value?.setUser(event.detail.user);
   }
 
   askDeletionConfirmation(event) {
@@ -390,12 +387,6 @@ export class Chat extends LitElement {
       this.sidebarRef.value.sidebarListRef.value.setList(message);
 
     this.messagesListRef.value?.requestUpdate();
-  }
-
-  // TODO: rimuovere quando gli utenti in una stanza arriveranno dal backend
-  isUsernameInRoomName(roomName, username) {
-    let names = roomName.split("-");
-    return names.includes(username);
   }
 
   focusOnEditor(event) {

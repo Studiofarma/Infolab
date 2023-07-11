@@ -45,7 +45,7 @@ export class UsersService {
     return users.data;
   }
 
-  static async getLoggedUser() {
+  static async getLoggedUser(username, password) {
     let loggedUser;
 
     const sessionUser = sessionStorage.getItem(loggedUserKey);
@@ -55,18 +55,12 @@ export class UsersService {
     } else {
       let usersList;
       try {
-        usersList = await UsersService.getUsers(
-          "",
-          this.cookie.username,
-          this.cookie.password
-        );
+        usersList = await UsersService.getUsers("", username, password);
       } catch (error) {
         console.error(error);
       }
 
-      loggedUser = usersList.filter(
-        (user) => user.name === this.cookie.username
-      );
+      loggedUser = usersList.filter((user) => user.name === username);
 
       sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
     }

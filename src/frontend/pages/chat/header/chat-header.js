@@ -27,7 +27,10 @@ export class ChatHeader extends LitElement {
   }
 
   async firstUpdated() {
-    this.loggedUser = await UsersService.getLoggedUser();
+    this.loggedUser = await UsersService.getLoggedUser(
+      this.cookie.username,
+      this.cookie.password
+    );
   }
 
   static styles = css`

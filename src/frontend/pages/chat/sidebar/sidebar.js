@@ -58,6 +58,13 @@ export class Sidebar extends LitElement {
     `;
   }
 
+  changeRoom(event, conversation) {
+    this.sidebarListRef.value?.changeRoom(event, conversation);
+  }
+
+  findConversation(username) {
+    return this.sidebarListRef.value?.findConversation(username);
+  }
 }
 
 customElements.define("il-sidebar", Sidebar);
