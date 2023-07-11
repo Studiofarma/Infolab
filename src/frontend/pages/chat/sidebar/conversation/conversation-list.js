@@ -284,7 +284,7 @@ class ConversationList extends LitElement {
   // -----------------------------
 
   handleForward() {
-    if (this.selectedChats === 1) {
+    if (this.selectedChats.length === 1) {
       this.changeRoom(new CustomEvent("forward"), this.lastSlectedConversation);
     } else {
       this.dispatchEvent(
