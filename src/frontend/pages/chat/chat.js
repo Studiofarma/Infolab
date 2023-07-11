@@ -63,11 +63,9 @@ export class Chat extends LitElement {
     });
 
     // Refs
-    this.forwardListConversationListRef = createRef();
     this.forwardListRef = createRef();
     this.sidebarRef = createRef();
     this.scrollButtonRef = createRef();
-    this.messageBoxRef = createRef();
     this.inputControlsRef = createRef();
     this.messagesListRef = createRef();
     this.snackbarRef = createRef();
@@ -106,33 +104,6 @@ export class Chat extends LitElement {
       display: flex;
       flex-direction: column;
       position: relative;
-    }
-
-    .chatHeader {
-      position: fixed;
-      top: 0px;
-      left: 350px;
-      background: #083c72;
-      box-shadow: 0px 1px 5px black;
-      width: calc(100% - 350px);
-      min-height: 50px;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      color: white;
-      z-index: 1000;
-    }
-
-    .chatHeader .settings {
-      order: 2;
-      display: flex;
-    }
-
-    .chatHeader .contact {
-      order: 1;
-      display: flex;
-      gap: 1em;
     }
 
     il-input-controls {
@@ -214,10 +185,9 @@ export class Chat extends LitElement {
                   >
                     <div class="forward-list">
                       ${when(
-                        this.forwardListRef.value?.ilDialogRef.value.isOpened,
+                        this.getForwardListRefIsOpened(),
                         () =>
                           html`<il-conversation-list
-                            ${ref(this.forwardListConversationListRef)}
                             isForwardList="true"
                             @multiple-forward=${this.multipleForward}
                             @change-conversation=${(event) => {
@@ -242,7 +212,9 @@ export class Chat extends LitElement {
                         <il-button-text
                           text="Annulla"
                           @click=${() =>
-                            this.deletionConfirmationDialogRef.value?.closeModal()}
+                            this.setDeletionConfirmationDialogRefIsOpened(
+                              false
+                            )}
                         ></il-button-text>
                         <il-button-text
                           color="#DC2042"
@@ -275,6 +247,50 @@ export class Chat extends LitElement {
     `;
   }
 
+  // getters & setters
+
+  getForwardListRefIsOpened() {
+    return this.forwardListRef.value?.getDialogRefIsOpened();
+  }
+
+  setForwardListRefIsOpened(value) {
+    this.forwardListRef.value?.setDialogRefIsOpened(value);
+  }
+
+  getSidebarRefActiveChatName() {
+    return this.sidebarRef.value?.getSidebarListRefActiveChatName();
+  }
+
+  setSidebarRefActiveChatName(value) {
+    this.sidebarRef.value?.setSidebarListRefActiveChatName(value);
+  }
+
+  getSidebarRefActiveDescription() {
+    return this.sidebarRef.value?.getSidebarListRefActiveDescription();
+  }
+
+  setSidebarRefActiveDescription(value) {
+    this.sidebarRef.value?.setSidebarListRefActiveDescription(value);
+  }
+
+  getSidebarRefConversationList() {
+    return [...this.sidebarRef.value?.getSidebarListRefConversationList()];
+  }
+
+  getSidebarRefNewConversationList() {
+    return [...this.sidebarRef.value?.getSidebarListRefNewConversationList()];
+  }
+
+  setDeletionConfirmationDialogRefIsOpened(value) {
+    this.deletionConfirmationDialogRef.value?.setDialogRefIsOpened(value);
+  }
+
+  // -------------------------------------
+
+  setList(message) {
+    this.sidebarRef.value?.setList(message);
+  }
+
   multipleForward(event) {
     if (event.detail.list[0] == undefined) return;
 
@@ -297,27 +313,25 @@ export class Chat extends LitElement {
       });
     }
 
-    this.forwardListRef.value?.closeModal();
+    this.setForwardListRefIsOpened(false);
   }
 
   openForwardMenu(event) {
     this.messageToForward = event.detail.messageToForward;
-    this.forwardListRef.value?.openModal();
+    this.setForwardListRefIsOpened(true);
     this.requestUpdate();
   }
 
   forwardMessage(event) {
     // chiudo il menù di inoltro
-    this.forwardListRef.value?.closeModal();
+    this.setForwardListRefIsOpened(false);
 
     // apro la chat a cui devo inoltrare
     this.setActiveChat(event);
     this.updateMessages(event);
 
-    this.sidebarRef.value.sidebarListRef.value.activeChatName =
-      event.detail.conversation.roomName;
-    this.sidebarRef.value.sidebarListRef.value.activeDescription =
-      event.detail.conversation.description;
+    this.setSidebarRefActiveChatName(event.detail.conversation.roomName);
+    this.setSidebarRefActiveDescription(event.detail.conversation.description);
 
     // invio il messaggio
     this.sendMessage({ detail: { message: this.messageToForward } });
@@ -326,38 +340,15 @@ export class Chat extends LitElement {
   }
 
   goToChat(event) {
-    // Devo trovare il modo di prendere la conversation e di mandarla nell'evento.
     this.sidebarRef.value?.changeRoom(
       new CustomEvent("go-to-chat"),
       this.sidebarRef.value?.findConversation(event.detail.user)
     );
-
-    // let list = this.sidebarRef.value.sidebarListRef.value.conversationList;
-    // let newList =
-    //   this.sidebarRef.value.sidebarListRef.value.newConversationList;
-    // let index = list.findIndex((elem) => {
-    //   return this.isUsernameInRoomName(elem.roomName, event.detail.user);
-    // });
-    // if (index === -1) {
-    //   index = newList.findIndex((elem) => {
-    //     return this.isUsernameInRoomName(elem.roomName, event.detail.user);
-    //   });
-    //   this.cookie.lastChat = newList[index].roomName;
-    //   this.cookie.lastDescription = newList[index].description;
-    //   this.updateMessages({ detail: { conversation: newList[index] } });
-    //   this.headerRef.value?.setConversation(newList[index]);
-    // } else {
-    //   this.cookie.lastChat = list[index].roomName;
-    //   this.cookie.lastDescription = list[index].description;
-    //   this.updateMessages({ detail: { conversation: list[index] } });
-    //   this.headerRef.value?.setConversation(list[index]);
-    // }
-    // this.headerRef.value?.setUser(event.detail.user);
   }
 
   askDeletionConfirmation(event) {
     this.indexToBeDeleted = event.detail.index;
-    this.deletionConfirmationDialogRef.value?.openModal();
+    this.setDeletionConfirmationDialogRefIsOpened(true);
   }
 
   deleteMessage() {
@@ -366,7 +357,7 @@ export class Chat extends LitElement {
       hasBeenDeleted: true,
     };
     this.messagesListRef.value?.requestUpdate();
-    this.deletionConfirmationDialogRef.value?.closeModal();
+    this.setDeletionConfirmationDialogRefIsOpened(false);
   }
 
   editMessage(event) {
@@ -383,8 +374,7 @@ export class Chat extends LitElement {
       hasBeenEdited: true,
     };
 
-    if (index === this.messages.length - 1)
-      this.sidebarRef.value.sidebarListRef.value.setList(message);
+    if (index === this.messages.length - 1) this.setList(message);
 
     this.messagesListRef.value?.requestUpdate();
   }
@@ -547,7 +537,7 @@ export class Chat extends LitElement {
         this.requestUpdate();
       }
 
-      this.sidebarRef.value.sidebarListRef.value.setList(message);
+      this.setList(message);
     }
 
     this.messageNotification(message);

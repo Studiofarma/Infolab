@@ -26,8 +26,11 @@ export class InputControls extends LitElement {
     this.message = "";
     this.isEmojiPickerOpen = false;
     this.selectedText = null;
-    this.editorRef = createRef();
     this.isEditMode = false;
+
+    // Refs
+    this.editorRef = createRef();
+    this.emojiPickerRef = createRef();
   }
 
   static styles = css`
@@ -84,13 +87,6 @@ export class InputControls extends LitElement {
       background-color: #eaecef;
       border-radius: 10px;
     }
-
-    hr {
-      height: 4px;
-      background-color: #206cf7;
-      border: 0;
-      border-radius: 5px;
-    }
   `;
 
   render() {
@@ -118,6 +114,7 @@ export class InputControls extends LitElement {
             </il-insertion-bar>
           </div>
           <il-emoji-picker
+            ${ref(this.emojiPickerRef)}
             @emoji-click=${this.insertEmoji}
             @picker-close=${() => (this.isEmojiPickerOpen = false)}
             ?isOpen=${this.isEmojiPickerOpen}
@@ -151,8 +148,7 @@ export class InputControls extends LitElement {
   }
 
   textEditorResized(event) {
-    const emojiPicker = this.shadowRoot.querySelector("il-emoji-picker");
-    emojiPicker.style.bottom = `${
+    this.emojiPickerRef.value.style.bottom = `${
       event.detail.height + emojiPickerBottomOffset
     }px`;
 

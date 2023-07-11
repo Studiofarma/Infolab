@@ -30,17 +30,35 @@ export class Modal extends LitElement {
     `;
   }
 
+  // Getter & Setters
+
+  getDialogRefIsOpened() {
+    return this.ilDialogRef.value?.getIsOpened();
+  }
+
+  setDialogRefIsOpened(value) {
+    this.ilDialogRef.value?.setIsOpened(value);
+  }
+
+  getDialogRefOffsetWidth() {
+    return this.dialogRef.value?.getOffsetWidth();
+  }
+
+  getDialogRefOffsetHeight() {
+    return this.dialogRef.value?.getOffsetHeight();
+  }
+
+  // ------------------------------
+
   onKeyDown(e) {
-    if (e.key == esc) this.ilDialogRef.value.isOpened = false;
+    if (e.key == esc) this.setDialogRefIsOpened(false);
   }
 
   isClickOuter(event) {
     if (event.detail.x < 0) return true;
-    if (event.detail.x > this.ilDialogRef.value.dialogRef.value.offsetWidth)
-      return true;
+    if (event.detail.x > this.getDialogRefOffsetWidth()) return true;
     if (event.detail.y < 0) return true;
-    if (event.detail.y > this.ilDialogRef.value.dialogRef.value.offsetHeight)
-      return true;
+    if (event.detail.y > this.getDialogRefOffsetHeight()) return true;
 
     return false;
   }
@@ -48,16 +66,8 @@ export class Modal extends LitElement {
   handleClick(event) {
     if (this.closeByBackdropClick && this.isClickOuter(event)) {
       this.dispatchEvent(new CustomEvent("modal-closed"));
-      this.ilDialogRef.value.isOpened = false;
+      this.setDialogRefIsOpened(false);
     }
-  }
-
-  openModal() {
-    this.ilDialogRef.value?.openDialog();
-  }
-
-  closeModal() {
-    this.ilDialogRef.value?.closeDialog();
   }
 }
 

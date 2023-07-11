@@ -43,11 +43,11 @@ export class Popover extends LitElement {
   }
 
   handleClick() {
-    this.ilDialogRef.value.isOpened = true;
+    this.ilDialogRef.value?.setIsOpened(true);
   }
 
   handleLeave() {
-    if (this.leaveByDefault) this.ilDialogRef.value.isOpened = false;
+    if (this.leaveByDefault) this.ilDialogRef.value?.setIsOpened(false);
   }
 }
 customElements.define("il-popover", Popover);
