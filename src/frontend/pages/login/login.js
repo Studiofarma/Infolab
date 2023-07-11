@@ -5,6 +5,8 @@ import { LoginService } from "../../services/login-service";
 import { CookieService } from "../../services/cookie-service";
 import { ThemeColorService } from "../../services/theme-color-service";
 
+import { VariableNames } from "../../enums/theme-colors";
+
 import "../../components/snackbar";
 import "../../components/button-icon";
 import "../../components/button-text";
@@ -43,7 +45,18 @@ export class Login extends LitElement {
       margin: 0;
       padding: 0;
       ${ThemeColorService.getThemeVariables()};
-      color: var(--text);
+      color: ${VariableNames.text};
+    }
+
+
+    #background {
+      position: absolute;
+      top: 0;
+      left:0;
+      width: 100%;
+      height: 100%;
+      background-color: ${VariableNames.loginBg};
+      z-index: 1;
     }
 
     #container {
@@ -51,20 +64,20 @@ export class Login extends LitElement {
       width: 530px;
       max-width: 100%;
       min-height: 400px;
-      background: white;
       padding: 1.5rem 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 1rem;
       border-radius: 10px;
-      background-color: var(--loginFieldBackground);
+      background-color: ${VariableNames.loginFieldBg};
+      z-index: 2;
       overflow: hidden;
     }
 
     div[class^="ring"] {
       position: absolute;
-      background: var(--backdrop);
+      background-color: ${VariableNames.loginBg};
       width: 250px;
       height: 250px;
       border-radius: 100%;
@@ -79,6 +92,8 @@ export class Login extends LitElement {
     }
 
     div[class^="ring"]::before {
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
       content: "";
       position: absolute;
       top: 50%;
@@ -86,7 +101,7 @@ export class Login extends LitElement {
       transform: translate(-50%, -50%);
       width: 200px;
       height: 200px;
-      background: var(--loginFieldBackground);
+      background: ${VariableNames.loginFieldBg};
       border-radius: 100%;
     }
 
@@ -212,6 +227,7 @@ export class Login extends LitElement {
 
   render() {
     return html`
+      <div id="background"></div>
       <div id="container">
         <div class="ring1"></div>
         <div class="ring2"></div>

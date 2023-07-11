@@ -10,7 +10,8 @@ export const VariableNames = {
 
   backdrop: css`var(--backdrop)`,
 
-  loginFieldBackground: css`var(--loginFieldBackground)`,
+  loginFieldBg: css`var(--loginFieldBg)`,
+  loginBg: css`var(--loginBg)`,
 
   chatBackground: css`var(--chatBackground)`,
 
@@ -87,7 +88,8 @@ export const ThemeColorsEnum = {
     boxShadowSecondary: "#00000029",
     backdrop: "#00000037",
 
-    loginFieldBackground: "#e4e8ee",
+    loginFieldBg: "#e4e8ee",
+    loginBg: "#083c72",
 
     chatBackground: "#eaecef",
 
