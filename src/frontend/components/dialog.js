@@ -71,6 +71,26 @@ export class Dialog extends LitElement {
     `;
   }
 
+  // Getters & Setters
+
+  getIsOpened() {
+    return this.isOpened;
+  }
+
+  setIsOpened(value) {
+    this.isOpened = value;
+  }
+
+  getOffsetWidth() {
+    return this.dialogRef.value.offsetWidth;
+  }
+
+  getOffsetHeight() {
+    return this.dialogRef.value.offsetHeight;
+  }
+
+  // -----------------------------
+
   willUpdate(changed) {
     if (changed.has("isOpened") && this.type === "modal")
       this.isOpened
@@ -81,14 +101,6 @@ export class Dialog extends LitElement {
       this.isOpened
         ? this.dialogRef.value.show()
         : this.dialogRef.value.close();
-  }
-
-  openDialog() {
-    this.isOpened = true;
-  }
-
-  closeDialog() {
-    this.isOpened = false;
   }
 }
 customElements.define("il-dialog", Dialog);

@@ -67,18 +67,6 @@ class Conversation extends LitElement {
       color: var(--conversationUnreadMessageCounter);
     }
 
-    span {
-      border-radius: 50%;
-      background-color: #e7f3ff;
-      height: 25px;
-      width: 25px;
-      grid-area: unread;
-      color: #083c72;
-      text-align: center;
-      vertical-align: middle;
-      line-height: 1.5;
-    }
-
     .unread {
       color: var(--conversationUnreadMessageText);
     }

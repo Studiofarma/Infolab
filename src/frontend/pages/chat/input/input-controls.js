@@ -91,13 +91,6 @@ export class InputControls extends LitElement {
       background-color: #eaecef;
       border-radius: 10px;
     }
-
-    hr {
-      height: 4px;
-      background-color: #206cf7;
-      border: 0;
-      border-radius: 5px;
-    }
   `;
 
   render() {

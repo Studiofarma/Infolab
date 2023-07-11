@@ -109,7 +109,6 @@ export class Message extends LitElement {
             <il-message-menu-popover
               style="opacity: 0"
               ${ref(this.messageMenuPopoverRef)}
-              .chatRef=${this.chatRef}
               @message-copy=${this.messageCopy}
               .messages=${this.messages}
               .message=${this.message}

@@ -67,6 +67,37 @@ export class Sidebar extends LitElement {
     `;
   }
 
+  // getters & setters
+
+  getSidebarListRefActiveChatName() {
+    return this.sidebarListRef.value?.getActiveChatName();
+  }
+
+  setSidebarListRefActiveChatName(value) {
+    this.sidebarListRef.value?.setActiveChatName(value);
+  }
+
+  getSidebarListRefActiveDescription() {
+    return this.sidebarListRef.value?.getActiveDescription();
+  }
+
+  setSidebarListRefActiveDescription(value) {
+    this.sidebarListRef.value?.setActiveDescription(value);
+  }
+
+  getSidebarListRefConversationList() {
+    return [...this.sidebarListRef.value?.getConversationList()];
+  }
+
+  getSidebarListRefNewConversationList() {
+    return [...this.sidebarListRef.value?.getNewConversationList()];
+  }
+
+  // -----------------------------------
+
+  setList(message) {
+    this.sidebarListRef.value?.setList(message);
+  }
 }
 
 customElements.define("il-sidebar", Sidebar);

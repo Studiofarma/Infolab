@@ -32,10 +32,6 @@ export class InputField extends LitElement {
       ${ThemeColorService.applyStyle(layoutID)};
     }
 
-    #container {
-      width: 100%;
-    }
-
     input {
       font: inherit;
       position: relative;
