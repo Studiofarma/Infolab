@@ -1,19 +1,14 @@
+import { UserDto } from "../models/user-dto";
+import { CookieService } from "./cookie-service";
+
 const axios = require("axios").default;
 
-export class UsersService {
-  static async GetUsers(query, username, password) {
-    // return await axios({
-    //   url: `/api/users?user=${query}`,
-    //   method: "get",
-    //   headers: {
-    //     "X-Requested-With": "XMLHttpRequest",
-    //   },
-    //   auth: {
-    //     username: username,
-    //     password: password,
-    //   },
-    // });
+const loggedUserKey = "logged-user";
 
+export class UsersService {
+  static cookie = CookieService.getCookie();
+
+  static async getUsers(query, username, password) {
     let users = await axios({
       url: `/api/users?user=${query}`,
       method: "get",
@@ -26,6 +21,8 @@ export class UsersService {
       },
     });
 
+    // #region Mock data
+    // TODO: remove this region when data comes from BE
     users.data.forEach((user, index) => {
       user.status = index % 2 === 0 ? "online" : "offline";
     });
@@ -33,10 +30,42 @@ export class UsersService {
     users.data.forEach((user) => {
       user.avatarLink = "";
     });
+    // #endregion
 
-    return new Promise((resolve) => {
-      resolve(users);
+    if (query !== "") {
+      users.data = users.data.filter((user) =>
+        user.description.includes(query)
+      );
+    }
+
+    users.data = users.data.map((user) => {
+      return new UserDto(user);
     });
+
+    return users.data;
+  }
+
+  static async getLoggedUser(username, password) {
+    let loggedUser;
+
+    const sessionUser = sessionStorage.getItem(loggedUserKey);
+
+    if (sessionUser) {
+      loggedUser = JSON.parse(sessionUser);
+    } else {
+      let usersList;
+      try {
+        usersList = await UsersService.getUsers("", username, password);
+      } catch (error) {
+        console.error(error);
+      }
+
+      loggedUser = usersList.filter((user) => user.name === username);
+
+      sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
+    }
+
+    return loggedUser[0];
   }
 
   static setUserDescription(newDescription) {

@@ -56,6 +56,7 @@ export class Chat extends LitElement {
     this.activeDescription = CookieService.getCookieByKey(
       CookieService.Keys.lastDescription
     );
+    this.cookie = CookieService.getCookie();
     this.scrolledToBottom = false;
     window.addEventListener("resize", () => {
       this.scrollToBottom();
@@ -69,6 +70,7 @@ export class Chat extends LitElement {
     this.messagesListRef = createRef();
     this.snackbarRef = createRef();
     this.deletionConfirmationDialogRef = createRef();
+    this.headerRef = createRef();
   }
 
   connectedCallback() {
@@ -154,6 +156,7 @@ export class Chat extends LitElement {
 
           <div class="chat">
             <il-chat-header
+              ${ref(this.headerRef)}
               userName=${this.login.username}
               activeDescription="${this.activeDescription ?? ""}"
             ></il-chat-header>
@@ -337,32 +340,10 @@ export class Chat extends LitElement {
   }
 
   goToChat(event) {
-    let list = this.getSidebarRefConversationList();
-
-    let newList = this.getSidebarListRefNewConversationList();
-
-    let index = list.findIndex((elem) => {
-      return this.isUsernameInRoomName(elem.roomName, event.detail.description);
-    });
-
-    if (index === -1) {
-      index = newList.findIndex((elem) => {
-        return this.isUsernameInRoomName(
-          elem.roomName,
-          event.detail.description
-        );
-      });
-
-      this.setSidebarRefActiveChatName(newList[index].roomName);
-      this.setSidebarRefActiveDescription(newList[index].description);
-
-      this.updateMessages({ detail: { conversation: newList[index] } });
-    } else {
-      this.setSidebarRefActiveChatName(list[index].roomName);
-      this.setSidebarRefActiveDescription(list[index].description);
-
-      this.updateMessages({ detail: { conversation: list[index] } });
-    }
+    this.sidebarRef.value?.changeRoom(
+      new CustomEvent("go-to-chat"),
+      this.sidebarRef.value?.findConversation(event.detail.user)
+    );
   }
 
   askDeletionConfirmation(event) {
@@ -396,12 +377,6 @@ export class Chat extends LitElement {
     if (index === this.messages.length - 1) this.setList(message);
 
     this.messagesListRef.value?.requestUpdate();
-  }
-
-  // TODO: rimuovere quando gli utenti in una stanza arriveranno dal backend
-  isUsernameInRoomName(roomName, username) {
-    let names = roomName.split("-");
-    return names.includes(username);
   }
 
   focusOnEditor(event) {
@@ -597,7 +572,8 @@ export class Chat extends LitElement {
   }
 
   setActiveChat(event) {
-    this.activeChatName = event.detail.conversation.roomName;
+    this.headerRef.value?.setConversation(event.detail.conversation);
+    this.headerRef.value?.setUser(event.detail.user);
   }
 
   activeChatNameFormatter(activeChatName) {
