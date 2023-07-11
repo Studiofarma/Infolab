@@ -88,7 +88,7 @@ export class ChatHeader extends LitElement {
       <div class="chatHeader">
         <div class="contact">
           <div class="profileContainer">
-            ${this.conversation?.description !== ""
+            ${this.conversation?.description !== undefined
               ? html` <il-avatar
                     .user=${this.otherUser}
                     .conversation=${this.conversation}
