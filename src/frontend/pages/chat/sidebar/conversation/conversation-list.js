@@ -408,13 +408,8 @@ class ConversationList extends LitElement {
   }
 
   async getAllRooms() {
-    let cookie = CookieService.getCookie();
-
     try {
-      let rooms = await OpenChatsService.getOpenChats(
-        cookie.username,
-        cookie.password
-      );
+      let rooms = await OpenChatsService.getOpenChats();
       rooms["data"].forEach((room) => {
         let userIndex = this.usersList.findIndex(
           (user) => user.description == room.description
@@ -442,11 +437,7 @@ class ConversationList extends LitElement {
 
   async getAllUsers() {
     try {
-      this.usersList = await UsersService.getUsers(
-        this.query,
-        this.cookie.username,
-        this.cookie.password
-      );
+      this.usersList = await UsersService.getUsers(this.query);
     } catch (error) {
       console.error(error);
     }

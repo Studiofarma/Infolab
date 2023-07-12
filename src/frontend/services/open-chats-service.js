@@ -1,9 +1,7 @@
 import { HttpService } from "./http-service";
 
-const axios = require("axios").default;
-
 export class OpenChatsService {
-  static async getOpenChats(username, password) {
+  static async getOpenChats() {
     return HttpService.httpGet("/api/rooms");
   }
 }

@@ -1,12 +1,11 @@
 import { UserDto } from "../models/user-dto";
+import { CookieService } from "./cookie-service";
 import { HttpService } from "./http-service";
-
-const axios = require("axios").default;
 
 const loggedUserKey = "logged-user";
 
 export class UsersService {
-  static async getUsers(query, username, password) {
+  static async getUsers(query) {
     let users = await HttpService.httpGetWithHeaders(
       `/api/users?user=${query}`,
       {
@@ -38,7 +37,9 @@ export class UsersService {
     return users.data;
   }
 
-  static async getLoggedUser(username, password) {
+  static async getLoggedUser() {
+    let cookie = CookieService.getCookie();
+
     let loggedUser;
 
     const sessionUser = sessionStorage.getItem(loggedUserKey);
@@ -48,12 +49,12 @@ export class UsersService {
     } else {
       let usersList;
       try {
-        usersList = await UsersService.getUsers("", username, password);
+        usersList = await UsersService.getUsers("");
       } catch (error) {
         console.error(error);
       }
 
-      loggedUser = usersList.filter((user) => user.name === username);
+      loggedUser = usersList.filter((user) => user.name === cookie.username);
 
       sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
     }

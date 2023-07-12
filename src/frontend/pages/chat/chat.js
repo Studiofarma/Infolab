@@ -386,11 +386,7 @@ export class Chat extends LitElement {
   async firstUpdated() {
     if (this.activeChatName === "") return;
 
-    MessagesService.getMessagesById(
-      this.login.username,
-      this.login.password,
-      this.activeChatName
-    ).then((messages) => {
+    MessagesService.getMessagesById(this.activeChatName).then((messages) => {
       this.messages = messages.data.reverse();
     });
 
@@ -400,17 +396,15 @@ export class Chat extends LitElement {
   }
 
   async updateMessages(e) {
-    MessagesService.getMessagesById(
-      this.login.username,
-      this.login.password,
-      e.detail.conversation.roomName
-    ).then((messages) => {
-      this.messages = messages.data.reverse();
+    MessagesService.getMessagesById(e.detail.conversation.roomName).then(
+      (messages) => {
+        this.messages = messages.data.reverse();
 
-      for (var i = 0; i < this.messages.length; i++) {
-        this.messages[i].index = i;
+        for (var i = 0; i < this.messages.length; i++) {
+          this.messages[i].index = i;
+        }
       }
-    });
+    );
     this.activeChatName = e.detail.conversation.roomName;
     this.activeDescription = e.detail.conversation.description;
 
