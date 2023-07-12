@@ -1,8 +1,6 @@
 import { LitElement, html } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
-import { InputField } from "./input-field";
-
 import { IconNames } from "../enums/icon-names";
 
 import "./button-icon";
@@ -80,4 +78,4 @@ export class InputRicerca extends LitElement {
   }
 }
 
-customElements.define("il-input-ricerca", InputRicerca);
+customElements.define("il-input-search", InputRicerca);

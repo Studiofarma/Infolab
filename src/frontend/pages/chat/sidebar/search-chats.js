@@ -23,7 +23,7 @@ export class SearchChats extends LitElement {
       position: relative;
     }
 
-    il-input-ricerca {
+    il-input-search {
       width: 100%;
     }
   `;
@@ -39,12 +39,12 @@ export class SearchChats extends LitElement {
     return html`
       <div class="search-chats">
         <div class="container-input">
-          <il-input-ricerca
+          <il-input-search
             ${ref(this.inputRef)}
             @search="${this.searchChat}"
             @keydown=${this.keyPressed}
             placeholder="Cerca o inizia una nuova conversazione"
-          ></il-input-ricerca>
+          ></il-input-search>
         </div>
       </div>
     `;
