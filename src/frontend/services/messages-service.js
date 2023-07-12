@@ -21,8 +21,8 @@ export class MessagesService {
     });
     // #endregion
 
-    return messages.data.map((user) => {
-      return new MessageDto(user);
+    return messages.data.map((message) => {
+      return new MessageDto(message);
     });
   }
 }

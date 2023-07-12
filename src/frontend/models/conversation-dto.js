@@ -1,7 +1,7 @@
 export class ConversationDto {
   id = 0;
   roomName = "";
-  avatar = "";
+  avatarLink = "";
   unreadMessages = 0;
   lastMessage = { content: "", sender: "", timestamp: "" };
   description = "";
