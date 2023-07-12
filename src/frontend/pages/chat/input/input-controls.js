@@ -30,7 +30,7 @@ export class InputControls extends LitElement {
     this.message = "";
     this.isEmojiPickerOpen = false;
     this.selectedText = null;
-    this.isEditMode = false;
+    this.isEditorInEditMode = false;
 
     // Refs
     this.editorRef = createRef();
@@ -102,10 +102,10 @@ export class InputControls extends LitElement {
           <div class="inputContainer">
             <il-editor
               ${ref(this.editorRef)}
-              @enter-key-pressed=${this.manageEnterKey}
+              @enter-key-pressed=${this.handleEnterKey}
               @text-changed=${this.updateMessage}
               @text-editor-resized=${this.textEditorResized}
-              .isEditMode=${this.isEditMode}
+              .isEditMode=${this.isEditorInEditMode}
             ></il-editor>
             <il-insertion-bar
               @send-message=${this.sendMessage}
@@ -173,7 +173,7 @@ export class InputControls extends LitElement {
     this.clearMessage();
   }
 
-  manageEnterKey() {
+  handleEnterKey() {
     if (this.isEditing) {
       this.confirmEdit(new CustomEvent("confirm-edit"));
     } else {
@@ -194,7 +194,7 @@ export class InputControls extends LitElement {
   }
 
   changeEditorMode(event) {
-    this.isEditMode = event.detail.isOpen;
+    this.isEditorInEditMode = event.detail.isOpen;
     this.requestUpdate();
   }
 
