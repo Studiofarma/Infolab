@@ -189,7 +189,7 @@ export class InputControls extends LitElement {
     this.editorRef.value?.setEditorText(detail.message.content);
     this.isEditing = true;
     this.messageBeingEdited = detail.message;
-    this.indexBeingEdited = detail.index;
+    this.indexBeingEdited = detail.messageIndex;
     this.focusEditor();
   }
 

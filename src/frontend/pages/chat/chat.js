@@ -346,7 +346,7 @@ export class Chat extends LitElement {
   }
 
   askDeletionConfirmation(event) {
-    this.indexToBeDeleted = event.detail.index;
+    this.indexToBeDeleted = event.detail.messageIndex;
     this.setDeletionConfirmationDialogRefIsOpened(true);
   }
 

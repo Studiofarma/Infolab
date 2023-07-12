@@ -112,7 +112,7 @@ export class Message extends LitElement {
               @message-copy=${this.messageCopy}
               .messages=${this.messages}
               .message=${this.message}
-              .index=${this.index}
+              .messageIndex=${this.index}
               .activeChatName=${this.activeChatName}
               @forward-message=${(event) => {
                 this.dispatchEvent(

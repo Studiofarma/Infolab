@@ -12,9 +12,8 @@ export class MessageOptions extends LitElement {
   static get properties() {
     return {
       message: { type: Object },
-      cookie: { type: Object },
       type: { type: String },
-      index: { type: Number },
+      messageIndex: { type: Number },
     };
   }
 
@@ -102,7 +101,7 @@ export class MessageOptions extends LitElement {
       new CustomEvent("delete-message", {
         detail: {
           messageToDelete: this.message,
-          index: this.index,
+          messageIndex: this.messageIndex,
         },
       })
     );
@@ -113,7 +112,7 @@ export class MessageOptions extends LitElement {
       new CustomEvent("edit-message", {
         detail: {
           message: this.message,
-          index: this.index,
+          messageIndex: this.messageIndex,
         },
       })
     );

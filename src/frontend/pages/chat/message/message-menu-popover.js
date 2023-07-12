@@ -50,7 +50,7 @@ export class MessageMenuPopover extends LitElement {
           slot="popup"
           .message=${this.message}
           .cookie=${this.cookie}
-          .index=${this.messageIndex}
+          .messageIndex=${this.messageIndex}
           .room=${this.activeChatName}
           .type=${this.message.sender == this.cookie.username
             ? "sender"
