@@ -61,7 +61,6 @@ class ConversationList extends LitElement {
       padding: 0;
       margin: 0;
       ${ThemeColorService.getThemeVariables()};
-      L
     }
 
     #selected {
