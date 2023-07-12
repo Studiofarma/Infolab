@@ -383,19 +383,13 @@ export class Chat extends LitElement {
     if (this.activeChatName === "") return;
 
     this.messages = (
-      await MessagesService.getMessagesByRoomName(
-        this.login.username,
-        this.login.password,
-        this.activeChatName
-      )
+      await MessagesService.getMessagesByRoomName(this.activeChatName)
     ).reverse();
   }
 
   async updateMessages(e) {
     this.messages = (
       await MessagesService.getMessagesByRoomName(
-        this.login.username,
-        this.login.password,
         e.detail.conversation.roomName
       )
     ).reverse();
