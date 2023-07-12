@@ -16,15 +16,18 @@ export class Message extends LitElement {
   static properties = {
     messages: { type: Array },
     message: { type: Object },
-    index: { type: Number },
+    messageIndex: { type: Number },
     activeChatName: { type: String },
     activeDescription: { type: String },
     userList: { type: Array },
+    user: { type: Object },
   };
 
   constructor() {
     super();
     this.cookie = CookieService.getCookie();
+
+    // Refs
     this.buttonIconRef = createRef();
     this.messageMenuPopoverRef = createRef();
   }
@@ -83,8 +86,8 @@ export class Message extends LitElement {
 
   render() {
     return html`
-      ${this.compareMessageDate(
-        this.messages[this.index - 1]?.timestamp,
+      ${this.renderDateLabels(
+        this.messages[this.messageIndex - 1]?.timestamp,
         this.message.timestamp
       )}
 
@@ -94,7 +97,7 @@ export class Message extends LitElement {
         @mouseleave=${this.hidePopover}
       >
         <il-message-content
-          .user=${this.getUserByUsername(this.message.sender)}
+          .user=${this.user}
           class=${this.message.sender == this.cookie.username
             ? "sender"
             : "receiver"}
@@ -109,11 +112,13 @@ export class Message extends LitElement {
             <il-message-menu-popover
               style="opacity: 0"
               ${ref(this.messageMenuPopoverRef)}
-              @message-copy=${this.messageCopy}
               .messages=${this.messages}
               .message=${this.message}
-              .messageIndex=${this.index}
+              .messageIndex=${this.messageIndex}
               .activeChatName=${this.activeChatName}
+              @message-copy=${(event) => {
+                this.dispatchEvent(new CustomEvent(event.type));
+              }}
               @forward-message=${(event) => {
                 this.dispatchEvent(
                   new CustomEvent(event.type, { detail: event.detail })
@@ -150,11 +155,7 @@ export class Message extends LitElement {
     this.messageMenuPopoverRef.value?.setOpacity(0);
   }
 
-  messageCopy() {
-    this.dispatchEvent(new CustomEvent("message-copy"));
-  }
-
-  compareMessageDate(messageDate1, messageDate2) {
+  renderDateLabels(messageDate1, messageDate2) {
     const today = new Date().toDateString();
     const message = new Date(messageDate2).toDateString();
 
@@ -162,7 +163,7 @@ export class Message extends LitElement {
       new Date(messageDate1).toDateString() ==
       new Date(messageDate2).toDateString()
     ) {
-      return "";
+      return html``;
     }
 
     if (today === message) {
@@ -182,15 +183,6 @@ export class Message extends LitElement {
       year: "numeric",
     });
     return html`<div class="message-date">${dayMonth}</div>`;
-  }
-
-  getUserByUsername(username) {
-    if (this.userList == undefined) return "";
-
-    let userIndex = this.userList.findIndex((user) => user.name == username);
-    if (userIndex < 0) return;
-
-    return this.userList[userIndex];
   }
 }
 

@@ -95,10 +95,10 @@ export class MessagesList extends LitElement {
             (message) => message.id,
             (message, index) =>
               html` <il-message
-                .userList=${this.users}
+                .user=${this.getUserByUsername(message.sender)}
                 .messages=${this.messages}
                 .message=${message}
-                .index=${index}
+                .messageIndex=${index}
                 .activeChatName=${this.activeChatName}
                 .activeDescription=${this.activeDescription}
                 @message-copy=${this.messageCopy}
@@ -128,6 +128,15 @@ export class MessagesList extends LitElement {
         () => html`<il-empty-messages></il-empty-messages>`
       )}
     `;
+  }
+
+  getUserByUsername(username) {
+    if (this.users == undefined) return "";
+
+    let userIndex = this.users.findIndex((user) => user.name == username);
+    if (userIndex < 0) return;
+
+    return this.users[userIndex];
   }
 
   messageCopy() {
