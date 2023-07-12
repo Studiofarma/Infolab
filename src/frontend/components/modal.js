@@ -41,11 +41,11 @@ export class Modal extends LitElement {
   }
 
   getDialogRefOffsetWidth() {
-    return this.dialogRef.value?.getOffsetWidth();
+    return this.ilDialogRef.value?.getOffsetWidth();
   }
 
   getDialogRefOffsetHeight() {
-    return this.dialogRef.value?.getOffsetHeight();
+    return this.ilDialogRef.value?.getOffsetHeight();
   }
 
   // ------------------------------

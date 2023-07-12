@@ -11,7 +11,7 @@ export class MessageContent extends LitElement {
   static properties = {
     message: { type: Object },
     activeChatName: { type: String },
-    userList: { type: Array },
+    user: { type: Object },
   };
 
   constructor() {
@@ -199,7 +199,7 @@ export class MessageContent extends LitElement {
               this.activeChatName.indexOf(this.cookie.username) === -1
                 ? html` <p class="receiver-name">
                     ${this.message.sender != this.cookie.username
-                      ? this.getUserDescription(this.message.sender)
+                      ? this.user?.description
                       : ""}
                   </p>`
                 : html``
@@ -245,15 +245,6 @@ export class MessageContent extends LitElement {
         </main>
       </div>
     `;
-  }
-
-  getUserDescription(userName) {
-    if (this.userList == undefined) return "";
-
-    let userIndex = this.userList.findIndex((user) => user.name == userName);
-    if (userIndex < 0) return;
-    let user = this.userList[userIndex];
-    return user?.description;
   }
 }
 

@@ -12,7 +12,7 @@ import "../../../../components/button-icon";
 
 class Conversation extends LitElement {
   static properties = {
-    chat: {},
+    conversation: {},
     isSelectable: false,
     isSelected: false,
     user: { type: Object },
@@ -92,7 +92,7 @@ class Conversation extends LitElement {
   `;
 
   render() {
-    if (this.chat.unread === 0) {
+    if (this.conversation.unread === 0) {
       this.notificationOpacity = "none";
     } else {
       this.notificationOpacity = "block";
@@ -106,7 +106,7 @@ class Conversation extends LitElement {
           this.dispatchEvent(
             new CustomEvent("clicked", {
               detail: {
-                room: this.chat.roomName,
+                room: this.conversation.roomName,
                 add: this.isSelected,
               },
             })
@@ -115,30 +115,30 @@ class Conversation extends LitElement {
       >
         <il-avatar
           .user=${this.user}
+          .conversation=${this.conversation}
           .selected=${this.isSelected && this.isSelectable}
-          .avatarLink=${this.chat.avatarLink}
-          .name=${this.chat?.description}
-          .id=${this.chat.id}
         ></il-avatar>
         <div class="name-box">
-          <p class="chat-name">${this.chat?.description}</p>
+          <p class="chat-name">${this.conversation?.description}</p>
           <p class="last-message">${this.lastMessageTextFormatter()}</p>
         </div>
         <div class="date-box">
           <p
-            class="last-message-timestamp last-message-timestamp ${this.chat
-              .unreadMessages > 0
+            class="last-message-timestamp last-message-timestamp ${this
+              .conversation.unreadMessages > 0
               ? "unread"
               : ""}"
           >
-            ${this.compareMessageDate(this.chat.lastMessage?.timestamp)}
+            ${this.compareMessageDate(this.conversation.lastMessage?.timestamp)}
           </p>
           <p class="unread-counter">
-            ${this.chat.unreadMessages > 0
+            ${this.conversation.unreadMessages > 0
               ? html`
                   <il-icon
                     style="display:${this.notificationOpacity};"
-                    name="${this.getUnreadIconName(this.chat.unreadMessages)}"
+                    name="${this.getUnreadIconName(
+                      this.conversation.unreadMessages
+                    )}"
                   ></il-icon>
                 `
               : html``}
@@ -208,10 +208,10 @@ class Conversation extends LitElement {
 
   lastMessageTextFormatter() {
     let text = "";
-    const lastMessage = this.chat.lastMessage;
+    const lastMessage = this.conversation.lastMessage;
     const content = lastMessage.content;
     const sender = lastMessage.sender;
-    const description = this.chat.description;
+    const description = this.conversation.description;
     const username = this.cookie.username;
 
     if (content) {
