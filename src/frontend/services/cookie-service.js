@@ -1,3 +1,5 @@
+import { CookieDto } from "../models/cookie-dto";
+
 export class CookieService {
   static Keys = {
     username: "username",
@@ -46,7 +48,7 @@ export class CookieService {
       isValid: isValid,
     };
 
-    return cookie;
+    return new CookieDto(cookie);
   }
   static setCookieByKey(key, value) {
     let expires = new Date(Date.now());

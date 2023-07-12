@@ -294,24 +294,20 @@ export class Chat extends LitElement {
   multipleForward(event) {
     if (event.detail.list[0] == undefined) return;
 
-    if (event.detail.list.length == 1) {
-      this.forwardMessage(event);
-    } else {
-      const chatMessage = {
-        sender: this.login.username,
-        content: this.messageToForward,
-        type: "CHAT",
-      };
+    const chatMessage = {
+      sender: this.login.username,
+      content: this.messageToForward,
+      type: "CHAT",
+    };
 
-      event.detail.list.forEach((room) => {
-        let chatName = this.activeChatNameFormatter(room);
-        this.stompClient.send(
-          `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
-          {},
-          JSON.stringify(chatMessage)
-        );
-      });
-    }
+    event.detail.list.forEach((room) => {
+      let chatName = this.activeChatNameFormatter(room);
+      this.stompClient.send(
+        `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
+        {},
+        JSON.stringify(chatMessage)
+      );
+    });
 
     this.setForwardListRefIsOpened(false);
   }
@@ -328,13 +324,13 @@ export class Chat extends LitElement {
 
     // apro la chat a cui devo inoltrare
     this.setActiveChat(event);
-    this.updateMessages(event);
+    this.updateMessages(event).then(() => {
+      // invio il messaggio
+      this.sendMessage({ detail: { message: this.messageToForward } });
+    });
 
     this.setSidebarRefActiveChatName(event.detail.conversation.roomName);
     this.setSidebarRefActiveDescription(event.detail.conversation.description);
-
-    // invio il messaggio
-    this.sendMessage({ detail: { message: this.messageToForward } });
 
     this.requestUpdate();
   }
@@ -386,31 +382,24 @@ export class Chat extends LitElement {
   async firstUpdated() {
     if (this.activeChatName === "") return;
 
-    MessagesService.getMessagesById(
-      this.login.username,
-      this.login.password,
-      this.activeChatName
-    ).then((messages) => {
-      this.messages = messages.data.reverse();
-    });
-
-    for (var i = 0; i < this.messages.length; i++) {
-      this.messages[i].index = i;
-    }
+    this.messages = (
+      await MessagesService.getMessagesByRoomName(
+        this.login.username,
+        this.login.password,
+        this.activeChatName
+      )
+    ).reverse();
   }
 
   async updateMessages(e) {
-    MessagesService.getMessagesById(
-      this.login.username,
-      this.login.password,
-      e.detail.conversation.roomName
-    ).then((messages) => {
-      this.messages = messages.data.reverse();
+    this.messages = (
+      await MessagesService.getMessagesByRoomName(
+        this.login.username,
+        this.login.password,
+        e.detail.conversation.roomName
+      )
+    ).reverse();
 
-      for (var i = 0; i < this.messages.length; i++) {
-        this.messages[i].index = i;
-      }
-    });
     this.activeChatName = e.detail.conversation.roomName;
     this.activeDescription = e.detail.conversation.description;
 

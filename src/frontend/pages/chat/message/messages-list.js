@@ -87,7 +87,7 @@ export class MessagesList extends LitElement {
         >
           ${repeat(
             this.messages,
-            (message) => message.index,
+            (message) => message.id,
             (message, index) =>
               html` <il-message
                 .userList=${this.users}

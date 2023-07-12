@@ -90,6 +90,10 @@ export class MessageMenuPopover extends LitElement {
       ? { top: "0px", left: menuOptionLeft }
       : { top: "0px", right: menuOptionRight };
   }
+
+  setOpacity(value) {
+    this.style.opacity = value;
+  }
 }
 
 customElements.define("il-message-menu-popover", MessageMenuPopover);
