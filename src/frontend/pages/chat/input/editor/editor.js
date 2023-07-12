@@ -10,6 +10,15 @@ export class Editor extends LitElement {
     isEditMode: false,
   };
 
+  constructor() {
+    super();
+    this.isKeyDown = false;
+    this.message = "";
+
+    // Refs
+    this.editorRef = createRef();
+  }
+
   static styles = css`
     #editor {
       background-color: ${ThemeCSSVariables.editorInputBg};
@@ -46,19 +55,12 @@ export class Editor extends LitElement {
     }
   `;
 
-  constructor() {
-    super();
-    this.editorRef = createRef();
-    this.isKeyDown = false;
-    this.message = "";
-  }
-
   render() {
     return html`
       <div
+        ${ref(this.editorRef)}
         id="editor"
         contenteditable="true"
-        ${ref(this.editorRef)}
         @keydown=${this.onKeyDown}
         @keyup=${this.onKeyUp}
         @input=${this.onInput}
@@ -90,16 +92,16 @@ export class Editor extends LitElement {
     }
   }
 
-  onKeyUp(event) {
+  onKeyUp() {
     this.isKeyDown = false;
   }
 
-  onBlur(event) {
+  onBlur() {
     this.isKeyDown = false;
   }
 
   focusEditor() {
-    this.editorRef.value.focus();
+    this.editorRef.value?.focus();
   }
 
   onInput(event) {
