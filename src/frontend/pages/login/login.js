@@ -3,6 +3,9 @@ import { createRef, ref } from "lit/directives/ref.js";
 
 import { LoginService } from "../../services/login-service";
 import { CookieService } from "../../services/cookie-service";
+import { ThemeColorService } from "../../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 
 import "../../components/snackbar";
 import "../../components/button-icon";
@@ -41,6 +44,18 @@ export class Login extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      ${ThemeColorService.getThemeVariables()};
+      color: ${ThemeCSSVariables.text};
+    }
+
+    #background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: ${ThemeCSSVariables.loginBg};
+      z-index: 1;
     }
 
     #container {
@@ -48,20 +63,20 @@ export class Login extends LitElement {
       width: 530px;
       max-width: 100%;
       min-height: 400px;
-      background: white;
       padding: 1.5rem 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 1rem;
       border-radius: 10px;
-      background-color: #e4e8ee;
+      background-color: ${ThemeCSSVariables.loginFieldBg};
+      z-index: 2;
       overflow: hidden;
     }
 
     div[class^="ring"] {
       position: absolute;
-      background: #083c72;
+      background-color: ${ThemeCSSVariables.loginBg};
       width: 250px;
       height: 250px;
       border-radius: 100%;
@@ -76,6 +91,8 @@ export class Login extends LitElement {
     }
 
     div[class^="ring"]::before {
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
       content: "";
       position: absolute;
       top: 50%;
@@ -83,7 +100,7 @@ export class Login extends LitElement {
       transform: translate(-50%, -50%);
       width: 200px;
       height: 200px;
-      background: #e4e8ee;
+      background: ${ThemeCSSVariables.loginFieldBg};
       border-radius: 100%;
     }
 
@@ -113,7 +130,7 @@ export class Login extends LitElement {
       bottom: 25px;
       right: 10px;
       z-index: 2;
-      color: rgba(10, 10, 128, 0.829);
+      color: ${ThemeCSSVariables.iconColor};
       opacity: 0;
       transition: 0.5s;
     }
@@ -122,77 +139,6 @@ export class Login extends LitElement {
       opacity: 1;
       visibility: visible;
       cursor: pointer;
-    }
-
-    label[id$="Error"] {
-      display: block;
-      color: darkred;
-      padding-top: 5px;
-      font-size: 10pt;
-    }
-
-    #submit_btn {
-      text-transform: uppercase;
-      padding: 15px 20px;
-      color: #e4e8ee;
-      background: #00234f;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      border-radius: 10px;
-      width: 150px;
-      margin-top: 30px;
-    }
-
-    input {
-      font-family: inherit;
-    }
-
-    .text-container::before {
-      content: "";
-      position: absolute;
-      top: 5px;
-      left: -2.5px;
-      border-radius: 10px;
-      width: calc(100% + 6px);
-      height: 100%;
-      background: #c1002e;
-      z-index: -1;
-      transition: 0.5s;
-      scale: 0;
-    }
-
-    .text-container:has(input.error)::before {
-      scale: 1;
-    }
-
-    .text-container::after {
-      content: "!";
-      position: absolute;
-      transform: translateY(50%);
-      bottom: 20px;
-      right: 10px;
-      z-index: 2;
-      width: 20px;
-      height: 20px;
-      padding: 5px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      background: #c1002e;
-      transition: 0.5s;
-      transition-delay: 0.5s;
-      opacity: 0;
-    }
-
-    .text-container:has(input.error)::after {
-      opacity: 1;
-    }
-
-    .text-container:hover::after {
-      display: none;
     }
 
     #input-container {
@@ -209,6 +155,7 @@ export class Login extends LitElement {
 
   render() {
     return html`
+      <div id="background"></div>
       <div id="container">
         <div class="ring1"></div>
         <div class="ring2"></div>

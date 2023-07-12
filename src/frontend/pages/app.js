@@ -1,4 +1,5 @@
 import { LitElement, html } from "lit";
+import { when } from "lit/directives/when.js";
 import "./login/login.js";
 import "./chat/chat.js";
 export class App extends LitElement {
@@ -25,9 +26,12 @@ export class App extends LitElement {
 
   render() {
     return html`
-      ${this.login.username === ""
-        ? html` <il-login @login-confirm="${this.loginConfirm}"></il-login> `
-        : html` <il-chat .login=${this.login}></il-chat> `}
+      ${when(
+        this.login.username === "",
+        () =>
+          html` <il-login @login-confirm="${this.loginConfirm}"></il-login> `,
+        () => html` <il-chat .login=${this.login}></il-chat> `
+      )}
     `;
   }
 

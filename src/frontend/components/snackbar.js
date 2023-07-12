@@ -1,9 +1,11 @@
 import { LitElement, html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
+import { ThemeColorService } from "../services/theme-color-service";
+
 import "./button-icon";
 import { IconNames } from "../enums/icon-names";
-
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
 export class Snackbar extends LitElement {
   constructor() {
     super();
@@ -16,6 +18,7 @@ export class Snackbar extends LitElement {
       box-sizing: border-box;
       padding: 0px;
       margin: 0px;
+      ${ThemeColorService.getThemeVariables()};
     }
 
     #snackbar {
@@ -25,10 +28,10 @@ export class Snackbar extends LitElement {
       bottom: -80px;
       min-width: 500px;
       min-height: 40px;
-      color: black;
+      color: ${ThemeCSSVariables.snackbarText};
       border-radius: 10px;
-      background: white;
-      box-shadow: 0 0 20px black;
+      background: ${ThemeCSSVariables.snackbarBg};
+      box-shadow: 0 0 20px ${ThemeCSSVariables.boxShadowPrimary};
       display: flex;
       align-items: center;
       transition: all 0.5s;
@@ -38,15 +41,15 @@ export class Snackbar extends LitElement {
     }
 
     .error {
-      border-bottom: 5px solid #fe354b;
+      border-bottom: 5px solid ${ThemeCSSVariables.error};
     }
 
     .warning {
-      border-bottom: 5px solid #f7a635;
+      border-bottom: 5px solid ${ThemeCSSVariables.warning};
     }
 
     .info {
-      border-bottom: 5px solid #206cf7;
+      border-bottom: 5px solid ${ThemeCSSVariables.info};
     }
 
     p {

@@ -1,6 +1,10 @@
 import { LitElement, html, css, unsafeCSS } from "lit";
 import { when } from "lit/directives/when.js";
 
+import { ThemeColorService } from "../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
+
 import "./icon";
 import "./tooltip";
 
@@ -13,6 +17,10 @@ export class ButtonIcon extends LitElement {
   };
 
   static styles = css`
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
+
     :host {
       display: flex;
       align-items: center;
@@ -26,7 +34,7 @@ export class ButtonIcon extends LitElement {
       cursor: pointer;
       user-select: none;
       padding: 5px;
-      color: #206cf7;
+      color: ${ThemeCSSVariables.iconColor};
     }
 
     .contanier {

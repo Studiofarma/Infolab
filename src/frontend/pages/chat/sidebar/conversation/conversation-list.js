@@ -6,6 +6,9 @@ import { repeat } from "lit/directives/repeat.js";
 import { CookieService } from "../../../../services/cookie-service";
 import { ConversationService } from "../../../../services/conversations-service";
 import { UsersService } from "../../../../services/users-service";
+import { ThemeColorService } from "../../../../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../../../../enums/theme-css-variables";
 
 import "../../../../components/avatar";
 import "./conversation";
@@ -57,10 +60,12 @@ class ConversationList extends LitElement {
       box-sizing: border-box;
       padding: 0;
       margin: 0;
+      ${ThemeColorService.getThemeVariables()};
+      L
     }
 
     #selected {
-      background-color: #e1f0ff;
+      background-color: ${ThemeCSSVariables.conversationHoverBg};
     }
 
     .conversation-list {
@@ -87,7 +92,7 @@ class ConversationList extends LitElement {
 
     ::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: #206cf7;
+      background-color: ${ThemeCSSVariables.scrollbar};
     }
 
     .conversation {
@@ -97,16 +102,16 @@ class ConversationList extends LitElement {
     }
 
     .conversation:hover {
-      background-color: #e1f0ff;
+      background-color: ${ThemeCSSVariables.conversationHoverBg};
     }
 
     .active {
-      background-color: #c5e1fe;
+      background-color: ${ThemeCSSVariables.conversationActiveBg};
     }
 
     .separator {
       padding: 5px 0px 5px 10px;
-      color: #1d1e20;
+      color: ${ThemeCSSVariables.sidebarSeparator};
     }
 
     .conversation-list-scrollable {
@@ -119,7 +124,7 @@ class ConversationList extends LitElement {
     }
 
     .no-result {
-      color: #3d3f41;
+      color: ${ThemeCSSVariables.sidebarNoResults};
       text-align: center;
     }
   `;

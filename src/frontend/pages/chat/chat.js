@@ -7,9 +7,11 @@ import Stomp from "stompjs";
 
 import { MessagesService } from "../../services/messages-service";
 import { CookieService } from "../../services/cookie-service";
+import { ThemeColorService } from "../../services/theme-color-service";
 
 import { IconNames } from "../../enums/icon-names";
 import { TooltipTexts } from "../../enums/tooltip-texts";
+import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 
 import "./message/message";
 import "../../components/icon";
@@ -83,6 +85,8 @@ export class Chat extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      ${ThemeColorService.getThemeVariables()};
+      color: ${ThemeCSSVariables.text};
     }
 
     main {
@@ -91,7 +95,7 @@ export class Chat extends LitElement {
       left: 0;
       width: 100%;
       min-height: 100%;
-      background: #eaecef;
+      background: ${ThemeCSSVariables.chatBackground};
     }
 
     section {
@@ -116,11 +120,11 @@ export class Chat extends LitElement {
       right: 20px;
       border-radius: 5px;
       padding: 2px;
-      background-color: #ffffff;
       color: white;
       visibility: hidden;
       transition: opacity 0.2s ease-in-out;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: ${ThemeCSSVariables.boxShadowSecondary} 0px 1px 4px;
+      background: ${ThemeCSSVariables.messageMenuBg};
     }
 
     .deletion-confirmation {
@@ -136,7 +140,6 @@ export class Chat extends LitElement {
     .forward-list {
       width: 400px;
       height: 100%;
-      color: white;
     }
   `;
 
@@ -160,86 +163,86 @@ export class Chat extends LitElement {
               userName=${this.login.username}
               activeDescription="${this.activeDescription ?? ""}"
             ></il-chat-header>
-            ${this.activeChatName !== ""
-              ? html` <il-messages-list
-                    ${ref(this.messagesListRef)}
-                    @scroll=${this.manageScrollButtonVisility}
-                    .messages=${this.messages}
-                    .activeChatName=${this.activeChatName}
-                    .activeDescription=${this.activeDescription}
-                    @forward-message=${this.openForwardMenu}
-                    @go-to-chat=${this.goToChat}
-                    @message-copy=${() =>
-                      this.snackbarRef.value.openSnackbar(
-                        "MESSAGGIO COPIATO",
-                        "info",
-                        2000
-                      )}
-                    @edit-message=${this.editMessage}
-                    @delete-message=${this.askDeletionConfirmation}
-                  ></il-messages-list>
+            ${when(
+              this.activeChatName === "",
+              () => html`<il-empty-chat></il-empty-chat>`,
+              () => html` <il-messages-list
+                  ${ref(this.messagesListRef)}
+                  @scroll=${this.manageScrollButtonVisility}
+                  .messages=${this.messages}
+                  .activeChatName=${this.activeChatName}
+                  .activeDescription=${this.activeDescription}
+                  @forward-message=${this.openForwardMenu}
+                  @go-to-chat=${this.goToChat}
+                  @message-copy=${() =>
+                    this.snackbarRef.value.openSnackbar(
+                      "MESSAGGIO COPIATO",
+                      "info",
+                      2000
+                    )}
+                  @edit-message=${this.editMessage}
+                  @delete-message=${this.askDeletionConfirmation}
+                ></il-messages-list>
 
-                  <il-modal
-                    @modal-closed=${() => this.requestUpdate()}
-                    ${ref(this.forwardListRef)}
-                  >
-                    <div class="forward-list">
-                      ${when(
-                        this.getForwardListRefIsOpened(),
-                        () =>
-                          html`<il-conversation-list
-                            isForwardList="true"
-                            @multiple-forward=${this.multipleForward}
-                            @change-conversation=${(event) => {
-                              this.forwardMessage(event);
-                              this.focusOnEditor(event);
-                            }}
-                          ></il-conversation-list>`
-                      )}
+                <il-modal
+                  @modal-closed=${() => this.requestUpdate()}
+                  ${ref(this.forwardListRef)}
+                >
+                  <div class="forward-list">
+                    ${when(
+                      this.getForwardListRefIsOpened(),
+                      () =>
+                        html`<il-conversation-list
+                          isForwardList="true"
+                          @multiple-forward=${this.multipleForward}
+                          @change-conversation=${(event) => {
+                            this.forwardMessage(event);
+                            this.focusOnEditor(event);
+                          }}
+                        ></il-conversation-list>`
+                    )}
+                  </div>
+                </il-modal>
+
+                <il-modal
+                  ${ref(this.deletionConfirmationDialogRef)}
+                  @modal-closed=${() => this.requestUpdate()}
+                >
+                  <div class="deletion-confirmation">
+                    <h3>Eliminazione messaggio</h3>
+                    <br />
+                    <p>Confermare l'eliminazione del messaggio?</p>
+                    <br />
+                    <div class="deletion-confirmation-buttons">
+                      <il-button-text
+                        text="Annulla"
+                        @click=${() =>
+                          this.setDeletionConfirmationDialogRefIsOpened(false)}
+                      ></il-button-text>
+                      <il-button-text
+                        color="#DC2042"
+                        @click=${this.deleteMessage}
+                        text="Elimina"
+                      ></il-button-text>
                     </div>
-                  </il-modal>
+                  </div>
+                </il-modal>
 
-                  <il-modal
-                    ${ref(this.deletionConfirmationDialogRef)}
-                    @modal-closed=${() => this.requestUpdate()}
-                  >
-                    <div class="deletion-confirmation">
-                      <h3>Eliminazione messaggio</h3>
-                      <br />
-                      <p>Confermare l'eliminazione del messaggio?</p>
-                      <br />
-                      <div class="deletion-confirmation-buttons">
-                        <il-button-text
-                          text="Annulla"
-                          @click=${() =>
-                            this.setDeletionConfirmationDialogRefIsOpened(
-                              false
-                            )}
-                        ></il-button-text>
-                        <il-button-text
-                          color="#DC2042"
-                          @click=${this.deleteMessage}
-                          text="Elimina"
-                        ></il-button-text>
-                      </div>
-                    </div>
-                  </il-modal>
+                <il-button-icon
+                  ${ref(this.scrollButtonRef)}
+                  style="bottom: 120px"
+                  @click="${this.scrollToBottom}"
+                  .content=${IconNames.scrollDownArrow}
+                  .tooltipText=${TooltipTexts.scrollToBottom}
+                ></il-button-icon>
 
-                  <il-button-icon
-                    ${ref(this.scrollButtonRef)}
-                    style="bottom: 120px"
-                    @click="${this.scrollToBottom}"
-                    .content=${IconNames.scrollDownArrow}
-                    .tooltipText=${TooltipTexts.scrollToBottom}
-                  ></il-button-icon>
-
-                  <il-input-controls
-                    ${ref(this.inputControlsRef)}
-                    @send-message=${this.sendMessage}
-                    @text-editor-resized=${this.textEditorResized}
-                    @confirm-edit=${this.confirmEdit}
-                  ></il-input-controls>`
-              : html`<il-empty-chat></il-empty-chat>`}
+                <il-input-controls
+                  ${ref(this.inputControlsRef)}
+                  @send-message=${this.sendMessage}
+                  @text-editor-resized=${this.textEditorResized}
+                  @confirm-edit=${this.confirmEdit}
+                ></il-input-controls>`
+            )}
           </div>
         </section>
         <il-snackbar ${ref(this.snackbarRef)}></il-snackbar>

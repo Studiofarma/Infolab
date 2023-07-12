@@ -1,6 +1,10 @@
 import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
+import { ThemeColorService } from "../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
+
 import { InputField } from "./input-field";
 
 export class InputWithIcon extends InputField {
@@ -17,10 +21,13 @@ export class InputWithIcon extends InputField {
   }
 
   static styles = css`
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
+
     div {
       width: 100%;
       display: flex;
-      color: white;
       border-radius: 10px;
       border: solid 2px;
       align-items: center;
@@ -32,7 +39,7 @@ export class InputWithIcon extends InputField {
       padding: 0 10px;
       border: none;
       outline: none;
-      background-color: rgba(0, 0, 0, 0);
+      background-color: ${ThemeCSSVariables.inputBackgroud};
       position: relative;
       overflow: hidden;
     }
@@ -42,11 +49,11 @@ export class InputWithIcon extends InputField {
     }
 
     div:has(input:focus) {
-      border-color: #206cf7;
+      border-color: ${ThemeCSSVariables.inputFocusedBorder};
     }
 
     div:not(:has(input:focus)) {
-      border-color: #989a9d;
+      border-color: ${ThemeCSSVariables.inputBorder};
     }
   `;
 

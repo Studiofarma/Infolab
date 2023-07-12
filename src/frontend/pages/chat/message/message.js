@@ -3,6 +3,9 @@ import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
+import { ThemeColorService } from "../../../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "./message-options";
 import "../../../components/popover";
@@ -30,6 +33,7 @@ export class Message extends LitElement {
     * {
       margin: 0;
       padding: 0;
+      ${ThemeColorService.getThemeVariables()};
     }
 
     .message-body:has(.sender) {
@@ -55,20 +59,20 @@ export class Message extends LitElement {
     .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: #1d1e20;
+      color: ${ThemeCSSVariables.timestampMessageText};
     }
 
     .message-date {
       justify-self: center;
       padding: 5px;
       border-radius: 6px;
-      background-color: rgb(221, 221, 221);
+      background-color: ${ThemeCSSVariables.datetimeMessageBg};
     }
 
     il-message-menu-popover {
       z-index: 10;
       transition: 0.5s;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: ${ThemeCSSVariables.boxShadowSecondary} 0px 1px 4px;
       border-radius: 5px;
     }
 

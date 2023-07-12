@@ -1,8 +1,12 @@
 import { LitElement, html, css } from "lit";
+import { when } from "lit/directives/when.js";
 
 import { IconNames } from "../../../../enums/icon-names";
 import { CookieService } from "../../../../services/cookie-service";
 import { HtmlParserService } from "../../../../services/html-parser-service";
+import { ThemeColorService } from "../../../../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../../../../enums/theme-css-variables";
 
 import "../../../../components/icon";
 import "../../../../components/button-icon";
@@ -25,7 +29,9 @@ class Conversation extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      ${ThemeColorService.getThemeVariables()};
     }
+
     .chat-box {
       display: flex;
       gap: 12px;
@@ -47,11 +53,11 @@ class Conversation extends LitElement {
     }
 
     .last-message {
-      color: #3d3f41;
+      color: ${ThemeCSSVariables.conversationLastMessageText};
     }
 
     .last-message-timestamp {
-      color: #3d3f41;
+      color: ${ThemeCSSVariables.conversationTimestapText};
     }
 
     il-icon {
@@ -59,26 +65,26 @@ class Conversation extends LitElement {
       display: flex;
       height: 24px;
       width: 25px;
-      color: rgb(13, 162, 255);
+      color: ${ThemeCSSVariables.conversationUnreadMessageCounter};
     }
 
     .unread {
-      color: rgb(58 179 255);
+      color: ${ThemeCSSVariables.conversationUnreadMessageText};
     }
 
     .last-message a[href] {
-      color: lightgray;
+      color: ${ThemeCSSVariables.conversationLastMessageLinkText};
       text-underline-position: below;
       text-underline-offset: 2px;
       transition: color 0.5s;
     }
 
     .last-message a[href]:hover {
-      color: white;
+      color: ${ThemeCSSVariables.conversationLastMessageLinkTextHover};
     }
 
     .chat-name {
-      color: black;
+      color: ${ThemeCSSVariables.conversationChatName};
     }
 
     il-button-icon {
@@ -127,16 +133,18 @@ class Conversation extends LitElement {
             ${this.compareMessageDate(this.conversation.lastMessage?.timestamp)}
           </p>
           <p class="unread-counter">
-            ${this.conversation.unreadMessages > 0
-              ? html`
-                  <il-icon
-                    style="display:${this.notificationOpacity};"
-                    name="${this.getUnreadIconName(
-                      this.conversation.unreadMessages
-                    )}"
-                  ></il-icon>
-                `
-              : html``}
+            ${when(
+              this.conversation.unreadMessages > 0,
+              () => html`
+                <il-icon
+                  style="display:${this.notificationOpacity};"
+                  name="${this.getUnreadIconName(
+                    this.conversation.unreadMessages
+                  )}"
+                ></il-icon>
+              `,
+              () => html``
+            )}
           </p>
         </div>
       </div>

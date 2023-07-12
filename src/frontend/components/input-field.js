@@ -1,5 +1,10 @@
 import { LitElement, html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
+import { when } from "lit/directives/when.js";
+
+import { ThemeColorService } from "../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
 import "./button-icon";
 
@@ -25,6 +30,7 @@ export class InputField extends LitElement {
   static styles = css`
     * {
       width: 100%;
+      ${ThemeColorService.getThemeVariables()};
     }
 
     input {
@@ -33,7 +39,7 @@ export class InputField extends LitElement {
       width: 100%;
       height: 40px;
       padding: 5px 10px;
-      color: black;
+      color: ${ThemeCSSVariables.inputText};
       border: none;
       outline: none;
       font-size: 15pt;
@@ -42,13 +48,19 @@ export class InputField extends LitElement {
     }
 
     input::placeholder {
-      color: #6f7174;
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
+      color: ${ThemeCSSVariables.placeholder};
     }
   `;
 
   render() {
     return html`
-      ${this.title === "" ? html`` : html`<label>${this.title}</label>`}
+      ${when(
+        this.title === "",
+        () => html``,
+        () => html`<label>${this.title}</label>`
+      )}
       <input
         ${ref(this.inputRef)}
         id="message-input"

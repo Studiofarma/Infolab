@@ -1,5 +1,9 @@
 import { LitElement, html, css } from "lit";
 
+import { ThemeColorService } from "../../../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
+
 import "../../../components/icon";
 
 export class MessageButtonOption extends LitElement {
@@ -9,6 +13,10 @@ export class MessageButtonOption extends LitElement {
   };
 
   static styles = css`
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
+
     div {
       display: flex;
       align-items: center;
@@ -17,11 +25,11 @@ export class MessageButtonOption extends LitElement {
       cursor: pointer;
       white-space: nowrap;
       transition: background 0.5s;
-      color: #206cf7;
+      color: ${ThemeCSSVariables.actionText};
     }
 
     div:hover {
-      background-color: #dfd8d8;
+      background-color: ${ThemeCSSVariables.messageMenuBgHover};
     }
   `;
 

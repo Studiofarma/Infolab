@@ -1,7 +1,14 @@
 import { LitElement, css, html } from "lit";
+import { ThemeColorService } from "../../../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 export class EmptyMessages extends LitElement {
   static styles = css`
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
+
     div {
       width: 100%;
       height: 100vh;
@@ -11,11 +18,11 @@ export class EmptyMessages extends LitElement {
       align-items: center;
     }
     h1 {
-      color: #3d3f41;
+      color: ${ThemeCSSVariables.textPrimary};
     }
 
     h2 {
-      color: #5c5e60;
+      color: ${ThemeCSSVariables.textSecondary};
     }
   `;
 

@@ -6,11 +6,11 @@
 }
 
 body {
+   /* for the blue screen of death */
+  background: #083c72; 
   font-weight: 400;
   font-size: 1rem;
   line-height: 1.58;
-  color: #333;
-  background: #083c72;
   min-height: 100vh;
   display: flex;
   justify-content: center;

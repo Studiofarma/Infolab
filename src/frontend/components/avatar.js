@@ -2,8 +2,11 @@ import { LitElement, html, css } from "lit";
 import { when } from "lit/directives/when.js";
 import { choose } from "lit/directives/choose.js";
 
+import { ThemeColorService } from "../services/theme-color-service";
+
 import "./icon";
 import { IconNames } from "../enums/icon-names";
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
 const maxInitials = 3;
 
@@ -21,6 +24,10 @@ export class Avatar extends LitElement {
   }
 
   static styles = css`
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
+
     img {
       border-radius: 50%;
       width: 100%;
@@ -42,14 +49,13 @@ export class Avatar extends LitElement {
       height: 24px;
       width: 23px;
       border-radius: 23px;
-      background-color: white;
+      background-color: ${ThemeCSSVariables.statusBorder};
       display: flex;
       justify-content: center;
       align-items: center;
       font-size: 0px;
       -webkit-font-smoothing: antialiased;
       user-select: none;
-      color: #206cf7;
       position: relative;
       left: 30px;
       bottom: 15px;
@@ -62,16 +68,16 @@ export class Avatar extends LitElement {
     .large {
       width: 150px !important;
       height: 150px !important;
-      color: white;
+      color: ${ThemeCSSVariables.initialsText};
       font-size: 50px;
     }
 
     .online {
-      color: #68c47e;
+      color: ${ThemeCSSVariables.onlineStatus};
     }
 
     .offline {
-      color: #dbdde0;
+      color: ${ThemeCSSVariables.offlineStatus};
     }
   `;
 
@@ -112,28 +118,28 @@ export class Avatar extends LitElement {
       (this.user?.id ?? this.conversation?.id) % 8 // Note that the BE doesn't return ID, yet it is inside the dto. By default it is 0.
     ) {
       case 0:
-        this.color = "#008A33";
+        this.color = `${ThemeCSSVariables.avatarBg0}`;
         break;
       case 1:
-        this.color = "#005B13";
+        this.color = `${ThemeCSSVariables.avatarBg1}`;
         break;
       case 2:
-        this.color = "#EF2C49";
+        this.color = `${ThemeCSSVariables.avatarBg2}`;
         break;
       case 3:
-        this.color = "#CF173A";
+        this.color = `${ThemeCSSVariables.avatarBg3}`;
         break;
       case 4:
-        this.color = "#F0981D";
+        this.color = `${ThemeCSSVariables.avatarBg4}`;
         break;
       case 5:
-        this.color = "#CF7A04";
+        this.color = `${ThemeCSSVariables.avatarBg5}`;
         break;
       case 6:
-        this.color = "#003366";
+        this.color = `${ThemeCSSVariables.avatarBg6}`;
         break;
       case 7:
-        this.color = "#5C5E60";
+        this.color = `${ThemeCSSVariables.avatarBg7}`;
     }
   }
 
@@ -148,7 +154,7 @@ export class Avatar extends LitElement {
           () => html`<div
             class=${this.sizeClass}
             id="avatar-default"
-            style="background-color:${this.color}"
+            style="background-color: ${this.color}"
           >
             ${this.initials}
           </div>`

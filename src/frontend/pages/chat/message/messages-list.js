@@ -5,6 +5,9 @@ import { createRef, ref } from "lit/directives/ref.js";
 
 import { CookieService } from "../../../services/cookie-service";
 import { UsersService } from "../../../services/users-service";
+import { ThemeColorService } from "../../../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "./empty-messages";
 
@@ -33,7 +36,9 @@ export class MessagesList extends LitElement {
     * {
       box-sizing: border-box;
       width: 100%;
+      ${ThemeColorService.getThemeVariables()};
     }
+
     .message-box {
       list-style-type: none;
       display: grid;
@@ -55,7 +60,7 @@ export class MessagesList extends LitElement {
 
     .message-box::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: #206cf7;
+      background-color: ${ThemeCSSVariables.scrollbar};
       min-height: 40px;
     }
 
