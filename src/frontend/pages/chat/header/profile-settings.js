@@ -142,7 +142,7 @@ export class profileSettings extends LitElement {
             sizeClass="large"
             name=${this.username}
             .avatarLink=${this.imagePath}
-            ?defaultAvatar=${this.imagePath === ""}
+            ?isDefaultAvatar=${this.imagePath === ""}
             .hasStatus=${false}
           ></il-avatar>
           <button

@@ -117,7 +117,7 @@ class Conversation extends LitElement {
         <il-avatar
           .user=${this.user}
           .conversation=${this.conversation}
-          .selected=${this.isSelected && this.isSelectable}
+          .isSelected=${this.isSelected && this.isSelectable}
         ></il-avatar>
         <div class="name-box">
           <p class="chat-name">${this.conversation?.description}</p>

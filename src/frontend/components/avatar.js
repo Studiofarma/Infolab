@@ -15,7 +15,7 @@ export class Avatar extends LitElement {
     return {
       avatarLink: "",
       name: "",
-      selected: false,
+      isSelected: false,
       sizeClass: "",
       user: {},
       conversation: {},
@@ -85,7 +85,7 @@ export class Avatar extends LitElement {
     super();
     this.initials = "";
     this.color = "";
-    this.defaultAvatar = true;
+    this.isDefaultAvatar = true;
     this.hasStatus = this.hasStatus === undefined ? true : this.hasStatus;
   }
 
@@ -105,11 +105,11 @@ export class Avatar extends LitElement {
     return initials.toUpperCase();
   }
 
-  createIcon() {
+  createAvatarWithInitials() {
     if (this.avatarLink || this.user?.avatarLink) {
-      this.defaultAvatar = true;
+      this.isDefaultAvatar = true;
     } else {
-      this.defaultAvatar = false;
+      this.isDefaultAvatar = false;
     }
     this.initials = this.getInitials(
       this.name ?? this.user?.description ?? this.conversation?.description
@@ -144,12 +144,12 @@ export class Avatar extends LitElement {
   }
 
   render() {
-    this.createIcon();
+    this.createAvatarWithInitials();
 
     return html`
       <div class=${"avatar " + this.sizeClass}>
         ${when(
-          this.defaultAvatar,
+          this.isDefaultAvatar,
           () => html`<img src=${this.avatarLink ?? this.user?.avatarLink} />`,
           () => html`<div
             class=${this.sizeClass}
@@ -160,7 +160,7 @@ export class Avatar extends LitElement {
           </div>`
         )}
         ${when(
-          this.selected,
+          this.isSelected,
           () => html`<div class="icon-button">
             <il-icon name=${IconNames.checkCircle}></il-icon>
           </div>`,
@@ -196,7 +196,7 @@ export class Avatar extends LitElement {
 
   setAvatarLink(avatarLink) {
     this.user.avatarLink = avatarLink;
-    this.defaultAvatar = false;
+    this.isDefaultAvatar = false;
     this.requestUpdate();
   }
 }
