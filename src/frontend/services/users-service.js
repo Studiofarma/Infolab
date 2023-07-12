@@ -1,25 +1,18 @@
 import { UserDto } from "../models/user-dto";
-import { CookieService } from "./cookie-service";
+import { HttpService } from "./http-service";
 
 const axios = require("axios").default;
 
 const loggedUserKey = "logged-user";
 
 export class UsersService {
-  static cookie = CookieService.getCookie();
-
   static async getUsers(query, username, password) {
-    let users = await axios({
-      url: `/api/users?user=${query}`,
-      method: "get",
-      headers: {
+    let users = await HttpService.httpGetWithHeaders(
+      `/api/users?user=${query}`,
+      {
         "X-Requested-With": "XMLHttpRequest",
-      },
-      auth: {
-        username: username,
-        password: password,
-      },
-    });
+      }
+    );
 
     // #region Mock data
     // TODO: remove this region when data comes from BE
