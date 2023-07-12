@@ -188,15 +188,17 @@ export class MessageContent extends LitElement {
                 : "receiver"
             }
           >
-            ${
-              this.activeChatName.indexOf(this.cookie.username) === -1
-                ? html` <p class="receiver-name">
-                    ${this.message.sender != this.cookie.username
-                      ? this.user?.description
-                      : ""}
-                  </p>`
-                : html``
-            }
+            ${when(
+              this.activeChatName.indexOf(this.cookie.username) === -1,
+              () => html` <p class="receiver-name">
+                ${when(
+                  this.message.sender != this.cookie.username,
+                  () => this.user?.description,
+                  () => ""
+                )}
+              </p>`,
+              () => html``
+            )}
             ${when(
               !this.message.hasBeenDeleted,
               () => html`
