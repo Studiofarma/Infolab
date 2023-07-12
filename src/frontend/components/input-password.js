@@ -1,4 +1,5 @@
 import { html, css } from "lit";
+import { when } from "lit/directives/when.js";
 
 import { IconNames } from "../enums/icon-names";
 import { InputField } from "./input-field";
@@ -46,7 +47,11 @@ export class InputPassword extends InputField {
 
   render() {
     return html`
-      ${this.title === "" ? html`` : html`<label>${this.title}</label>`}
+      ${when(
+        this.title === "",
+        () => html``,
+        () => html`<label>${this.title}</label>`
+      )}
       <div>
         <input
           placeholder="${this.placeholder}"

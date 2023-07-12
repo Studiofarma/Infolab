@@ -163,86 +163,86 @@ export class Chat extends LitElement {
               userName=${this.login.username}
               activeDescription="${this.activeDescription ?? ""}"
             ></il-chat-header>
-            ${this.activeChatName !== ""
-              ? html` <il-messages-list
-                    ${ref(this.messagesListRef)}
-                    @scroll=${this.manageScrollButtonVisility}
-                    .messages=${this.messages}
-                    .activeChatName=${this.activeChatName}
-                    .activeDescription=${this.activeDescription}
-                    @forward-message=${this.openForwardMenu}
-                    @go-to-chat=${this.goToChat}
-                    @message-copy=${() =>
-                      this.snackbarRef.value.openSnackbar(
-                        "MESSAGGIO COPIATO",
-                        "info",
-                        2000
-                      )}
-                    @edit-message=${this.editMessage}
-                    @delete-message=${this.askDeletionConfirmation}
-                  ></il-messages-list>
+            ${when(
+              this.activeChatName === "",
+              () => html`<il-empty-chat></il-empty-chat>`,
+              () => html` <il-messages-list
+                  ${ref(this.messagesListRef)}
+                  @scroll=${this.manageScrollButtonVisility}
+                  .messages=${this.messages}
+                  .activeChatName=${this.activeChatName}
+                  .activeDescription=${this.activeDescription}
+                  @forward-message=${this.openForwardMenu}
+                  @go-to-chat=${this.goToChat}
+                  @message-copy=${() =>
+                    this.snackbarRef.value.openSnackbar(
+                      "MESSAGGIO COPIATO",
+                      "info",
+                      2000
+                    )}
+                  @edit-message=${this.editMessage}
+                  @delete-message=${this.askDeletionConfirmation}
+                ></il-messages-list>
 
-                  <il-modal
-                    @modal-closed=${() => this.requestUpdate()}
-                    ${ref(this.forwardListRef)}
-                  >
-                    <div class="forward-list">
-                      ${when(
-                        this.getForwardListRefIsOpened(),
-                        () =>
-                          html`<il-conversation-list
-                            isForwardList="true"
-                            @multiple-forward=${this.multipleForward}
-                            @change-conversation=${(event) => {
-                              this.forwardMessage(event);
-                              this.focusOnEditor(event);
-                            }}
-                          ></il-conversation-list>`
-                      )}
+                <il-modal
+                  @modal-closed=${() => this.requestUpdate()}
+                  ${ref(this.forwardListRef)}
+                >
+                  <div class="forward-list">
+                    ${when(
+                      this.getForwardListRefIsOpened(),
+                      () =>
+                        html`<il-conversation-list
+                          isForwardList="true"
+                          @multiple-forward=${this.multipleForward}
+                          @change-conversation=${(event) => {
+                            this.forwardMessage(event);
+                            this.focusOnEditor(event);
+                          }}
+                        ></il-conversation-list>`
+                    )}
+                  </div>
+                </il-modal>
+
+                <il-modal
+                  ${ref(this.deletionConfirmationDialogRef)}
+                  @modal-closed=${() => this.requestUpdate()}
+                >
+                  <div class="deletion-confirmation">
+                    <h3>Eliminazione messaggio</h3>
+                    <br />
+                    <p>Confermare l'eliminazione del messaggio?</p>
+                    <br />
+                    <div class="deletion-confirmation-buttons">
+                      <il-button-text
+                        text="Annulla"
+                        @click=${() =>
+                          this.setDeletionConfirmationDialogRefIsOpened(false)}
+                      ></il-button-text>
+                      <il-button-text
+                        color="#DC2042"
+                        @click=${this.deleteMessage}
+                        text="Elimina"
+                      ></il-button-text>
                     </div>
-                  </il-modal>
+                  </div>
+                </il-modal>
 
-                  <il-modal
-                    ${ref(this.deletionConfirmationDialogRef)}
-                    @modal-closed=${() => this.requestUpdate()}
-                  >
-                    <div class="deletion-confirmation">
-                      <h3>Eliminazione messaggio</h3>
-                      <br />
-                      <p>Confermare l'eliminazione del messaggio?</p>
-                      <br />
-                      <div class="deletion-confirmation-buttons">
-                        <il-button-text
-                          text="Annulla"
-                          @click=${() =>
-                            this.setDeletionConfirmationDialogRefIsOpened(
-                              false
-                            )}
-                        ></il-button-text>
-                        <il-button-text
-                          color="#DC2042"
-                          @click=${this.deleteMessage}
-                          text="Elimina"
-                        ></il-button-text>
-                      </div>
-                    </div>
-                  </il-modal>
+                <il-button-icon
+                  ${ref(this.scrollButtonRef)}
+                  style="bottom: 120px"
+                  @click="${this.scrollToBottom}"
+                  .content=${IconNames.scrollDownArrow}
+                  .tooltipText=${TooltipTexts.scrollToBottom}
+                ></il-button-icon>
 
-                  <il-button-icon
-                    ${ref(this.scrollButtonRef)}
-                    style="bottom: 120px"
-                    @click="${this.scrollToBottom}"
-                    .content=${IconNames.scrollDownArrow}
-                    .tooltipText=${TooltipTexts.scrollToBottom}
-                  ></il-button-icon>
-
-                  <il-input-controls
-                    ${ref(this.inputControlsRef)}
-                    @send-message=${this.sendMessage}
-                    @text-editor-resized=${this.textEditorResized}
-                    @confirm-edit=${this.confirmEdit}
-                  ></il-input-controls>`
-              : html`<il-empty-chat></il-empty-chat>`}
+                <il-input-controls
+                  ${ref(this.inputControlsRef)}
+                  @send-message=${this.sendMessage}
+                  @text-editor-resized=${this.textEditorResized}
+                  @confirm-edit=${this.confirmEdit}
+                ></il-input-controls>`
+            )}
           </div>
         </section>
         <il-snackbar ${ref(this.snackbarRef)}></il-snackbar>
@@ -297,24 +297,20 @@ export class Chat extends LitElement {
   multipleForward(event) {
     if (event.detail.list[0] == undefined) return;
 
-    if (event.detail.list.length == 1) {
-      this.forwardMessage(event);
-    } else {
-      const chatMessage = {
-        sender: this.login.username,
-        content: this.messageToForward,
-        type: "CHAT",
-      };
+    const chatMessage = {
+      sender: this.login.username,
+      content: this.messageToForward,
+      type: "CHAT",
+    };
 
-      event.detail.list.forEach((room) => {
-        let chatName = this.activeChatNameFormatter(room);
-        this.stompClient.send(
-          `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
-          {},
-          JSON.stringify(chatMessage)
-        );
-      });
-    }
+    event.detail.list.forEach((room) => {
+      let chatName = this.activeChatNameFormatter(room);
+      this.stompClient.send(
+        `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
+        {},
+        JSON.stringify(chatMessage)
+      );
+    });
 
     this.setForwardListRefIsOpened(false);
   }
@@ -331,13 +327,13 @@ export class Chat extends LitElement {
 
     // apro la chat a cui devo inoltrare
     this.setActiveChat(event);
-    this.updateMessages(event);
+    this.updateMessages(event).then(() => {
+      // invio il messaggio
+      this.sendMessage({ detail: { message: this.messageToForward } });
+    });
 
     this.setSidebarRefActiveChatName(event.detail.conversation.roomName);
     this.setSidebarRefActiveDescription(event.detail.conversation.description);
-
-    // invio il messaggio
-    this.sendMessage({ detail: { message: this.messageToForward } });
 
     this.requestUpdate();
   }
@@ -389,31 +385,24 @@ export class Chat extends LitElement {
   async firstUpdated() {
     if (this.activeChatName === "") return;
 
-    MessagesService.getMessagesById(
-      this.login.username,
-      this.login.password,
-      this.activeChatName
-    ).then((messages) => {
-      this.messages = messages.data.reverse();
-    });
-
-    for (var i = 0; i < this.messages.length; i++) {
-      this.messages[i].index = i;
-    }
+    this.messages = (
+      await MessagesService.getMessagesByRoomName(
+        this.login.username,
+        this.login.password,
+        this.activeChatName
+      )
+    ).reverse();
   }
 
   async updateMessages(e) {
-    MessagesService.getMessagesById(
-      this.login.username,
-      this.login.password,
-      e.detail.conversation.roomName
-    ).then((messages) => {
-      this.messages = messages.data.reverse();
+    this.messages = (
+      await MessagesService.getMessagesByRoomName(
+        this.login.username,
+        this.login.password,
+        e.detail.conversation.roomName
+      )
+    ).reverse();
 
-      for (var i = 0; i < this.messages.length; i++) {
-        this.messages[i].index = i;
-      }
-    });
     this.activeChatName = e.detail.conversation.roomName;
     this.activeDescription = e.detail.conversation.description;
 

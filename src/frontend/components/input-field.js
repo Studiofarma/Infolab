@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
+import { when } from "lit/directives/when.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
@@ -55,7 +56,11 @@ export class InputField extends LitElement {
 
   render() {
     return html`
-      ${this.title === "" ? html`` : html`<label>${this.title}</label>`}
+      ${when(
+        this.title === "",
+        () => html``,
+        () => html`<label>${this.title}</label>`
+      )}
       <input
         ${ref(this.inputRef)}
         id="message-input"
