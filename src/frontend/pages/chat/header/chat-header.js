@@ -141,7 +141,7 @@ export class ChatHeader extends LitElement {
     this.profileSettingsRef.value?.setIsFocus();
   }
 
-  closeProfileMenu(event) {
+  closeProfileMenu() {
     this.modalRef.value?.setDialogRefIsOpened(false);
   }
 
@@ -153,7 +153,7 @@ export class ChatHeader extends LitElement {
     this.conversation = conversation;
   }
 
-  setUser(user) {
+  setOtherUser(user) {
     this.otherUser = user;
   }
 }

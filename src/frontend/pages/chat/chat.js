@@ -565,7 +565,7 @@ export class Chat extends LitElement {
 
   setActiveChat(event) {
     this.headerRef.value?.setConversation(event.detail.conversation);
-    this.headerRef.value?.setUser(event.detail.user);
+    this.headerRef.value?.setOtherUser(event.detail.user);
   }
 
   activeChatNameFormatter(activeChatName) {
