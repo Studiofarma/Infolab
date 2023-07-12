@@ -7,13 +7,13 @@ const esc = "Escape";
 
 export class Modal extends LitElement {
   static properties = {
-    closeByBackdropClick: { type: Boolean },
+    isClosableByBackdropClick: { type: Boolean },
     ilDialogRef: { type: Object },
   };
 
   constructor() {
     super();
-    this.closeByBackdropClick = true;
+    this.isClosableByBackdropClick = true;
     this.ilDialogRef = createRef();
     document.addEventListener("keydown", (e) => this.onKeyDown(e));
   }
@@ -30,7 +30,7 @@ export class Modal extends LitElement {
     `;
   }
 
-  // Getter & Setters
+  //#region Getter & Setters
 
   getDialogRefIsOpened() {
     return this.ilDialogRef.value?.getIsOpened();
@@ -48,7 +48,7 @@ export class Modal extends LitElement {
     return this.ilDialogRef.value?.getOffsetHeight();
   }
 
-  // ------------------------------
+  //#endregion
 
   onKeyDown(e) {
     if (e.key == esc) this.setDialogRefIsOpened(false);
@@ -64,7 +64,7 @@ export class Modal extends LitElement {
   }
 
   handleClick(event) {
-    if (this.closeByBackdropClick && this.isClickOuter(event)) {
+    if (this.isClosableByBackdropClick && this.isClickOuter(event)) {
       this.dispatchEvent(new CustomEvent("modal-closed"));
       this.setDialogRefIsOpened(false);
     }

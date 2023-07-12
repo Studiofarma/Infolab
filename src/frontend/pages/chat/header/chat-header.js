@@ -117,7 +117,7 @@ export class ChatHeader extends LitElement {
             <h2>${this.loggedUser?.description}</h2>
           </div>
 
-          <il-modal ${ref(this.modalRef)} .closeByBackdropClick=${false}>
+          <il-modal ${ref(this.modalRef)} .isClosableByBackdropClick=${false}>
             <div class="profile-modal">
               <il-profile-settings
                 ${ref(this.profileSettingsRef)}
