@@ -114,7 +114,7 @@ Cypress.Commands.add("clickOptionButton", (option) => {
     "il-app, il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options"
   )
     .last()
-    .find("message-button-option")
+    .find("il-message-button-option")
     .shadow()
     .find("div")
     .filter(`:contains("${option}")`)

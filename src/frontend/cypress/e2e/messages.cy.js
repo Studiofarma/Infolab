@@ -9,7 +9,7 @@ const messageOptionsPath =
 const messageMenuPopoverPath =
   "il-app,il-chat, il-messages-list, il-message, il-message-menu-popover";
 const messageButtonOptionPath =
-  "il-app,il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options, message-button-option";
+  "il-app,il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options, il-message-button-option";
 
 // Il primo è per le conversazioni della sidebar, il secondo per quelli della forward-list
 const sidebarConversationPath =

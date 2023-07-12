@@ -26,44 +26,44 @@ export class MessageOptions extends LitElement {
   render() {
     return html`
       <div class=${this.type}>
-        <message-button-option
+        <il-message-button-option
           iconName=${IconNames.mdiContentCopy}
           text="Copia"
           @click=${this.copyToClipboardHandler}
         >
-        </message-button-option>
+        </il-message-button-option>
 
         ${when(
           this.type === "receiver" && this.message.roomName === "general",
-          () => html` <message-button-option
+          () => html` <il-message-button-option
             iconName=${IconNames.mdiMessage}
             text="Scrivi in privato"
             @click=${this.goToChatHandler}
           >
-          </message-button-option>`
+          </il-message-button-option>`
         )}
 
-        <message-button-option
+        <il-message-button-option
           iconName=${IconNames.mdiShare}
           text="Inoltra"
           @click=${this.forwardMessageHandler}
         >
-        </message-button-option>
+        </il-message-button-option>
 
         ${when(
           this.type === "sender",
-          () => html`<message-button-option
+          () => html`<il-message-button-option
               iconName=${IconNames.pencil}
               text="Modifica"
               @click=${this.editHandler}
-            ></message-button-option>
+            ></il-message-button-option>
 
-            <message-button-option
+            <il-message-button-option
               iconName=${IconNames.mdiDelete}
               text="Elimina"
               @click=${this.deleteMessageHandler}
             >
-            </message-button-option>`,
+            </il-message-button-option>`,
           () => html``
         )}
       </div>
