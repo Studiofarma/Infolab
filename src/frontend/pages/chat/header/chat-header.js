@@ -8,6 +8,8 @@ import { UsersService } from "../../../services/users-service";
 import { CookieService } from "../../../services/cookie-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
+import { VariableNames } from "../../../enums/theme-colors";
+
 export class ChatHeader extends LitElement {
   static get properties() {
     return {
@@ -38,16 +40,15 @@ export class ChatHeader extends LitElement {
     }
 
     .chatHeader {
-      background: var(--headerBackground);
+      background: ${VariableNames.headerBg};
       height: 40px;
       padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: var(--headerColor);
+      color: ${VariableNames.headerColor};
       position: fixed;
       width: calc(100vw - 400px);
-      border-bottom: 1px solid black;
       z-index: 1000;
     }
 

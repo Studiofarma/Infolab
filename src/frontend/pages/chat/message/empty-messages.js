@@ -1,6 +1,8 @@
 import { LitElement, css, html } from "lit";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
+import { VariableNames } from "../../../enums/theme-colors";
+
 export class EmptyMessages extends LitElement {
   static styles = css`
     * {
@@ -16,11 +18,11 @@ export class EmptyMessages extends LitElement {
       align-items: center;
     }
     h1 {
-      color: var(--textPrimary);
+      color: ${VariableNames.textPrimary};
     }
 
     h2 {
-      color: var(--textSecondary);
+      color: ${VariableNames.textSecondary};
     }
   `;
 

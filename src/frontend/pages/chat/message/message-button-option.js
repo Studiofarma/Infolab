@@ -2,6 +2,8 @@ import { LitElement, html, css } from "lit";
 
 import { ThemeColorService } from "../../../services/theme-color-service";
 
+import { VariableNames } from "../../../enums/theme-colors";
+
 import "../../../components/icon";
 
 export class MessageButtonOption extends LitElement {
@@ -23,11 +25,11 @@ export class MessageButtonOption extends LitElement {
       cursor: pointer;
       white-space: nowrap;
       transition: background 0.5s;
-      color: var(--actionText);
+      color: ${VariableNames.actionText};
     }
 
     div:hover {
-      background-color: var(--messageMenuBgHover);
+      background-color: ${VariableNames.messageMenuBgHover};
     }
   `;
 

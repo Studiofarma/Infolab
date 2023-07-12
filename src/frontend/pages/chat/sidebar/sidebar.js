@@ -3,6 +3,8 @@ import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../../../services/theme-color-service";
 
+import {VariableNames} from "../../../enums/theme-colors";
+
 import "./conversation/conversation-list";
 
 export class Sidebar extends LitElement {
@@ -27,13 +29,13 @@ export class Sidebar extends LitElement {
     }
 
     .side-bar {
-      background: var(--sidebarBg);
+      background: ${VariableNames.sidebarBg};
       color: white;
       display: flex;
       flex-direction: column;
       height: 100vh;
       width: 350px;
-      box-shadow: 2px 0 8px var(--boxShadow);
+      box-shadow: 2px 0 8px ${VariableNames.boxShadowPrimary};
       z-index: 1100;
     }
 

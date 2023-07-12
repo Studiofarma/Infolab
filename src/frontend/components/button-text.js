@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
-import {VariableNames} from "../enums/theme-colors"
+import { VariableNames } from "../enums/theme-colors";
 
 export class ButtonText extends LitElement {
   static get properties() {

@@ -7,6 +7,8 @@ import { CookieService } from "../../../services/cookie-service";
 import { UsersService } from "../../../services/users-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
+import { VariableNames } from "../../../enums/theme-colors";
+
 import "./empty-messages";
 
 const fullScreenHeight = "100vh";
@@ -58,7 +60,7 @@ export class MessagesList extends LitElement {
 
     .message-box::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: var(--scrollbar);
+      background-color: ${VariableNames.scrollbar};
       min-height: 40px;
     }
 

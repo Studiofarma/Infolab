@@ -5,6 +5,7 @@ import { UsersService } from "../../../services/users-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { IconNames } from "../../../enums/icon-names";
+import { VariableNames } from "../../../enums/theme-colors";
 
 import "../../../components/avatar";
 import "../../../components/button-text";
@@ -72,7 +73,7 @@ export class profileSettings extends LitElement {
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      color: var(--actionText);
+      color: ${VariableNames.actionText};
     }
 
     input[type="file"] {
@@ -178,7 +179,7 @@ export class profileSettings extends LitElement {
       <footer>
         <il-button-text
           text="Annulla"
-          color="var(--buttonUndoBg)"
+          color=${`${VariableNames.buttonUndoBg}`}
           @click=${this.restoreDefault}
         ></il-button-text>
         <il-button-text

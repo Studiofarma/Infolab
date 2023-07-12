@@ -5,6 +5,8 @@ import { CookieService } from "../../../services/cookie-service";
 import { HtmlParserService } from "./../../../services/html-parser-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
+import { VariableNames } from "../../../enums/theme-colors";
+
 export class MessageContent extends LitElement {
   static properties = {
     message: { type: Object },
@@ -31,33 +33,37 @@ export class MessageContent extends LitElement {
       min-width: 300px;
       max-width: 500px;
       padding: 8px 8px 6px 10px;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: ${VariableNames.boxShadowSecondary} 0px 1px 4px;
       z-index: 3;
     }
 
     .sender {
       border-radius: 10px 0 10px 10px;
-      color: var(--messageSenderText);
-      background-color: var(--messageSenderBg);
+      color: ${VariableNames.messageSenderText};
+      background-color: ${VariableNames.messageSenderBg};
     }
 
     .sender::after {
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
       content: "";
       position: absolute;
       top: 0px;
       right: -9px;
-      border-top: 10px solid var(--messageSenderBg);
+      border-top: 10px solid ${VariableNames.messageSenderBg};
       border-left: 0px solid transparent;
       border-right: 10px solid transparent;
       z-index: 3;
     }
 
     .sender::before {
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
       content: "";
       position: absolute;
       top: -1px;
       right: -13px;
-      border-top: 11px solid var(--messageSenderBg);
+      border-top: 11px solid ${VariableNames.messageSenderBg};
       border-left: 0px solid transparent;
       border-right: 12px solid transparent;
       filter: blur(0.8px);
@@ -66,27 +72,31 @@ export class MessageContent extends LitElement {
 
     .receiver {
       border-radius: 0 10px 10px 10px;
-      color: var(--messageReceiverText);
-      background-color: var(--messageReceiverBg);
+      color: ${VariableNames.messageReceiverText};
+      background-color: ${VariableNames.messageReceiverBg};
     }
 
     .receiver::after {
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
       content: "";
       position: absolute;
       top: 0px;
       left: -9px;
-      border-top: 10px solid var(--messageReceiverBg);
+      border-top: 10px solid ${VariableNames.messageReceiverBg};
       border-left: 10px solid transparent;
       border-right: 0px solid transparent;
       z-index: 3;
     }
 
     .receiver::before {
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
       content: "";
       position: absolute;
       top: -1px;
       left: -13px;
-      border-top: 11px solid var(--messageReceiverBg);
+      border-top: 11px solid ${VariableNames.messageReceiverBg};
       border-right: 0px solid transparent;
       border-left: 12px solid transparent;
       filter: blur(0.8px);
@@ -95,7 +105,7 @@ export class MessageContent extends LitElement {
 
     .receiver-name {
       font-size: 13px;
-      color: var(--messageSenderNameText);
+      color: ${VariableNames.messageSenderNameText};
     }
 
     .message {
@@ -104,9 +114,9 @@ export class MessageContent extends LitElement {
 
     .settings-container {
       position: relative;
-      background: white;
+      background: ${VariableNames.messageMenuBg};
       border-radius: 6px;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: ${VariableNames.boxShadowSecondary} 0px 1px 4px;
       opacity: 0;
       transition: opacity 0.5s;
     }
@@ -130,20 +140,20 @@ export class MessageContent extends LitElement {
     .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: var(--timestampMessageText);
+      color: ${VariableNames.timestampMessageText};
     }
 
     .edited {
       text-align: end;
       font-size: 11px;
-      color: var(--modifiedMessageText);
+      color: ${VariableNames.modifiedMessageText};
       margin-right: 10px;
     }
 
     .deleted {
       text-align: end;
       font-size: 11px;
-      color: var(deletedMessageText);
+      color: ${VariableNames.deletedMessageText};
     }
 
     .timestamp-edited-container {
@@ -164,11 +174,11 @@ export class MessageContent extends LitElement {
       justify-self: center;
       padding: 5px;
       border-radius: 6px;
-      background-color: var(--datetimeMessageBg);
+      background-color: ${VariableNames.datetimeMessageBg};
     }
 
     .message a[href] {
-      color: var(--link);
+      color: ${VariableNames.link};
       text-underline-position: below;
       text-underline-offset: 2px;
       transition: color 0.5s;

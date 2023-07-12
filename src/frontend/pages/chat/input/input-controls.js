@@ -3,6 +3,8 @@ import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../../../services/theme-color-service";
 
+import { VariableNames } from "../../../enums/theme-colors";
+
 import "./insertion-bar";
 import "./editor/editor";
 import "../../../components/button-icon";
@@ -66,8 +68,8 @@ export class InputControls extends LitElement {
       align-items: center;
       gap: 5px;
       padding: 5px 5px;
-      background: var(--inputControlsBg);
-      box-shadow: 0 0 8px 2px var(--boxShadow);
+      background: ${VariableNames.inputControlsBg};
+      box-shadow: 0 0 8px 2px ${VariableNames.boxShadowPrimary};
       margin: 0 20px;
       z-index: 1000;
       border-radius: 10px 10px 0 0;
@@ -87,7 +89,7 @@ export class InputControls extends LitElement {
     }
 
     il-editor {
-      background-color: #eaecef;
+      background-color: ${VariableNames.editorBg};
       border-radius: 10px;
     }
   `;

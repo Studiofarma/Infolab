@@ -32,7 +32,7 @@ export class Dialog extends LitElement {
       transition: 0.5s;
       overflow-y: auto;
     }
-    
+
     dialog::backdrop {
       // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
       ${ThemeColorService.getThemeVariables()};

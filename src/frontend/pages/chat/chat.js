@@ -11,6 +11,7 @@ import { ThemeColorService } from "../../services/theme-color-service";
 
 import { IconNames } from "../../enums/icon-names";
 import { TooltipTexts } from "../../enums/tooltip-texts";
+import { VariableNames } from "../../enums/theme-colors";
 
 import "./message/message";
 import "../../components/icon";
@@ -83,7 +84,7 @@ export class Chat extends LitElement {
       margin: 0;
       padding: 0;
       ${ThemeColorService.getThemeVariables()};
-      color: var(--text);
+      color: ${VariableNames.text};
     }
 
     main {
@@ -92,7 +93,7 @@ export class Chat extends LitElement {
       left: 0;
       width: 100%;
       min-height: 100%;
-      background: var(--chatBackground);
+      background: ${VariableNames.chatBackground};
     }
 
     section {
@@ -117,11 +118,10 @@ export class Chat extends LitElement {
       right: 20px;
       border-radius: 5px;
       padding: 2px;
-      background-color: #ffffff;
       color: white;
       visibility: hidden;
       transition: opacity 0.2s ease-in-out;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: ${VariableNames.boxShadowSecondary} 0px 1px 4px;
     }
 
     .deletion-confirmation {
@@ -137,7 +137,6 @@ export class Chat extends LitElement {
     .forward-list {
       width: 400px;
       height: 100%;
-      color: white;
     }
   `;
 

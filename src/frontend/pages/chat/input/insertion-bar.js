@@ -20,7 +20,6 @@ export class InsertionBar extends LitElement {
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      color: white;
     }
 
     .formatting-container {
@@ -37,7 +36,6 @@ export class InsertionBar extends LitElement {
       height: 50px;
       margin-top: 0px;
       border: none;
-      color: white !important;
       cursor: pointer;
       display: flex;
       justify-content: center;

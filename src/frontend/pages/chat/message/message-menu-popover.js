@@ -4,6 +4,7 @@ import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { IconNames } from "../../../enums/icon-names";
 import { TooltipTexts } from "../../../enums/tooltip-texts";
+import { VariableNames } from "../../../enums/theme-colors";
 
 import "../../../components/button-icon";
 
@@ -30,9 +31,9 @@ export class MessageMenuPopover extends LitElement {
     }
 
     il-button-icon {
-      background-color: var(--messageMenuBg);
+      background-color: ${VariableNames.messageMenuBg};
       border-radius: 6px;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: ${VariableNames.boxShadowSecondary} 0px 1px 4px;
     }
   `;
 

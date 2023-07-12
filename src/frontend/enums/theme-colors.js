@@ -46,7 +46,7 @@ export const VariableNames = {
   tooltipBg: css`var(--tooltipBg)`,
   tooltipText: css`var(--tooltipText)`,
 
-  headerBackground: css`var(--headerBackground)`,
+  headerBg: css`var(--headerBg)`,
   headerColor: css`var(--headerColor)`,
 
   messageSenderBg: css`var(--messageSenderBg)`,
@@ -75,7 +75,9 @@ export const VariableNames = {
   conversationHoverBg: css`var(--conversationHoverBg)`,
   conversationActiveBg: css`var(--conversationActiveBg)`,
 
-  inputControlsBg: `--inputControlsBg`,
+  inputControlsBg: css`--inputControlsBg`,
+  editorBg: css`var(--editorBg)`,
+  editorInputBg: css`var(--editorInputBg)`,
 };
 
 export const ThemeColorsEnum = {
@@ -124,7 +126,7 @@ export const ThemeColorsEnum = {
     tooltipBg: "#206cf7",
     tooltipText: "#fff",
 
-    headerBackground: "#083c72",
+    headerBg: "#083c72",
     headerColor: "#fff",
 
     messageSenderBg: "#c5e1fe",
@@ -154,6 +156,8 @@ export const ThemeColorsEnum = {
     conversationActiveBg: "#c5e1fe",
 
     inputControlsBg: "#f2f4f7",
+    editorBg: "#eaecef",
+    editorInputBg: "#fff",
   },
 
   dark: {},
