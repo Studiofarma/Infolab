@@ -75,7 +75,7 @@ export class Dialog extends LitElement {
     `;
   }
 
-  // Getters & Setters
+  //#region Getters & Setters
 
   getIsOpened() {
     return this.isOpened;
@@ -93,7 +93,7 @@ export class Dialog extends LitElement {
     return this.dialogRef.value.offsetHeight;
   }
 
-  // -----------------------------
+  //#endregion
 
   willUpdate(changed) {
     if (changed.has("isOpened") && this.type === "modal")
