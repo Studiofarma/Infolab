@@ -3,7 +3,7 @@ import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
-import { VariableNames } from "../enums/theme-colors";
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
 import { InputField } from "./input-field";
 
@@ -39,7 +39,7 @@ export class InputWithIcon extends InputField {
       padding: 0 10px;
       border: none;
       outline: none;
-      background-color: ${VariableNames.inputBackgroud};
+      background-color: ${ThemeCSSVariables.inputBackgroud};
       position: relative;
       overflow: hidden;
     }
@@ -49,11 +49,11 @@ export class InputWithIcon extends InputField {
     }
 
     div:has(input:focus) {
-      border-color: ${VariableNames.inputFocusedBorder};
+      border-color: ${ThemeCSSVariables.inputFocusedBorder};
     }
 
     div:not(:has(input:focus)) {
-      border-color: ${VariableNames.inputBorder};
+      border-color: ${ThemeCSSVariables.inputBorder};
     }
   `;
 

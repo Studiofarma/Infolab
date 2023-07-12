@@ -3,7 +3,7 @@ import { when } from "lit/directives/when.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
-import { VariableNames } from "../enums/theme-colors";
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
 import "./icon";
 import "./tooltip";
@@ -34,7 +34,7 @@ export class ButtonIcon extends LitElement {
       cursor: pointer;
       user-select: none;
       padding: 5px;
-      color: ${VariableNames.iconColor};
+      color: ${ThemeCSSVariables.iconColor};
     }
 
     .contanier {

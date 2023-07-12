@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { ThemeColorService } from "../../services/theme-color-service";
 
-import { VariableNames } from "../../enums/theme-colors";
+import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 
 class EmptyChat extends LitElement {
   static styles = css`
@@ -19,11 +19,11 @@ class EmptyChat extends LitElement {
     }
 
     h1 {
-      color: ${VariableNames.textPrimary};
+      color: ${ThemeCSSVariables.textPrimary};
     }
 
     h2 {
-      color: ${VariableNames.textSecondary};
+      color: ${ThemeCSSVariables.textSecondary};
     }
   `;
 

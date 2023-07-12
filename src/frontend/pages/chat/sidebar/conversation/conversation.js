@@ -5,7 +5,7 @@ import { CookieService } from "../../../../services/cookie-service";
 import { HtmlParserService } from "../../../../services/html-parser-service";
 import { ThemeColorService } from "../../../../services/theme-color-service";
 
-import { VariableNames } from "../../../../enums/theme-colors";
+import { ThemeCSSVariables } from "../../../../enums/theme-css-variables";
 
 import "../../../../components/icon";
 import "../../../../components/button-icon";
@@ -52,11 +52,11 @@ class Conversation extends LitElement {
     }
 
     .last-message {
-      color: ${VariableNames.conversationLastMessageText};
+      color: ${ThemeCSSVariables.conversationLastMessageText};
     }
 
     .last-message-timestamp {
-      color: ${VariableNames.conversationTimestapText};
+      color: ${ThemeCSSVariables.conversationTimestapText};
     }
 
     il-icon {
@@ -64,26 +64,26 @@ class Conversation extends LitElement {
       display: flex;
       height: 24px;
       width: 25px;
-      color: ${VariableNames.conversationUnreadMessageCounter};
+      color: ${ThemeCSSVariables.conversationUnreadMessageCounter};
     }
 
     .unread {
-      color: ${VariableNames.conversationUnreadMessageText};
+      color: ${ThemeCSSVariables.conversationUnreadMessageText};
     }
 
     .last-message a[href] {
-      color: ${VariableNames.conversationLastMessageLinkText};
+      color: ${ThemeCSSVariables.conversationLastMessageLinkText};
       text-underline-position: below;
       text-underline-offset: 2px;
       transition: color 0.5s;
     }
 
     .last-message a[href]:hover {
-      color: ${VariableNames.conversationLastMessageLinkTextHover};
+      color: ${ThemeCSSVariables.conversationLastMessageLinkTextHover};
     }
 
     .chat-name {
-      color: ${VariableNames.conversationChatName};
+      color: ${ThemeCSSVariables.conversationChatName};
     }
 
     il-button-icon {

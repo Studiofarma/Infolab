@@ -3,7 +3,7 @@ import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../../../services/theme-color-service";
 
-import {VariableNames} from "../../../enums/theme-colors";
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "./conversation/conversation-list";
 
@@ -29,13 +29,13 @@ export class Sidebar extends LitElement {
     }
 
     .side-bar {
-      background: ${VariableNames.sidebarBg};
+      background: ${ThemeCSSVariables.sidebarBg};
       color: white;
       display: flex;
       flex-direction: column;
       height: 100vh;
       width: 350px;
-      box-shadow: 2px 0 8px ${VariableNames.boxShadowPrimary};
+      box-shadow: 2px 0 8px ${ThemeCSSVariables.boxShadowPrimary};
       z-index: 1100;
     }
 

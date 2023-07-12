@@ -1,21 +1,30 @@
 import { css } from "lit";
 
-import { ThemeColorsEnum } from "../enums/theme-colors";
+import { lightTheme } from "../enums/themes/lightTheme"
+import { darkTheme } from "../enums/themes/darkTheme"
+
 
 export class ThemeColorService {
   static getCurrentTheme() {
     // TODO: implementare il controllo del tema attuale dell'utente nel session storage e ritornarlo
-    return "light";
+    const currentTheme = "light";
+
+    switch(currentTheme) {
+
+      case "light": return lightTheme;
+
+      case "dark": return darkTheme;
+
+    }
   }
 
   static getThemeVariables() {
-    const theme = this.getCurrentTheme();
-    const variables = ThemeColorsEnum[theme];
+    const themeVariables = this.getCurrentTheme();
 
     let text = "";
 
-    for (let key in variables) {
-      text += `--${key}: ${variables[key]}; \n`;
+    for (let key in themeVariables) {
+      text += `--${key}: ${themeVariables[key]}; \n`;
     }
 
     return css([text]);

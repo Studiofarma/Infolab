@@ -8,7 +8,7 @@ import { UsersService } from "../../../services/users-service";
 import { CookieService } from "../../../services/cookie-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
-import { VariableNames } from "../../../enums/theme-colors";
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 export class ChatHeader extends LitElement {
   static get properties() {
@@ -42,13 +42,13 @@ export class ChatHeader extends LitElement {
     }
 
     .chatHeader {
-      background: ${VariableNames.headerBg};
+      background: ${ThemeCSSVariables.headerBg};
       height: 40px;
       padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: ${VariableNames.headerColor};
+      color: ${ThemeCSSVariables.headerColor};
       position: fixed;
       width: calc(100vw - 400px);
       z-index: 1000;

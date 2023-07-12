@@ -4,7 +4,7 @@ import { render } from "lit";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
-import {VariableNames} from "../enums/theme-colors";
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
 // Positioning library
 import {
@@ -52,12 +52,12 @@ export class Tooltip extends LitElement {
       z-index: 1100;
       position: fixed;
       border: none;
-      background: ${VariableNames.tooltipBg};
+      background: ${ThemeCSSVariables.tooltipBg};
       padding: 4px;
       border-radius: 4px;
       display: inline-block;
       pointer-events: none;
-      color: ${VariableNames.tooltipText};
+      color: ${ThemeCSSVariables.tooltipText};
 
       /* Animate in */
       opacity: 0;

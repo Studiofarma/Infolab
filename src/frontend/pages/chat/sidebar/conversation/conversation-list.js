@@ -8,7 +8,7 @@ import { OpenChatsService } from "../../../../services/open-chats-service";
 import { UsersService } from "../../../../services/users-service";
 import { ThemeColorService } from "../../../../services/theme-color-service";
 
-import { VariableNames } from "../../../../enums/theme-colors";
+import { ThemeCSSVariables } from "../../../../enums/theme-css-variables";
 
 import "../../../../components/avatar";
 import "./conversation";
@@ -65,7 +65,7 @@ class ConversationList extends LitElement {
     }
 
     #selected {
-      background-color: ${VariableNames.conversationHoverBg};
+      background-color: ${ThemeCSSVariables.conversationHoverBg};
     }
 
     .conversation-list {
@@ -92,7 +92,7 @@ class ConversationList extends LitElement {
 
     ::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: ${VariableNames.scrollbar};
+      background-color: ${ThemeCSSVariables.scrollbar};
     }
 
     .conversation {
@@ -102,16 +102,16 @@ class ConversationList extends LitElement {
     }
 
     .conversation:hover {
-      background-color: ${VariableNames.conversationHoverBg};
+      background-color: ${ThemeCSSVariables.conversationHoverBg};
     }
 
     .active {
-      background-color: ${VariableNames.conversationActiveBg};
+      background-color: ${ThemeCSSVariables.conversationActiveBg};
     }
 
     .separator {
       padding: 5px 0px 5px 10px;
-      color: ${VariableNames.sidebarSeparator};
+      color: ${ThemeCSSVariables.sidebarSeparator};
     }
 
     .conversation-list-scrollable {
@@ -124,7 +124,7 @@ class ConversationList extends LitElement {
     }
 
     .no-result {
-      color: ${VariableNames.sidebarNoResults};
+      color: ${ThemeCSSVariables.sidebarNoResults};
       text-align: center;
     }
   `;

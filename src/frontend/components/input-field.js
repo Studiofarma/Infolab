@@ -3,7 +3,7 @@ import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
-import { VariableNames } from "../enums/theme-colors";
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
 import "./button-icon";
 
@@ -38,7 +38,7 @@ export class InputField extends LitElement {
       width: 100%;
       height: 40px;
       padding: 5px 10px;
-      color: ${VariableNames.inputText};
+      color: ${ThemeCSSVariables.inputText};
       border: none;
       outline: none;
       font-size: 15pt;
@@ -49,7 +49,7 @@ export class InputField extends LitElement {
     input::placeholder {
       // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
       ${ThemeColorService.getThemeVariables()};
-      color: ${VariableNames.placeholder};
+      color: ${ThemeCSSVariables.placeholder};
     }
   `;
 

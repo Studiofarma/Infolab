@@ -2,7 +2,7 @@ import { LitElement, html, css } from "lit";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
-import { VariableNames } from "../enums/theme-colors";
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
 export class ButtonText extends LitElement {
   static get properties() {
@@ -23,8 +23,8 @@ export class ButtonText extends LitElement {
       font-family: inherit;
       border-radius: 10px;
       text-align: center;
-      border: 1px solid ${VariableNames.buttonBorder};
-      color: ${VariableNames.buttonText};
+      border: 1px solid ${ThemeCSSVariables.buttonBorder};
+      color: ${ThemeCSSVariables.buttonText};
       height: 40px;
       cursor: pointer;
     }
@@ -35,7 +35,7 @@ export class ButtonText extends LitElement {
       <button
         style=${this.color
           ? `background: ${this.color}`
-          : `background: ${VariableNames.buttonConfirmBg};`}
+          : `background: ${ThemeCSSVariables.buttonConfirmBg};`}
       >
         ${this.text}
       </button>

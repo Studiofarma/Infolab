@@ -5,7 +5,7 @@ import { CookieService } from "../../../services/cookie-service";
 import { HtmlParserService } from "./../../../services/html-parser-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
-import { VariableNames } from "../../../enums/theme-colors";
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 export class MessageContent extends LitElement {
   static properties = {
@@ -33,14 +33,14 @@ export class MessageContent extends LitElement {
       min-width: 300px;
       max-width: 500px;
       padding: 8px 8px 6px 10px;
-      box-shadow: ${VariableNames.boxShadowSecondary} 0px 1px 4px;
+      box-shadow: ${ThemeCSSVariables.boxShadowSecondary} 0px 1px 4px;
       z-index: 3;
     }
 
     .sender {
       border-radius: 10px 0 10px 10px;
-      color: ${VariableNames.messageSenderText};
-      background-color: ${VariableNames.messageSenderBg};
+      color: ${ThemeCSSVariables.messageSenderText};
+      background-color: ${ThemeCSSVariables.messageSenderBg};
     }
 
     .sender::after {
@@ -50,7 +50,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: 0px;
       right: -9px;
-      border-top: 10px solid ${VariableNames.messageSenderBg};
+      border-top: 10px solid ${ThemeCSSVariables.messageSenderBg};
       border-left: 0px solid transparent;
       border-right: 10px solid transparent;
       z-index: 3;
@@ -63,7 +63,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: -1px;
       right: -13px;
-      border-top: 11px solid ${VariableNames.messageSenderBg};
+      border-top: 11px solid ${ThemeCSSVariables.messageSenderBg};
       border-left: 0px solid transparent;
       border-right: 12px solid transparent;
       filter: blur(0.8px);
@@ -72,8 +72,8 @@ export class MessageContent extends LitElement {
 
     .receiver {
       border-radius: 0 10px 10px 10px;
-      color: ${VariableNames.messageReceiverText};
-      background-color: ${VariableNames.messageReceiverBg};
+      color: ${ThemeCSSVariables.messageReceiverText};
+      background-color: ${ThemeCSSVariables.messageReceiverBg};
     }
 
     .receiver::after {
@@ -83,7 +83,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: 0px;
       left: -9px;
-      border-top: 10px solid ${VariableNames.messageReceiverBg};
+      border-top: 10px solid ${ThemeCSSVariables.messageReceiverBg};
       border-left: 10px solid transparent;
       border-right: 0px solid transparent;
       z-index: 3;
@@ -96,7 +96,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: -1px;
       left: -13px;
-      border-top: 11px solid ${VariableNames.messageReceiverBg};
+      border-top: 11px solid ${ThemeCSSVariables.messageReceiverBg};
       border-right: 0px solid transparent;
       border-left: 12px solid transparent;
       filter: blur(0.8px);
@@ -105,7 +105,7 @@ export class MessageContent extends LitElement {
 
     .receiver-name {
       font-size: 13px;
-      color: ${VariableNames.messageSenderNameText};
+      color: ${ThemeCSSVariables.messageSenderNameText};
     }
 
     .message {
@@ -114,9 +114,9 @@ export class MessageContent extends LitElement {
 
     .settings-container {
       position: relative;
-      background: ${VariableNames.messageMenuBg};
+      background: ${ThemeCSSVariables.messageMenuBg};
       border-radius: 6px;
-      box-shadow: ${VariableNames.boxShadowSecondary} 0px 1px 4px;
+      box-shadow: ${ThemeCSSVariables.boxShadowSecondary} 0px 1px 4px;
       opacity: 0;
       transition: opacity 0.5s;
     }
@@ -140,20 +140,20 @@ export class MessageContent extends LitElement {
     .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: ${VariableNames.timestampMessageText};
+      color: ${ThemeCSSVariables.timestampMessageText};
     }
 
     .edited {
       text-align: end;
       font-size: 11px;
-      color: ${VariableNames.modifiedMessageText};
+      color: ${ThemeCSSVariables.modifiedMessageText};
       margin-right: 10px;
     }
 
     .deleted {
       text-align: end;
       font-size: 11px;
-      color: ${VariableNames.deletedMessageText};
+      color: ${ThemeCSSVariables.deletedMessageText};
     }
 
     .timestamp-edited-container {
@@ -174,11 +174,11 @@ export class MessageContent extends LitElement {
       justify-self: center;
       padding: 5px;
       border-radius: 6px;
-      background-color: ${VariableNames.datetimeMessageBg};
+      background-color: ${ThemeCSSVariables.datetimeMessageBg};
     }
 
     .message a[href] {
-      color: ${VariableNames.link};
+      color: ${ThemeCSSVariables.link};
       text-underline-position: below;
       text-underline-offset: 2px;
       transition: color 0.5s;

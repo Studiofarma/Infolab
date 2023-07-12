@@ -5,7 +5,7 @@ import { when } from "lit/directives/when.js";
 import { CookieService } from "../../../services/cookie-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
-import { VariableNames } from "../../../enums/theme-colors";
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "./message-options";
 import "../../../components/popover";
@@ -59,20 +59,20 @@ export class Message extends LitElement {
     .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: ${VariableNames.timestampMessageText};
+      color: ${ThemeCSSVariables.timestampMessageText};
     }
 
     .message-date {
       justify-self: center;
       padding: 5px;
       border-radius: 6px;
-      background-color: ${VariableNames.datetimeMessageBg};
+      background-color: ${ThemeCSSVariables.datetimeMessageBg};
     }
 
     il-message-menu-popover {
       z-index: 10;
       transition: 0.5s;
-      box-shadow: ${VariableNames.boxShadowSecondary} 0px 1px 4px;
+      box-shadow: ${ThemeCSSVariables.boxShadowSecondary} 0px 1px 4px;
       border-radius: 5px;
     }
 

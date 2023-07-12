@@ -5,7 +5,7 @@ import { LoginService } from "../../services/login-service";
 import { CookieService } from "../../services/cookie-service";
 import { ThemeColorService } from "../../services/theme-color-service";
 
-import { VariableNames } from "../../enums/theme-colors";
+import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 
 import "../../components/snackbar";
 import "../../components/button-icon";
@@ -45,7 +45,7 @@ export class Login extends LitElement {
       margin: 0;
       padding: 0;
       ${ThemeColorService.getThemeVariables()};
-      color: ${VariableNames.text};
+      color: ${ThemeCSSVariables.text};
     }
 
     #background {
@@ -54,7 +54,7 @@ export class Login extends LitElement {
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: ${VariableNames.loginBg};
+      background-color: ${ThemeCSSVariables.loginBg};
       z-index: 1;
     }
 
@@ -69,14 +69,14 @@ export class Login extends LitElement {
       align-items: center;
       gap: 1rem;
       border-radius: 10px;
-      background-color: ${VariableNames.loginFieldBg};
+      background-color: ${ThemeCSSVariables.loginFieldBg};
       z-index: 2;
       overflow: hidden;
     }
 
     div[class^="ring"] {
       position: absolute;
-      background-color: ${VariableNames.loginBg};
+      background-color: ${ThemeCSSVariables.loginBg};
       width: 250px;
       height: 250px;
       border-radius: 100%;
@@ -100,7 +100,7 @@ export class Login extends LitElement {
       transform: translate(-50%, -50%);
       width: 200px;
       height: 200px;
-      background: ${VariableNames.loginFieldBg};
+      background: ${ThemeCSSVariables.loginFieldBg};
       border-radius: 100%;
     }
 
@@ -130,7 +130,7 @@ export class Login extends LitElement {
       bottom: 25px;
       right: 10px;
       z-index: 2;
-      color: ${VariableNames.iconColor};
+      color: ${ThemeCSSVariables.iconColor};
       opacity: 0;
       transition: 0.5s;
     }
