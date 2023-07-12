@@ -11,6 +11,8 @@ import "./input-with-icon";
 export class InputRicerca extends LitElement {
   constructor() {
     super();
+
+    // Refs
     this.inputWithIconRef = createRef();
   }
 
@@ -28,7 +30,7 @@ export class InputRicerca extends LitElement {
     `;
   }
 
-  //  Getters & Setters
+  //#region  Getters & Setters
 
   getInputWithIconRefValue() {
     return this.inputWithIconRef.value?.getInputValue();
@@ -38,7 +40,7 @@ export class InputRicerca extends LitElement {
     this.inputWithIconRef.value?.setInputValue(value);
   }
 
-  //  --------------------
+  //#endregion
 
   clear() {
     this.inputWithIconRef.value?.clear();

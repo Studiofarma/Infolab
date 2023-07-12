@@ -77,8 +77,6 @@ export class InputField extends LitElement {
 
   setValue(e) {
     this.value = e.target.value;
-    this.selectionStart = e.target.selectionStart;
-    this.selectionEnd = e.target.selectionEnd;
   }
 
   clear() {
