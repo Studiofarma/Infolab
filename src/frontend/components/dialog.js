@@ -8,12 +8,13 @@ import { ThemeCSSVariables } from "../enums/theme-css-variables";
 export class Dialog extends LitElement {
   static properties = {
     isOpened: { type: Boolean },
-    dialogRef: { type: Object },
     type: { type: String },
   };
 
   constructor() {
     super();
+
+    // Refs
     this.dialogRef = createRef();
   }
 
@@ -97,13 +98,13 @@ export class Dialog extends LitElement {
   willUpdate(changed) {
     if (changed.has("isOpened") && this.type === "modal")
       this.isOpened
-        ? this.dialogRef.value.showModal()
-        : this.dialogRef.value.close();
+        ? this.dialogRef.value?.showModal()
+        : this.dialogRef.value?.close();
 
     if (changed.has("isOpened") && this.type === "popover")
       this.isOpened
-        ? this.dialogRef.value.show()
-        : this.dialogRef.value.close();
+        ? this.dialogRef.value?.show()
+        : this.dialogRef.value?.close();
   }
 }
 customElements.define("il-dialog", Dialog);
