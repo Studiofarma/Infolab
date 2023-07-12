@@ -131,7 +131,7 @@ export class Login extends LitElement {
       bottom: 25px;
       right: 10px;
       z-index: 2;
-      color: rgba(10, 10, 128, 0.829);
+      color: ${VariableNames.iconColor};
       opacity: 0;
       transition: 0.5s;
     }
@@ -140,77 +140,6 @@ export class Login extends LitElement {
       opacity: 1;
       visibility: visible;
       cursor: pointer;
-    }
-
-    label[id$="Error"] {
-      display: block;
-      color: darkred;
-      padding-top: 5px;
-      font-size: 10pt;
-    }
-
-    #submit_btn {
-      text-transform: uppercase;
-      padding: 15px 20px;
-      color: #e4e8ee;
-      background: #00234f;
-      border: none;
-      outline: none;
-      cursor: pointer;
-      border-radius: 10px;
-      width: 150px;
-      margin-top: 30px;
-    }
-
-    input {
-      font-family: inherit;
-    }
-
-    .text-container::before {
-      content: "";
-      position: absolute;
-      top: 5px;
-      left: -2.5px;
-      border-radius: 10px;
-      width: calc(100% + 6px);
-      height: 100%;
-      background: #c1002e;
-      z-index: -1;
-      transition: 0.5s;
-      scale: 0;
-    }
-
-    .text-container:has(input.error)::before {
-      scale: 1;
-    }
-
-    .text-container::after {
-      content: "!";
-      position: absolute;
-      transform: translateY(50%);
-      bottom: 20px;
-      right: 10px;
-      z-index: 2;
-      width: 20px;
-      height: 20px;
-      padding: 5px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      background: #c1002e;
-      transition: 0.5s;
-      transition-delay: 0.5s;
-      opacity: 0;
-    }
-
-    .text-container:has(input.error)::after {
-      opacity: 1;
-    }
-
-    .text-container:hover::after {
-      display: none;
     }
 
     #input-container {
