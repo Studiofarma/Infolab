@@ -6,7 +6,7 @@ import { IconNames } from "../enums/icon-names";
 import "./button-icon";
 import "./input-with-icon";
 
-export class InputRicerca extends LitElement {
+export class InputSearch extends LitElement {
   constructor() {
     super();
 
@@ -78,4 +78,4 @@ export class InputRicerca extends LitElement {
   }
 }
 
-customElements.define("il-input-search", InputRicerca);
+customElements.define("il-input-search", InputSearch);
