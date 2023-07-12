@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
+import { when } from "lit/directives/when.js";
 
 import "./profile-settings";
 import "../../../components/button-icon";
@@ -88,14 +89,16 @@ export class ChatHeader extends LitElement {
       <div class="chatHeader">
         <div class="contact">
           <div class="profileContainer">
-            ${this.conversation?.description !== undefined
-              ? html` <il-avatar
-                    .user=${this.otherUser}
-                    .conversation=${this.conversation}
-                    name=${this.conversation?.description}
-                  ></il-avatar>
-                  <h2>${this.conversation?.description}</h2>`
-              : html``}
+            ${when(
+              this.conversation?.description !== undefined,
+              () => html` <il-avatar
+                  .user=${this.otherUser}
+                  .conversation=${this.conversation}
+                  name=${this.conversation?.description}
+                ></il-avatar>
+                <h2>${this.conversation?.description}</h2>`,
+              () => html``
+            )}
           </div>
 
           <div class="profileContainer" @click=${this.openSettingsMenu}>

@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { when } from "lit/directives/when.js";
 
 import { IconNames } from "../../../../enums/icon-names";
 import { CookieService } from "../../../../services/cookie-service";
@@ -127,16 +128,18 @@ class Conversation extends LitElement {
             ${this.compareMessageDate(this.conversation.lastMessage?.timestamp)}
           </p>
           <p class="unread-counter">
-            ${this.conversation.unreadMessages > 0
-              ? html`
-                  <il-icon
-                    style="display:${this.notificationOpacity};"
-                    name="${this.getUnreadIconName(
-                      this.conversation.unreadMessages
-                    )}"
-                  ></il-icon>
-                `
-              : html``}
+            ${when(
+              this.conversation.unreadMessages > 0,
+              () => html`
+                <il-icon
+                  style="display:${this.notificationOpacity};"
+                  name="${this.getUnreadIconName(
+                    this.conversation.unreadMessages
+                  )}"
+                ></il-icon>
+              `,
+              () => html``
+            )}
           </p>
         </div>
       </div>
