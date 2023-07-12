@@ -139,11 +139,11 @@ export class Message extends LitElement {
   }
 
   showPopover() {
-    this.messageMenuPopoverRef.value.style.opacity = "1";
+    this.messageMenuPopoverRef.value?.setOpacity(1);
   }
 
   hidePopover() {
-    this.messageMenuPopoverRef.value.style.opacity = "0";
+    this.messageMenuPopoverRef.value?.setOpacity(0);
   }
 
   messageCopy() {

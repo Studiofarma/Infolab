@@ -4,7 +4,7 @@ import { when } from "lit/directives/when.js";
 import { repeat } from "lit/directives/repeat.js";
 
 import { CookieService } from "../../../../services/cookie-service";
-import { OpenChatsService } from "../../../../services/open-chats-service";
+import { ConversationService } from "../../../../services/conversations-service";
 import { UsersService } from "../../../../services/users-service";
 
 import "../../../../components/avatar";
@@ -284,7 +284,7 @@ class ConversationList extends LitElement {
   // -----------------------------
 
   handleForward() {
-    if (this.selectedChats === 1) {
+    if (this.selectedChats.length === 1) {
       this.changeRoom(new CustomEvent("forward"), this.lastSlectedConversation);
     } else {
       this.dispatchEvent(
@@ -411,11 +411,11 @@ class ConversationList extends LitElement {
     let cookie = CookieService.getCookie();
 
     try {
-      let rooms = await OpenChatsService.getOpenChats(
+      let rooms = await ConversationService.getOpenConversations(
         cookie.username,
         cookie.password
       );
-      rooms["data"].forEach((room) => {
+      rooms.forEach((room) => {
         let userIndex = this.usersList.findIndex(
           (user) => user.description == room.description
         );
