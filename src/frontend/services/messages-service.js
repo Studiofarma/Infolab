@@ -1,17 +1,11 @@
 import { MessageDto } from "../models/message-dto";
+import { HttpService } from "./http-service";
 
 const axios = require("axios").default;
 
 export class MessagesService {
   static async getMessagesByRoomName(username, password, roomName) {
-    let messages = await axios({
-      url: `/api/messages/${roomName}`,
-      method: "get",
-      auth: {
-        username: username,
-        password: password,
-      },
-    });
+    let messages = await HttpService.httpGet(`/api/messages/${roomName}`);
 
     // #region Mock data
     // TODO: remove this region when data comes from BE
