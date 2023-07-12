@@ -16,7 +16,7 @@ export class MessageMenuPopover extends LitElement {
   static properties = {
     messages: { type: Array },
     message: { type: Object },
-    index: { type: Number },
+    messageIndex: { type: Number },
     activeChatName: { type: String },
   };
 
@@ -39,7 +39,7 @@ export class MessageMenuPopover extends LitElement {
 
   render() {
     return html`
-      <il-popover .popupCoords=${{ ...this.getPopupCoords() }}>
+      <il-popover .popupCoords=${{ ...this.getPopupCoordinates() }}>
         <il-button-icon
           slot="pop-button"
           .content="${IconNames.dotsHorizontal}"
@@ -48,14 +48,16 @@ export class MessageMenuPopover extends LitElement {
 
         <il-message-options
           slot="popup"
-          @message-copy=${this.messageCopy}
           .message=${this.message}
           .cookie=${this.cookie}
-          .index=${this.index}
+          .index=${this.messageIndex}
           .room=${this.activeChatName}
           .type=${this.message.sender == this.cookie.username
             ? "sender"
             : "receiver"}
+          @message-copy=${(event) => {
+            this.dispatchEvent(new CustomEvent(event.type));
+          }}
           @forward-message=${(event) =>
             this.dispatchEvent(
               new CustomEvent(event.type, { detail: event.detail })
@@ -81,12 +83,11 @@ export class MessageMenuPopover extends LitElement {
     `;
   }
 
-  messageCopy() {
-    this.dispatchEvent(new CustomEvent("message-copy"));
-  }
-
-  getPopupCoords() {
-    if (this.index === this.messages.length - 1 && this.messages.length !== 1) {
+  getPopupCoordinates() {
+    if (
+      this.messageIndex === this.messages.length - 1 &&
+      this.messages.length !== 1
+    ) {
       return this.message.sender == this.cookie.username
         ? { top: lastMenuOptionTop, left: menuOptionLeft }
         : { top: lastMenuOptionTop, right: menuOptionRight };
