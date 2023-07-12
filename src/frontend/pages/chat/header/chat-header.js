@@ -7,6 +7,9 @@ import "../../../components/button-icon";
 import "../../../components/modal";
 import { UsersService } from "../../../services/users-service";
 import { CookieService } from "../../../services/cookie-service";
+import { ThemeColorService } from "../../../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 export class ChatHeader extends LitElement {
   static get properties() {
@@ -35,17 +38,20 @@ export class ChatHeader extends LitElement {
   }
 
   static styles = css`
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
+
     .chatHeader {
-      background: #083c72;
+      background: ${ThemeCSSVariables.headerBg};
       height: 40px;
       padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: white;
+      color: ${ThemeCSSVariables.headerColor};
       position: fixed;
       width: calc(100vw - 400px);
-      border-bottom: 1px solid black;
       z-index: 1000;
     }
 

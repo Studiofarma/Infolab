@@ -2,6 +2,10 @@ import { html, css, LitElement } from "lit";
 import { Directive, directive } from "lit/directive.js";
 import { render } from "lit";
 
+import { ThemeColorService } from "../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
+
 // Positioning library
 import {
   computePosition,
@@ -39,17 +43,21 @@ export class Tooltip extends LitElement {
   }
 
   static styles = css`
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
+
     :host {
       /* Position fixed to help ensure the tooltip is "on top" */
       z-index: 1100;
       position: fixed;
       border: none;
-      background: #206cf7;
+      background: ${ThemeCSSVariables.tooltipBg};
       padding: 4px;
       border-radius: 4px;
       display: inline-block;
       pointer-events: none;
-      color: white;
+      color: ${ThemeCSSVariables.tooltipText};
 
       /* Animate in */
       opacity: 0;

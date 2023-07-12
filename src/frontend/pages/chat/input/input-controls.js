@@ -1,6 +1,10 @@
 import { LitElement, html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
+import { ThemeColorService } from "../../../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
+
 import "./insertion-bar";
 import "./editor/editor";
 import "../../../components/button-icon";
@@ -38,6 +42,7 @@ export class InputControls extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      ${ThemeColorService.getThemeVariables()};
     }
 
     .container {
@@ -63,8 +68,8 @@ export class InputControls extends LitElement {
       align-items: center;
       gap: 5px;
       padding: 5px 5px;
-      background: #f2f4f7;
-      box-shadow: 0 0 8px 2px #b7b9bd;
+      background: ${ThemeCSSVariables.inputControlsBg};
+      box-shadow: 0 0 8px 2px ${ThemeCSSVariables.boxShadowPrimary};
       margin: 0 20px;
       z-index: 1000;
       border-radius: 10px 10px 0 0;
@@ -84,7 +89,7 @@ export class InputControls extends LitElement {
     }
 
     il-editor {
-      background-color: #eaecef;
+      background-color: ${ThemeCSSVariables.editorBg};
       border-radius: 10px;
     }
   `;

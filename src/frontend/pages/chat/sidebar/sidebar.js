@@ -1,6 +1,10 @@
 import { LitElement, html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
+import { ThemeColorService } from "../../../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
+
 import "./conversation/conversation-list";
 
 export class Sidebar extends LitElement {
@@ -20,14 +24,18 @@ export class Sidebar extends LitElement {
   }
 
   static styles = css`
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
+
     .side-bar {
-      background: #f2f4f7;
+      background: ${ThemeCSSVariables.sidebarBg};
       color: white;
       display: flex;
       flex-direction: column;
       height: 100vh;
       width: 350px;
-      box-shadow: 2px 0 8px #b7b9bd;
+      box-shadow: 2px 0 8px ${ThemeCSSVariables.boxShadowPrimary};
       z-index: 1100;
     }
 

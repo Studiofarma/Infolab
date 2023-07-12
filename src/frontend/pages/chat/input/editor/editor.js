@@ -1,6 +1,8 @@
 import { LitElement, html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
+import { ThemeCSSVariables } from "../../../../enums/theme-css-variables";
+
 const enterKey = "Enter";
 
 export class Editor extends LitElement {
@@ -10,7 +12,7 @@ export class Editor extends LitElement {
 
   static styles = css`
     #editor {
-      background-color: white;
+      background-color: ${ThemeCSSVariables.editorInputBg};
       flex: 1;
       padding: 20px;
       outline: 0px solid transparent;
@@ -36,7 +38,7 @@ export class Editor extends LitElement {
 
     ::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: #206cf7;
+      background-color: ${ThemeCSSVariables.scrollbar};
     }
 
     ::-webkit-scrollbar:vertical {

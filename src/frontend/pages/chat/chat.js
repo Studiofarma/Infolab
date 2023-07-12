@@ -7,9 +7,11 @@ import Stomp from "stompjs";
 
 import { MessagesService } from "../../services/messages-service";
 import { CookieService } from "../../services/cookie-service";
+import { ThemeColorService } from "../../services/theme-color-service";
 
 import { IconNames } from "../../enums/icon-names";
 import { TooltipTexts } from "../../enums/tooltip-texts";
+import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 
 import "./message/message";
 import "../../components/icon";
@@ -83,6 +85,8 @@ export class Chat extends LitElement {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      ${ThemeColorService.getThemeVariables()};
+      color: ${ThemeCSSVariables.text};
     }
 
     main {
@@ -91,7 +95,7 @@ export class Chat extends LitElement {
       left: 0;
       width: 100%;
       min-height: 100%;
-      background: #eaecef;
+      background: ${ThemeCSSVariables.chatBackground};
     }
 
     section {
@@ -116,11 +120,11 @@ export class Chat extends LitElement {
       right: 20px;
       border-radius: 5px;
       padding: 2px;
-      background-color: #ffffff;
       color: white;
       visibility: hidden;
       transition: opacity 0.2s ease-in-out;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: ${ThemeCSSVariables.boxShadowSecondary} 0px 1px 4px;
+      background: ${ThemeCSSVariables.messageMenuBg};
     }
 
     .deletion-confirmation {
@@ -136,7 +140,6 @@ export class Chat extends LitElement {
     .forward-list {
       width: 400px;
       height: 100%;
-      color: white;
     }
   `;
 

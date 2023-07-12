@@ -3,6 +3,9 @@ import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
 import { HtmlParserService } from "./../../../services/html-parser-service";
+import { ThemeColorService } from "../../../services/theme-color-service";
+
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 export class MessageContent extends LitElement {
   static properties = {
@@ -20,6 +23,7 @@ export class MessageContent extends LitElement {
     * {
       margin: 0;
       padding: 0;
+      ${ThemeColorService.getThemeVariables()};
     }
 
     .sender,
@@ -29,38 +33,37 @@ export class MessageContent extends LitElement {
       min-width: 300px;
       max-width: 500px;
       padding: 8px 8px 6px 10px;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: ${ThemeCSSVariables.boxShadowSecondary} 0px 1px 4px;
       z-index: 3;
-    }
-
-    .sender .message > p::selection {
-      color: black;
-      background-color: white;
     }
 
     .sender {
       border-radius: 10px 0 10px 10px;
-      color: black;
-      background-color: #c5e1fe;
+      color: ${ThemeCSSVariables.messageSenderText};
+      background-color: ${ThemeCSSVariables.messageSenderBg};
     }
 
     .sender::after {
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
       content: "";
       position: absolute;
       top: 0px;
       right: -9px;
-      border-top: 10px solid rgb(197, 225, 254);
+      border-top: 10px solid ${ThemeCSSVariables.messageSenderBg};
       border-left: 0px solid transparent;
       border-right: 10px solid transparent;
       z-index: 3;
     }
 
     .sender::before {
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
       content: "";
       position: absolute;
       top: -1px;
       right: -13px;
-      border-top: 11px solidrgb(197, 225, 254 / 34%);
+      border-top: 11px solid ${ThemeCSSVariables.messageSenderBg};
       border-left: 0px solid transparent;
       border-right: 12px solid transparent;
       filter: blur(0.8px);
@@ -69,27 +72,31 @@ export class MessageContent extends LitElement {
 
     .receiver {
       border-radius: 0 10px 10px 10px;
-      color: black;
-      background-color: white;
+      color: ${ThemeCSSVariables.messageReceiverText};
+      background-color: ${ThemeCSSVariables.messageReceiverBg};
     }
 
     .receiver::after {
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
       content: "";
       position: absolute;
       top: 0px;
       left: -9px;
-      border-top: 10px solid white;
+      border-top: 10px solid ${ThemeCSSVariables.messageReceiverBg};
       border-left: 10px solid transparent;
       border-right: 0px solid transparent;
       z-index: 3;
     }
 
     .receiver::before {
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
       content: "";
       position: absolute;
       top: -1px;
       left: -13px;
-      border-top: 11px solid rgb(209 209 209 / 34%);
+      border-top: 11px solid ${ThemeCSSVariables.messageReceiverBg};
       border-right: 0px solid transparent;
       border-left: 12px solid transparent;
       filter: blur(0.8px);
@@ -98,7 +105,7 @@ export class MessageContent extends LitElement {
 
     .receiver-name {
       font-size: 13px;
-      color: blue;
+      color: ${ThemeCSSVariables.messageSenderNameText};
     }
 
     .message {
@@ -107,9 +114,9 @@ export class MessageContent extends LitElement {
 
     .settings-container {
       position: relative;
-      background: white;
+      background: ${ThemeCSSVariables.messageMenuBg};
       border-radius: 6px;
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: ${ThemeCSSVariables.boxShadowSecondary} 0px 1px 4px;
       opacity: 0;
       transition: opacity 0.5s;
     }
@@ -133,20 +140,20 @@ export class MessageContent extends LitElement {
     .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: #1d1e20;
+      color: ${ThemeCSSVariables.timestampMessageText};
     }
 
     .edited {
       text-align: end;
       font-size: 11px;
-      color: #1d1e20;
+      color: ${ThemeCSSVariables.modifiedMessageText};
       margin-right: 10px;
     }
 
     .deleted {
       text-align: end;
       font-size: 11px;
-      color: #1d1e20;
+      color: ${ThemeCSSVariables.deletedMessageText};
     }
 
     .timestamp-edited-container {
@@ -167,11 +174,11 @@ export class MessageContent extends LitElement {
       justify-self: center;
       padding: 5px;
       border-radius: 6px;
-      background-color: rgb(221, 221, 221);
+      background-color: ${ThemeCSSVariables.datetimeMessageBg};
     }
 
     .message a[href] {
-      color: blue;
+      color: ${ThemeCSSVariables.link};
       text-underline-position: below;
       text-underline-offset: 2px;
       transition: color 0.5s;
