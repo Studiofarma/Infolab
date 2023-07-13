@@ -13,13 +13,12 @@ const messageButtonOptionPath =
 
 // Il primo è per le conversazioni della sidebar, il secondo per quelli della forward-list
 const sidebarConversationPath =
-  "il-app,il-chat, il-sidebar, il-conversation-list, il-conversation";
-const conversationPath =
   "il-app,il-chat, il-conversation-list, il-conversation";
+const conversationInForwardListPath =
+  "il-app,il-chat, #forwardList, il-conversation";
 
 const buttonTextPath = "il-app,il-chat, il-conversation-list, il-button-text";
-const sidebarConversationList =
-  "il-app,il-chat, il-sidebar, il-conversation-list";
+const sidebarConversationList = "il-app,il-chat, il-conversation-list";
 
 beforeEach(() => {
   // login
@@ -112,12 +111,12 @@ describe("messages spec", () => {
       .find(".message")
       .invoke("text")
       .then((txt) => {
-        cy.getLitElement(conversationPath)
+        cy.getLitElement(conversationInForwardListPath)
           .find(".chat-name")
           .first()
           .click({ force: true });
         //check if  the check icon is visible
-        cy.getLitElement(conversationPath)
+        cy.getLitElement(conversationInForwardListPath)
           .find(".chat-box")
           .first()
           .find("il-avatar")
@@ -147,7 +146,7 @@ describe("messages spec", () => {
       .invoke("text")
       .then((txt) => {
         for (let i = 0; i < 2; i++) {
-          cy.getLitElement(conversationPath)
+          cy.getLitElement(conversationInForwardListPath)
             .find(".chat-name")
             .eq(i)
             .click({ force: true });

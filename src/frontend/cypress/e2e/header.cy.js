@@ -1,7 +1,7 @@
 const HEADER_PATH = "il-app,il-chat,il-chat-header";
 const AVATAR_PATH = "il-app,il-chat,il-chat-header, il-avatar";
 const CONVERSATION_PATH =
-  "il-app,il-chat, il-sidebar, il-conversation-list, il-conversation";
+  "il-app,il-chat, il-conversation-list, il-conversation";
 
 beforeEach(() => {
   cy.login({ user: "user1", password: "password1" });

@@ -40,7 +40,7 @@ export class Snackbar extends LitElement {
       transition: all 0.5s;
       padding: 5px;
       opacity: 0;
-      z-index: 1000;
+      z-index: 10000;
     }
 
     .error {

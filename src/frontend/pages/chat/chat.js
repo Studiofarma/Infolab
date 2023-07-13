@@ -17,7 +17,7 @@ import "./message/message";
 import "../../components/icon";
 import "../../components/modal";
 import "./input/input-controls";
-import "./sidebar/sidebar";
+import "./sidebar/conversation/conversation-list";
 import "./header/chat-header";
 import "./empty-chat";
 import "./message/messages-list";
@@ -66,7 +66,7 @@ export class Chat extends LitElement {
 
     // Refs
     this.forwardListRef = createRef();
-    this.sidebarRef = createRef();
+    this.conversationListRef = createRef();
     this.scrollButtonRef = createRef();
     this.inputControlsRef = createRef();
     this.messagesListRef = createRef();
@@ -141,21 +141,42 @@ export class Chat extends LitElement {
       width: 400px;
       height: 100%;
     }
+
+    .side-bar {
+      background: ${ThemeCSSVariables.sidebarBg};
+      color: white;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 350px;
+      box-shadow: 2px 0 8px ${ThemeCSSVariables.boxShadowPrimary};
+      z-index: 1100;
+    }
+
+    .conversation-list {
+      margin: 0 5px 0 7px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
   `;
 
   render() {
     return html`
       <main>
         <section>
-          <il-sidebar
-            ${ref(this.sidebarRef)}
-            @update-message="${this.updateMessages}"
-            @change-conversation=${(event) => {
-              this.setActiveChat(event);
-              this.focusOnEditor(event);
-            }}
-            .login=${this.login}
-          ></il-sidebar>
+          <div class="side-bar">
+            <il-conversation-list
+              ${ref(this.conversationListRef)}
+              id="#sidebar"
+              class="conversation-list"
+              @update-message=${this.updateMessages}
+              @change-conversation=${(event) => {
+                this.setActiveChat(event);
+                this.focusOnEditor(event);
+              }}
+            ></il-conversation-list>
+          </div>
 
           <div class="chat">
             <il-chat-header
@@ -193,6 +214,7 @@ export class Chat extends LitElement {
                       this.getForwardListRefIsOpened(),
                       () =>
                         html`<il-conversation-list
+                          id="forwardList"
                           isForwardList="true"
                           @multiple-forward=${this.multipleForward}
                           @change-conversation=${(event) => {
@@ -260,28 +282,28 @@ export class Chat extends LitElement {
     this.forwardListRef.value?.setDialogRefIsOpened(value);
   }
 
-  getSidebarRefActiveChatName() {
-    return this.sidebarRef.value?.getSidebarListRefActiveChatName();
+  getconversationListRefActiveChatName() {
+    return this.conversationListRef.value?.getActiveChatName();
   }
 
-  setSidebarRefActiveChatName(value) {
-    this.sidebarRef.value?.setSidebarListRefActiveChatName(value);
+  setconversationListRefActiveChatName(value) {
+    this.conversationListRef.value?.setActiveChatName(value);
   }
 
-  getSidebarRefActiveDescription() {
-    return this.sidebarRef.value?.getSidebarListRefActiveDescription();
+  getconversationListRefActiveDescription() {
+    return this.conversationListRef.value?.getActiveDescription();
   }
 
-  setSidebarRefActiveDescription(value) {
-    this.sidebarRef.value?.setSidebarListRefActiveDescription(value);
+  setconversationListRefActiveDescription(value) {
+    this.conversationListRef.value?.setActiveDescription(value);
   }
 
-  getSidebarRefConversationList() {
-    return [...this.sidebarRef.value?.getSidebarListRefConversationList()];
+  getconversationListRefConversationList() {
+    return [...this.conversationListRef.value?.getConversationList()];
   }
 
-  getSidebarRefNewConversationList() {
-    return [...this.sidebarRef.value?.getSidebarListRefNewConversationList()];
+  getconversationListRefNewConversationList() {
+    return [...this.conversationListRef.value?.getNewConversationList()];
   }
 
   setDeletionConfirmationDialogRefIsOpened(value) {
@@ -291,7 +313,7 @@ export class Chat extends LitElement {
   // -------------------------------------
 
   updateLastMessageInConversationList(message) {
-    this.sidebarRef.value?.updateLastMessageInConversationList(message);
+    this.conversationListRef.value?.updateLastMessage(message);
   }
 
   multipleForward(event) {
@@ -332,16 +354,21 @@ export class Chat extends LitElement {
       this.sendMessage({ detail: { message: this.messageToForward } });
     });
 
-    this.setSidebarRefActiveChatName(event.detail.conversation.roomName);
-    this.setSidebarRefActiveDescription(event.detail.conversation.description);
+    this.setconversationListRefActiveChatName(
+      event.detail.conversation.roomName
+    );
+    this.setconversationListRefActiveDescription(
+      event.detail.conversation.description
+    );
 
+    this.conversationListRef.value?.requestUpdate();
     this.requestUpdate();
   }
 
   goToChat(event) {
-    this.sidebarRef.value?.changeRoom(
+    this.conversationListRef.value?.changeRoom(
       new CustomEvent("go-to-chat"),
-      this.sidebarRef.value?.findConversation(event.detail.user)
+      this.conversationListRef.value?.findConversation(event.detail.user)
     );
   }
 
@@ -489,7 +516,9 @@ export class Chat extends LitElement {
       });
 
       notification.onclick = function () {
-        this.sidebarRef.value.sidebarListRef.value.selectChat(roomName);
+        this.conversationListRef.value.sidebarListRef.value.selectChat(
+          roomName
+        );
         window.focus("/");
       };
     } else if (Notification.permission !== "denied") {
@@ -500,7 +529,7 @@ export class Chat extends LitElement {
           });
 
           notification.onclick = function () {
-            this.sidebarRef.value.sidebarListRef.value.selectChat(
+            this.conversationListRef.value.sidebarListRef.value.selectChat(
               message,
               this.activeDescription
             );
