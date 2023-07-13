@@ -1,6 +1,6 @@
-const HEADER_PATH = "il-app,il-chat,il-chat-header";
-const AVATAR_PATH = "il-app,il-chat,il-chat-header, il-avatar";
-const CONVERSATION_PATH =
+const headerPath = "il-app,il-chat,il-chat-header";
+const avatarPath = "il-app,il-chat,il-chat-header, il-avatar";
+const conversationPath =
   "il-app,il-chat, il-conversation-list, il-conversation";
 
 beforeEach(() => {
@@ -9,52 +9,50 @@ beforeEach(() => {
 
 describe("header component spec", () => {
   it("header component exists after login", () => {
-    cy.litElementExist(HEADER_PATH);
+    cy.litElementExist(headerPath);
   });
 
   it("profileContainers exist in the il-chat header component", () => {
-    cy.getLitElement(HEADER_PATH).find(".profileContainer").should("exist");
+    cy.getLitElement(headerPath).find(".profileContainer").should("exist");
   });
 
   it("asserting that only your profileContainer exists", () => {
     // asserting user profile container exist
-    cy.getLitElement(HEADER_PATH)
+    cy.getLitElement(headerPath)
       .find("il-avatar[name='Mario Rossi']")
       .should("exist");
 
     // asserting conversation profile container doesn't exist
-    cy.getLitElement(HEADER_PATH)
+    cy.getLitElement(headerPath)
       .find("il-avatar:not([name='Mario Rossi'])")
       .should("not.exist");
 
     // asserting user profile container has the correct description
-    cy.getLitElement(HEADER_PATH)
+    cy.getLitElement(headerPath)
       .find(".profileContainer")
       .last()
       .should("include.text", "Mario Rossi");
   });
 
   it("asserting that your avatar displays the correct initials", () => {
-    cy.getLitElement(AVATAR_PATH)
+    cy.getLitElement(avatarPath)
       .find("#avatar-default")
       .should("include.text", "MR");
   });
 
   it("get the correct avatar when you open a chat", () => {
-    cy.getLitElement(CONVERSATION_PATH)
+    cy.getLitElement(conversationPath)
       .find(".chat-name")
       .as("conversation")
       .each((el, index) => {
         cy.get("@conversation").eq(index).click({ force: true });
 
-        cy.getLitElement(HEADER_PATH)
-          .find("il-avatar")
-          .should("have.length", 2);
+        cy.getLitElement(headerPath).find("il-avatar").should("have.length", 2);
 
         cy.wrap(el)
           .invoke("text")
           .then((text) => {
-            cy.getLitElement(HEADER_PATH)
+            cy.getLitElement(headerPath)
               .find(".profileContainer")
               .should("include.text", text);
           });
@@ -62,15 +60,13 @@ describe("header component spec", () => {
   });
 
   it("asserting that the avatar of a contact contains the correct initials ", () => {
-    cy.getLitElement(CONVERSATION_PATH)
+    cy.getLitElement(conversationPath)
       .find(".chat-name")
       .as("conversation")
       .each((el, index) => {
         cy.get("@conversation").eq(index).click({ force: true });
 
-        cy.getLitElement(HEADER_PATH)
-          .find("il-avatar")
-          .should("have.length", 2);
+        cy.getLitElement(headerPath).find("il-avatar").should("have.length", 2);
 
         cy.wrap(el)
           .invoke("text")
@@ -81,7 +77,7 @@ describe("header component spec", () => {
               .join("")
               .toUpperCase();
 
-            cy.getLitElement(AVATAR_PATH)
+            cy.getLitElement(avatarPath)
               .first()
               .find("#avatar-default")
               .should("include.text", initials);
