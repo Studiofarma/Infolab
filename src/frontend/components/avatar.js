@@ -36,6 +36,7 @@ export class Avatar extends LitElement {
     }
 
     #avatar-default {
+      color: ${ThemeCSSVariables.initialsText};
       width: 50px;
       height: 50px;
       border-radius: 50%;
@@ -59,6 +60,10 @@ export class Avatar extends LitElement {
       position: relative;
       left: 30px;
       bottom: 15px;
+    }
+
+    il-icon {
+      color: ${ThemeCSSVariables.actionText};
     }
 
     .avatar {
