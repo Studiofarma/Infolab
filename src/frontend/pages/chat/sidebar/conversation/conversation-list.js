@@ -12,7 +12,7 @@ import { ThemeCSSVariables } from "../../../../enums/theme-css-variables";
 
 import "../../../../components/avatar";
 import "./conversation";
-import "../search-chats";
+import "../../../../components/input-search";
 import "../../../../components/button-text";
 import { ConversationDto } from "../../../../models/conversation-dto";
 
@@ -134,17 +134,32 @@ class ConversationList extends LitElement {
       color: ${ThemeCSSVariables.sidebarNoResults};
       text-align: center;
     }
+
+    il-input-search {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    .search-chats {
+      width: 100%;
+      padding: 15px 10px 10px;
+      column-gap: 10px;
+      position: relative;
+    }
   `;
 
   render() {
     return html`
       <div class="container">
-        <il-search
-          ${ref(this.inputRef)}
-          @search-chat=${this.setQueryString}
-          @keyPressed=${this.navigateSearchResultsWithArrows}
-          @blur=${this.clearSelection}
-        ></il-search>
+        <div class="search-chats">
+          <il-input-search
+            ${ref(this.inputRef)}
+            @search=${this.setQueryString}
+            @keydown=${this.navigateSearchResultsWithArrows}
+            @blur=${this.clearSelection}
+          ></il-input-search>
+        </div>
         <div class="conversation-list-scrollable">
           <div>
             <p class="separator">Conversazioni</p>
@@ -336,8 +351,8 @@ class ConversationList extends LitElement {
   }
 
   navigateSearchResultsWithArrows(e) {
-    if (e.detail.key == arrowDown || e.detail.key == arrowUp)
-      this.changeIndexOfSelectedChat(e.detail.key);
+    if (e.key == arrowDown || e.key == arrowUp)
+      this.changeIndexOfSelectedChat(e.key);
 
     if (this.indexOfSelectedChat <= -1) {
       this.clearSelection();
@@ -347,7 +362,7 @@ class ConversationList extends LitElement {
     this.scrollToSelectedChat();
     this.getSelectedRoom();
 
-    if (e.detail.key == enter) this.changeRoom(e, this.selectedRoom);
+    if (e.key == enter) this.changeRoom(e, this.selectedRoom);
   }
 
   clearSelection() {

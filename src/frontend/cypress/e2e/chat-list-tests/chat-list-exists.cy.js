@@ -22,7 +22,7 @@ describe("chat list render spec", () => {
 
   it("filter exist after login", () => {
     cy.litElementExist(
-      "il-app,il-chat,il-sidebar,il-conversation-list,il-search"
+      "il-app,il-chat,il-sidebar,il-conversation-list,il-input-search"
     );
   });
 });
