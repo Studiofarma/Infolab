@@ -18,12 +18,11 @@ export class MessagesList extends LitElement {
     messages: { type: Array },
     activeChatName: { type: String },
     activeDescription: { type: String },
-    users: { type: Array },
+    usersList: { type: Array },
   };
 
   constructor() {
     super();
-
     this.cookie = CookieService.getCookie();
 
     this.getAllUsers();
@@ -88,7 +87,6 @@ export class MessagesList extends LitElement {
           }}
           class="message-box"
           style="height: calc(${fullScreenHeight} - 179px);"
-          ${ref(this.messageBoxRef)}
         >
           ${repeat(
             this.messages,
@@ -101,7 +99,9 @@ export class MessagesList extends LitElement {
                 .messageIndex=${index}
                 .activeChatName=${this.activeChatName}
                 .activeDescription=${this.activeDescription}
-                @message-copy=${this.messageCopy}
+                @message-copy=${(event) => {
+                  this.dispatchEvent(new CustomEvent(event.type));
+                }}
                 @forward-message=${(event) => {
                   this.dispatchEvent(
                     new CustomEvent(event.type, { detail: event.detail })
@@ -131,21 +131,17 @@ export class MessagesList extends LitElement {
   }
 
   getUserByUsername(username) {
-    if (this.users == undefined) return "";
+    if (this.usersList == undefined) return "";
 
-    let userIndex = this.users.findIndex((user) => user.name == username);
+    let userIndex = this.usersList.findIndex((user) => user.name == username);
     if (userIndex < 0) return;
 
-    return this.users[userIndex];
-  }
-
-  messageCopy() {
-    this.dispatchEvent(new CustomEvent("message-copy"));
+    return this.usersList[userIndex];
   }
 
   async getAllUsers() {
     try {
-      this.users = await UsersService.getUsers(
+      this.usersList = await UsersService.getUsers(
         "",
         this.cookie.username,
         this.cookie.password
@@ -167,7 +163,7 @@ export class MessagesList extends LitElement {
     if (this.activeChatName === "" || this.messageBoxRef.value === undefined)
       return;
 
-    this.messageBoxRef.value.scrollTo({
+    this.messageBoxRef.value?.scrollTo({
       top: this.messageBoxRef.value.scrollHeight,
     });
   }
@@ -180,6 +176,7 @@ export class MessagesList extends LitElement {
         this.messageBoxRef.value.scrollTop + 10
       );
     } catch (error) {
+      console.log(error);
       return false;
     }
   }
