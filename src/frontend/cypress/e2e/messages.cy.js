@@ -1,15 +1,8 @@
-const messagesListPath = "il-app ,il-chat, il-messages-list";
-const messagePath = "il-app, il-chat, il-messages-list, il-message";
-const messageContentPath =
-  "il-app,il-chat, il-messages-list, il-message, il-message-content";
-const iconButtonPath =
-  "il-app,il-chat, il-messages-list, il-message, il-message-menu-popover, il-button-icon";
-const messageOptionsPath =
-  "il-app,il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options";
+const messagesListPath = "il-app, il-chat, il-messages-list";
+const messagePath = `${messagesListPath}, il-message`;
+const messageContentPath = `${messagePath}, il-message-content`;
 const messageMenuPopoverPath =
-  "il-app,il-chat, il-messages-list, il-message, il-message-menu-popover";
-const messageButtonOptionPath =
-  "il-app,il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options, il-message-button-option";
+  "il-app, il-chat, il-messages-list, il-message, il-message-menu-popover";
 
 // Il primo è per le conversazioni della sidebar, il secondo per quelli della forward-list
 const sidebarConversationPath =
@@ -71,7 +64,9 @@ describe("messages spec", () => {
       .first()
       .find(".message-body")
       .trigger("mouseover", { force: true });
-    cy.getLitElement(iconButtonPath).find(".icon-button").should("be.visible");
+    cy.getLitElement(`${messageMenuPopoverPath}, il-button-icon`)
+      .find(".icon-button")
+      .should("be.visible");
   });
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
@@ -80,7 +75,7 @@ describe("messages spec", () => {
 
     cy.clickOnTheLastOptionsMenu();
 
-    cy.getLitElement(messageOptionsPath)
+    cy.getLitElement(`${messageMenuPopoverPath}, il-message-options`)
       .find("div")
       .should("be.visible")
       .and("not.to.be.empty");
