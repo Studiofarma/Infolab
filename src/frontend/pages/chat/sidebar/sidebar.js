@@ -101,8 +101,8 @@ export class Sidebar extends LitElement {
 
   // -----------------------------------
 
-  setList(message) {
-    this.sidebarListRef.value?.setList(message);
+  updateLastMessageInConversationList(message) {
+    this.sidebarListRef.value?.updateLastMessage(message);
   }
 }
 

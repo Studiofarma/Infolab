@@ -26,7 +26,7 @@ class ConversationList extends LitElement {
   static properties = {
     conversationList: { type: Array },
     newConversationList: { type: Array },
-    users: { type: Array },
+    usersList: { type: Array },
     conversationListFiltered: { type: Array },
     newConversationListFiltered: { type: Array },
     indexOfSelectedChat: { type: Number },
@@ -43,16 +43,24 @@ class ConversationList extends LitElement {
     this.conversationList = [];
     this.newConversationList = [];
     this.usersList = [];
-    this.cookie = CookieService.getCookie();
-    this.onLoad();
     this.indexOfSelectedChat = -1;
     this.selectedRoom = {};
     this.selectedChats = [];
     this.isOpen = false;
     this.isStartup = true;
 
+    this.cookie = CookieService.getCookie();
+    this.onLoad();
+
     // Refs
     this.inputRef = createRef();
+  }
+
+  async onLoad() {
+    await this.getAllUsers();
+    await this.getAllRooms();
+    this.setNewConversationList();
+    this.requestUpdate();
   }
 
   static styles = css`
@@ -170,50 +178,56 @@ class ConversationList extends LitElement {
 
     if (this.conversationListFiltered.length === 0) return noResult;
 
-    return repeat(this.conversationListFiltered, (pharmacy) => {
-      let conversation = new ConversationDto(pharmacy);
+    return repeat(
+      this.conversationListFiltered,
+      (pharmacy) => pharmacy.roomName,
+      (pharmacy) => {
+        let conversation = new ConversationDto(pharmacy);
 
-      if (
-        conversation.lastMessage?.content ||
-        conversation.roomName == this.cookie.lastChat
-      ) {
         if (
-          conversation.roomName === this.cookie.lastChat &&
-          this.isStartup &&
-          !this.isForwardList
+          conversation.lastMessage?.content ||
+          conversation.roomName == this.cookie.lastChat
         ) {
-          this.changeRoom(new CustomEvent("first-update"), conversation);
-          this.isStartup = false;
+          if (
+            conversation.roomName === this.cookie.lastChat &&
+            this.isStartup &&
+            !this.isForwardList
+          ) {
+            this.changeRoom(new CustomEvent("first-update"), conversation);
+            this.isStartup = false;
+          }
+
+          let user = this.findUser(this.conversationListFiltered, conversation);
+
+          return html`<il-conversation
+            .userList=${this.usersList}
+            .user=${user}
+            @selected=${this.selectConversation}
+            .isSelectable=${this.isForwardList &&
+            this.selectedChats.length != 0}
+            .isSelected=${this.selectedChats.includes(conversation.roomName)}
+            class=${"conversation " +
+            (conversation.roomName == this.cookie.lastChat ||
+            conversation.roomName == this.selectedRoom.roomName
+              ? "active"
+              : "")}
+            id=${conversation.roomName == this.selectedRoom.roomName
+              ? "selected"
+              : ""}
+            .conversation=${conversation}
+            @clicked=${(event) =>
+              this.handleConversationClick(event, conversation)}
+          ></il-conversation>`;
+        } else {
+          let conversationIndex = this.conversationList.findIndex(
+            (obj) => obj.roomName == conversation.roomName
+          );
+          let delChat = this.conversationList.splice(conversationIndex, 1)[0];
+          this.newConversationList.unshift(delChat);
+          return null;
         }
-
-        let user = this.findUser(this.conversationListFiltered, conversation);
-
-        return html`<il-conversation
-          .userList=${this.usersList}
-          .user=${user}
-          @selected=${this.selectConversation}
-          .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
-          .isSelected=${this.selectedChats.includes(conversation.roomName)}
-          class=${"conversation " +
-          (conversation.roomName == this.cookie.lastChat ||
-          conversation.roomName == this.selectedRoom.roomName
-            ? "active"
-            : "")}
-          id=${conversation.roomName == this.selectedRoom.roomName
-            ? "selected"
-            : ""}
-          .conversation=${conversation}
-          @clicked=${(event) => this.handleClick(event, conversation)}
-        ></il-conversation>`;
-      } else {
-        let conversationIndex = this.conversationList.findIndex(
-          (obj) => obj.roomName == conversation.roomName
-        );
-        let delChat = this.conversationList.splice(conversationIndex, 1)[0];
-        this.newConversationList.unshift(delChat);
-        return null;
       }
-    });
+    );
   }
 
   renderNewConversationList() {
@@ -223,41 +237,49 @@ class ConversationList extends LitElement {
 
     if (this.newConversationListFiltered.length === 0) return noResult;
 
-    return this.newConversationListFiltered.map((pharmacy) => {
-      let conversation = new ConversationDto(pharmacy);
+    return repeat(
+      this.newConversationListFiltered,
+      (pharmacy) => pharmacy.roomName,
+      (pharmacy) => {
+        let conversation = new ConversationDto(pharmacy);
 
-      if (
-        conversation.roomName === this.cookie.lastChat &&
-        this.isStartup &&
-        !this.isForwardList
-      ) {
-        this.changeRoom(new CustomEvent("first-update"), conversation);
-        this.isStartup = false;
+        if (
+          conversation.roomName === this.cookie.lastChat &&
+          this.isStartup &&
+          !this.isForwardList
+        ) {
+          this.changeRoom(new CustomEvent("first-update"), conversation);
+          this.isStartup = false;
+        }
+
+        let user = this.findUser(
+          this.newConversationListFiltered,
+          conversation
+        );
+
+        return html`<il-conversation
+          .userList=${this.usersList}
+          .user=${user}
+          @selected=${this.selectConversation}
+          .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
+          .isSelected=${this.selectedChats.includes(conversation.roomName)}
+          class=${"conversation new-conversation " +
+          (conversation.roomName == this.cookie.lastChat ||
+          conversation.roomName == this.selectedRoom.roomName
+            ? "active"
+            : "")}
+          .conversation=${conversation}
+          id=${conversation.roomName == this.selectedRoom.roomName
+            ? "selected"
+            : ""}
+          @clicked=${(event) =>
+            this.handleConversationClick(event, conversation)}
+        ></il-conversation>`;
       }
-
-      let user = this.findUser(this.newConversationListFiltered, conversation);
-
-      return html`<il-conversation
-        .userList=${this.usersList}
-        .user=${user}
-        @selected=${this.selectConversation}
-        .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
-        .isSelected=${this.selectedChats.includes(conversation.roomName)}
-        class=${"conversation new-conversation " +
-        (conversation.roomName == this.cookie.lastChat ||
-        conversation.roomName == this.selectedRoom.roomName
-          ? "active"
-          : "")}
-        .conversation=${conversation}
-        id=${conversation.roomName == this.selectedRoom.roomName
-          ? "selected"
-          : ""}
-        @clicked=${(event) => this.handleClick(event, conversation)}
-      ></il-conversation>`;
-    });
+    );
   }
 
-  // Getters & Setters
+  //#region Getters & Setters
 
   getActiveChatName() {
     return this.activeChatName;
@@ -285,7 +307,7 @@ class ConversationList extends LitElement {
     return [...this.newConversationList];
   }
 
-  // -----------------------------
+  //#endregion -----------------------------
 
   handleForward() {
     if (this.selectedChats.length === 1) {
@@ -404,13 +426,6 @@ class ConversationList extends LitElement {
     );
   }
 
-  async onLoad() {
-    await this.getAllUsers();
-    await this.getAllRooms();
-    this.setNewConversationList();
-    this.requestUpdate();
-  }
-
   async getAllRooms() {
     let cookie = CookieService.getCookie();
 
@@ -426,14 +441,13 @@ class ConversationList extends LitElement {
         if (userIndex == -1) {
           this.conversationList = [...this.conversationList, room];
         } else {
-          let conversation = {
+          let conversation = new ConversationDto({
             roomName: room.roomName,
             avatarLink: room.avatarlink,
             unreadMessages: room.unreadMessages,
             description: room.description,
             lastMessage: room.lastMessage || "",
-            id: this.usersList[userIndex].id,
-          };
+          });
           this.conversationList = [...this.conversationList, conversation];
         }
       });
@@ -465,7 +479,7 @@ class ConversationList extends LitElement {
     });
   }
 
-  setList(message) {
+  updateLastMessage(message) {
     let index = this.conversationList.findIndex(
       (conversation) => conversation.roomName == message.roomName
     );
@@ -511,19 +525,17 @@ class ConversationList extends LitElement {
   }
 
   convertUserToRoom(roomName, user) {
-    return {
+    return new ConversationDto({
       roomName: roomName,
       avatarLink: null,
       unreadMessages: 0,
+      description: user.description === "" ? user.name : user.description,
       lastMessage: {
         preview: null,
         sender: null,
         timestamp: null,
       },
-      description: user.description === "" ? user.name : user.description,
-      id: user.id,
-      status: user.status,
-    };
+    });
   }
 
   compareTimestamp(a, b) {
@@ -553,7 +565,7 @@ class ConversationList extends LitElement {
     return usernames.filter((elem) => elem !== cookie.username)[0];
   }
 
-  handleClick(e, conversation) {
+  handleConversationClick(e, conversation) {
     if (!this.isForwardList) this.changeRoom(e, conversation);
 
     this.lastSlectedConversation = conversation;

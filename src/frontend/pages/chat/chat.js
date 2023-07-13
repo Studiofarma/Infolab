@@ -290,8 +290,8 @@ export class Chat extends LitElement {
 
   // -------------------------------------
 
-  setList(message) {
-    this.sidebarRef.value?.setList(message);
+  updateLastMessageInConversationList(message) {
+    this.sidebarRef.value?.updateLastMessageInConversationList(message);
   }
 
   multipleForward(event) {
@@ -373,7 +373,8 @@ export class Chat extends LitElement {
       hasBeenEdited: true,
     };
 
-    if (index === this.messages.length - 1) this.setList(message);
+    if (index === this.messages.length - 1)
+      this.updateLastMessageInConversationList(message);
 
     this.messagesListRef.value?.requestUpdate();
   }
@@ -529,7 +530,7 @@ export class Chat extends LitElement {
         this.requestUpdate();
       }
 
-      this.setList(message);
+      this.updateLastMessageInConversationList(message);
     }
 
     this.messageNotification(message);
