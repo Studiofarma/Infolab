@@ -1,17 +1,14 @@
-const axios = require("axios").default;
+import { HttpService } from "./http-service";
 
 export class LoginService {
-    static async getLogin(username, password) {
-        return axios({
-            url: "/csrf",
-            method: "get",
-            headers: {
-                "X-Requested-With": "XMLHttpRequest",
-            },
-            auth: {
-                username: username,
-                password: password,
-            },
-        });
-    }
+  static async getLogin(username, password) {
+    return HttpService.httpGetWithHeadersAndCredentials(
+      "/csrf",
+      {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      username,
+      password
+    );
+  }
 }

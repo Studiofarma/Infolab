@@ -1,25 +1,19 @@
 import { UserDto } from "../models/user-dto";
 import { CookieService } from "./cookie-service";
-
-const axios = require("axios").default;
+import { HttpService } from "./http-service";
 
 const loggedUserKey = "logged-user";
 
 export class UsersService {
   static cookie = CookieService.getCookie();
 
-  static async getUsers(query, username, password) {
-    let users = await axios({
-      url: `/api/users?user=${query}`,
-      method: "get",
-      headers: {
+  static async getUsers(query) {
+    let users = await HttpService.httpGetWithHeaders(
+      `/api/users?user=${query}`,
+      {
         "X-Requested-With": "XMLHttpRequest",
-      },
-      auth: {
-        username: username,
-        password: password,
-      },
-    });
+      }
+    );
 
     // #region Mock data
     // TODO: remove this region when data comes from BE
@@ -45,7 +39,9 @@ export class UsersService {
     return users.data;
   }
 
-  static async getLoggedUser(username, password) {
+  static async getLoggedUser() {
+    let cookie = CookieService.getCookie();
+
     let loggedUser;
 
     const sessionUser = sessionStorage.getItem(loggedUserKey);
@@ -55,12 +51,12 @@ export class UsersService {
     } else {
       let usersList;
       try {
-        usersList = await UsersService.getUsers("", username, password);
+        usersList = await UsersService.getUsers("");
       } catch (error) {
         console.error(error);
       }
 
-      loggedUser = usersList.filter((user) => user.name === username);
+      loggedUser = usersList.filter((user) => user.name === cookie.username);
 
       sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
     }
