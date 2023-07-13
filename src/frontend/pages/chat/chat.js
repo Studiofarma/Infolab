@@ -204,7 +204,7 @@ export class Chat extends LitElement {
                   .messages=${this.messages}
                   .activeChatName=${this.activeChatName}
                   .activeDescription=${this.activeDescription}
-                  @il:messageForwarded=${this.openForwardMenu}
+                  @il:message-forwarded=${this.openForwardMenu}
                   @il:went-to-chat=${this.wentToChatHandler}
                   @il:message-copied=${() =>
                     this.snackbarRef.value.openSnackbar(
