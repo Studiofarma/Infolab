@@ -24,15 +24,13 @@ import "./message/messages-list";
 import "../../components/snackbar";
 import "../../components/button-icon";
 
-const fullScreenHeight = "100vh";
-
 export class Chat extends LitElement {
   static properties = {
     stompClient: {},
     messages: [],
-    message: "",
-    nMessages: 0,
     messageToForward: "",
+    activeDescription: "",
+    scrolledToBottom: false,
   };
 
   static get properties() {
@@ -51,15 +49,14 @@ export class Chat extends LitElement {
   constructor() {
     super();
     this.messages = [];
-    this.message = "";
-    this.nMessages = 0;
+    this.scrolledToBottom = false;
+
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
     this.activeDescription = CookieService.getCookieByKey(
       CookieService.Keys.lastDescription
     );
-    this.cookie = CookieService.getCookie();
-    this.scrolledToBottom = false;
+
     window.addEventListener("resize", () => {
       this.scrollToBottom();
     });
@@ -78,6 +75,20 @@ export class Chat extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.createSocket();
+  }
+
+  async firstUpdated() {
+    if (this.activeChatName === "") return;
+
+    this.messages = (
+      await MessagesService.getMessagesByRoomName(this.activeChatName)
+    ).reverse();
+  }
+
+  async updated() {
+    await setTimeout(() => {
+      this.scrollToBottom();
+    }, 20);
   }
 
   static styles = css`
@@ -170,7 +181,7 @@ export class Chat extends LitElement {
               ${ref(this.conversationListRef)}
               id="#sidebar"
               class="conversation-list"
-              @update-message=${this.updateMessages}
+              @fetch-messages=${this.fetchMessages}
               @change-conversation=${(event) => {
                 this.setActiveChat(event);
                 this.focusOnEditor(event);
@@ -272,7 +283,7 @@ export class Chat extends LitElement {
     `;
   }
 
-  // getters & setters
+  //#region getters & setters
 
   getForwardListRefIsOpened() {
     return this.forwardListRef.value?.getDialogRefIsOpened();
@@ -310,7 +321,7 @@ export class Chat extends LitElement {
     this.deletionConfirmationDialogRef.value?.setDialogRefIsOpened(value);
   }
 
-  // -------------------------------------
+  //#endregion
 
   updateLastMessageInConversationList(message) {
     this.conversationListRef.value?.updateLastMessage(message);
@@ -326,7 +337,7 @@ export class Chat extends LitElement {
     };
 
     event.detail.list.forEach((room) => {
-      let chatName = this.activeChatNameFormatter(room);
+      let chatName = this.formatActiveChatName(room);
       this.stompClient.send(
         `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
         {},
@@ -349,7 +360,7 @@ export class Chat extends LitElement {
 
     // apro la chat a cui devo inoltrare
     this.setActiveChat(event);
-    this.updateMessages(event).then(() => {
+    this.fetchMessages(event).then(() => {
       // invio il messaggio
       this.sendMessage({ detail: { message: this.messageToForward } });
     });
@@ -406,19 +417,11 @@ export class Chat extends LitElement {
     this.messagesListRef.value?.requestUpdate();
   }
 
-  focusOnEditor(event) {
+  focusOnEditor() {
     this.inputControlsRef.value?.focusEditor();
   }
 
-  async firstUpdated() {
-    if (this.activeChatName === "") return;
-
-    this.messages = (
-      await MessagesService.getMessagesByRoomName(this.activeChatName)
-    ).reverse();
-  }
-
-  async updateMessages(e) {
+  async fetchMessages(e) {
     this.messages = (
       await MessagesService.getMessagesByRoomName(
         e.detail.conversation.roomName
@@ -429,12 +432,6 @@ export class Chat extends LitElement {
     this.activeDescription = e.detail.conversation.description;
 
     this.inputControlsRef?.value?.focusEditor();
-  }
-
-  async updated() {
-    await setTimeout(() => {
-      this.scrollToBottom();
-    }, 20);
   }
 
   createSocket() {
@@ -455,7 +452,7 @@ export class Chat extends LitElement {
   }
 
   manageScrollButtonVisility() {
-    if (this.checkScrolledToBottom()) {
+    if (this.isScrolledToBottom()) {
       this.scrollButtonRef.value.style.visibility = "hidden";
       return;
     }
@@ -463,13 +460,13 @@ export class Chat extends LitElement {
     this.scrollButtonRef.value.style.visibility = "visible";
   }
 
-  checkScrolledToBottom() {
-    return this.messagesListRef.value.checkScrolledToBottom();
+  isScrolledToBottom() {
+    return this.messagesListRef.value.isScrolledToBottom();
   }
 
   textEditorResized(event) {
     this.scrollButtonRef.value.style.bottom = `${event.detail.height + 100}px`;
-    this.messagesListRef.value.textEditorResized(event);
+    this.messagesListRef.value?.textEditorResized(event);
   }
 
   scrollToBottom() {
@@ -567,7 +564,7 @@ export class Chat extends LitElement {
         type: type,
       };
 
-      let activeChatName = this.activeChatNameFormatter(this.activeChatName);
+      let activeChatName = this.formatActiveChatName(this.activeChatName);
 
       this.stompClient.send(
         `/app/chat.send${
@@ -592,7 +589,7 @@ export class Chat extends LitElement {
     this.headerRef.value?.setOtherUser(event.detail.user);
   }
 
-  activeChatNameFormatter(activeChatName) {
+  formatActiveChatName(activeChatName) {
     let cookie = CookieService.getCookie();
     if (activeChatName.includes("-")) {
       activeChatName = activeChatName.split("-");

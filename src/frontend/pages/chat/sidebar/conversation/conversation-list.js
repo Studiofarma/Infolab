@@ -425,7 +425,7 @@ class ConversationList extends LitElement {
       })
     );
 
-    this.updateMessages(conversation);
+    this.fetchMessages(conversation);
     this.cleanSearchInput();
     this.requestUpdate();
   }
@@ -601,9 +601,9 @@ class ConversationList extends LitElement {
       );
   }
 
-  updateMessages(conversation) {
+  fetchMessages(conversation) {
     this.dispatchEvent(
-      new CustomEvent("update-message", {
+      new CustomEvent("fetch-messages", {
         detail: {
           conversation: conversation,
         },

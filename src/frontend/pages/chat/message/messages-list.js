@@ -164,7 +164,7 @@ export class MessagesList extends LitElement {
     });
   }
 
-  checkScrolledToBottom() {
+  isScrolledToBottom() {
     try {
       return (
         this.messageBoxRef.value.scrollHeight -
