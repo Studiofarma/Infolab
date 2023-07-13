@@ -73,12 +73,12 @@ export class MessageOptions extends LitElement {
     navigator.clipboard.writeText(
       HtmlParserService.parseToString(this.message.content)
     );
-    this.dispatchEvent(new CustomEvent("message-copy"));
+    this.dispatchEvent(new CustomEvent("il:message-copied"));
   }
 
   forwardMessageHandler() {
     this.dispatchEvent(
-      new CustomEvent("forward-message", {
+      new CustomEvent("il:message-forwarded", {
         detail: {
           messageToForward: this.message.content,
         },
@@ -98,7 +98,7 @@ export class MessageOptions extends LitElement {
 
   deleteMessageHandler() {
     this.dispatchEvent(
-      new CustomEvent("delete-message", {
+      new CustomEvent("il:message-deleted", {
         detail: {
           messageToDelete: this.message,
           messageIndex: this.messageIndex,
@@ -109,7 +109,7 @@ export class MessageOptions extends LitElement {
 
   editHandler() {
     this.dispatchEvent(
-      new CustomEvent("edit-message", {
+      new CustomEvent("il:message-edited", {
         detail: {
           message: this.message,
           messageIndex: this.messageIndex,

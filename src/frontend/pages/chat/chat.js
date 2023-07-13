@@ -181,8 +181,8 @@ export class Chat extends LitElement {
               ${ref(this.conversationListRef)}
               id="#sidebar"
               class="conversation-list"
-              @fetch-messages=${this.fetchMessages}
-              @change-conversation=${(event) => {
+              @il:messages-fetched=${this.fetchMessages}
+              @il:conversation-changed=${(event) => {
                 this.setActiveChat(event);
                 this.focusOnEditor(event);
               }}
@@ -204,16 +204,16 @@ export class Chat extends LitElement {
                   .messages=${this.messages}
                   .activeChatName=${this.activeChatName}
                   .activeDescription=${this.activeDescription}
-                  @forward-message=${this.openForwardMenu}
+                  @il:messageForwarded=${this.openForwardMenu}
                   @il:went-to-chat=${this.wentToChatHandler}
-                  @message-copy=${() =>
+                  @il:message-copied=${() =>
                     this.snackbarRef.value.openSnackbar(
                       "MESSAGGIO COPIATO",
                       "info",
                       2000
                     )}
-                  @edit-message=${this.editMessage}
-                  @delete-message=${this.askDeletionConfirmation}
+                  @il:message-edited=${this.editMessage}
+                  @il:message-deleted=${this.askDeletionConfirmation}
                 ></il-messages-list>
 
                 <il-modal
@@ -227,8 +227,8 @@ export class Chat extends LitElement {
                         html`<il-conversation-list
                           id="forwardList"
                           isForwardList="true"
-                          @multiple-forward=${this.multipleForward}
-                          @change-conversation=${(event) => {
+                          @il:multiple-forwarded=${this.multipleForward}
+                          @il:conversation-changed=${(event) => {
                             this.forwardMessage(event);
                             this.focusOnEditor(event);
                           }}

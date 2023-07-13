@@ -106,7 +106,7 @@ class Conversation extends LitElement {
         @click=${() => {
           this.isSelected = !this.isSelected;
           this.dispatchEvent(
-            new CustomEvent("clicked", {
+            new CustomEvent("il:clicked", {
               detail: {
                 room: this.conversation.roomName,
                 add: this.isSelected,

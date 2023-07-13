@@ -116,10 +116,10 @@ export class Message extends LitElement {
               .message=${this.message}
               .messageIndex=${this.messageIndex}
               .activeChatName=${this.activeChatName}
-              @message-copy=${(event) => {
+              @il:message-copied=${(event) => {
                 this.dispatchEvent(new CustomEvent(event.type));
               }}
-              @forward-message=${(event) => {
+              @il:message-forwarded=${(event) => {
                 this.dispatchEvent(
                   new CustomEvent(event.type, { detail: event.detail })
                 );
@@ -129,12 +129,12 @@ export class Message extends LitElement {
                   new CustomEvent(event.type, { detail: event.detail })
                 );
               }}
-              @edit-message=${(event) => {
+              @il:message-edited=${(event) => {
                 this.dispatchEvent(
                   new CustomEvent(event.type, { detail: event.detail })
                 );
               }}
-              @delete-message=${(event) => {
+              @il:message-deleted=${(event) => {
                 this.dispatchEvent(
                   new CustomEvent(event.type, { detail: event.detail })
                 );

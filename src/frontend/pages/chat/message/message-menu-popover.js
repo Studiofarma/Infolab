@@ -55,10 +55,10 @@ export class MessageMenuPopover extends LitElement {
           .type=${this.message.sender == this.cookie.username
             ? "sender"
             : "receiver"}
-          @message-copy=${(event) => {
+          @il:message-copied=${(event) => {
             this.dispatchEvent(new CustomEvent(event.type));
           }}
-          @forward-message=${(event) =>
+          @il:message-forwarded=${(event) =>
             this.dispatchEvent(
               new CustomEvent(event.type, { detail: event.detail })
             )}
@@ -67,12 +67,12 @@ export class MessageMenuPopover extends LitElement {
               new CustomEvent(event.type, { detail: event.detail })
             );
           }}
-          @edit-message=${(event) => {
+          @il:message-edited=${(event) => {
             this.dispatchEvent(
               new CustomEvent(event.type, { detail: event.detail })
             );
           }}
-          @delete-message=${(event) => {
+          @il:message-deleted=${(event) => {
             this.dispatchEvent(
               new CustomEvent(event.type, { detail: event.detail })
             );

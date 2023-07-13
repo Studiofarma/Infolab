@@ -220,7 +220,7 @@ export class Login extends LitElement {
 
   loginConfirmEvent() {
     this.dispatchEvent(
-      new CustomEvent("login-confirm", {
+      new CustomEvent("il:login-confirmed", {
         detail: {
           login: {
             username: this.username,

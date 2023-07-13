@@ -208,7 +208,7 @@ class ConversationList extends LitElement {
             this.isStartup &&
             !this.isForwardList
           ) {
-            this.changeRoom(new CustomEvent("first-update"), conversation);
+            this.changeRoom(new CustomEvent("il:first-updated"), conversation);
             this.isStartup = false;
           }
 
@@ -237,7 +237,7 @@ class ConversationList extends LitElement {
               ? "selected"
               : ""}
             .conversation=${conversation}
-            @clicked=${(event) =>
+            @il:clicked=${(event) =>
               this.handleConversationClick(event, conversation)}
           ></il-conversation>`;
         } else {
@@ -270,7 +270,7 @@ class ConversationList extends LitElement {
           this.isStartup &&
           !this.isForwardList
         ) {
-          this.changeRoom(new CustomEvent("first-update"), conversation);
+          this.changeRoom(new CustomEvent("il:first-updated"), conversation);
           this.isStartup = false;
         }
 
@@ -298,7 +298,7 @@ class ConversationList extends LitElement {
           id=${conversation.roomName == this.selectedRoom.roomName
             ? "selected"
             : ""}
-          @clicked=${(event) =>
+          @il:clicked=${(event) =>
             this.handleConversationClick(event, conversation)}
         ></il-conversation>`;
       }
@@ -337,10 +337,13 @@ class ConversationList extends LitElement {
 
   handleForward() {
     if (this.selectedChats.length === 1) {
-      this.changeRoom(new CustomEvent("forward"), this.lastSlectedConversation);
+      this.changeRoom(
+        new CustomEvent("il:forwarded"),
+        this.lastSlectedConversation
+      );
     } else {
       this.dispatchEvent(
-        new CustomEvent("multiple-forward", {
+        new CustomEvent("il:multiple-forwarded", {
           detail: {
             list: this.selectedChats,
             conversation: this.lastSlectedConversation,
@@ -416,7 +419,7 @@ class ConversationList extends LitElement {
     this.cookie.lastDescription = conversation.description;
 
     this.dispatchEvent(
-      new CustomEvent("change-conversation", {
+      new CustomEvent("il:conversation-changed", {
         detail: {
           conversation: conversation,
           user: this.getOtherUserInRoom(conversation),
@@ -603,7 +606,7 @@ class ConversationList extends LitElement {
 
   fetchMessages(conversation) {
     this.dispatchEvent(
-      new CustomEvent("fetch-messages", {
+      new CustomEvent("il:messages-fetched", {
         detail: {
           conversation: conversation,
         },
