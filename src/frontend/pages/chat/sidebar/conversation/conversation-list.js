@@ -197,11 +197,18 @@ class ConversationList extends LitElement {
             this.isStartup = false;
           }
 
-          let user = this.findUser(this.conversationListFiltered, conversation);
+          let conversationUser = this.findUser(
+            this.conversationListFiltered,
+            conversation
+          );
+
+          let lastMessageUser = this.getUserByUsername(
+            conversation.lastMessage.sender
+          );
 
           return html`<il-conversation
-            .userList=${this.usersList}
-            .user=${user}
+            .conversationUser=${conversationUser}
+            .lastMessageUser=${lastMessageUser}
             @selected=${this.selectConversation}
             .isSelectable=${this.isForwardList &&
             this.selectedChats.length != 0}
@@ -252,14 +259,18 @@ class ConversationList extends LitElement {
           this.isStartup = false;
         }
 
-        let user = this.findUser(
+        let conversationUser = this.findUser(
           this.newConversationListFiltered,
           conversation
         );
 
+        let lastMessageUser = this.getUserByUsername(
+          conversation.lastMessage.sender
+        );
+
         return html`<il-conversation
-          .userList=${this.usersList}
-          .user=${user}
+          .conversationUser=${conversationUser}
+          .lastMessageUser=${lastMessageUser}
           @selected=${this.selectConversation}
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
@@ -625,6 +636,19 @@ class ConversationList extends LitElement {
   isUsernameInRoomName(roomName, username) {
     let names = roomName.split("-");
     return names.includes(username);
+  }
+
+  getUserByUsername(username) {
+    if (username === undefined)
+      return { username: undefined, description: undefined };
+    if (this.usersList === undefined)
+      return { username: undefined, description: undefined };
+
+    let userIndex = this.usersList.findIndex((user) => user.name == username);
+
+    if (userIndex < 0) return { username: undefined, description: undefined };
+
+    return this.usersList[userIndex];
   }
 }
 
