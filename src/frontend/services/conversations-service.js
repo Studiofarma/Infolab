@@ -1,17 +1,9 @@
 import { ConversationDto } from "../models/conversation-dto";
-
-const axios = require("axios").default;
+import { HttpService } from "./http-service";
 
 export class ConversationService {
-  static async getOpenConversations(username, password) {
-    let conversations = await axios({
-      url: "/api/rooms",
-      method: "get",
-      auth: {
-        username: username,
-        password: password,
-      },
-    });
+  static async getOpenConversations() {
+    let conversations = await HttpService.httpGet("/api/rooms");
 
     return conversations.data.map((conversation) => {
       return new ConversationDto(conversation);

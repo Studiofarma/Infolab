@@ -61,7 +61,6 @@ class ConversationList extends LitElement {
       padding: 0;
       margin: 0;
       ${ThemeColorService.getThemeVariables()};
-      L
     }
 
     #selected {
@@ -416,10 +415,7 @@ class ConversationList extends LitElement {
     let cookie = CookieService.getCookie();
 
     try {
-      let rooms = await ConversationService.getOpenConversations(
-        cookie.username,
-        cookie.password
-      );
+      let rooms = await ConversationService.getOpenConversations();
       rooms.forEach((room) => {
         let userIndex = this.usersList.findIndex(
           (user) => user.description == room.description
@@ -447,11 +443,7 @@ class ConversationList extends LitElement {
 
   async getAllUsers() {
     try {
-      this.usersList = await UsersService.getUsers(
-        this.query,
-        this.cookie.username,
-        this.cookie.password
-      );
+      this.usersList = await UsersService.getUsers(this.query);
     } catch (error) {
       console.error(error);
     }
