@@ -99,26 +99,26 @@ export class InsertionBar extends LitElement {
     this.editor?.value.focusEditor();
 
     this.dispatchEvent(
-      new CustomEvent("change-editor-mode", {
+      new CustomEvent("il:editor-mode-changed", {
         detail: { isOpen: this.areFormattingButtonsOpen },
       })
     );
   }
 
   sendMessage() {
-    this.dispatchEvent(new CustomEvent("send-message"));
+    this.dispatchEvent(new CustomEvent("il:message-sent"));
   }
 
   emojiPickerClick() {
-    this.dispatchEvent(new CustomEvent("emoji-picker-click"));
+    this.dispatchEvent(new CustomEvent("il:emoji-picker-clicked"));
   }
 
   confirmEdit() {
-    this.dispatchEvent(new CustomEvent("confirm-edit"));
+    this.dispatchEvent(new CustomEvent("il:edit-confirmed"));
   }
 
   cancelEdit() {
-    this.dispatchEvent(new CustomEvent("cancel-edit"));
+    this.dispatchEvent(new CustomEvent("il:edit-canceled"));
   }
 }
 

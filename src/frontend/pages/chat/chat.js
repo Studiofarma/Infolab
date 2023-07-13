@@ -271,9 +271,9 @@ export class Chat extends LitElement {
 
                 <il-input-controls
                   ${ref(this.inputControlsRef)}
-                  @send-message=${this.sendMessage}
-                  @text-editor-resized=${this.textEditorResized}
-                  @confirm-edit=${this.confirmEdit}
+                  @il:message-sent=${this.sendMessage}
+                  @il:text-editor-resized=${this.handleTextEditorResized}
+                  @il:edit-confirmed=${this.confirmEdit}
                 ></il-input-controls>`
             )}
           </div>
@@ -464,7 +464,7 @@ export class Chat extends LitElement {
     return this.messagesListRef.value.isScrolledToBottom();
   }
 
-  textEditorResized(event) {
+  handleTextEditorResized(event) {
     this.scrollButtonRef.value.style.bottom = `${event.detail.height + 100}px`;
     this.messagesListRef.value?.textEditorResized(event);
   }

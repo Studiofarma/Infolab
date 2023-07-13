@@ -102,17 +102,17 @@ export class InputControls extends LitElement {
           <div class="inputContainer">
             <il-editor
               ${ref(this.editorRef)}
-              @enter-key-pressed=${this.handleEnterKey}
-              @text-changed=${this.updateMessage}
-              @text-editor-resized=${this.textEditorResized}
+              @il:enter-key-pressed=${this.handleEnterKey}
+              @il:text-changed=${this.updateMessage}
+              @il:text-editor-resized=${this.handleTextEditorResized}
               .isEditMode=${this.isEditorInEditMode}
             ></il-editor>
             <il-insertion-bar
-              @send-message=${this.sendMessage}
-              @emoji-picker-click=${this.emojiPickerClick}
-              @confirm-edit=${this.confirmEdit}
-              @cancel-edit=${this.cancelEdit}
-              @change-editor-mode=${this.changeEditorMode}
+              @il:message-sent=${this.sendMessage}
+              @il:emoji-picker-clicked=${this.handleEmojiPickerClick}
+              @il:edit-confirmed=${this.confirmEdit}
+              @il:edit-canceled=${this.handleEditCanceled}
+              @il:editor-mode-changed=${this.changeEditorMode}
               .editor=${this.editorRef}
               .isEditing=${this.isEditing}
             >
@@ -121,7 +121,7 @@ export class InputControls extends LitElement {
           <il-emoji-picker
             ${ref(this.emojiPickerRef)}
             @emoji-click=${this.insertEmoji}
-            @picker-close=${() => (this.isEmojiPickerOpen = false)}
+            @il:emoji-picker-closed=${() => (this.isEmojiPickerOpen = false)}
             ?isOpen=${this.isEmojiPickerOpen}
             class="emoji-picker-editor-opened"
           ></il-emoji-picker>
@@ -147,24 +147,22 @@ export class InputControls extends LitElement {
     if (event.key === enterKey) this.sendMessage();
   }
 
-  emojiPickerClick() {
+  handleEmojiPickerClick() {
     this.isEmojiPickerOpen = !this.isEmojiPickerOpen;
     this.editorRef.value.focusEditor();
   }
 
-  textEditorResized(event) {
+  handleTextEditorResized(event) {
     this.emojiPickerRef.value.style.bottom = `${
       event.detail.height + emojiPickerBottomOffset
     }px`;
 
-    this.dispatchEvent(
-      new CustomEvent("text-editor-resized", { detail: event.detail })
-    );
+    this.dispatchEvent(new CustomEvent(event.type, { detail: event.detail }));
   }
 
   sendMessage() {
     this.dispatchEvent(
-      new CustomEvent("send-message", {
+      new CustomEvent("il:message-sent", {
         detail: {
           message: this.message,
         },
@@ -175,7 +173,7 @@ export class InputControls extends LitElement {
 
   handleEnterKey() {
     if (this.isEditing) {
-      this.confirmEdit(new CustomEvent("confirm-edit"));
+      this.confirmEdit(new CustomEvent("il:edit-confirmed"));
     } else {
       this.sendMessage();
     }
@@ -216,7 +214,7 @@ export class InputControls extends LitElement {
     this.focusEditor();
   }
 
-  cancelEdit() {
+  handleEditCanceled() {
     this.isEditing = false;
     this.messageBeingEdited = {};
     this.indexBeingEdited = undefined;

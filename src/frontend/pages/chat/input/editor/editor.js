@@ -72,7 +72,7 @@ export class Editor extends LitElement {
 
   clearMessage() {
     this.editorRef.value.innerHTML = "";
-    this.textEditorResized();
+    this.resizeTextEditor();
   }
 
   insertInEditor(text) {
@@ -110,7 +110,7 @@ export class Editor extends LitElement {
       return;
     }
 
-    this.textEditorResized();
+    this.resizeTextEditor();
     this.textChanged();
     this.message = this.getText();
   }
@@ -119,24 +119,24 @@ export class Editor extends LitElement {
     const text = this.getText();
 
     this.dispatchEvent(
-      new CustomEvent("text-changed", {
+      new CustomEvent("il:text-changed", {
         detail: { content: text },
       })
     );
   }
 
-  textEditorResized() {
+  resizeTextEditor() {
     const height = this.editorRef.value.clientHeight;
 
     this.dispatchEvent(
-      new CustomEvent("text-editor-resized", {
+      new CustomEvent("il:text-editor-resized", {
         detail: { height: height },
       })
     );
   }
 
   sendMessage() {
-    this.dispatchEvent(new CustomEvent("enter-key-pressed"));
+    this.dispatchEvent(new CustomEvent("il:enter-key-pressed"));
   }
 
   getText() {

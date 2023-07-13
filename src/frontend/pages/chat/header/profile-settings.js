@@ -250,12 +250,12 @@ export class profileSettings extends LitElement {
     }
 
     if (this.username !== this.currentUsername) {
-      this.dispatchEvent(new CustomEvent("set-new-description"));
+      this.dispatchEvent(new CustomEvent("il:new-description-set"));
       UsersService.setUserDescription(this.username);
     }
 
     if (this.imagePath !== this.currentAvatarURL) {
-      this.dispatchEvent(new CustomEvent("set-new-avatar"));
+      this.dispatchEvent(new CustomEvent("il:new-avatar-set"));
       UsersService.setUserAvatar(this.imagePath);
     }
 
@@ -263,7 +263,7 @@ export class profileSettings extends LitElement {
   }
 
   closeMenu() {
-    this.dispatchEvent(new CustomEvent("close-menu"));
+    this.dispatchEvent(new CustomEvent("il:menu-closed"));
   }
 }
 
