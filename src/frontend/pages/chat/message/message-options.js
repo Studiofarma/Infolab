@@ -37,7 +37,7 @@ export class MessageOptions extends LitElement {
           () => html` <il-message-button-option
             iconName=${IconNames.mdiMessage}
             text="Scrivi in privato"
-            @click=${this.goToChatHandler}
+            @click=${this.wentToChat}
           >
           </il-message-button-option>`
         )}
@@ -86,9 +86,9 @@ export class MessageOptions extends LitElement {
     );
   }
 
-  goToChatHandler() {
+  wentToChat() {
     this.dispatchEvent(
-      new CustomEvent("go-to-chat", {
+      new CustomEvent("il:went-to-chat", {
         detail: {
           user: this.message.sender,
         },

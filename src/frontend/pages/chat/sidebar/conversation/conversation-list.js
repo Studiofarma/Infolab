@@ -155,7 +155,7 @@ class ConversationList extends LitElement {
         <div class="search-chats">
           <il-input-search
             ${ref(this.inputRef)}
-            @search=${this.setQueryString}
+            @il:searched=${this.setQueryString}
             @keydown=${this.navigateSearchResultsWithArrows}
             @blur=${this.clearSelection}
           ></il-input-search>

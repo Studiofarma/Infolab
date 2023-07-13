@@ -62,7 +62,7 @@ export class MessageMenuPopover extends LitElement {
             this.dispatchEvent(
               new CustomEvent(event.type, { detail: event.detail })
             )}
-          @go-to-chat=${(event) => {
+          @il:went-to-chat=${(event) => {
             this.dispatchEvent(
               new CustomEvent(event.type, { detail: event.detail })
             );

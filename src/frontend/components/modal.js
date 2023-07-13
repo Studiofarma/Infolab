@@ -23,7 +23,7 @@ export class Modal extends LitElement {
       <il-dialog
         type="modal"
         ${ref(this.ilDialogRef)}
-        @dialog-clicked=${this.handleClick}
+        @il:dialog-clicked=${this.handleDialogClicked}
       >
         <slot></slot>
       </il-dialog>
@@ -51,7 +51,9 @@ export class Modal extends LitElement {
   //#endregion
 
   onKeyDown(e) {
-    if (e.key == esc) this.setDialogRefIsOpened(false);
+    if (e.key == esc) {
+      this.closeDialog();
+    }
   }
 
   isClickOuter(event) {
@@ -63,11 +65,15 @@ export class Modal extends LitElement {
     return false;
   }
 
-  handleClick(event) {
+  handleDialogClicked(event) {
     if (this.isClosableByBackdropClick && this.isClickOuter(event)) {
-      this.dispatchEvent(new CustomEvent("modal-closed"));
-      this.setDialogRefIsOpened(false);
+      this.closeDialog();
     }
+  }
+
+  closeDialog() {
+    this.dispatchEvent(new CustomEvent("il:modal-closed"));
+    this.setDialogRefIsOpened(false);
   }
 }
 

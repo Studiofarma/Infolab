@@ -205,7 +205,7 @@ export class Chat extends LitElement {
                   .activeChatName=${this.activeChatName}
                   .activeDescription=${this.activeDescription}
                   @forward-message=${this.openForwardMenu}
-                  @go-to-chat=${this.goToChat}
+                  @il:went-to-chat=${this.wentToChatHandler}
                   @message-copy=${() =>
                     this.snackbarRef.value.openSnackbar(
                       "MESSAGGIO COPIATO",
@@ -376,9 +376,9 @@ export class Chat extends LitElement {
     this.requestUpdate();
   }
 
-  goToChat(event) {
+  wentToChatHandler(event) {
     this.conversationListRef.value?.changeRoom(
-      new CustomEvent("go-to-chat"),
+      new CustomEvent(event.type),
       this.conversationListRef.value?.findConversation(event.detail.user)
     );
   }

@@ -61,7 +61,7 @@ export class Dialog extends LitElement {
         ${ref(this.dialogRef)}
         @click=${(event) => {
           this.dispatchEvent(
-            new CustomEvent("dialog-clicked", {
+            new CustomEvent("il:dialog-clicked", {
               detail: {
                 x: event.offsetX,
                 y: event.offsetY,

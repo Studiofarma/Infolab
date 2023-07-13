@@ -22,7 +22,7 @@ export class InputSearch extends LitElement {
           ? IconNames.close
           : IconNames.magnify}
         @input=${this.onInput}
-        @icon-click=${this.onIconClick}
+        @il:icon-clicked=${this.handleIconClicked}
         placeholder="Cerca o inizia una nuova conversazione"
       ></il-input-with-icon>
     `;
@@ -48,7 +48,7 @@ export class InputSearch extends LitElement {
     this.inputWithIconRef.value?.focusInput();
   }
 
-  onIconClick() {
+  handleIconClicked() {
     const inputValue = this.getInputWithIconRefValue();
 
     if (inputValue?.length !== 0) {
@@ -67,7 +67,7 @@ export class InputSearch extends LitElement {
 
   search() {
     this.dispatchEvent(
-      new CustomEvent("search", {
+      new CustomEvent("il:searched", {
         detail: {
           query: this.inputWithIconRef.value?.getInputValue(),
         },

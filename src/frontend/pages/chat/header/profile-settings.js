@@ -171,7 +171,7 @@ export class profileSettings extends LitElement {
             ${ref(this.usernameInputRef)}
             .iconName=${IconNames.pencil}
             @input=${this.setUsername}
-            @icon-click=${this.onIconClick}
+            @il:icon-clicked=${this.focusAndSelectInput}
             placeholder="Inserisci un nome utente"
             value=${this.username}
           ></il-input-with-icon>
@@ -198,10 +198,6 @@ export class profileSettings extends LitElement {
     let file = this.inputFileRef.value?.files[0];
     this.imagePath = URL.createObjectURL(file);
     this.requestUpdate();
-  }
-
-  onIconClick() {
-    this.focusAndSelectInput();
   }
 
   focusAndSelectInput() {

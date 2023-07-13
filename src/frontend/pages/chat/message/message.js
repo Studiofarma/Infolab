@@ -124,7 +124,7 @@ export class Message extends LitElement {
                   new CustomEvent(event.type, { detail: event.detail })
                 );
               }}
-              @go-to-chat=${(event) => {
+              @il:went-to-chat=${(event) => {
                 this.dispatchEvent(
                   new CustomEvent(event.type, { detail: event.detail })
                 );

@@ -112,7 +112,7 @@ export class InputWithIcon extends InputField {
   }
 
   iconClick() {
-    this.dispatchEvent(new CustomEvent("icon-click"));
+    this.dispatchEvent(new CustomEvent("il:icon-clicked"));
   }
 }
 
