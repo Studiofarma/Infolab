@@ -1,16 +1,16 @@
 import { LitElement, html } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
-import { InputField } from "./input-field";
-
 import { IconNames } from "../enums/icon-names";
 
 import "./button-icon";
 import "./input-with-icon";
 
-export class InputRicerca extends LitElement {
+export class InputSearch extends LitElement {
   constructor() {
     super();
+
+    // Refs
     this.inputWithIconRef = createRef();
   }
 
@@ -22,13 +22,13 @@ export class InputRicerca extends LitElement {
           ? IconNames.close
           : IconNames.magnify}
         @input=${this.onInput}
-        @icon-click=${this.onIconClick}
+        @il:icon-clicked=${this.handleIconClicked}
         placeholder="Cerca o inizia una nuova conversazione"
       ></il-input-with-icon>
     `;
   }
 
-  //  Getters & Setters
+  //#region  Getters & Setters
 
   getInputWithIconRefValue() {
     return this.inputWithIconRef.value?.getInputValue();
@@ -38,7 +38,7 @@ export class InputRicerca extends LitElement {
     this.inputWithIconRef.value?.setInputValue(value);
   }
 
-  //  --------------------
+  //#endregion
 
   clear() {
     this.inputWithIconRef.value?.clear();
@@ -48,7 +48,7 @@ export class InputRicerca extends LitElement {
     this.inputWithIconRef.value?.focusInput();
   }
 
-  onIconClick() {
+  handleIconClicked() {
     const inputValue = this.getInputWithIconRefValue();
 
     if (inputValue?.length !== 0) {
@@ -67,7 +67,7 @@ export class InputRicerca extends LitElement {
 
   search() {
     this.dispatchEvent(
-      new CustomEvent("search", {
+      new CustomEvent("il:searched", {
         detail: {
           query: this.inputWithIconRef.value?.getInputValue(),
         },
@@ -78,4 +78,4 @@ export class InputRicerca extends LitElement {
   }
 }
 
-customElements.define("il-input-ricerca", InputRicerca);
+customElements.define("il-input-search", InputSearch);

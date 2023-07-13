@@ -43,4 +43,4 @@ export class MessageButtonOption extends LitElement {
   }
 }
 
-customElements.define("message-button-option", MessageButtonOption);
+customElements.define("il-message-button-option", MessageButtonOption);

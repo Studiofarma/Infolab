@@ -17,7 +17,7 @@ const maxLength = 30;
 
 export class profileSettings extends LitElement {
   static properties = {
-    isFocus: { type: Boolean },
+    isFocused: { type: Boolean },
     imagePath: { type: String },
     currentUsername: { type: String },
     currentAvatarURL: { type: String },
@@ -29,7 +29,7 @@ export class profileSettings extends LitElement {
     super();
     this.temp = "";
     this.imagePath = "";
-    this.isFocus = false;
+    this.isFocused = false;
     this.usernameInputRef = createRef();
     this.inputFileRef = createRef();
     this.snackbarRef = createRef();
@@ -125,7 +125,7 @@ export class profileSettings extends LitElement {
     super.connectedCallback();
     this.addEventListener("keydown", (event) => {
       if (event.key === "Escape") this.restoreDefault();
-      if (event.key === "Enter") this.confirmEdit();
+      if (event.key === "Enter") this.confirmChanges();
     });
   }
 
@@ -142,7 +142,7 @@ export class profileSettings extends LitElement {
             sizeClass="large"
             name=${this.username}
             .avatarLink=${this.imagePath}
-            ?defaultAvatar=${this.imagePath === ""}
+            ?isDefaultAvatar=${this.imagePath === ""}
             .hasStatus=${false}
           ></il-avatar>
           <button
@@ -171,7 +171,7 @@ export class profileSettings extends LitElement {
             ${ref(this.usernameInputRef)}
             .iconName=${IconNames.pencil}
             @input=${this.setUsername}
-            @icon-click=${this.onIconClick}
+            @il:icon-clicked=${this.focusAndSelectInput}
             placeholder="Inserisci un nome utente"
             value=${this.username}
           ></il-input-with-icon>
@@ -186,7 +186,7 @@ export class profileSettings extends LitElement {
         ></il-button-text>
         <il-button-text
           text="Conferma"
-          @click=${this.confirmEdit}
+          @click=${this.confirmChanges}
         ></il-button-text>
       </footer>
 
@@ -200,21 +200,17 @@ export class profileSettings extends LitElement {
     this.requestUpdate();
   }
 
-  onIconClick() {
-    this.focusAndSelectInput();
-  }
-
   focusAndSelectInput() {
     this.usernameInputRef.value.focusInput();
     this.usernameInputRef.value.selectInput();
   }
 
-  setIsFocus() {
-    this.isFocus = true;
+  focus() {
+    this.isFocused = true;
   }
 
   updated(c) {
-    if (c.has("isFocus") && this.isFocus) this.focusAndSelectInput();
+    if (c.has("isFocused") && this.isFocused) this.focusAndSelectInput();
   }
 
   setUsername(event) {
@@ -242,7 +238,7 @@ export class profileSettings extends LitElement {
     this.closeMenu();
   }
 
-  confirmEdit() {
+  confirmChanges() {
     if (this.username.trim() === "") {
       this.snackbarRef.value.openSnackbar(
         "INSERIRE UN NOME UTENTE NON VUOTO",
@@ -254,12 +250,12 @@ export class profileSettings extends LitElement {
     }
 
     if (this.username !== this.currentUsername) {
-      this.dispatchEvent(new CustomEvent("set-new-description"));
+      this.dispatchEvent(new CustomEvent("il:new-description-set"));
       UsersService.setUserDescription(this.username);
     }
 
     if (this.imagePath !== this.currentAvatarURL) {
-      this.dispatchEvent(new CustomEvent("set-new-avatar"));
+      this.dispatchEvent(new CustomEvent("il:new-avatar-set"));
       UsersService.setUserAvatar(this.imagePath);
     }
 
@@ -267,7 +263,7 @@ export class profileSettings extends LitElement {
   }
 
   closeMenu() {
-    this.dispatchEvent(new CustomEvent("close-menu"));
+    this.dispatchEvent(new CustomEvent("il:menu-closed"));
   }
 }
 

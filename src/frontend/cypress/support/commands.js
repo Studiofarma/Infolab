@@ -75,9 +75,7 @@ Cypress.Commands.add("sendTestMessages", (number) => {
 });
 
 Cypress.Commands.add("openChat", (name) => {
-  cy.getLitElement(
-    "il-app, il-chat, il-sidebar, il-conversation-list, il-conversation"
-  )
+  cy.getLitElement("il-app, il-chat, il-conversation-list, il-conversation")
     .find(".chat-name")
     .each((element, index) => {
       cy.wrap(element)
@@ -85,7 +83,7 @@ Cypress.Commands.add("openChat", (name) => {
         .then((txt) => {
           if (txt === name) {
             cy.getLitElement(
-              "il-app, il-chat, il-sidebar, il-conversation-list, il-conversation"
+              "il-app, il-chat, il-conversation-list, il-conversation"
             )
               .find(".chat-name")
               .eq(index)
@@ -114,7 +112,7 @@ Cypress.Commands.add("clickOptionButton", (option) => {
     "il-app, il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options"
   )
     .last()
-    .find("message-button-option")
+    .find("il-message-button-option")
     .shadow()
     .find("div")
     .filter(`:contains("${option}")`)

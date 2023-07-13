@@ -9,14 +9,12 @@ import { InputField } from "./input-field";
 
 export class InputWithIcon extends InputField {
   static properties = {
-    isFocus: { type: Boolean },
     iconName: { type: String },
     iconTooltipText: { type: String },
   };
 
   constructor() {
     super();
-    this.isFocus = false;
     this.inputRef = createRef();
   }
 
@@ -76,7 +74,7 @@ export class InputWithIcon extends InputField {
     `;
   }
 
-  // Funzioni ereditate da Input-Field
+  //#region Funzioni ereditate da Input-Field
 
   firstUpdated() {
     super.firstUpdated();
@@ -90,9 +88,9 @@ export class InputWithIcon extends InputField {
     super.clear();
   }
 
-  // ----------------------
+  //#endregion
 
-  // Getters & Setters
+  //#region Getters & Setters
 
   getInputValue() {
     return this.inputRef.value.value;
@@ -103,7 +101,7 @@ export class InputWithIcon extends InputField {
     this.inputRef.value.value = text;
   }
 
-  // ------------------------
+  //#endregion
 
   focusInput() {
     this.inputRef.value?.focus();
@@ -114,7 +112,7 @@ export class InputWithIcon extends InputField {
   }
 
   iconClick() {
-    this.dispatchEvent(new CustomEvent("icon-click"));
+    this.dispatchEvent(new CustomEvent("il:icon-clicked"));
   }
 }
 

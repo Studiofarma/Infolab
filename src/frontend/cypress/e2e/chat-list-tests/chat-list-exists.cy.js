@@ -1,29 +1,25 @@
+const conversationListPath = "il-app,il-chat,il-conversation-list";
+
 describe("chat list render spec", () => {
   it("chat list exists after login", () => {
-    cy.countElements(
-      "il-app,il-chat,il-sidebar,il-conversation-list",
-      "il-conversation",
-      9
-    );
+    cy.countElements(conversationListPath, "il-conversation", 9);
   });
 
   it("separator 'Conversazioni' exists after login", () => {
-    cy.getLitElement("il-app,il-chat,il-sidebar,il-conversation-list")
+    cy.getLitElement(conversationListPath)
       .find(".separator")
       .eq(0)
       .should("have.text", "Conversazioni");
   });
 
   it("separator 'Nuove conversazioni' exists after login", () => {
-    cy.getLitElement("il-app,il-chat,il-sidebar,il-conversation-list")
+    cy.getLitElement(conversationListPath)
       .contains("Nuove conversazioni")
       .should("exist");
   });
 
   it("filter exist after login", () => {
-    cy.litElementExist(
-      "il-app,il-chat,il-sidebar,il-conversation-list,il-search"
-    );
+    cy.litElementExist(`${conversationListPath},il-input-search`);
   });
 });
 

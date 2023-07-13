@@ -6,9 +6,12 @@ import { ThemeColorService } from "../services/theme-color-service";
 import "./button-icon";
 import { IconNames } from "../enums/icon-names";
 import { ThemeCSSVariables } from "../enums/theme-css-variables";
+
 export class Snackbar extends LitElement {
   constructor() {
     super();
+
+    // Refs
     this.snackbarRef = createRef();
     this.textRef = createRef();
   }
@@ -37,7 +40,7 @@ export class Snackbar extends LitElement {
       transition: all 0.5s;
       padding: 5px;
       opacity: 0;
-      z-index: 1000;
+      z-index: 10000;
     }
 
     .error {
@@ -79,7 +82,7 @@ export class Snackbar extends LitElement {
     `;
   }
 
-  closeSnackbar(type) {
+  closeSnackbar() {
     this.snackbarRef.value.style.opacity = 0.0;
     this.snackbarRef.value.style.bottom = `-${
       this.snackbarRef.value.clientHeight * 2
