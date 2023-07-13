@@ -16,7 +16,8 @@ class Conversation extends LitElement {
     conversation: {},
     isSelectable: false,
     isSelected: false,
-    user: { type: Object },
+    conversationUser: { type: Object },
+    lastMessageUser: { type: Object },
   };
 
   constructor() {
@@ -105,7 +106,7 @@ class Conversation extends LitElement {
         @click=${() => {
           this.isSelected = !this.isSelected;
           this.dispatchEvent(
-            new CustomEvent("clicked", {
+            new CustomEvent("il:clicked", {
               detail: {
                 room: this.conversation.roomName,
                 add: this.isSelected,
@@ -115,13 +116,13 @@ class Conversation extends LitElement {
         }}
       >
         <il-avatar
-          .user=${this.user}
+          .user=${this.conversationUser}
           .conversation=${this.conversation}
-          .selected=${this.isSelected && this.isSelectable}
+          .isSelected=${this.isSelected && this.isSelectable}
         ></il-avatar>
         <div class="name-box">
           <p class="chat-name">${this.conversation?.description}</p>
-          <p class="last-message">${this.lastMessageTextFormatter()}</p>
+          <p class="last-message">${this.formatLastMessageText()}</p>
         </div>
         <div class="date-box">
           <p
@@ -130,7 +131,9 @@ class Conversation extends LitElement {
               ? "unread"
               : ""}"
           >
-            ${this.compareMessageDate(this.conversation.lastMessage?.timestamp)}
+            ${this.compareMessageDateWithCurrentDate(
+              this.conversation.lastMessage?.timestamp
+            )}
           </p>
           <p class="unread-counter">
             ${when(
@@ -151,7 +154,7 @@ class Conversation extends LitElement {
     `;
   }
 
-  compareMessageDate(messageDate) {
+  compareMessageDateWithCurrentDate(messageDate) {
     if (!messageDate) {
       return "";
     }
@@ -197,34 +200,24 @@ class Conversation extends LitElement {
     return "Date not available";
   }
 
-  getUserDescription(userName) {
-    if (userName === undefined)
-      return { username: undefined, description: undefined };
-    if (this.userList === undefined)
-      return { username: undefined, description: undefined };
-
-    let userIndex = this.userList.findIndex((user) => user.name == userName);
-    if (userIndex < 0) return "";
-    let user = this.userList[userIndex];
-    return user.description;
-  }
-
-  lastMessageTextFormatter() {
+  formatLastMessageText() {
     let text = "";
     const lastMessage = this.conversation.lastMessage;
     const content = lastMessage.content;
     const sender = lastMessage.sender;
     const description = this.conversation.description;
-    const username = this.cookie.username;
+    const loggedUsername = this.cookie.username;
 
     if (content) {
       if (description !== "Generale") {
         text =
-          sender === username ? `Tu: ${content}` : `${description}: ${content}`;
+          sender === loggedUsername
+            ? `Tu: ${content}`
+            : `${description}: ${content}`;
       } else {
-        const userDescription = this.getUserDescription(sender);
+        const userDescription = this.lastMessageUser?.description;
         text =
-          sender === username
+          sender === loggedUsername
             ? `Tu: ${content}`
             : `${userDescription}: ${content}`;
       }
@@ -260,36 +253,10 @@ class Conversation extends LitElement {
   }
 
   getUnreadIconName(unread) {
-    switch (unread) {
-      case 1:
-        return IconNames.numeric1;
-
-      case 2:
-        return IconNames.numeric2;
-
-      case 3:
-        return IconNames.numeric3;
-
-      case 4:
-        return IconNames.numeric4;
-
-      case 5:
-        return IconNames.numeric5;
-
-      case 6:
-        return IconNames.numeric6;
-
-      case 7:
-        return IconNames.numeric7;
-
-      case 8:
-        return IconNames.numeric8;
-
-      case 9:
-        return IconNames.numeric9;
-
-      default:
-        return IconNames.numericPlus;
+    if (unread <= 9) {
+      return IconNames[`numeric${unread}`];
+    } else {
+      return IconNames.numericPlus;
     }
   }
 }

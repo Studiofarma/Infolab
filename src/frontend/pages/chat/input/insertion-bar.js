@@ -9,7 +9,7 @@ import { TooltipTexts } from "../../../enums/tooltip-texts";
 
 export class InsertionBar extends LitElement {
   static properties = {
-    bEditor: false,
+    areFormattingButtonsOpen: false,
     editor: undefined,
     isEditing: { type: Boolean },
   };
@@ -55,10 +55,10 @@ export class InsertionBar extends LitElement {
           <il-button-icon
             .content=${IconNames.pencil}
             .tooltipText=${TooltipTexts.editor}
-            @click=${this.editorClick}
+            @click=${this.toggleFormattingButtons}
           ></il-button-icon>
           ${when(
-            this.bEditor,
+            this.areFormattingButtonsOpen,
             () =>
               html`<il-editor-formatting-buttons
                 .editor=${this.editor}
@@ -94,31 +94,31 @@ export class InsertionBar extends LitElement {
     `;
   }
 
-  editorClick() {
-    this.bEditor = !this.bEditor;
+  toggleFormattingButtons() {
+    this.areFormattingButtonsOpen = !this.areFormattingButtonsOpen;
     this.editor?.value.focusEditor();
 
     this.dispatchEvent(
-      new CustomEvent("change-editor-mode", {
-        detail: { isOpen: this.bEditor },
+      new CustomEvent("il:editor-mode-changed", {
+        detail: { isOpen: this.areFormattingButtonsOpen },
       })
     );
   }
 
   sendMessage() {
-    this.dispatchEvent(new CustomEvent("send-message"));
+    this.dispatchEvent(new CustomEvent("il:message-sent"));
   }
 
   emojiPickerClick() {
-    this.dispatchEvent(new CustomEvent("emoji-picker-click"));
+    this.dispatchEvent(new CustomEvent("il:emoji-picker-clicked"));
   }
 
   confirmEdit() {
-    this.dispatchEvent(new CustomEvent("confirm-edit"));
+    this.dispatchEvent(new CustomEvent("il:edit-confirmed"));
   }
 
   cancelEdit() {
-    this.dispatchEvent(new CustomEvent("cancel-edit"));
+    this.dispatchEvent(new CustomEvent("il:edit-canceled"));
   }
 }
 

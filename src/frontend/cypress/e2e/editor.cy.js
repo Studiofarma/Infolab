@@ -10,9 +10,7 @@ function getEditor() {
 beforeEach(() => {
   cy.login({ user: "user1", password: "password1" });
 
-  cy.getLitElement(
-    `${chatPath},il-sidebar,il-conversation-list,il-conversation`
-  )
+  cy.getLitElement(`${chatPath},il-conversation-list,il-conversation`)
     .find(".chat-box")
     .first()
     .click({ force: true });

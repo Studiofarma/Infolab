@@ -18,12 +18,11 @@ export class MessagesList extends LitElement {
     messages: { type: Array },
     activeChatName: { type: String },
     activeDescription: { type: String },
-    users: { type: Array },
+    usersList: { type: Array },
   };
 
   constructor() {
     super();
-
     this.cookie = CookieService.getCookie();
 
     this.getAllUsers();
@@ -88,36 +87,37 @@ export class MessagesList extends LitElement {
           }}
           class="message-box"
           style="height: calc(${fullScreenHeight} - 179px);"
-          ${ref(this.messageBoxRef)}
         >
           ${repeat(
             this.messages,
             (message) => message.id,
             (message, index) =>
               html` <il-message
-                .userList=${this.users}
+                .user=${this.getUserByUsername(message.sender)}
                 .messages=${this.messages}
                 .message=${message}
-                .index=${index}
+                .messageIndex=${index}
                 .activeChatName=${this.activeChatName}
                 .activeDescription=${this.activeDescription}
-                @message-copy=${this.messageCopy}
-                @forward-message=${(event) => {
+                @il:message-copied=${(event) => {
+                  this.dispatchEvent(new CustomEvent(event.type));
+                }}
+                @il:message-forwarded=${(event) => {
                   this.dispatchEvent(
                     new CustomEvent(event.type, { detail: event.detail })
                   );
                 }}
-                @go-to-chat=${(event) => {
+                @il:went-to-chat=${(event) => {
                   this.dispatchEvent(
                     new CustomEvent(event.type, { detail: event.detail })
                   );
                 }}
-                @edit-message=${(event) => {
+                @il:message-edited=${(event) => {
                   this.dispatchEvent(
                     new CustomEvent(event.type, { detail: event.detail })
                   );
                 }}
-                @delete-message=${(event) => {
+                @il:message-deleted=${(event) => {
                   this.dispatchEvent(
                     new CustomEvent(event.type, { detail: event.detail })
                   );
@@ -130,13 +130,18 @@ export class MessagesList extends LitElement {
     `;
   }
 
-  messageCopy() {
-    this.dispatchEvent(new CustomEvent("message-copy"));
+  getUserByUsername(username) {
+    if (this.usersList == undefined) return "";
+
+    let userIndex = this.usersList.findIndex((user) => user.name == username);
+    if (userIndex < 0) return;
+
+    return this.usersList[userIndex];
   }
 
   async getAllUsers() {
     try {
-      this.users = await UsersService.getUsers("");
+      this.usersList = await UsersService.getUsers("");
     } catch (error) {
       console.error(error);
     }
@@ -154,12 +159,12 @@ export class MessagesList extends LitElement {
     if (this.activeChatName === "" || this.messageBoxRef.value === undefined)
       return;
 
-    this.messageBoxRef.value.scrollTo({
+    this.messageBoxRef.value?.scrollTo({
       top: this.messageBoxRef.value.scrollHeight,
     });
   }
 
-  checkScrolledToBottom() {
+  isScrolledToBottom() {
     try {
       return (
         this.messageBoxRef.value.scrollHeight -
@@ -167,6 +172,7 @@ export class MessagesList extends LitElement {
         this.messageBoxRef.value.scrollTop + 10
       );
     } catch (error) {
+      console.log(error);
       return false;
     }
   }

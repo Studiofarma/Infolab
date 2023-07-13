@@ -8,12 +8,13 @@ import { ThemeCSSVariables } from "../enums/theme-css-variables";
 export class Dialog extends LitElement {
   static properties = {
     isOpened: { type: Boolean },
-    dialogRef: { type: Object },
     type: { type: String },
   };
 
   constructor() {
     super();
+
+    // Refs
     this.dialogRef = createRef();
   }
 
@@ -60,7 +61,7 @@ export class Dialog extends LitElement {
         ${ref(this.dialogRef)}
         @click=${(event) => {
           this.dispatchEvent(
-            new CustomEvent("dialog-clicked", {
+            new CustomEvent("il:dialog-clicked", {
               detail: {
                 x: event.offsetX,
                 y: event.offsetY,
@@ -74,7 +75,7 @@ export class Dialog extends LitElement {
     `;
   }
 
-  // Getters & Setters
+  //#region Getters & Setters
 
   getIsOpened() {
     return this.isOpened;
@@ -92,18 +93,18 @@ export class Dialog extends LitElement {
     return this.dialogRef.value.offsetHeight;
   }
 
-  // -----------------------------
+  //#endregion
 
   willUpdate(changed) {
     if (changed.has("isOpened") && this.type === "modal")
       this.isOpened
-        ? this.dialogRef.value.showModal()
-        : this.dialogRef.value.close();
+        ? this.dialogRef.value?.showModal()
+        : this.dialogRef.value?.close();
 
     if (changed.has("isOpened") && this.type === "popover")
       this.isOpened
-        ? this.dialogRef.value.show()
-        : this.dialogRef.value.close();
+        ? this.dialogRef.value?.show()
+        : this.dialogRef.value?.close();
   }
 }
 customElements.define("il-dialog", Dialog);

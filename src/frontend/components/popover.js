@@ -6,14 +6,14 @@ import "./dialog.js";
 
 export class Popover extends LitElement {
   static properties = {
-    leaveByDefault: { type: Boolean },
+    doesLeaveByDefault: { type: Boolean },
     popupCoords: { type: Object },
     ilDialogRef: { type: Object },
   };
 
   constructor() {
     super();
-    this.leaveByDefault = true;
+    this.doesLeaveByDefault = true;
     this.popupCoords = { top: "0px", right: "0px", left: "0px", bottom: "0px" };
     this.ilDialogRef = createRef();
   }
@@ -47,7 +47,7 @@ export class Popover extends LitElement {
   }
 
   handleLeave() {
-    if (this.leaveByDefault) this.ilDialogRef.value?.setIsOpened(false);
+    if (this.doesLeaveByDefault) this.ilDialogRef.value?.setIsOpened(false);
   }
 }
 customElements.define("il-popover", Popover);

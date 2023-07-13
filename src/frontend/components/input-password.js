@@ -7,7 +7,7 @@ import { InputField } from "./input-field";
 export class InputPassword extends InputField {
   static get properties() {
     return {
-      pswVisibility: false,
+      isPasswordVisible: false,
       placeholder: "",
       value: "",
       title: "",
@@ -59,19 +59,21 @@ export class InputPassword extends InputField {
           @input=${this.setValue}
           @blur="${this.setBlur}"
           @focus="${this.setFocus}"
-          type=${!this.pswVisibility ? "password" : "text"}
+          type=${!this.isPasswordVisible ? "password" : "text"}
         />
 
         <il-button-icon
-          @click=${this.setVisibility}
-          content="${!this.pswVisibility ? IconNames.eye : IconNames.eyeOff}"
+          @click=${this.toggleVisibility}
+          content="${!this.isPasswordVisible
+            ? IconNames.eye
+            : IconNames.eyeOff}"
         ></il-button-icon>
       </div>
     `;
   }
 
-  setVisibility() {
-    this.pswVisibility = !this.pswVisibility;
+  toggleVisibility() {
+    this.isPasswordVisible = !this.isPasswordVisible;
   }
 }
 

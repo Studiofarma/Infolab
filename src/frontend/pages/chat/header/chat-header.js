@@ -114,7 +114,7 @@ export class ChatHeader extends LitElement {
             <h2>${this.loggedUser?.description}</h2>
           </div>
 
-          <il-modal ${ref(this.modalRef)} .closeByBackdropClick=${false}>
+          <il-modal ${ref(this.modalRef)} .isClosableByBackdropClick=${false}>
             <div class="profile-modal">
               <il-profile-settings
                 ${ref(this.profileSettingsRef)}
@@ -122,9 +122,9 @@ export class ChatHeader extends LitElement {
                 currentUsername=${this.loggedUser?.description}
                 currentAvatarURL=${this.loggedUser?.avatarLink}
                 username=${this.loggedUser?.description}
-                @set-new-description=${this.setNewDescription}
-                @set-new-avatar=${this.setNewAvatar}
-                @close-menu=${this.closeProfileMenu}
+                @il:new-description-set=${this.newDescriptionSetHandler}
+                @il:new-avatar-set=${this.newAvatarSetHandler}
+                @il:menu-closed=${this.closeProfileMenu}
               ></il-profile-settings>
             </div>
           </il-modal>
@@ -135,22 +135,22 @@ export class ChatHeader extends LitElement {
 
   openSettingsMenu() {
     this.modalRef.value?.setDialogRefIsOpened(true);
-    this.profileSettingsRef.value?.setIsFocus();
+    this.profileSettingsRef.value?.focus();
   }
 
-  closeProfileMenu(event) {
+  closeProfileMenu() {
     this.modalRef.value?.setDialogRefIsOpened(false);
   }
 
-  setNewDescription() {}
+  newDescriptionSetHandler() {}
 
-  setNewAvatar() {}
+  newAvatarSetHandler() {}
 
   setConversation(conversation) {
     this.conversation = conversation;
   }
 
-  setUser(user) {
+  setOtherUser(user) {
     this.otherUser = user;
   }
 }

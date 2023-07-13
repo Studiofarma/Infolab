@@ -12,9 +12,8 @@ export class MessageOptions extends LitElement {
   static get properties() {
     return {
       message: { type: Object },
-      cookie: { type: Object },
       type: { type: String },
-      index: { type: Number },
+      messageIndex: { type: Number },
     };
   }
 
@@ -26,44 +25,44 @@ export class MessageOptions extends LitElement {
   render() {
     return html`
       <div class=${this.type}>
-        <message-button-option
+        <il-message-button-option
           iconName=${IconNames.mdiContentCopy}
           text="Copia"
           @click=${this.copyToClipboardHandler}
         >
-        </message-button-option>
+        </il-message-button-option>
 
         ${when(
           this.type === "receiver" && this.message.roomName === "general",
-          () => html` <message-button-option
+          () => html` <il-message-button-option
             iconName=${IconNames.mdiMessage}
             text="Scrivi in privato"
-            @click=${this.goToChatHandler}
+            @click=${this.wentToChat}
           >
-          </message-button-option>`
+          </il-message-button-option>`
         )}
 
-        <message-button-option
+        <il-message-button-option
           iconName=${IconNames.mdiShare}
           text="Inoltra"
           @click=${this.forwardMessageHandler}
         >
-        </message-button-option>
+        </il-message-button-option>
 
         ${when(
           this.type === "sender",
-          () => html`<message-button-option
+          () => html`<il-message-button-option
               iconName=${IconNames.pencil}
               text="Modifica"
               @click=${this.editHandler}
-            ></message-button-option>
+            ></il-message-button-option>
 
-            <message-button-option
+            <il-message-button-option
               iconName=${IconNames.mdiDelete}
               text="Elimina"
               @click=${this.deleteMessageHandler}
             >
-            </message-button-option>`,
+            </il-message-button-option>`,
           () => html``
         )}
       </div>
@@ -74,12 +73,12 @@ export class MessageOptions extends LitElement {
     navigator.clipboard.writeText(
       HtmlParserService.parseToString(this.message.content)
     );
-    this.dispatchEvent(new CustomEvent("message-copy"));
+    this.dispatchEvent(new CustomEvent("il:message-copied"));
   }
 
   forwardMessageHandler() {
     this.dispatchEvent(
-      new CustomEvent("forward-message", {
+      new CustomEvent("il:message-forwarded", {
         detail: {
           messageToForward: this.message.content,
         },
@@ -87,9 +86,9 @@ export class MessageOptions extends LitElement {
     );
   }
 
-  goToChatHandler() {
+  wentToChat() {
     this.dispatchEvent(
-      new CustomEvent("go-to-chat", {
+      new CustomEvent("il:went-to-chat", {
         detail: {
           user: this.message.sender,
         },
@@ -99,10 +98,10 @@ export class MessageOptions extends LitElement {
 
   deleteMessageHandler() {
     this.dispatchEvent(
-      new CustomEvent("delete-message", {
+      new CustomEvent("il:message-deleted", {
         detail: {
           messageToDelete: this.message,
-          index: this.index,
+          messageIndex: this.messageIndex,
         },
       })
     );
@@ -110,10 +109,10 @@ export class MessageOptions extends LitElement {
 
   editHandler() {
     this.dispatchEvent(
-      new CustomEvent("edit-message", {
+      new CustomEvent("il:message-edited", {
         detail: {
           message: this.message,
-          index: this.index,
+          messageIndex: this.messageIndex,
         },
       })
     );

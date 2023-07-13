@@ -10,6 +10,15 @@ export class Editor extends LitElement {
     isEditMode: false,
   };
 
+  constructor() {
+    super();
+    this.isKeyDown = false;
+    this.message = "";
+
+    // Refs
+    this.editorRef = createRef();
+  }
+
   static styles = css`
     #editor {
       background-color: ${ThemeCSSVariables.editorInputBg};
@@ -46,19 +55,12 @@ export class Editor extends LitElement {
     }
   `;
 
-  constructor() {
-    super();
-    this.editorRef = createRef();
-    this.isKeyDown = false;
-    this.message = "";
-  }
-
   render() {
     return html`
       <div
+        ${ref(this.editorRef)}
         id="editor"
         contenteditable="true"
-        ${ref(this.editorRef)}
         @keydown=${this.onKeyDown}
         @keyup=${this.onKeyUp}
         @input=${this.onInput}
@@ -70,7 +72,7 @@ export class Editor extends LitElement {
 
   clearMessage() {
     this.editorRef.value.innerHTML = "";
-    this.textEditorResized();
+    this.resizeTextEditor();
   }
 
   insertInEditor(text) {
@@ -90,16 +92,16 @@ export class Editor extends LitElement {
     }
   }
 
-  onKeyUp(event) {
+  onKeyUp() {
     this.isKeyDown = false;
   }
 
-  onBlur(event) {
+  onBlur() {
     this.isKeyDown = false;
   }
 
   focusEditor() {
-    this.editorRef.value.focus();
+    this.editorRef.value?.focus();
   }
 
   onInput(event) {
@@ -108,7 +110,7 @@ export class Editor extends LitElement {
       return;
     }
 
-    this.textEditorResized();
+    this.resizeTextEditor();
     this.textChanged();
     this.message = this.getText();
   }
@@ -117,24 +119,24 @@ export class Editor extends LitElement {
     const text = this.getText();
 
     this.dispatchEvent(
-      new CustomEvent("text-changed", {
+      new CustomEvent("il:text-changed", {
         detail: { content: text },
       })
     );
   }
 
-  textEditorResized() {
+  resizeTextEditor() {
     const height = this.editorRef.value.clientHeight;
 
     this.dispatchEvent(
-      new CustomEvent("text-editor-resized", {
+      new CustomEvent("il:text-editor-resized", {
         detail: { height: height },
       })
     );
   }
 
   sendMessage() {
-    this.dispatchEvent(new CustomEvent("enter-key-pressed"));
+    this.dispatchEvent(new CustomEvent("il:enter-key-pressed"));
   }
 
   getText() {

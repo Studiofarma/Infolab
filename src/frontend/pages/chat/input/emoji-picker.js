@@ -38,7 +38,7 @@ export class EmojiPicker extends LitElement {
   }
 
   closePicker() {
-    this.dispatchEvent(new CustomEvent("picker-close"));
+    this.dispatchEvent(new CustomEvent("il:emoji-picker-closed"));
   }
 }
 

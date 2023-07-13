@@ -17,26 +17,29 @@ export class Login extends LitElement {
   static properties = {
     username: "",
     password: "",
-    pswVisibility: false,
-    emptyUsernameField: false,
-    emptyPasswordField: false,
+    isPasswordVisible: false,
+    isUsernameFieldEmpty: false,
+    isPasswordFieldEmpty: false,
     header: "",
     token: "",
-    cookie: false,
+    cookie: { type: Object },
   };
 
   constructor() {
     super();
     this.username = "";
     this.password = "";
-    this.pswVisibility = false;
-    this.emptyUsernameField = false;
-    this.emptyPasswordField = false;
+    this.isPasswordVisible = false;
+    this.isUsernameFieldEmpty = false;
+    this.isPasswordFieldEmpty = false;
     this.header = "";
     this.token = "";
-    this.snackbarRef = createRef();
+
     this.cookie = CookieService.getCookie();
     if (this.cookie.isValid) this.loginConfirm();
+
+    // Refs
+    this.snackbarRef = createRef();
   }
 
   static styles = css`
@@ -146,7 +149,7 @@ export class Login extends LitElement {
     }
   `;
 
-  setCookie() {
+  setCookieWithCurrentData() {
     CookieService.setCookieByKey(CookieService.Keys.username, this.username);
     CookieService.setCookieByKey(CookieService.Keys.password, this.password);
     CookieService.setCookieByKey(CookieService.Keys.header, this.header);
@@ -164,7 +167,7 @@ export class Login extends LitElement {
         <div id="input-container">
           <div class="text-container">
             <il-input-field
-              class=${this.emptyUsernameField ? "error" : ""}
+              class=${this.isUsernameFieldEmpty ? "error" : ""}
               id="username"
               type="text"
               @input=${this.onUsernameInput}
@@ -176,7 +179,7 @@ export class Login extends LitElement {
 
           <div class="text-container">
             <il-input-password
-              class=${this.emptyPasswordField ? "error" : ""}
+              class=${this.isPasswordFieldEmpty ? "error" : ""}
               id="password"
               @input=${this.onPasswordInput}
               @keydown=${this.checkEnterKey}
@@ -212,12 +215,12 @@ export class Login extends LitElement {
   }
 
   setVisibility() {
-    this.pswVisibility = !this.pswVisibility;
+    this.isPasswordVisible = !this.isPasswordVisible;
   }
 
   loginConfirmEvent() {
     this.dispatchEvent(
-      new CustomEvent("login-confirm", {
+      new CustomEvent("il:login-confirmed", {
         detail: {
           login: {
             username: this.username,
@@ -237,18 +240,18 @@ export class Login extends LitElement {
     }
 
     if (this.username === "" && this.password === "") {
-      this.emptyUsernameField = true;
-      this.emptyPasswordField = true;
+      this.isUsernameFieldEmpty = true;
+      this.isPasswordFieldEmpty = true;
       return;
     }
 
     if (this.username === "") {
-      this.emptyUsernameField = true;
+      this.isUsernameFieldEmpty = true;
       return;
     }
 
     if (this.password === "") {
-      this.emptyPasswordField = true;
+      this.isPasswordFieldEmpty = true;
       return;
     }
 
@@ -256,12 +259,12 @@ export class Login extends LitElement {
       .then((response) => {
         this.header = response.data.headerName;
         this.token = response.data.token;
-        this.setCookie();
+        this.setCookieWithCurrentData();
         this.loginConfirmEvent();
       })
-      .catch((e) => {
-        this.emptyUsernameField = false;
-        this.emptyPasswordField = false;
+      .catch(() => {
+        this.isUsernameFieldEmpty = false;
+        this.isPasswordFieldEmpty = false;
         this.snackbarRef.value.openSnackbar(
           "CREDENZIALI NON VALIDE",
           "error",
