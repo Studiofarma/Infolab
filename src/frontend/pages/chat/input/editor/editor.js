@@ -72,6 +72,7 @@ export class Editor extends LitElement {
 
   clearMessage() {
     this.editorRef.value.innerHTML = "";
+    this.message = "";
     this.resizeTextEditor();
   }
 
