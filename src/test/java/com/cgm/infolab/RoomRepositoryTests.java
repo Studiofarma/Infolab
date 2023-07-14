@@ -47,7 +47,6 @@ public class RoomRepositoryTests {
 
     public RoomEntity general = RoomEntity.general();
     public String generalDesc = "Generale";
-    public RoomEntity anotherPublic = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC);
 
     public ChatMessageDto[] messageDtos =
             {ChatMessageDto.of("1 Hello general from user0", users[0].getName().value()),

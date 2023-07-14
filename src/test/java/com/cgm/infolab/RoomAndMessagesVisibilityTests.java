@@ -46,7 +46,7 @@ public class RoomAndMessagesVisibilityTests {
     public UserEntity loggedInUser = users[0]; // user0
 
     public RoomEntity general = RoomEntity.general();
-    public RoomEntity anotherPublic = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC);
+    public RoomEntity anotherPublic = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC, RoomTypeEnum.GROUP);
 
     public ChatMessageDto[] messageDtos =
             {ChatMessageDto.of("1 Hello general from user0", users[0].getName().value()),

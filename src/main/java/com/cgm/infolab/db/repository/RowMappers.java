@@ -18,10 +18,15 @@ public abstract class RowMappers {
         UserEntity user = UserEntity.of(rs.getLong("user_id"),
                 Username.of(rs.getString("username")));
 
+        // TODO: remove when roomType will come from the db
+        String roomName = rs.getString("roomname");
+        RoomTypeEnum roomType = roomName.equals("general") ? RoomTypeEnum.GROUP : RoomTypeEnum.USER2USER;
+
         RoomEntity room = RoomEntity.of(
                 rs.getLong("room_id"),
-                RoomName.of(rs.getString("roomname")),
-                VisibilityEnum.valueOf(rs.getString("visibility").trim())
+                RoomName.of(roomName),
+                VisibilityEnum.valueOf(rs.getString("visibility").trim()),
+                roomType
         );
 
         return ChatMessageEntity
@@ -41,11 +46,17 @@ public abstract class RowMappers {
     }
 
     public static RoomEntity mapToRoomEntity(ResultSet rs, int rowNum) throws SQLException {
-        return RoomEntity
-                .of(rs.getLong("room_id"),
-                        RoomName.of(rs.getString("roomname")),
-                        VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                        rs.getString("description"));
+        // TODO: remove when roomType will come from the db
+        String roomName = rs.getString("roomname");
+        RoomTypeEnum roomType = roomName.equals("general") ? RoomTypeEnum.GROUP : RoomTypeEnum.USER2USER;
+
+        return RoomEntity.of(
+                rs.getLong("room_id"),
+                RoomName.of(roomName),
+                VisibilityEnum.valueOf(rs.getString("visibility").trim()),
+                roomType,
+                rs.getString("description")
+        );
     }
 
     public static RoomEntity mapToRoomEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
