@@ -1,9 +1,8 @@
 package com.cgm.infolab.model;
 
-import com.cgm.infolab.db.model.Username;
-import java.security.Principal;
-
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RoomDto {
     private String roomName;
@@ -13,6 +12,7 @@ public class RoomDto {
     private String visibility;
     private String roomType;
     private LastMessageDto lastMessage;
+    private List<UserDto> users;
 
     private RoomDto() {
     }
@@ -23,7 +23,8 @@ public class RoomDto {
                     String description,
                     String visibility,
                     String roomType,
-                    LastMessageDto lastMessage) {
+                    LastMessageDto lastMessage,
+                    List<UserDto> users) {
         this.roomName = roomName;
         this.avatarLink = avatarLink;
         this.unreadMessages = unreadMessages;
@@ -31,14 +32,15 @@ public class RoomDto {
         this.visibility = visibility;
         this.roomType = roomType;
         this.lastMessage = lastMessage;
+        this.users = users;
     }
 
     public static RoomDto empty() {
-        return new RoomDto("", null, 0, "", "", "", LastMessageDto.empty());
+        return new RoomDto("", null, 0, "", "", "", LastMessageDto.empty(), new ArrayList<>());
     }
 
     public static RoomDto of(String roomName, int unreadMessages, String description, String visibility, String roomType) {
-        return new RoomDto(roomName, null, unreadMessages, description, visibility, roomType, LastMessageDto.empty());
+        return new RoomDto(roomName, null, unreadMessages, description, visibility, roomType, LastMessageDto.empty(), new ArrayList<>());
     }
 
     public String getRoomName() {
@@ -95,5 +97,13 @@ public class RoomDto {
 
     public void setLastMessage(LastMessageDto lastMessage) {
         this.lastMessage = lastMessage;
+    }
+
+    public List<UserDto> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<UserDto> users) {
+        this.users = users;
     }
 }
