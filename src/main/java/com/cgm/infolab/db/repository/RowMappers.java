@@ -73,7 +73,7 @@ public abstract class RowMappers {
 
         String description = rs.getString("description");
 
-        description = description == null || description.equals("") ? usernameString : description;
+        description = description == null || description.isEmpty() ? usernameString : description;
 
         return UserEntity.of(rs.getLong("id"),
                 Username.of(usernameString),
