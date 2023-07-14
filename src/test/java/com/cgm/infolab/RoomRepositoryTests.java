@@ -8,6 +8,7 @@ import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
 import com.cgm.infolab.service.RoomService;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,19 +24,15 @@ import java.util.List;
 public class RoomRepositoryTests {
 
     @Autowired
-    public ChatMessageRepository chatMessageRepository;
-    @Autowired
     public RoomRepository roomRepository;
     @Autowired
-    public UserRepository userRepository;
-    @Autowired
     public DownloadDateRepository downloadDateRepository;
-    @Autowired
-    public RoomService roomService;
     @Autowired
     public ChatService chatService;
     @Autowired
     public JdbcTemplate jdbcTemplate;
+    @Autowired
+    public TestDbHelper testDbHelper;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0"), "user0 desc"),
@@ -60,20 +57,18 @@ public class RoomRepositoryTests {
 
     @BeforeAll
     void setUpAll() {
-        jdbcTemplate.update("DELETE FROM infolab.download_dates");
-        jdbcTemplate.update("DELETE FROM infolab.chatmessages");
-        jdbcTemplate.update("DELETE FROM infolab.rooms_subscriptions");
-        jdbcTemplate.update("DELETE FROM infolab.users");
-        jdbcTemplate.update("DELETE FROM infolab.rooms WHERE roomname <> 'general'");
+        testDbHelper.clearDbExceptForGeneral();
 
-        for (UserEntity user : users) {
-            userRepository.add(user);
-        }
+        testDbHelper.addUsers(users);
 
-        roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[1].getName());
-        roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[2].getName());
-        roomService.createPrivateRoomAndSubscribeUsers(users[1].getName(), users[2].getName());
-        roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[3].getName());
+        List<Pair<UserEntity, UserEntity>> pairs = List.of(
+                Pair.of(users[0], users[1]),
+                Pair.of(users[0], users[2]),
+                Pair.of(users[1], users[2]),
+                Pair.of(users[0], users[3])
+        );
+
+        testDbHelper.addPrivateRoomsAndSubscribeUsers(pairs);
 
         chatService.saveMessageInDb(messageDtos[0], users[0].getName(), general.getName(), null);
         chatService.saveMessageInDb(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"), users[0].getName());

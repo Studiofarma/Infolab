@@ -78,9 +78,15 @@ public abstract class RowMappers {
     }
 
     public static UserEntity mapToUserEntity(ResultSet rs, int rowNum) throws SQLException {
+        String usernameString = rs.getString("username");
+
+        String description = rs.getString("description");
+
+        description = description == null || description.isEmpty() ? usernameString : description;
+
         return UserEntity.of(rs.getLong("id"),
-                Username.of(rs.getString("username")),
-                rs.getString("description"));
+                Username.of(usernameString),
+                description);
     }
 
     public static UserEntity mapToOtherUserEntity(ResultSet rs, int rowNum) throws SQLException {

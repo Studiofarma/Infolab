@@ -6,6 +6,7 @@ import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
 import com.cgm.infolab.service.RoomService;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,6 +15,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -30,6 +32,8 @@ public class LastDownloadDateUpdateTests {
     public DownloadDateRepository downloadDateRepository;
     @Autowired
     public UserRepository userRepository;
+    @Autowired
+    public TestDbHelper testDbHelper;
 
     public RoomEntity general = RoomEntity.general();
 
@@ -54,23 +58,18 @@ public class LastDownloadDateUpdateTests {
 
     @BeforeAll
     void setUp() {
-        jdbcTemplate.update("DELETE FROM infolab.download_dates");
-        jdbcTemplate.update("DELETE FROM infolab.chatmessages");
-        jdbcTemplate.update("DELETE FROM infolab.rooms_subscriptions");
-        jdbcTemplate.update("DELETE FROM infolab.users");
+        testDbHelper.clearDbExceptForGeneral();
 
-        for (int i = 0; i < users.length; i++) {
-            users[i] = userRepository.add(users[i]);
-        }
+        users = testDbHelper.addUsers(users);
 
-        roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[1].getName());
-        roomService.createPrivateRoomAndSubscribeUsers(users[1].getName(), users[2].getName());
+        List<Pair<UserEntity, UserEntity>> pairs = List.of(Pair.of(users[0], users[1]), Pair.of(users[1], users[2]));
+
+        testDbHelper.addPrivateRoomsAndSubscribeUsers(pairs);
     }
 
     @AfterEach
     void clearDb() {
-        jdbcTemplate.update("DELETE FROM infolab.download_dates");
-        jdbcTemplate.update("DELETE FROM infolab.chatmessages");
+        testDbHelper.clearMessages();
     }
 
     @Test
