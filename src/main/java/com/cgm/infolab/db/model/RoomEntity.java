@@ -14,7 +14,7 @@ public class RoomEntity {
     private String description;
     private int notDownloadedMessagesCount;
     private List<ChatMessageEntity> messages;
-    private List<UserEntity> users;
+    private List<UserEntity> otherParticipants;
 
     private RoomEntity(long id,
                        RoomName name,
@@ -23,7 +23,7 @@ public class RoomEntity {
                        String description,
                        int notDownloadedMessagesCount,
                        List<ChatMessageEntity> messages,
-                       List<UserEntity> users) {
+                       List<UserEntity> otherParticipants) {
         this.id = id;
         this.name = name;
         this.visibility = visibility;
@@ -31,7 +31,7 @@ public class RoomEntity {
         this.description = description;
         this.notDownloadedMessagesCount = notDownloadedMessagesCount;
         this.messages = messages;
-        this.users = users;
+        this.otherParticipants = otherParticipants;
     }
 
     public static RoomEntity of(RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType) {
@@ -122,12 +122,12 @@ public class RoomEntity {
         this.messages = messages;
     }
 
-    public List<UserEntity> getUsers() {
-        return users;
+    public List<UserEntity> getOtherParticipants() {
+        return otherParticipants;
     }
 
-    public void setUsers(List<UserEntity> users) {
-        this.users = users;
+    public void setOtherParticipants(List<UserEntity> otherParticipants) {
+        this.otherParticipants = otherParticipants;
     }
 
     @Override

@@ -194,7 +194,7 @@ public class RoomRepositoryTests {
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
 
-        Assertions.assertEquals("user1", roomsFromDb.get(1).getUsers().get(0).getName().value());
-        Assertions.assertEquals("user2", roomsFromDb.get(2).getUsers().get(0).getName().value());
+        Assertions.assertEquals("user1", roomsFromDb.get(1).getOtherParticipants().get(0).getName().value());
+        Assertions.assertEquals("user2", roomsFromDb.get(2).getOtherParticipants().get(0).getName().value());
     }
 }

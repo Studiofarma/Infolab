@@ -7,9 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class RowMappers {
 
@@ -73,7 +71,7 @@ public abstract class RowMappers {
         );
 
         if (rs.getString("other_user_id") != null) {
-            room.setUsers(List.of(mapToOtherUserEntity(rs, rowNum)));
+            room.setOtherParticipants(List.of(mapToOtherUserEntity(rs, rowNum)));
         }
 
         return room;

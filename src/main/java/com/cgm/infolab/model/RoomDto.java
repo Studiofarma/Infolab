@@ -12,7 +12,7 @@ public class RoomDto {
     private String visibility;
     private String roomType;
     private LastMessageDto lastMessage;
-    private List<UserDto> users;
+    private List<UserDto> otherParticipants;
 
     private RoomDto() {
     }
@@ -24,7 +24,7 @@ public class RoomDto {
                     String visibility,
                     String roomType,
                     LastMessageDto lastMessage,
-                    List<UserDto> users) {
+                    List<UserDto> otherParticipants) {
         this.roomName = roomName;
         this.avatarLink = avatarLink;
         this.unreadMessages = unreadMessages;
@@ -32,7 +32,7 @@ public class RoomDto {
         this.visibility = visibility;
         this.roomType = roomType;
         this.lastMessage = lastMessage;
-        this.users = users;
+        this.otherParticipants = otherParticipants;
     }
 
     public static RoomDto empty() {
@@ -99,11 +99,11 @@ public class RoomDto {
         this.lastMessage = lastMessage;
     }
 
-    public List<UserDto> getUsers() {
-        return users;
+    public List<UserDto> getOtherParticipants() {
+        return otherParticipants;
     }
 
-    public void setUsers(List<UserDto> users) {
-        this.users = users;
+    public void setOtherParticipants(List<UserDto> otherParticipants) {
+        this.otherParticipants = otherParticipants;
     }
 }

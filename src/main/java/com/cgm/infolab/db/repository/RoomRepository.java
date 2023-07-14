@@ -53,7 +53,7 @@ public class RoomRepository {
                 room.getRoomType(),
                 room.getDescription(),
                 room.getMessages(),
-                room.getUsers()
+                room.getOtherParticipants()
         );
     }
 
