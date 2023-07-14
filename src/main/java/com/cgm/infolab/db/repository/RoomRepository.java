@@ -49,6 +49,7 @@ public class RoomRepository {
         return RoomEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters),
                 room.getName(),
                 room.getVisibility(),
+                room.getRoomType(),
                 room.getDescription(),
                 room.getMessages());
     }

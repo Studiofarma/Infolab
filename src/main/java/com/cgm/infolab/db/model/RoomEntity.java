@@ -45,12 +45,8 @@ public class RoomEntity {
         return new RoomEntity(id, name, visibility, roomType, description, 0,null);
     }
 
-    public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, List<ChatMessageEntity> messages) {
-        return new RoomEntity(id, name, visibility, null, "", 0, messages);
-    }
-
-    public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, String description, List<ChatMessageEntity> messages) {
-        return new RoomEntity(id, name, visibility, null, description, 0, messages);
+    public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType, String description, List<ChatMessageEntity> messages) {
+        return new RoomEntity(id, name, visibility, roomType, description, 0, messages);
     }
 
     public static RoomEntity empty() {

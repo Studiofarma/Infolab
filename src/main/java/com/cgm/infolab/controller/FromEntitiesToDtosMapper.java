@@ -25,7 +25,13 @@ public abstract class FromEntitiesToDtosMapper {
     }
 
     public static RoomDto fromEntityToDto(RoomEntity roomEntity) {
-        RoomDto roomDto = RoomDto.of(roomEntity.getName().value(), roomEntity.getNotDownloadedMessagesCount(), roomEntity.getDescription());
+        RoomDto roomDto = RoomDto.of(
+                roomEntity.getName().value(),
+                roomEntity.getNotDownloadedMessagesCount(),
+                roomEntity.getDescription(),
+                roomEntity.getVisibility().toString(),
+                roomEntity.getRoomType().toString()
+        );
 
         LastMessageDto lastMessage = fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
         roomDto.setLastMessage(lastMessage);
