@@ -46,11 +46,15 @@ public class RoomRepository {
         parameters.put("roomname", room.getName().value());
         parameters.put("visibility", room.getVisibility().name());
         parameters.put("description", room.getDescription());
-        return RoomEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters),
+        return RoomEntity.of(
+                (long)simpleJdbcInsert.executeAndReturnKey(parameters),
                 room.getName(),
                 room.getVisibility(),
+                room.getRoomType(),
                 room.getDescription(),
-                room.getMessages());
+                room.getMessages(),
+                room.getOtherParticipants()
+        );
     }
 
     /**
@@ -184,7 +188,8 @@ public class RoomRepository {
         return queryHelper
                 .forUser(username)
                 .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, " +
-                        "r.visibility, u_mex.id user_id, u_mex.username username, m.id message_id, m.sent_at, m.content, m.sender_id, %s".formatted(CASE_QUERY))
+                        "r.visibility, u_mex.id user_id, u_mex.username username, m.id message_id, m.sent_at, m.content, m.sender_id," +
+                        "u_other.id other_user_id, u_other.username other_username, u_other.description other_description, %s".formatted(CASE_QUERY))
                 .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id " +
                         "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
                         "left join infolab.users u_other on u_other.id = s_other.user_id");

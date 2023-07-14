@@ -7,7 +7,8 @@ import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.LastMessageDto;
 import com.cgm.infolab.model.RoomDto;
 import com.cgm.infolab.model.UserDto;
-import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 public abstract class FromEntitiesToDtosMapper {
 
@@ -25,10 +26,19 @@ public abstract class FromEntitiesToDtosMapper {
     }
 
     public static RoomDto fromEntityToDto(RoomEntity roomEntity) {
-        RoomDto roomDto = RoomDto.of(roomEntity.getName().value(), roomEntity.getNotDownloadedMessagesCount(), roomEntity.getDescription());
+        RoomDto roomDto = RoomDto.of(
+                roomEntity.getName().value(),
+                roomEntity.getNotDownloadedMessagesCount(),
+                roomEntity.getDescription(),
+                roomEntity.getVisibility().toString(),
+                roomEntity.getRoomType().toString()
+        );
 
         LastMessageDto lastMessage = fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
         roomDto.setLastMessage(lastMessage);
+
+        List<UserDto> userDtos = roomEntity.getOtherParticipants().stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
+        roomDto.setOtherParticipants(userDtos);
 
         return roomDto;
     }

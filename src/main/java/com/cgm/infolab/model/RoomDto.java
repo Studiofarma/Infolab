@@ -1,16 +1,18 @@
 package com.cgm.infolab.model;
 
-import com.cgm.infolab.db.model.Username;
-import java.security.Principal;
-
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RoomDto {
     private String roomName;
     private URL avatarLink;
     private int unreadMessages;
     private String description;
+    private String visibility;
+    private String roomType;
     private LastMessageDto lastMessage;
+    private List<UserDto> otherParticipants;
 
     private RoomDto() {
     }
@@ -19,28 +21,26 @@ public class RoomDto {
                     URL avatarLink,
                     int unreadMessages,
                     String description,
-                    LastMessageDto lastMessage) {
+                    String visibility,
+                    String roomType,
+                    LastMessageDto lastMessage,
+                    List<UserDto> otherParticipants) {
         this.roomName = roomName;
         this.avatarLink = avatarLink;
         this.unreadMessages = unreadMessages;
         this.description = description;
+        this.visibility = visibility;
+        this.roomType = roomType;
         this.lastMessage = lastMessage;
+        this.otherParticipants = otherParticipants;
     }
 
     public static RoomDto empty() {
-        return new RoomDto("", null, 0, "", LastMessageDto.empty());
+        return new RoomDto("", null, 0, "", "", "", LastMessageDto.empty(), new ArrayList<>());
     }
 
-    public static RoomDto of(String roomName) {
-        return new RoomDto(roomName, null, 0, "", LastMessageDto.empty());
-    }
-
-    public static RoomDto of(String roomName, String description) {
-        return new RoomDto(roomName, null, 0, description, LastMessageDto.empty());
-    }
-
-    public static RoomDto of(String roomName, int unreadMessages, String description) {
-        return new RoomDto(roomName, null, unreadMessages, description, LastMessageDto.empty());
+    public static RoomDto of(String roomName, int unreadMessages, String description, String visibility, String roomType) {
+        return new RoomDto(roomName, null, unreadMessages, description, visibility, roomType, LastMessageDto.empty(), new ArrayList<>());
     }
 
     public String getRoomName() {
@@ -67,6 +67,30 @@ public class RoomDto {
         this.unreadMessages = unreadMessages;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(String visibility) {
+        this.visibility = visibility;
+    }
+
+    public String getRoomType() {
+        return roomType;
+    }
+
+    public void setRoomType(String roomType) {
+        this.roomType = roomType;
+    }
+
     public LastMessageDto getLastMessage() {
         return lastMessage;
     }
@@ -75,11 +99,11 @@ public class RoomDto {
         this.lastMessage = lastMessage;
     }
 
-    public String getDescription() {
-        return description;
+    public List<UserDto> getOtherParticipants() {
+        return otherParticipants;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setOtherParticipants(List<UserDto> otherParticipants) {
+        this.otherParticipants = otherParticipants;
     }
 }

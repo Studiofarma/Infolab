@@ -181,4 +181,15 @@ public class RoomRepositoryTests {
 
         Assertions.assertEquals(1, roomEntities.get(2).getNotDownloadedMessagesCount()); // user0-user2
     }
+
+    @Test
+    void whenFetchingPrivateRoom_otherUserIsTheExpectedOne() {
+        List<RoomEntity> roomsFromDb = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        Assertions.assertEquals("user1", roomsFromDb.get(1).getOtherParticipants().get(0).getName().value());
+        Assertions.assertEquals("user2", roomsFromDb.get(2).getOtherParticipants().get(0).getName().value());
+    }
 }
