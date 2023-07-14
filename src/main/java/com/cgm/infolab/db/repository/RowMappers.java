@@ -61,31 +61,33 @@ public abstract class RowMappers {
         String roomName = rs.getString("roomname");
         RoomTypeEnum roomType = getRoomType(roomName);
 
-        if (rs.getString("content") != null) {
-            ChatMessageEntity message = mapToChatMessageEntity(rs, rowNum);
+        ChatMessageEntity messageEntity = rs.getString("content") == null ? ChatMessageEntity.empty() : mapToChatMessageEntity(rs, rowNum);
 
-            return RoomEntity
-                    .of(rs.getLong("room_id"),
-                            RoomName.of(roomName),
-                            VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                            roomType,
-                            rs.getString("description"),
-                            List.of(message));
-        } else {
-            return RoomEntity
-                    .of(rs.getLong("room_id"),
-                            RoomName.of(roomName),
-                            VisibilityEnum.valueOf(rs.getString("visibility").trim()),
-                            roomType,
-                            rs.getString("description"),
-                            List.of(ChatMessageEntity.empty()));
-        }
+        UserEntity userEntity = rs.getString("other_user_id") == null ? UserEntity.empty() : mapToOtherUserEntity(rs, rowNum);
+
+        return RoomEntity.of(
+                rs.getLong("room_id"),
+                RoomName.of(roomName),
+                VisibilityEnum.valueOf(rs.getString("visibility").trim()),
+                roomType,
+                rs.getString("description"),
+                List.of(messageEntity),
+                List.of(userEntity)
+        );
     }
 
     public static UserEntity mapToUserEntity(ResultSet rs, int rowNum) throws SQLException {
         return UserEntity.of(rs.getLong("id"),
                 Username.of(rs.getString("username")),
                 rs.getString("description"));
+    }
+
+    public static UserEntity mapToOtherUserEntity(ResultSet rs, int rowNum) throws SQLException {
+        return UserEntity.of(
+                rs.getLong("other_user_id"),
+                Username.of(rs.getString("other_username")),
+                rs.getString("other_description")
+        );
     }
 
     public static Pair<Long, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {

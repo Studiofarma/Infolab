@@ -14,8 +14,16 @@ public class RoomEntity {
     private String description;
     private int notDownloadedMessagesCount;
     private List<ChatMessageEntity> messages;
+    private List<UserEntity> users;
 
-    private RoomEntity(long id, RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType, String description, int notDownloadedMessagesCount, List<ChatMessageEntity> messages) {
+    private RoomEntity(long id,
+                       RoomName name,
+                       VisibilityEnum visibility,
+                       RoomTypeEnum roomType,
+                       String description,
+                       int notDownloadedMessagesCount,
+                       List<ChatMessageEntity> messages,
+                       List<UserEntity> users) {
         this.id = id;
         this.name = name;
         this.visibility = visibility;
@@ -23,14 +31,15 @@ public class RoomEntity {
         this.description = description;
         this.notDownloadedMessagesCount = notDownloadedMessagesCount;
         this.messages = messages;
+        this.users = users;
     }
 
     public static RoomEntity of(RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType) {
-        return new RoomEntity(ID.None, name, visibility, roomType, "", 0,null);
+        return new RoomEntity(ID.None, name, visibility, roomType, "", 0,null, null);
     }
 
     public static RoomEntity of(RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType, String description) {
-        return new RoomEntity(ID.None, name, visibility, roomType, description, 0, null);
+        return new RoomEntity(ID.None, name, visibility, roomType, description, 0, null, null);
     }
 
     public static RoomEntity general() {
@@ -38,19 +47,19 @@ public class RoomEntity {
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType) {
-        return new RoomEntity(id, name, visibility, roomType, "", 0, null);
+        return new RoomEntity(id, name, visibility, roomType, "", 0, null, null);
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType, String description) {
-        return new RoomEntity(id, name, visibility, roomType, description, 0,null);
+        return new RoomEntity(id, name, visibility, roomType, description, 0,null, null);
     }
 
-    public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType, String description, List<ChatMessageEntity> messages) {
-        return new RoomEntity(id, name, visibility, roomType, description, 0, messages);
+    public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType, String description, List<ChatMessageEntity> messages, List<UserEntity> users) {
+        return new RoomEntity(id, name, visibility, roomType, description, 0, messages, users);
     }
 
     public static RoomEntity empty() {
-        return new RoomEntity(ID.None, RoomName.empty(), null, null, "", 0, new ArrayList<>());
+        return new RoomEntity(ID.None, RoomName.empty(), null, null, "", 0, new ArrayList<>(), new ArrayList<>());
     }
 
     public long getId() {
@@ -67,14 +76,6 @@ public class RoomEntity {
 
     public void setName(RoomName name) {
         this.name = name;
-    }
-
-    public List<ChatMessageEntity> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(List<ChatMessageEntity> messages) {
-        this.messages = messages;
     }
 
     public VisibilityEnum getVisibility() {
@@ -101,6 +102,30 @@ public class RoomEntity {
         this.description = description;
     }
 
+    public int getNotDownloadedMessagesCount() {
+        return notDownloadedMessagesCount;
+    }
+
+    public void setNotDownloadedMessagesCount(int notDownloadedMessagesCount) {
+        this.notDownloadedMessagesCount = notDownloadedMessagesCount;
+    }
+
+    public List<ChatMessageEntity> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<ChatMessageEntity> messages) {
+        this.messages = messages;
+    }
+
+    public List<UserEntity> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<UserEntity> users) {
+        this.users = users;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -112,13 +137,5 @@ public class RoomEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, visibility, messages);
-    }
-
-    public int getNotDownloadedMessagesCount() {
-        return notDownloadedMessagesCount;
-    }
-
-    public void setNotDownloadedMessagesCount(int notDownloadedMessagesCount) {
-        this.notDownloadedMessagesCount = notDownloadedMessagesCount;
     }
 }
