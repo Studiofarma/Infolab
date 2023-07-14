@@ -1,4 +1,4 @@
-package com.cgm.infolab;
+package com.cgm.infolab.helper;
 
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
