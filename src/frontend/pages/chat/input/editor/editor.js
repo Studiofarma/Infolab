@@ -12,7 +12,7 @@ export class Editor extends LitElement {
 
   constructor() {
     super();
-    this.isKeyDown = false;
+    this.isKeyDown = false; // IMPORTANT: PREVENTS BUG. DO NOT REMOVE.
     this.message = "";
 
     // Refs
