@@ -40,6 +40,7 @@ export class InputField extends LitElement {
       height: 40px;
       padding: 5px 10px;
       color: ${ThemeCSSVariables.inputText};
+      background-color: ${ThemeCSSVariables.inputBackground};
       border: none;
       outline: none;
       font-size: 15pt;

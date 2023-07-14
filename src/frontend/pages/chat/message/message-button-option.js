@@ -24,7 +24,9 @@ export class MessageButtonOption extends LitElement {
       padding: 2px 4px;
       cursor: pointer;
       white-space: nowrap;
+      overflow: hidden;
       transition: background 0.5s;
+      background-color: ${ThemeCSSVariables.messageMenuBg};
       color: ${ThemeCSSVariables.actionText};
     }
 

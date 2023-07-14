@@ -4,10 +4,11 @@ export const ThemeCSSVariables = {
   text: css`var(--text)`,
   actionText: css`var(--actionText)`,
   scrollbar: css`var(--scrollbar)`,
+  buttonBg: css`var(--buttonBg)`,
   link: css`var(--link)`,
   boxShadowPrimary: css`var(--boxShadowPrimary)`,
   boxShadowSecondary: css`var(--boxShadowSecondary)`,
-
+  dialogBg: css`var(--dialogBg)`,
   backdrop: css`var(--backdrop)`,
 
   loginFieldBg: css`var(--loginFieldBg)`,
@@ -46,8 +47,7 @@ export const ThemeCSSVariables = {
 
   inputText: css`var(--inputText)`,
   placeholder: css`var(--placeholder)`,
-
-  inputBackgroud: css`var(--inputBackgroud)`,
+  inputBackground: css`var(--inputBackground)`,
   inputBorder: css`var(--inputBorder)`,
   inputFocusedBorder: css`var(--inputFocusedBorder)`,
 

@@ -1,10 +1,12 @@
-import { LitElement, html } from "lit";
+import { LitElement, html, css } from "lit";
 import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service.js";
+import { ThemeColorService } from "../../../services/theme-color-service.js";
 
 import { IconNames } from "../../../enums/icon-names.js";
 import { HtmlParserService } from "../../../services/html-parser-service.js";
+import { ThemeCSSVariables } from "../../../enums/theme-css-variables.js";
 
 import "./message-button-option.js";
 
@@ -21,6 +23,16 @@ export class MessageOptions extends LitElement {
     super();
     this.cookie = CookieService.getCookie();
   }
+
+  static styles = css`
+    * {
+      ${ThemeColorService.getThemeVariables()};
+    }
+
+    div {
+      background: ${ThemeCSSVariables.messageMenuBg};
+    }
+  `;
 
   render() {
     return html`

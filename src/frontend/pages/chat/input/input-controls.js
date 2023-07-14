@@ -89,7 +89,6 @@ export class InputControls extends LitElement {
     }
 
     il-editor {
-      background-color: ${ThemeCSSVariables.editorBg};
       border-radius: 10px;
     }
   `;

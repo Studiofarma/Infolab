@@ -42,6 +42,7 @@ export class profileSettings extends LitElement {
       padding: 0;
       box-sizing: border-box;
       ${ThemeColorService.getThemeVariables()};
+      color: ${ThemeCSSVariables.text};
     }
 
     header h2 {
@@ -74,6 +75,7 @@ export class profileSettings extends LitElement {
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      background: ${ThemeCSSVariables.buttonBg};
       color: ${ThemeCSSVariables.actionText};
     }
 

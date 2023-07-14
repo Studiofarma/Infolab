@@ -2,9 +2,11 @@ export const lightTheme = {
   text: "#333",
   actionText: "#206cf7",
   scrollbar: "#206cf7",
+  buttonBg: "#B7B9BD",
   link: "#0000FF",
   boxShadowPrimary: "#b7b9bd",
   boxShadowSecondary: "#00000029",
+  dialogBg: "#fff",
   backdrop: "#00000037",
 
   loginFieldBg: "#e4e8ee",
@@ -43,8 +45,7 @@ export const lightTheme = {
 
   inputText: "#000",
   placeholder: "#6f7174",
-
-  inputBackgroud: "transparent",
+  inputBackground: "#fff",
   inputBorder: "#989a9d",
   inputFocusedBorder: "#206cf7",
 
@@ -81,6 +82,5 @@ export const lightTheme = {
   conversationActiveBg: "#c5e1fe",
 
   inputControlsBg: "#f2f4f7",
-  editorBg: "#eaecef",
   editorInputBg: "#fff",
 };

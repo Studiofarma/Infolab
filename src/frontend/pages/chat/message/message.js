@@ -70,6 +70,7 @@ export class Message extends LitElement {
       padding: 5px;
       border-radius: 6px;
       background-color: ${ThemeCSSVariables.datetimeMessageBg};
+      color: ${ThemeCSSVariables.datetimeMessageText};
     }
 
     il-message-menu-popover {

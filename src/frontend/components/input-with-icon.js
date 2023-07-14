@@ -29,6 +29,7 @@ export class InputWithIcon extends InputField {
       border-radius: 10px;
       border: solid 2px;
       align-items: center;
+      background-color: ${ThemeCSSVariables.inputBackground};
     }
 
     input {
@@ -37,9 +38,17 @@ export class InputWithIcon extends InputField {
       padding: 0 10px;
       border: none;
       outline: none;
-      background-color: ${ThemeCSSVariables.inputBackgroud};
+      border-radius: 10px;
+      color: ${ThemeCSSVariables.inputText};
+      background-color: ${ThemeCSSVariables.inputBackground};
       position: relative;
       overflow: hidden;
+    }
+
+    input::placeholder {
+      // importo anche qua il servizio per rendere visibili le variabili nello pseudo-elemento
+      ${ThemeColorService.getThemeVariables()};
+      color: ${ThemeCSSVariables.placeholder};
     }
 
     il-button-icon {

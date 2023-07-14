@@ -27,6 +27,7 @@ export class Dialog extends LitElement {
       width: fit-content;
       border: none;
       outline: none;
+      background-color: ${ThemeCSSVariables.dialogBg};
       box-shadow: ${ThemeCSSVariables.boxShadowSecondary} 0px 1px 4px;
       border-radius: 6px;
       padding: 8px;
