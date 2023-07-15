@@ -26,14 +26,14 @@ export const darkTheme = {
 
   initialsText: "#fff",
   statusBorder: "#fff",
-  avatarBg0: "#008A33", //
-  avatarBg1: "#005B13", //
-  avatarBg2: "#EF2C49", //
-  avatarBg3: "#CF173A", //
-  avatarBg4: "#F0981D", //
-  avatarBg5: "#CF7A04", //
-  avatarBg6: "#003366", //
-  avatarBg7: "#5C5E60", //
+  avatarBg0: "#008A33",
+  avatarBg1: "#005B13",
+  avatarBg2: "#EF2C49",
+  avatarBg3: "#CF173A",
+  avatarBg4: "#F0981D",
+  avatarBg5: "#CF7A04",
+  avatarBg6: "#003366",
+  avatarBg7: "#5C5E60",
   onlineStatus: "#68c47e",
   offlineStatus: "#dbdde0",
 

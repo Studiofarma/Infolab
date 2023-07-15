@@ -4,9 +4,13 @@ import { lightTheme } from "../enums/themes/lightTheme";
 import { darkTheme } from "../enums/themes/darkTheme";
 
 export class ThemeColorService {
+
+  static getCurrentThemeName() {
+    return "dark";
+  }
+
   static getCurrentTheme() {
-    // TODO: implementare il controllo del tema attuale dell'utente nel session storage e ritornarlo
-    const currentTheme = "dark";
+    const currentTheme = this.getCurrentThemeName();
 
     switch (currentTheme) {
       case "light":

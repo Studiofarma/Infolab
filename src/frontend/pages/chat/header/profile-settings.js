@@ -12,6 +12,7 @@ import "../../../components/button-text";
 import "../../../components/icon";
 import "../../../components/snackbar";
 import "../../../components/input-with-icon";
+import "./theme-switcher";
 
 const maxLength = 30;
 
@@ -54,7 +55,6 @@ export class profileSettings extends LitElement {
       align-items: center;
       gap: 30px;
       padding: 2em;
-      margin-bottom: 50px;
     }
 
     .avatarContainer {
@@ -63,6 +63,7 @@ export class profileSettings extends LitElement {
       gap: 20px;
       justify-content: center;
       align-items: center;
+      margin-top: auto;
     }
 
     .avatarContainer button {
@@ -87,10 +88,10 @@ export class profileSettings extends LitElement {
       flex-grow: 1;
     }
 
-    p {
+    .fieldset p {
       display: block;
       font-size: 20px;
-      margin-bottom: 15px;
+      margin: 15px 0px;
     }
 
     .inputContainer {
@@ -111,9 +112,6 @@ export class profileSettings extends LitElement {
     }
 
     footer {
-      position: absolute;
-      bottom: 0px;
-      left: 0px;
       width: 100%;
       display: flex;
       justify-content: end;
@@ -179,6 +177,12 @@ export class profileSettings extends LitElement {
           ></il-input-with-icon>
         </div>
       </section>
+
+      <div>
+        <p>Tema:</p>
+
+        <il-theme-switcher></il-theme-switcher>
+      </div>
 
       <footer>
         <il-button-text
