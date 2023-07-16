@@ -1,5 +1,4 @@
 import { LitElement, html, css } from "lit";
-import { ref, createRef } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../../../services/theme-color-service";
 
@@ -11,11 +10,16 @@ import "../../../components/button-icon";
 export class ThemeSwitcher extends LitElement {
   static properties = {
     isThemesSelectionOpened: { type: Boolean },
+    currentTheme: { type: String },
+    theme: { type: String },
+    themes: { type: Array },
   };
 
   constructor() {
     super();
     this.isThemesSelectionOpened = false;
+    this.theme = ThemeColorService.getCurrentThemeName();
+    this.themes = ["light", "dark"];
   }
 
   static styles = css`
@@ -48,6 +52,10 @@ export class ThemeSwitcher extends LitElement {
       transition: 0.5s;
     }
 
+    .theme-option[hidden] {
+      display: none;
+    }
+
     .theme-option:hover {
       background: ${ThemeCSSVariables.messageMenuBgHover};
     }
@@ -57,15 +65,16 @@ export class ThemeSwitcher extends LitElement {
       margin-left: auto;
       font-size: 20px;
       font-weight: 900;
+      color: ${ThemeCSSVariables.actionText};
     }
 
     .themes-selection {
       max-height: 0px;
       overflow-y: hidden;
-      transition: all 1s;
+      transition: max-height 0.5s;
     }
 
-    .open {
+    .themes-selection.open {
       max-height: 1000px;
       overflow-y: auto;
     }
@@ -89,8 +98,10 @@ export class ThemeSwitcher extends LitElement {
     return html`
       <div class="container">
         <div class="theme-option current" @click=${this.toggleThemesSelection}>
-          <il-button-icon content=${IconNames.dotsHorizontal}></il-button-icon>
-          <p>Lorem1</p>
+          <il-button-icon
+            content=${this.getThemeIcon(this.theme) ?? ""}
+          ></il-button-icon>
+          <p>${this.theme}</p>
           <span>${this.isThemesSelectionOpened ? "-" : "+"}</span>
         </div>
 
@@ -98,22 +109,20 @@ export class ThemeSwitcher extends LitElement {
           class=${"themes-selection " +
           (this.isThemesSelectionOpened ? "open" : "")}
         >
-          <div class="theme-option ">
-            <il-button-icon content=${IconNames.checkCircle}></il-button-icon>
-            <p>Lorem2</p>
-          </div>
-          <div class="theme-option ">
-            <il-button-icon content=${IconNames.checkCircle}></il-button-icon>
-            <p>Lorem3</p>
-          </div>
-          <div class="theme-option ">
-            <il-button-icon content=${IconNames.checkCircle}></il-button-icon>
-            <p>Lorem4</p>
-          </div>
-          <div class="theme-option ">
-            <il-button-icon content=${IconNames.checkCircle}></il-button-icon>
-            <p>Lorem5</p>
-          </div>
+          ${this.themes.map(
+            (themeName) => html`
+              <div
+                class="theme-option"
+                ?hidden=${this.theme === themeName}
+                @click=${() => this.setTheme(themeName)}
+              >
+                <il-button-icon
+                  content=${this.getThemeIcon(themeName) ?? ""}
+                ></il-button-icon>
+                <p>${themeName}</p>
+              </div>
+            `
+          )}
         </div>
       </div>
     `;
@@ -122,6 +131,26 @@ export class ThemeSwitcher extends LitElement {
   toggleThemesSelection() {
     this.isThemesSelectionOpened = !this.isThemesSelectionOpened;
     this.requestUpdate();
+  }
+
+  getThemeIcon(themeName) {
+    let icon;
+    switch (themeName) {
+      case "light":
+        icon = IconNames.sun;
+        break;
+
+      case "dark":
+        icon = IconNames.moon;
+        break;
+    }
+
+    return icon;
+  }
+
+  setTheme(themeName) {
+    this.theme = themeName;
+    ThemeColorService.setCurrentThemeName(themeName);
   }
 }
 customElements.define("il-theme-switcher", ThemeSwitcher);

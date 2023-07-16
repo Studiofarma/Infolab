@@ -9,7 +9,7 @@ import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "../../../components/avatar";
 import "../../../components/button-text";
-import "../../../components/icon";
+import "../../../components/button-icon";
 import "../../../components/snackbar";
 import "../../../components/input-with-icon";
 import "./theme-switcher";
@@ -150,10 +150,10 @@ export class profileSettings extends LitElement {
               this.inputFileRef.value.click();
             }}
           >
-            <il-icon
+            <il-button-icon
               @click=${() => this.usernameInputRef.value.focus()}
-              name=${IconNames.update}
-            ></il-icon>
+              content=${IconNames.update}
+            ></il-button-icon>
             Carica immagine
           </button>
           <input
@@ -181,7 +181,9 @@ export class profileSettings extends LitElement {
       <div>
         <p>Tema:</p>
 
-        <il-theme-switcher></il-theme-switcher>
+        <il-theme-switcher
+          currentTheme=${ThemeColorService.getCurrentThemeName()}
+        ></il-theme-switcher>
       </div>
 
       <footer>

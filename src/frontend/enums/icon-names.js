@@ -38,5 +38,5 @@ export const IconNames = {
   redo: "mdiRedoVariant",
   circle: "mdiCircle",
   sun: "mdiWhiteBalanceSunny",
-  moon: "mdiMoonWaningCrescent ",
+  moon: "mdiMoonWaningCrescent",
 };
