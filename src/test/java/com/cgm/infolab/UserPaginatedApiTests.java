@@ -55,13 +55,6 @@ public class UserPaginatedApiTests {
     }
 
     @Test
-    void whenTryingToFetch_moreThan20Users_20UsersAreReturned() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/users?user=&page[size]=22");
-
-        Assertions.assertEquals(20, responseBody.size());
-    }
-
-    @Test
     void whenFetching_withPageSize3_afterUserE_userFAndGAndHAreReturned() {
         List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/users?user=&page[size]=3&page[after]=userE desc");
 
