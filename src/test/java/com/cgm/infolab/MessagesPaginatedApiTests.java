@@ -105,10 +105,8 @@ public class MessagesPaginatedApiTests {
     }
 
     @Test
-    void whenFetching_afterMessage30_messagesFrom31To79AreReturned() {
-        LocalDateTime dateTime = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '30. Hello general from user0'", this::dateTimeMapper);
-
-        String stringDate = dateTime.toString().replace("T", " ");
+    void whenFetching_afterMessage30_messagesFrom79To31AreReturned() {
+        String stringDate = getMessageTimestampString(30);
 
         ResponseEntity<List> response = testRestTemplate.withBasicAuth(
                 "user1", "password1").getForEntity("/api/messages/general?page[after]=%s".formatted(stringDate),
@@ -121,7 +119,30 @@ public class MessagesPaginatedApiTests {
         Assertions.assertEquals("31. Hello general from user0", responseBody.get(48).get("content"));
     }
 
+    @Test
+    void whenFetching_beforeMessage30_messagesFrom29To0AreReturned() {
+        String stringDate = getMessageTimestampString(30);
+
+        ResponseEntity<List> response = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/messages/general?page[before]=%s".formatted(stringDate),
+                List.class);
+
+        List<LinkedHashMap> responseBody = response.getBody();
+
+        Assertions.assertEquals(30, responseBody.size());
+        Assertions.assertEquals("29. Hello general from user0", responseBody.get(0).get("content"));
+        Assertions.assertEquals("0. Hello general from user0", responseBody.get(29).get("content"));
+    }
+
     private LocalDateTime dateTimeMapper(ResultSet rs, int rowNum) throws SQLException {
         return RowMappers.resultSetToLocalDateTime(rs);
+    }
+
+    private String getMessageTimestampString(int messageNumber) {
+        LocalDateTime dateTime = jdbcTemplate.queryForObject(
+                "select * from infolab.chatmessages where content = '%d. Hello general from user0'".formatted(messageNumber),
+                this::dateTimeMapper
+        );
+        return dateTime.toString().replace("T", " ");
     }
 }

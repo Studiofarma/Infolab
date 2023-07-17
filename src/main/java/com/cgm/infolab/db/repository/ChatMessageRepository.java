@@ -76,15 +76,18 @@ public class ChatMessageRepository {
         arguments.put("roomName", roomName.value());
         arguments.put("beforeOrAfterTimestamp", beforeOrAfterTimestamp);
 
-        String beforeOrAfterCondition = "";
-        String ascOrDesc = "DESC";
+        String beforeOrAfterCondition;
+        String ascOrDesc;
         if(beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
             beforeOrAfterCondition = ">";
             ascOrDesc = "ASC";
+        } else {
+            beforeOrAfterCondition = "<";
+            ascOrDesc = "DESC";
         }
 
         String beforeOrAfterQuery;
-        if (beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
+        if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE) || beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
             beforeOrAfterQuery = "AND m.sent_at %s :beforeOrAfterTimestamp".formatted(beforeOrAfterCondition);
         } else {
             beforeOrAfterQuery = "";
@@ -110,6 +113,9 @@ public class ChatMessageRepository {
 
     private List<ChatMessageEntity> queryUserMessages(String where, String other, Username username, Map<String, ?> queryParams) {
         try {
+            System.out.println(getMessages(username)
+                    .where(where)
+                    .other(other).query());
             return getMessages(username)
                     .where(where)
                     .other(other)

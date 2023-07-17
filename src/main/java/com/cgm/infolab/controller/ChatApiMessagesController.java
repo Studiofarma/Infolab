@@ -33,6 +33,7 @@ public class ChatApiMessagesController {
     public List<ChatMessageDto> getAllMessages(@PathVariable("roomName") String roomName,
                                                @RequestParam(required = false, name = "page[size]") Integer pageSize,
                                                @RequestParam(required = false, name = "page[after]") String pageAfter,
+                                               @RequestParam(required = false, name = "page[before]") String pageBefore,
                                                Principal principal) {
         if (pageSize == null) {
             pageSize = -1;
@@ -40,10 +41,13 @@ public class ChatApiMessagesController {
 
         List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
         List<ChatMessageEntity> chatMessageEntities;
-        if (pageAfter == null) {
+        if (pageAfter == null && pageBefore == null) {
             chatMessageEntities =
                     chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName);
-        } else {
+        } else if (pageBefore != null) {
+            chatMessageEntities =
+                    chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName, CursorEnum.PAGE_BEFORE, pageBefore);
+        } else { // pageAfter != null
             chatMessageEntities =
                     chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName, CursorEnum.PAGE_AFTER, pageAfter);
         }
