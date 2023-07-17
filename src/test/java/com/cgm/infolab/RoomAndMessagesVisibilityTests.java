@@ -7,6 +7,7 @@ import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
 import com.cgm.infolab.service.RoomService;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -29,13 +30,9 @@ public class RoomAndMessagesVisibilityTests {
     @Autowired
     public RoomRepository roomRepository;
     @Autowired
-    public UserRepository userRepository;
-    @Autowired
-    public RoomService roomService;
-    @Autowired
     public ChatService chatService;
     @Autowired
-    public JdbcTemplate jdbcTemplate;
+    public TestDbHelper testDbHelper;
 
     public UserEntity[] users =
         {UserEntity.of(Username.of("user0")),
@@ -46,7 +43,7 @@ public class RoomAndMessagesVisibilityTests {
     public UserEntity loggedInUser = users[0]; // user0
 
     public RoomEntity general = RoomEntity.general();
-    public RoomEntity anotherPublic = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC);
+    public RoomEntity anotherPublic = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC, RoomTypeEnum.GROUP);
 
     public ChatMessageDto[] messageDtos =
             {ChatMessageDto.of("1 Hello general from user0", users[0].getName().value()),
@@ -58,20 +55,20 @@ public class RoomAndMessagesVisibilityTests {
 
     @BeforeAll
     void setUpAll() {
-        jdbcTemplate.update("DELETE FROM infolab.download_dates");
-        jdbcTemplate.update("DELETE FROM infolab.chatmessages");
-        jdbcTemplate.update("DELETE FROM infolab.rooms_subscriptions");
-        jdbcTemplate.update("DELETE FROM infolab.users");
+        testDbHelper.clearDbExceptForRooms();
 
-        for (UserEntity user : users) {
-            userRepository.add(user);
-        }
+        testDbHelper.addUsers(users);
 
-        roomRepository.add(anotherPublic);
-        roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[1].getName());
-        roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[2].getName());
-        roomService.createPrivateRoomAndSubscribeUsers(users[1].getName(), users[2].getName());
-        roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[3].getName());
+        testDbHelper.addRooms(anotherPublic);
+
+        List<Pair<UserEntity, UserEntity>> pairs = List.of(
+                Pair.of(users[0], users[1]),
+                Pair.of(users[0], users[2]),
+                Pair.of(users[1], users[2]),
+                Pair.of(users[0], users[3])
+        );
+
+        testDbHelper.addPrivateRoomsAndSubscribeUsers(pairs);
 
         chatService.saveMessageInDb(messageDtos[0], users[0].getName(), general.getName(), null);
         chatService.saveMessageInDb(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"), users[0].getName());
@@ -103,7 +100,7 @@ public class RoomAndMessagesVisibilityTests {
         Assertions.assertEquals("user0-user1", roomsFromDb.get(2).getName().value());
         Assertions.assertEquals("user0-user2", roomsFromDb.get(3).getName().value());
 
-        // NOTE: these assertions are needed to check whether the last messages returned is correct.
+        // NOTE: these assertions are needed to check whether the last messages returned is correct or not.
         //  For these to work the three previous assertions must be fulfilled.
         //  Actually the order of the rooms is not relevant.
         Assertions.assertEquals(messageDtos[0].getContent(), roomsFromDb.get(0).getMessages().get(0).getContent());

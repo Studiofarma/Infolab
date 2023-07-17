@@ -8,6 +8,7 @@ import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
 import com.cgm.infolab.service.RoomService;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,19 +24,15 @@ import java.util.List;
 public class RoomRepositoryTests {
 
     @Autowired
-    public ChatMessageRepository chatMessageRepository;
-    @Autowired
     public RoomRepository roomRepository;
     @Autowired
-    public UserRepository userRepository;
-    @Autowired
     public DownloadDateRepository downloadDateRepository;
-    @Autowired
-    public RoomService roomService;
     @Autowired
     public ChatService chatService;
     @Autowired
     public JdbcTemplate jdbcTemplate;
+    @Autowired
+    public TestDbHelper testDbHelper;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0"), "user0 desc"),
@@ -47,7 +44,6 @@ public class RoomRepositoryTests {
 
     public RoomEntity general = RoomEntity.general();
     public String generalDesc = "Generale";
-    public RoomEntity anotherPublic = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC);
 
     public ChatMessageDto[] messageDtos =
             {ChatMessageDto.of("1 Hello general from user0", users[0].getName().value()),
@@ -61,20 +57,18 @@ public class RoomRepositoryTests {
 
     @BeforeAll
     void setUpAll() {
-        jdbcTemplate.update("DELETE FROM infolab.download_dates");
-        jdbcTemplate.update("DELETE FROM infolab.chatmessages");
-        jdbcTemplate.update("DELETE FROM infolab.rooms_subscriptions");
-        jdbcTemplate.update("DELETE FROM infolab.users");
-        jdbcTemplate.update("DELETE FROM infolab.rooms WHERE roomname <> 'general'");
+        testDbHelper.clearDbExceptForGeneral();
 
-        for (UserEntity user : users) {
-            userRepository.add(user);
-        }
+        testDbHelper.addUsers(users);
 
-        roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[1].getName());
-        roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[2].getName());
-        roomService.createPrivateRoomAndSubscribeUsers(users[1].getName(), users[2].getName());
-        roomService.createPrivateRoomAndSubscribeUsers(users[0].getName(), users[3].getName());
+        List<Pair<UserEntity, UserEntity>> pairs = List.of(
+                Pair.of(users[0], users[1]),
+                Pair.of(users[0], users[2]),
+                Pair.of(users[1], users[2]),
+                Pair.of(users[0], users[3])
+        );
+
+        testDbHelper.addPrivateRoomsAndSubscribeUsers(pairs);
 
         chatService.saveMessageInDb(messageDtos[0], users[0].getName(), general.getName(), null);
         chatService.saveMessageInDb(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"), users[0].getName());
@@ -186,5 +180,16 @@ public class RoomRepositoryTests {
         Assertions.assertEquals(0, roomEntities.get(1).getNotDownloadedMessagesCount()); // user0-user1
 
         Assertions.assertEquals(1, roomEntities.get(2).getNotDownloadedMessagesCount()); // user0-user2
+    }
+
+    @Test
+    void whenFetchingPrivateRoom_otherUserIsTheExpectedOne() {
+        List<RoomEntity> roomsFromDb = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        Assertions.assertEquals("user1", roomsFromDb.get(1).getOtherParticipants().get(0).getName().value());
+        Assertions.assertEquals("user2", roomsFromDb.get(2).getOtherParticipants().get(0).getName().value());
     }
 }
