@@ -1,9 +1,6 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.RoomName;
-import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
@@ -134,7 +131,7 @@ class InfolabApplicationTests {
                 Assertions.assertEquals(sentMessage.getContent(), received.getContent());
                 Assertions.assertEquals(sentMessage.getSender(), received.getSender());
             });
-        List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("general"), 1, Username.of("user1"));
+        List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("general"), 1, CursorEnum.NONE, null, Username.of("user1"));
         Assertions.assertEquals(1,messages.size());
         Assertions.assertEquals(sentMessage.getContent(),messages.get(0).getContent());
     }
@@ -188,7 +185,7 @@ class InfolabApplicationTests {
                 Assertions.assertEquals(sentMessage.getSender(), received.getSender());
             });
 
-        List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("banana-user1"), 1, Username.of("user1"));
+        List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("banana-user1"), 1, CursorEnum.NONE, null, Username.of("user1"));
         Assertions.assertEquals(1,messages.size());
         Assertions.assertEquals(sentMessage.getContent(),messages.get(0).getContent());
     }

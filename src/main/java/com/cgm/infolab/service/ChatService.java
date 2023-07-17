@@ -87,21 +87,6 @@ public class ChatService {
         });
     }
 
-    public List<ChatMessageEntity> getAllMessages(int pageSize, Username username, String roomName) {
-        List<ChatMessageEntity> chatMessageEntities = new ArrayList<>();
-        try {
-            chatMessageEntities = chatMessageRepository
-                    .getByRoomNameNumberOfMessages(RoomName.of(roomName),
-                            pageSize,
-                            username);
-        } catch (IllegalArgumentException e) {
-            log.info(e.getMessage());
-            return chatMessageEntities;
-        }
-
-        return chatMessageEntities;
-    }
-
     public List<ChatMessageEntity> getAllMessages(int pageSize, Username username, String roomName, CursorEnum beforeOrAfter, String beforeOrAfterTimestamp) {
         List<ChatMessageEntity> chatMessageEntities = new ArrayList<>();
         try {

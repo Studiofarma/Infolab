@@ -43,7 +43,7 @@ public class ChatApiMessagesController {
         List<ChatMessageEntity> chatMessageEntities;
         if (pageAfter == null && pageBefore == null) {
             chatMessageEntities =
-                    chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName);
+                    chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName, CursorEnum.NONE, null);
         } else if (pageBefore != null) {
             chatMessageEntities =
                     chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName, CursorEnum.PAGE_BEFORE, pageBefore);

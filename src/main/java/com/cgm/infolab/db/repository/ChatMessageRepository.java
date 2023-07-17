@@ -45,25 +45,9 @@ public class ChatMessageRepository {
                 message.getContent());
     }
 
+    // Handy for testing
     public List<ChatMessageEntity> getByRoomName(RoomName roomName, Username username) {
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put("roomName", roomName.value());
-
-        return queryUserMessages("r.roomname = :roomName AND m.id IS NOT NULL", "ORDER BY m.sent_at DESC", username, arguments);
-    }
-
-    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(RoomName roomName, int pageSize, Username username) {
-
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put("roomName", roomName.value());
-
-        String limit = "";
-        if (pageSize != -1) {
-            limit = "LIMIT :pageSize";
-            arguments.put("pageSize", pageSize);
-        }
-
-        return queryUserMessages("r.roomname = :roomName AND m.id IS NOT NULL", "ORDER BY m.sent_at DESC %s".formatted(limit), username, arguments);
+        return getByRoomNameNumberOfMessages(roomName, -1, CursorEnum.NONE, null, username);
     }
 
     public List<ChatMessageEntity> getByRoomNameNumberOfMessages(RoomName roomName,
