@@ -1,5 +1,6 @@
 package com.cgm.infolab.controller;
 
+import com.cgm.infolab.db.model.CursorEnum;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.UserRepository;
@@ -17,6 +18,7 @@ public class UserApiController {
 
     private final UserRepository userRepository;
     private final Logger log = LoggerFactory.getLogger(UserApiController.class);
+    private static final int MAX_USERS_PAGE_SIZE = 20;
 
 
     @Autowired
@@ -25,10 +27,24 @@ public class UserApiController {
     }
 
     @GetMapping("/api/users")
-    public List<UserDto> getUsername(@RequestParam("user") String user) {
+    public List<UserDto> getUsername(@RequestParam("user") String user,
+                                     @RequestParam(required = false, name = "page[size]") Integer pageSize,
+                                     @RequestParam(required = false, name = "page[before]") String pageBefore,
+                                     @RequestParam(required = false, name = "page[after]") String pageAfter) {
+
+        System.out.println(pageSize);
+
+        pageSize = pageSize != null && pageSize < MAX_USERS_PAGE_SIZE ? pageSize : MAX_USERS_PAGE_SIZE;
 
         List<UserDto> UserDtos = new ArrayList<>();
-        List<UserEntity> userEntities = userRepository.getByUsernameWithLike(Username.of(user));
+        List<UserEntity> userEntities;
+        if (pageBefore == null && pageAfter == null) {
+            userEntities = userRepository.getByUsernameWithLike(Username.of(user), pageSize, CursorEnum.NONE, "");
+        } else if (pageBefore != null) {
+            userEntities = userRepository.getByUsernameWithLike(Username.of(user), pageSize, CursorEnum.PAGE_BEFORE, pageBefore);
+        } else { // pageAfter != null
+            userEntities = userRepository.getByUsernameWithLike(Username.of(user), pageSize, CursorEnum.PAGE_AFTER, pageAfter);
+        }
 
         if (userEntities.size() > 0) {
             UserDtos = userEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
