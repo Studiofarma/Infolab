@@ -68,15 +68,43 @@ export class InputField extends LitElement {
       );
 
       let newSelectorText = `
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    ${ThemeColorService.getThemeVariables().toString()};
-  }`;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  ${ThemeColorService.getThemeVariables().toString()};
+}`;
 
       stylesheet.deleteRule(index);
       stylesheet.insertRule(newSelectorText, index);
+
+      // updating pseudo elements
+
+      for (let i = 0; i < rules.length; i++) {
+        if (rules[i].selectorText.includes("::")) {
+          let selectorName = rules[i].selectorText;
+
+          let properties = rules[i].cssText
+            .slice(
+              rules[i].cssText.indexOf("{") + 1,
+              rules[i].cssText.indexOf("}")
+            )
+            .split(";")
+            .map((prop) => prop.trim())
+            .filter((prop) => !prop.startsWith("--"))
+            .join(";\n");
+
+          let newCSS = `
+            ${selectorName} {
+              ${properties}
+              ${ThemeColorService.getThemeVariables()}
+            }
+          `;
+
+          stylesheet.deleteRule(i);
+          stylesheet.insertRule(newCSS, i);
+        }
+      }
 
       adoptStyles(this.shadowRoot, [stylesheet]);
     });
