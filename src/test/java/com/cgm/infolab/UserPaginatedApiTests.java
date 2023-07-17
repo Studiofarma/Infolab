@@ -40,7 +40,7 @@ public class UserPaginatedApiTests {
     }
 
     @Test
-    void whenFetching_withoutPageSize_responseIsOf20FirstUsers() {
+    void whenFetching_withoutPageSize_responseIsOfAllUsers() {
         ResponseEntity<List> response = testRestTemplate.withBasicAuth(
                 "user1", "password1").getForEntity("/api/users?user=",
                 List.class);
@@ -94,7 +94,7 @@ public class UserPaginatedApiTests {
     }
 
     @Test
-    void whenFetching_withoutPageSize_afterUserF_usersFromGToZAreReturned() {
+    void whenFetching_withoutPageSize_afterUserF_usersFromGTo_AreReturned() {
         ResponseEntity<List> response = testRestTemplate.withBasicAuth(
                 "user1", "password1").getForEntity("/api/users?user=&page[after]=userF desc",
                 List.class);
