@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, adoptStyles } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 
@@ -86,6 +86,33 @@ export class ChatHeader extends LitElement {
       height: fit-content;
     }
   `;
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    document.addEventListener("change-theme", () => {
+      // changing the adoptedStylesheet
+      let stylesheet = this.shadowRoot.adoptedStyleSheets[0];
+      let rules = stylesheet.cssRules;
+
+      let index = Object.values(rules).findIndex(
+        (rule) => rule.selectorText === "*"
+      );
+
+      let newSelectorText = `
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    ${ThemeColorService.getThemeVariables().toString()};
+  }`;
+
+      stylesheet.deleteRule(index);
+      stylesheet.insertRule(newSelectorText, index);
+
+      adoptStyles(this.shadowRoot, [stylesheet]);
+    });
+  }
 
   render() {
     return html`

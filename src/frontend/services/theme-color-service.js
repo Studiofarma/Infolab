@@ -4,6 +4,8 @@ import { lightTheme } from "../enums/themes/lightTheme";
 import { darkTheme } from "../enums/themes/darkTheme";
 
 export class ThemeColorService {
+  static changeThemeEvent = new CustomEvent("change-theme");
+
   static getCurrentThemeName() {
     return sessionStorage.getItem("theme") ?? "light";
   }

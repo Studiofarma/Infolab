@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, adoptStyles } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
 import { UsersService } from "../../../services/users-service";
@@ -126,6 +126,31 @@ export class profileSettings extends LitElement {
     this.addEventListener("keydown", (event) => {
       if (event.key === "Escape") this.restoreDefault();
       if (event.key === "Enter") this.confirmChanges();
+    });
+
+    document.addEventListener("change-theme", () => {
+      // changing the adoptedStylesheet
+      let stylesheet = this.shadowRoot.adoptedStyleSheets[0];
+      let rules = stylesheet.cssRules;
+
+      let index = Object.values(rules).findIndex(
+        (rule) => rule.selectorText === "*"
+      );
+
+      let newSelectorText = `
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      ${ThemeColorService.getThemeVariables().toString()};
+    }
+    
+    `;
+
+      stylesheet.deleteRule(index);
+      stylesheet.insertRule(newSelectorText, index);
+
+      adoptStyles(this.shadowRoot, [stylesheet]);
     });
   }
 

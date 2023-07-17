@@ -1,4 +1,4 @@
-import { html, css, LitElement } from "lit";
+import { LitElement, html, css, adoptStyles } from "lit";
 import { Directive, directive } from "lit/directive.js";
 import { render } from "lit";
 
@@ -100,6 +100,31 @@ export class Tooltip extends LitElement {
     this.target ??= this.previousElementSibling;
     // Ensure hidden at start
     this.finishHide();
+
+    document.addEventListener("change-theme", () => {
+      // changing the adoptedStylesheet
+      let stylesheet = this.shadowRoot.adoptedStyleSheets[0];
+      let rules = stylesheet.cssRules;
+
+      let index = Object.values(rules).findIndex(
+        (rule) => rule.selectorText === "*"
+      );
+
+      let newSelectorText = `
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      ${ThemeColorService.getThemeVariables().toString()};
+    }
+    
+    `;
+
+      stylesheet.deleteRule(index);
+      stylesheet.insertRule(newSelectorText, index);
+
+      adoptStyles(this.shadowRoot, [stylesheet]);
+    });
   }
 
   // Target for which to show tooltip

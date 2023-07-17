@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { LitElement, html, css, adoptStyles } from "lit";
 
 import { ThemeColorService } from "../../../services/theme-color-service";
 
@@ -94,6 +94,35 @@ export class ThemeSwitcher extends LitElement {
     }
   `;
 
+  connectedCallback() {
+    super.connectedCallback();
+
+    document.addEventListener("change-theme", () => {
+      // changing the adoptedStylesheet
+      let stylesheet = this.shadowRoot.adoptedStyleSheets[0];
+      let rules = stylesheet.cssRules;
+
+      let index = Object.values(rules).findIndex(
+        (rule) => rule.selectorText === "*"
+      );
+
+      let newSelectorText = `
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      ${ThemeColorService.getThemeVariables().toString()};
+    }
+    
+    `;
+
+      stylesheet.deleteRule(index);
+      stylesheet.insertRule(newSelectorText, index);
+
+      adoptStyles(this.shadowRoot, [stylesheet]);
+    });
+  }
+
   render() {
     return html`
       <div class="container">
@@ -151,6 +180,8 @@ export class ThemeSwitcher extends LitElement {
   setTheme(themeName) {
     this.theme = themeName;
     ThemeColorService.setCurrentThemeName(themeName);
+
+    document.dispatchEvent(ThemeColorService.changeThemeEvent);
   }
 }
 customElements.define("il-theme-switcher", ThemeSwitcher);
