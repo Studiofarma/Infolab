@@ -30,6 +30,10 @@ export class ThemeSwitcher extends LitElement {
       ${ThemeColorService.getThemeVariables()};
     }
 
+    p {
+      color: ${ThemeCSSVariables.text};
+    }
+
     .container {
       position: relative;
       display: flex;

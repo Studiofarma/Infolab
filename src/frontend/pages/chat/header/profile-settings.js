@@ -48,6 +48,7 @@ export class profileSettings extends LitElement {
 
     header h2 {
       text-align: center;
+      color: ${ThemeCSSVariables.text};
     }
 
     section {
@@ -92,6 +93,7 @@ export class profileSettings extends LitElement {
       display: block;
       font-size: 20px;
       margin: 15px 0px;
+      color: ${ThemeCSSVariables.text};
     }
 
     .inputContainer {
@@ -203,7 +205,7 @@ export class profileSettings extends LitElement {
         </div>
       </section>
 
-      <div>
+      <div class="fieldset">
         <p>Tema:</p>
 
         <il-theme-switcher
