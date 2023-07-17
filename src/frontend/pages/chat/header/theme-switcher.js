@@ -10,7 +10,7 @@ import "../../../components/button-icon";
 export class ThemeSwitcher extends LitElement {
   static properties = {
     isThemesSelectionOpened: { type: Boolean },
-    currentTheme: { type: String },
+    initialTheme: { type: String },
     theme: { type: String },
     themes: { type: Array },
   };
@@ -20,6 +20,7 @@ export class ThemeSwitcher extends LitElement {
     this.isThemesSelectionOpened = false;
     this.theme = ThemeColorService.getCurrentThemeName();
     this.themes = ["light", "dark"];
+    this.initialTheme = "";
   }
 
   static styles = css`
@@ -189,9 +190,32 @@ export class ThemeSwitcher extends LitElement {
     `;
   }
 
+  firstUpdated() {
+    this.initialTheme = ThemeColorService.getCurrentThemeName();
+  }
+
+  // Getters & Setters
+
+  setIsThemesSelectionOpened(value) {
+    this.isThemesSelectionOpened = value;
+  }
+
+  setTheme(value) {
+    this.theme = value;
+  }
+
+  getInitialTheme() {
+    return this.initialTheme;
+  }
+
+  setInitialTheme(value) {
+    this.initialTheme = value;
+  }
+
+  // ----------------------------
+
   toggleThemesSelection() {
     this.isThemesSelectionOpened = !this.isThemesSelectionOpened;
-    this.requestUpdate();
   }
 
   getThemeIcon(themeName) {

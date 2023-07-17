@@ -35,6 +35,7 @@ export class profileSettings extends LitElement {
     this.inputFileRef = createRef();
     this.snackbarRef = createRef();
     this.avatarRef = createRef();
+    this.themeSwitcherRef = createRef();
   }
 
   static styles = css`
@@ -236,9 +237,7 @@ export class profileSettings extends LitElement {
       <div class="fieldset">
         <p>Tema:</p>
 
-        <il-theme-switcher
-          currentTheme=${ThemeColorService.getCurrentThemeName()}
-        ></il-theme-switcher>
+        <il-theme-switcher ${ref(this.themeSwitcherRef)}></il-theme-switcher>
       </div>
 
       <footer>
@@ -292,11 +291,21 @@ export class profileSettings extends LitElement {
   }
 
   restoreDefault() {
+    // restoring profile
     this.username = this.currentUsername;
     this.usernameInputRef.value?.setInputValue(this.currentUsername);
 
     this.imagePath = this.currentAvatarURL;
     this.inputFileRef.value.value = this.currentAvatarURL;
+
+    // restoring theme
+    const restoredTheme = this.themeSwitcherRef.value?.getInitialTheme();
+
+    ThemeColorService.setCurrentThemeName(restoredTheme);
+
+    this.themeSwitcherRef.value?.setTheme(restoredTheme);
+
+    document.dispatchEvent(ThemeColorService.changeThemeEvent);
 
     this.closeMenu();
   }
@@ -321,6 +330,12 @@ export class profileSettings extends LitElement {
       this.dispatchEvent(new CustomEvent("il:new-avatar-set"));
       UsersService.setUserAvatar(this.imagePath);
     }
+
+    // confirming theme
+    this.themeSwitcherRef.value?.setIsThemesSelectionOpened(false);
+    this.themeSwitcherRef.value?.setInitialTheme(
+      ThemeColorService.getCurrentThemeName()
+    );
 
     this.closeMenu();
   }
