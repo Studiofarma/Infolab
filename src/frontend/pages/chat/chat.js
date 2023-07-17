@@ -193,6 +193,7 @@ export class Chat extends LitElement {
 
     .deletion-confirmation {
       padding: 10px;
+      color: ${ThemeCSSVariables.text};
     }
 
     .deletion-confirmation-buttons {
