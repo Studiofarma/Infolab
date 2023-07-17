@@ -140,7 +140,14 @@ export class MessageContent extends LitElement {
     .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: ${ThemeCSSVariables.timestampMessageText};
+    }
+
+    .sender .message-timestamp {
+      color: ${ThemeCSSVariables.timestampMessageTextSender};
+    }
+
+    .receiver .message-timestamp {
+      color: ${ThemeCSSVariables.timestampMessageTextReceiver};
     }
 
     .edited {
