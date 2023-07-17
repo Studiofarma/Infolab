@@ -7,12 +7,12 @@ const enterKey = "Enter";
 
 export class Editor extends LitElement {
   static properties = {
-    isEditMode: false,
+    isFormattingMode: false,
   };
 
   constructor() {
     super();
-    this.isKeyDown = false;
+    this.isKeyDown = false; // IMPORTANT: PREVENTS BUG. DO NOT REMOVE.
     this.message = "";
 
     // Refs
@@ -72,6 +72,7 @@ export class Editor extends LitElement {
 
   clearMessage() {
     this.editorRef.value.innerHTML = "";
+    this.message = "";
     this.resizeTextEditor();
   }
 
@@ -85,7 +86,7 @@ export class Editor extends LitElement {
   onKeyDown(event) {
     this.isKeyDown = true;
 
-    if (!this.isEditMode && event.key === enterKey) {
+    if (!this.isFormattingMode && event.key === enterKey) {
       event.preventDefault();
       if (event.shiftKey) document.execCommand("insertLineBreak");
       else this.sendMessage();
@@ -104,8 +105,8 @@ export class Editor extends LitElement {
     this.editorRef.value?.focus();
   }
 
-  onInput(event) {
-    if (!this.isKeyDown && event.inputType == "insertText") {
+  onInput() {
+    if (!this.isKeyDown) {
       this.editorRef.value.innerHTML = this.message;
       return;
     }

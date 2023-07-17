@@ -198,56 +198,41 @@ class ConversationList extends LitElement {
       (pharmacy) => pharmacy.roomName,
       (pharmacy) => {
         let conversation = new ConversationDto(pharmacy);
-
         if (
-          conversation.lastMessage?.content ||
-          conversation.roomName == this.cookie.lastChat
+          conversation.roomName === this.cookie.lastChat &&
+          this.isStartup &&
+          !this.isForwardList
         ) {
-          if (
-            conversation.roomName === this.cookie.lastChat &&
-            this.isStartup &&
-            !this.isForwardList
-          ) {
-            this.changeRoom(new CustomEvent("il:first-updated"), conversation);
-            this.isStartup = false;
-          }
-
-          let conversationUser = this.findUser(
-            this.conversationListFiltered,
-            conversation
-          );
-
-          let lastMessageUser = this.getUserByUsername(
-            conversation.lastMessage.sender
-          );
-
-          return html`<il-conversation
-            .conversationUser=${conversationUser}
-            .lastMessageUser=${lastMessageUser}
-            @selected=${this.selectConversation}
-            .isSelectable=${this.isForwardList &&
-            this.selectedChats.length != 0}
-            .isSelected=${this.selectedChats.includes(conversation.roomName)}
-            class=${"conversation " +
-            (conversation.roomName == this.cookie.lastChat ||
-            conversation.roomName == this.selectedRoom.roomName
-              ? "active"
-              : "")}
-            id=${conversation.roomName == this.selectedRoom.roomName
-              ? "selected"
-              : ""}
-            .conversation=${conversation}
-            @il:clicked=${(event) =>
-              this.handleConversationClick(event, conversation)}
-          ></il-conversation>`;
-        } else {
-          let conversationIndex = this.conversationList.findIndex(
-            (obj) => obj.roomName == conversation.roomName
-          );
-          let delChat = this.conversationList.splice(conversationIndex, 1)[0];
-          this.newConversationList.unshift(delChat);
-          return null;
+          this.changeRoom(new CustomEvent("il:first-updated"), conversation);
+          this.isStartup = false;
         }
+
+        let conversationUser = this.findUser(
+          this.conversationListFiltered,
+          conversation
+        );
+
+        let lastMessageUser = this.getUserByUsername(
+          conversation.lastMessage.sender
+        );
+
+        return html`<il-conversation
+          .conversationUser=${conversationUser}
+          .lastMessageUser=${lastMessageUser}
+          .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
+          .isSelected=${this.selectedChats.includes(conversation.roomName)}
+          class=${"conversation " +
+          (conversation.roomName == this.cookie.lastChat ||
+          conversation.roomName == this.selectedRoom.roomName
+            ? "active"
+            : "")}
+          id=${conversation.roomName == this.selectedRoom.roomName
+            ? "selected"
+            : ""}
+          .conversation=${conversation}
+          @il:clicked=${(event) =>
+            this.handleConversationClick(event, conversation)}
+        ></il-conversation>`;
       }
     );
   }
@@ -286,7 +271,6 @@ class ConversationList extends LitElement {
         return html`<il-conversation
           .conversationUser=${conversationUser}
           .lastMessageUser=${lastMessageUser}
-          @selected=${this.selectConversation}
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
           class=${"conversation new-conversation " +

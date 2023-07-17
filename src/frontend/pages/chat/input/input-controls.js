@@ -30,7 +30,7 @@ export class InputControls extends LitElement {
     this.message = "";
     this.isEmojiPickerOpen = false;
     this.selectedText = null;
-    this.isEditorInEditMode = false;
+    this.isEditorInFormattingMode = false;
 
     // Refs
     this.editorRef = createRef();
@@ -105,7 +105,7 @@ export class InputControls extends LitElement {
               @il:enter-key-pressed=${this.handleEnterKey}
               @il:text-changed=${this.updateMessage}
               @il:text-editor-resized=${this.handleTextEditorResized}
-              .isEditMode=${this.isEditorInEditMode}
+              .isFormattingMode=${this.isEditorInFormattingMode}
             ></il-editor>
             <il-insertion-bar
               @il:message-sent=${this.sendMessage}
@@ -192,7 +192,7 @@ export class InputControls extends LitElement {
   }
 
   changeEditorMode(event) {
-    this.isEditorInEditMode = event.detail.isOpen;
+    this.isEditorInFormattingMode = event.detail.isOpen;
     this.requestUpdate();
   }
 
