@@ -8,7 +8,9 @@ import com.cgm.infolab.model.UserDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,10 @@ public class UserApiController {
                                      @RequestParam(required = false, name = "page[size]") Integer pageSize,
                                      @RequestParam(required = false, name = "page[before]") String pageBefore,
                                      @RequestParam(required = false, name = "page[after]") String pageAfter) {
+
+        if (pageBefore != null && pageAfter != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Range Pagination Not Supported");
+        }
 
         if (pageSize == null) pageSize = -1;
 

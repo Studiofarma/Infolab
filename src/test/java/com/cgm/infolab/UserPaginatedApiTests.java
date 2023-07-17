@@ -20,8 +20,10 @@ import java.util.List;
 public class UserPaginatedApiTests {
 
     @Autowired
-    TestApiHelper testApiHelper;
+    TestRestTemplate testRestTemplate;
 
+    @Autowired
+    TestApiHelper testApiHelper;
     @Autowired
     TestDbHelper testDbHelper;
 
@@ -98,5 +100,14 @@ public class UserPaginatedApiTests {
             char letter = (char) c;
             Assertions.assertEquals("user%s desc".formatted(letter), responseBody.get(i).get("description"));
         }
+    }
+
+    @Test
+    void whenTryingToUseRangePagination_BadRequestStatusCodeIsReturned() {
+        ResponseEntity<Object> response = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/users?user=&page[before]=userF desc&page[after]=userQ desc",
+                Object.class);
+
+        Assertions.assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
     }
 }
