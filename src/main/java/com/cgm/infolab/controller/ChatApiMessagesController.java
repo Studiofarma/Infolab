@@ -5,10 +5,12 @@ import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -35,6 +37,10 @@ public class ChatApiMessagesController {
                                                @RequestParam(required = false, name = "page[after]") String pageAfter,
                                                @RequestParam(required = false, name = "page[before]") String pageBefore,
                                                Principal principal) {
+        if (pageBefore != null && pageAfter != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Range Pagination Not Supported");
+        }
+
         if (pageSize == null) {
             pageSize = -1;
         }

@@ -15,6 +15,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -162,6 +164,18 @@ public class MessagesPaginatedApiTests {
         Assertions.assertEquals(10, responseBody.size());
         Assertions.assertEquals("49. Hello general from user0", responseBody.get(0).get("content"));
         Assertions.assertEquals("40. Hello general from user0", responseBody.get(9).get("content"));
+    }
+
+    @Test
+    void whenTryingToUseRangePagination_BadRequestStatusCodeIsReturned() {
+        String stringDateBefore = getMessageTimestampString(30);
+        String stringDateAfter = getMessageTimestampString(50);
+
+        ResponseEntity<Object> response = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/messages/general?page[before]=%s&page[after]=%s".formatted(stringDateBefore, stringDateAfter),
+                Object.class);
+
+        Assertions.assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
     }
 
     private LocalDateTime dateTimeMapper(ResultSet rs, int rowNum) throws SQLException {
