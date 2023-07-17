@@ -63,7 +63,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: -1px;
       right: -13px;
-      border-top: 11px solid ${ThemeCSSVariables.messageSenderBg};
+      border-top: 11px solid ${ThemeCSSVariables.boxShadowSecondary};
       border-left: 0px solid transparent;
       border-right: 12px solid transparent;
       filter: blur(0.8px);
@@ -96,7 +96,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: -1px;
       left: -13px;
-      border-top: 11px solid ${ThemeCSSVariables.messageReceiverBg};
+      border-top: 11px solid ${ThemeCSSVariables.boxShadowSecondary};
       border-right: 0px solid transparent;
       border-left: 12px solid transparent;
       filter: blur(0.8px);
