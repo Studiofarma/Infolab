@@ -32,14 +32,21 @@ public class ChatApiMessagesController {
     @GetMapping("/api/messages/{roomName}")
     public List<ChatMessageDto> getAllMessages(@PathVariable("roomName") String roomName,
                                                @RequestParam(required = false, name = "page[size]") Integer pageSize,
+                                               @RequestParam(required = false, name = "page[after]") String pageAfter,
                                                Principal principal) {
         if (pageSize == null) {
             pageSize = -1;
         }
 
         List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
-        List<ChatMessageEntity> chatMessageEntities =
-                chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName);
+        List<ChatMessageEntity> chatMessageEntities;
+        if (pageAfter == null) {
+            chatMessageEntities =
+                    chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName);
+        } else {
+            chatMessageEntities =
+                    chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName, CursorEnum.PAGE_AFTER, pageAfter);
+        }
 
         if (chatMessageEntities.size() > 0) {
             chatMessageDtos = chatMessageEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToChatMessageDto).toList();

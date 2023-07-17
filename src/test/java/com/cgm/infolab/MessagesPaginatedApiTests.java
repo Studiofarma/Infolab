@@ -4,6 +4,7 @@ import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.repository.RowMappers;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
 import org.apache.commons.lang3.tuple.Pair;
@@ -15,8 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -31,6 +38,8 @@ public class MessagesPaginatedApiTests {
     ChatService chatService;
     @Autowired
     TestRestTemplate testRestTemplate;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -42,6 +51,8 @@ public class MessagesPaginatedApiTests {
 
     public RoomEntity general = RoomEntity.general();
     public ChatMessageDto[] messageDtos = new ChatMessageDto[80];
+
+    public static final LocalDateTime STARTING_TIME = LocalDateTime.of(2023, 6, 1, 1, 1, 1);
 
     @BeforeAll
     void setUp() {
@@ -58,9 +69,13 @@ public class MessagesPaginatedApiTests {
 
         testDbHelper.addPrivateRoomsAndSubscribeUsers(pairs);
 
+        Long generalId = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = 'general'", (rs, rowNum) -> rs.getLong("id"));
+
+        Long user0Id = jdbcTemplate.queryForObject("select * from infolab.users where username = 'user0'", (rs, rowNum) -> rs.getLong("id"));
+
         for (int i = 0; i < messageDtos.length; i++) {
-            messageDtos[i] = ChatMessageDto.of("%d. Hello general from user0".formatted(i), loggedInUser.getName().value());
-            chatService.saveMessageInDb(messageDtos[i], loggedInUser.getName(), general.getName(), null);
+            jdbcTemplate.update("INSERT INTO infolab.chatmessages (id, sender_id, recipient_room_id, sent_at, content) values" +
+                    "(?, ?, ?, ?, ?)", i, user0Id, generalId, STARTING_TIME.plusSeconds(i), "%d. Hello general from user0".formatted(i));
         }
     }
 
@@ -87,5 +102,26 @@ public class MessagesPaginatedApiTests {
 
         Assertions.assertEquals("79. Hello general from user0", responseBody.get(0).get("content"));
         Assertions.assertEquals("70. Hello general from user0", responseBody.get(9).get("content"));
+    }
+
+    @Test
+    void whenFetching_afterMessage30_messagesFrom31To79AreReturned() {
+        LocalDateTime dateTime = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '30. Hello general from user0'", this::dateTimeMapper);
+
+        String stringDate = dateTime.toString().replace("T", " ");
+
+        ResponseEntity<List> response = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/messages/general?page[after]=%s".formatted(stringDate),
+                List.class);
+
+        List<LinkedHashMap> responseBody = response.getBody();
+
+        Assertions.assertEquals(49, responseBody.size());
+        Assertions.assertEquals("79. Hello general from user0", responseBody.get(0).get("content"));
+        Assertions.assertEquals("31. Hello general from user0", responseBody.get(48).get("content"));
+    }
+
+    private LocalDateTime dateTimeMapper(ResultSet rs, int rowNum) throws SQLException {
+        return RowMappers.resultSetToLocalDateTime(rs);
     }
 }

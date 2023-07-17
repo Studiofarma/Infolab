@@ -16,7 +16,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,8 +102,34 @@ public class ChatService {
         return chatMessageEntities;
     }
 
+    public List<ChatMessageEntity> getAllMessages(int pageSize, Username username, String roomName, CursorEnum beforeOrAfter, String beforeOrAfterTimestamp) {
+        List<ChatMessageEntity> chatMessageEntities = new ArrayList<>();
+        try {
+            chatMessageEntities = chatMessageRepository
+                    .getByRoomNameNumberOfMessages(RoomName.of(roomName),
+                            pageSize,
+                            beforeOrAfter,
+                            fromStringToDate(beforeOrAfterTimestamp),
+                            username);
+        } catch (IllegalArgumentException e) {
+            log.info(e.getMessage());
+            return chatMessageEntities;
+        }
+
+        return chatMessageEntities;
+    }
+
     public void updateReadTimestamp(Username user, RoomName room) {
         downloadDateRepository.addWhereNotDownloadedYetForUser(user, room);
+    }
+
+    private LocalDateTime fromStringToDate(String date) {
+        if (date == null) {
+            return null;
+        } else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(date, formatter);
+        }
     }
 }
 
