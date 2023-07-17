@@ -105,7 +105,7 @@ public class MessagesPaginatedApiTests {
     }
 
     @Test
-    void whenFetching_afterMessage30_messagesFrom79To31AreReturned() {
+    void whenFetching_withoutPageSize_afterMessage30_messagesFrom79To31AreReturned() {
         String stringDate = getMessageTimestampString(30);
 
         ResponseEntity<List> response = testRestTemplate.withBasicAuth(
@@ -120,7 +120,7 @@ public class MessagesPaginatedApiTests {
     }
 
     @Test
-    void whenFetching_beforeMessage30_messagesFrom29To0AreReturned() {
+    void whenFetching_withoutPageSize_beforeMessage30_messagesFrom29To0AreReturned() {
         String stringDate = getMessageTimestampString(30);
 
         ResponseEntity<List> response = testRestTemplate.withBasicAuth(
@@ -132,6 +132,36 @@ public class MessagesPaginatedApiTests {
         Assertions.assertEquals(30, responseBody.size());
         Assertions.assertEquals("29. Hello general from user0", responseBody.get(0).get("content"));
         Assertions.assertEquals("0. Hello general from user0", responseBody.get(29).get("content"));
+    }
+
+    @Test
+    void whenFetching_pageSize10_afterMessage50_messagesFrom60To51AreReturned() {
+        String stringDate = getMessageTimestampString(50);
+
+        ResponseEntity<List> response = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/messages/general?page[size]=10&page[after]=%s".formatted(stringDate),
+                List.class);
+
+        List<LinkedHashMap> responseBody = response.getBody();
+
+        Assertions.assertEquals(10, responseBody.size());
+        Assertions.assertEquals("60. Hello general from user0", responseBody.get(0).get("content"));
+        Assertions.assertEquals("51. Hello general from user0", responseBody.get(9).get("content"));
+    }
+
+    @Test
+    void whenFetching_pageSize10_beforeMessage50_messagesFrom49To40AreReturned() {
+        String stringDate = getMessageTimestampString(50);
+
+        ResponseEntity<List> response = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/messages/general?page[size]=10&page[before]=%s".formatted(stringDate),
+                List.class);
+
+        List<LinkedHashMap> responseBody = response.getBody();
+
+        Assertions.assertEquals(10, responseBody.size());
+        Assertions.assertEquals("49. Hello general from user0", responseBody.get(0).get("content"));
+        Assertions.assertEquals("40. Hello general from user0", responseBody.get(9).get("content"));
     }
 
     private LocalDateTime dateTimeMapper(ResultSet rs, int rowNum) throws SQLException {
