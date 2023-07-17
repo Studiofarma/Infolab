@@ -307,6 +307,8 @@ export class profileSettings extends LitElement {
 
     document.dispatchEvent(ThemeColorService.changeThemeEvent);
 
+    this.themeSwitcherRef.value?.setIsThemesSelectionOpened(false);
+
     this.closeMenu();
   }
 
