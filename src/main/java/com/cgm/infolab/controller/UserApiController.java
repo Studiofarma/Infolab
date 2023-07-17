@@ -32,9 +32,9 @@ public class UserApiController {
                                      @RequestParam(required = false, name = "page[before]") String pageBefore,
                                      @RequestParam(required = false, name = "page[after]") String pageAfter) {
 
-        System.out.println(pageSize);
+        if (pageSize == null) pageSize = -1;
 
-        pageSize = pageSize != null && pageSize < MAX_USERS_PAGE_SIZE ? pageSize : MAX_USERS_PAGE_SIZE;
+        pageSize = pageSize <= MAX_USERS_PAGE_SIZE ? pageSize : MAX_USERS_PAGE_SIZE;
 
         List<UserDto> UserDtos = new ArrayList<>();
         List<UserEntity> userEntities;

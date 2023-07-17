@@ -70,7 +70,6 @@ public class UserRepository {
     public List<UserEntity> getByUsernameWithLike(Username username, int pageSize, CursorEnum beforeOrAfter, String beforeOrAfterDescription) {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("similarUsername", username.value());
-        arguments.put("pageSize", pageSize);
         arguments.put("beforeOrAfterDescription", beforeOrAfterDescription);
 
 
@@ -92,8 +91,14 @@ public class UserRepository {
             beforeOrAfterQuery = "";
         }
 
+        String limit = "";
+        if (pageSize != -1) {
+            limit = "LIMIT :pageSize";
+            arguments.put("pageSize", pageSize);
+        }
+
         List<UserEntity> userEntities = queryUsers("username ILIKE :similarUsername || '%%' %s".formatted(beforeOrAfterQuery),
-                "ORDER BY description %s LIMIT :pageSize".formatted(ascOrDesc), arguments);
+                "ORDER BY description %s %s".formatted(ascOrDesc, limit), arguments);
 
         userEntities.sort(Comparator.comparing(UserEntity::getDescription));
 

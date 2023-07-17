@@ -49,7 +49,7 @@ public class UserPaginatedApiTests {
 
         List<Object> responseBody = response.getBody();
 
-        Assertions.assertEquals(20, responseBody.size());
+        Assertions.assertEquals(30, responseBody.size());
     }
 
     @Test
@@ -101,9 +101,9 @@ public class UserPaginatedApiTests {
 
         List<LinkedHashMap> responseBody = response.getBody();
 
-        Assertions.assertEquals(20, responseBody.size());
+        Assertions.assertEquals(24, responseBody.size());
 
-        for (int i = 0, c = 71; i < 20; i++, c++) {
+        for (int i = 0, c = 71; i < 24; i++, c++) {
             char letter = (char) c;
             Assertions.assertEquals("user%s desc".formatted(letter), responseBody.get(i).get("description"));
         }
