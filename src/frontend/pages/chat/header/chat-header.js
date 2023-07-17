@@ -101,9 +101,6 @@ export class ChatHeader extends LitElement {
 
       let newSelectorText = `
   * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
     ${ThemeColorService.getThemeVariables().toString()};
   }`;
 

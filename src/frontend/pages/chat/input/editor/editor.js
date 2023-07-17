@@ -30,6 +30,7 @@ export class Editor extends LitElement {
     }
 
     #editor {
+      color: ${ThemeCSSVariables.text};
       background-color: ${ThemeCSSVariables.editorInputBg};
       flex: 1;
       padding: 20px;
