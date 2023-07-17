@@ -85,12 +85,12 @@ public class ChatService {
         });
     }
 
-    public List<ChatMessageEntity> getAllMessages(int numberOfMessages, Username username, String roomName) {
+    public List<ChatMessageEntity> getAllMessages(int pageSize, Username username, String roomName) {
         List<ChatMessageEntity> chatMessageEntities = new ArrayList<>();
         try {
             chatMessageEntities = chatMessageRepository
                     .getByRoomNameNumberOfMessages(RoomName.of(roomName),
-                            numberOfMessages,
+                            pageSize,
                             username);
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());

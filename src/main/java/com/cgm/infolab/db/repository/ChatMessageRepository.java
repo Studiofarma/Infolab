@@ -51,15 +51,15 @@ public class ChatMessageRepository {
         return queryUserMessages("ORDER BY m.sent_at DESC", username, arguments);
     }
 
-    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(RoomName roomName, int numberOfMessages, Username username) {
+    public List<ChatMessageEntity> getByRoomNameNumberOfMessages(RoomName roomName, int pageSize, Username username) {
         // In caso il parametro non sia valido vengono ritornati tutti i messaggi disponibili.
-        if (numberOfMessages < 0) {
+        if (pageSize < 0) {
             return getByRoomName(roomName, username);
         }
 
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("roomName", roomName.value());
-        arguments.put("limit", numberOfMessages);
+        arguments.put("limit", pageSize);
 
         return queryUserMessages("ORDER BY m.sent_at DESC LIMIT :limit", username, arguments);
     }
