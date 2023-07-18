@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.cgm.infolab.db.repository.DownloadDateRepository.*;
@@ -30,6 +31,10 @@ public class RoomRepository {
             "left join infolab.users u_other on u_other.id = s_other.user_id";
 
     private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
+
+    private final String GET_DOWNLOAD_DATES_FROM = "infolab.chatmessages m";
+    private final String GET_DOWNLOAD_DATES_INNER_JOIN = "join infolab.download_dates d on d.message_id = m.id";
+    private final String GET_DOWNLOAD_DATES_WHERE_IN_LIST = "m.recipient_room_id IN (:roomIds)";
 
     public RoomRepository(QueryHelper queryHelper, DataSource dataSource) {
         this.queryHelper = queryHelper;
@@ -130,9 +135,14 @@ public class RoomRepository {
 
     public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
         List<RoomEntity> rooms = queryRooms(null, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
-        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberByRoomName(username);
 
+        List<Long> roomIds = extractRoomIdsFromRoomList(rooms);
+
+        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(roomIds);
         rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
+
+        Map<Long, LocalDateTime> lastDownloadedDatesList = getLastDownloadedDatesGroupedByRoom(roomIds);
+        rooms = mergeRoomsAndLastDownloadedDate(rooms, lastDownloadedDatesList);
 
         return rooms;
     }
@@ -152,9 +162,13 @@ public class RoomRepository {
                 arguments
         );
 
-        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberByRoomName(username);
+        List<Long> roomIds = extractRoomIdsFromRoomList(rooms);
 
+        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(roomIds);
         rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
+
+        Map<Long, LocalDateTime> lastDownloadedDatesList = getLastDownloadedDatesGroupedByRoom(roomIds);
+        rooms = mergeRoomsAndLastDownloadedDate(rooms, lastDownloadedDatesList);
 
         return rooms;
     }
@@ -165,6 +179,18 @@ public class RoomRepository {
             int count = countObj == null ? 0 : countObj;
 
             room.setNotDownloadedMessagesCount(count);
+
+            rooms.set(rooms.indexOf(room), room);
+        });
+
+        return rooms;
+    }
+
+    private List<RoomEntity> mergeRoomsAndLastDownloadedDate(List<RoomEntity> rooms, Map<Long, LocalDateTime> notDownloadedDatesList) {
+        rooms.forEach(room -> {
+            LocalDateTime timestamp = notDownloadedDatesList.get(room.getId());
+
+            room.setLastDownloadedDate(timestamp);
 
             rooms.set(rooms.indexOf(room), room);
         });
@@ -195,17 +221,37 @@ public class RoomRepository {
                         "left join infolab.users u_other on u_other.id = s_other.user_id");
     }
 
-    public Map<Long, Integer> getNotDownloadedYetNumberByRoomName(Username username) {
-
+    public Map<Long, Integer> getNotDownloadedYetNumberGroupedByRoom(List<Long> roomIds) {
         Map<String, Object> arguments = new HashMap<>();
-        arguments.put("username", username.value());
+        arguments.put("roomIds", roomIds);
 
         return queryHelper
-                .forUser(username)
-                .query("SELECT COUNT(*) not_downloaded_count, r.id")
-                .join(DOWNLOAD_DATES_JOIN)
-                .where(DOWNLOAD_DATES_WHERE_NULL)
-                .other("GROUP BY r.id")
+                .query("SELECT COUNT(*) not_downloaded_count, m.recipient_room_id id")
+                .from(GET_DOWNLOAD_DATES_FROM)
+                .join("left %s".formatted(GET_DOWNLOAD_DATES_INNER_JOIN))
+                .where("%s and %s".formatted(GET_DOWNLOAD_DATES_WHERE_IN_LIST, DOWNLOAD_DATES_WHERE_NULL))
+                .other("GROUP BY m.recipient_room_id")
                 .executeForMap(RowMappers::mapNotDownloadedMessagesCount, arguments);
+    }
+
+    public Map<Long, LocalDateTime> getLastDownloadedDatesGroupedByRoom(List<Long> roomIds) {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("roomIds", roomIds);
+
+        return queryHelper
+                .query("SELECT DISTINCT ON (m.recipient_room_id) d.download_timestamp, m.recipient_room_id id")
+                .from(GET_DOWNLOAD_DATES_FROM)
+                .join(GET_DOWNLOAD_DATES_INNER_JOIN)
+                .where(GET_DOWNLOAD_DATES_WHERE_IN_LIST)
+                .other("order by m.recipient_room_id, d.download_timestamp desc")
+                .executeForMap(RowMappers::mapLastDownloadedDate, arguments);
+    }
+
+    private List<Long> extractRoomIdsFromRoomList(List<RoomEntity> rooms) {
+        List<Long> roomIds = new ArrayList<>();
+
+        rooms.forEach((roomEntity -> roomIds.add(roomEntity.getId())));
+
+        return roomIds;
     }
 }

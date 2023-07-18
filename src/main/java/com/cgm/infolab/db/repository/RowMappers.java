@@ -6,7 +6,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 
 public abstract class RowMappers {
@@ -30,16 +29,8 @@ public abstract class RowMappers {
                 .of(rs.getLong("message_id"),
                         user,
                         room,
-                        resultSetToLocalDateTime(rs),
+                        rs.getObject("sent_at", LocalDateTime.class),
                         rs.getString("content"));
-    }
-
-    public static LocalDateTime resultSetToLocalDateTime(ResultSet rs) throws SQLException {
-        return rs
-                .getTimestamp("sent_at")
-                .toInstant()
-                .atZone(ZoneId.of("Europe/Rome"))
-                .toLocalDateTime();
     }
 
     public static RoomEntity mapToRoomEntity(ResultSet rs, int rowNum) throws SQLException {
@@ -99,6 +90,14 @@ public abstract class RowMappers {
 
     public static Pair<Long, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
         return Pair.of(rs.getLong("id"), rs.getInt("not_downloaded_count"));
+    }
+
+    public static Pair<Long, LocalDateTime> mapLastDownloadedDate(ResultSet rs, int rowNum) throws SQLException {
+        if (rs.getTimestamp("download_timestamp") == null) {
+            return Pair.of(rs.getLong("id"), null);
+        } else {
+            return Pair.of(rs.getLong("id"), rs.getObject("download_timestamp", LocalDateTime.class));
+        }
     }
 
     // TODO: remove when roomType will come from the db

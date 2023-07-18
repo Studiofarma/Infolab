@@ -90,16 +90,6 @@ public record UserQueryResult(
         return namedJdbcTemplate.query(this.query(), params, rowMapper);
     }
 
-    public <T, K> Map<T, K> executeForMap(RowMapper<Pair<T, K>> rowMapper, Map<String, ?> queryParams) throws InvalidUserKeyException, EmptyResultDataAccessException {
-        checkInputKeysAndThrow(queryParams);
-
-        MapSqlParameterSource params = addAllParams(queryParams);
-
-        List<Pair<T, K>> result = namedJdbcTemplate.query(this.query(), params, rowMapper);
-
-        return result.stream().collect(Collectors.toMap(Pair::getKey, Pair::getValue));
-    }
-
     public <T> T executeForObject(RowMapper<T> rowMapper, Map<String, ?> queryParams) throws InvalidUserKeyException, EmptyResultDataAccessException {
 
        checkInputKeysAndThrow(queryParams);

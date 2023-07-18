@@ -1,6 +1,9 @@
 package com.cgm.infolab.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +11,8 @@ public class RoomDto {
     private String roomName;
     private URL avatarLink;
     private int unreadMessages;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime lastReadTimestamp;
     private String description;
     private String visibility;
     private String roomType;
@@ -20,7 +25,7 @@ public class RoomDto {
     private RoomDto(String roomName,
                     URL avatarLink,
                     int unreadMessages,
-                    String description,
+                    LocalDateTime lastReadTimestamp, String description,
                     String visibility,
                     String roomType,
                     LastMessageDto lastMessage,
@@ -28,6 +33,7 @@ public class RoomDto {
         this.roomName = roomName;
         this.avatarLink = avatarLink;
         this.unreadMessages = unreadMessages;
+        this.lastReadTimestamp = lastReadTimestamp;
         this.description = description;
         this.visibility = visibility;
         this.roomType = roomType;
@@ -36,11 +42,11 @@ public class RoomDto {
     }
 
     public static RoomDto empty() {
-        return new RoomDto("", null, 0, "", "", "", LastMessageDto.empty(), new ArrayList<>());
+        return new RoomDto("", null, 0, null, "", "", "", LastMessageDto.empty(), new ArrayList<>());
     }
 
-    public static RoomDto of(String roomName, int unreadMessages, String description, String visibility, String roomType) {
-        return new RoomDto(roomName, null, unreadMessages, description, visibility, roomType, LastMessageDto.empty(), new ArrayList<>());
+    public static RoomDto of(String roomName, int unreadMessages, LocalDateTime lastReadTimestamp, String description, String visibility, String roomType) {
+        return new RoomDto(roomName, null, unreadMessages, lastReadTimestamp, description, visibility, roomType, LastMessageDto.empty(), new ArrayList<>());
     }
 
     public String getRoomName() {
@@ -65,6 +71,14 @@ public class RoomDto {
 
     public void setUnreadMessages(int unreadMessages) {
         this.unreadMessages = unreadMessages;
+    }
+
+    public LocalDateTime getLastReadTimestamp() {
+        return lastReadTimestamp;
+    }
+
+    public void setLastReadTimestamp(LocalDateTime lastReadTimestamp) {
+        this.lastReadTimestamp = lastReadTimestamp;
     }
 
     public String getDescription() {

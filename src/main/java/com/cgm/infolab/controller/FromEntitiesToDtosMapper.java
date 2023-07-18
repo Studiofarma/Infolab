@@ -29,6 +29,7 @@ public abstract class FromEntitiesToDtosMapper {
         RoomDto roomDto = RoomDto.of(
                 roomEntity.getName().value(),
                 roomEntity.getNotDownloadedMessagesCount(),
+                roomEntity.getLastDownloadedDate(),
                 roomEntity.getDescription(),
                 roomEntity.getVisibility().toString(),
                 roomEntity.getRoomType().toString()
