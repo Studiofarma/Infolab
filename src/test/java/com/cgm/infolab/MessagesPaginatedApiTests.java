@@ -1,12 +1,10 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
-import com.cgm.infolab.db.repository.RowMappers;
+import com.cgm.infolab.helper.TestApiHelper;
+import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
-import com.cgm.infolab.service.ChatService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -16,14 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
@@ -36,6 +30,8 @@ public class MessagesPaginatedApiTests {
     
     @Autowired
     TestDbHelper testDbHelper;
+    @Autowired
+    TestApiHelper testApiHelper;
     @Autowired
     TestRestTemplate testRestTemplate;
     @Autowired
@@ -77,22 +73,14 @@ public class MessagesPaginatedApiTests {
 
     @Test
     void whenFetching_withoutPageSize_responseIsOfAllMessages() {
-        ResponseEntity<List> response = testRestTemplate.withBasicAuth(
-                "user1", "password1").getForEntity("/api/messages/general",
-                List.class);
-
-        List<LinkedHashMap> responseBody = response.getBody();
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general");
 
         Assertions.assertEquals(80, responseBody.size());
     }
 
     @Test
     void whenFetching_withPageSize3_responseIsLast3Messages() {
-        ResponseEntity<List> response = testRestTemplate.withBasicAuth(
-                "user1", "password1").getForEntity("/api/messages/general?page[size]=3",
-                List.class);
-
-        List<LinkedHashMap> responseBody = response.getBody();
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general?page[size]=3");
 
         Assertions.assertEquals(3, responseBody.size());
 
@@ -105,11 +93,7 @@ public class MessagesPaginatedApiTests {
     void whenFetching_withoutPageSize_afterMessage30_messagesFrom79To31AreReturned() {
         String stringDate = getMessageTimestampString(30);
 
-        ResponseEntity<List> response = testRestTemplate.withBasicAuth(
-                "user1", "password1").getForEntity("/api/messages/general?page[after]=%s".formatted(stringDate),
-                List.class);
-
-        List<LinkedHashMap> responseBody = response.getBody();
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general?page[after]=%s".formatted(stringDate));
 
         Assertions.assertEquals(49, responseBody.size());
 
@@ -122,11 +106,7 @@ public class MessagesPaginatedApiTests {
     void whenFetching_withoutPageSize_beforeMessage30_messagesFrom29To0AreReturned() {
         String stringDate = getMessageTimestampString(30);
 
-        ResponseEntity<List> response = testRestTemplate.withBasicAuth(
-                "user1", "password1").getForEntity("/api/messages/general?page[before]=%s".formatted(stringDate),
-                List.class);
-
-        List<LinkedHashMap> responseBody = response.getBody();
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general?page[before]=%s".formatted(stringDate));
 
         for (int i = 0, c = 29; i < responseBody.size(); i++, c--) {
             Assertions.assertEquals("%d. Hello general from user0".formatted(c), responseBody.get(i).get("content"));
@@ -137,11 +117,7 @@ public class MessagesPaginatedApiTests {
     void whenFetching_pageSize3_afterMessage50_messagesFrom53To51AreReturned() {
         String stringDate = getMessageTimestampString(50);
 
-        ResponseEntity<List> response = testRestTemplate.withBasicAuth(
-                "user1", "password1").getForEntity("/api/messages/general?page[size]=3&page[after]=%s".formatted(stringDate),
-                List.class);
-
-        List<LinkedHashMap> responseBody = response.getBody();
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general?page[size]=3&page[after]=%s".formatted(stringDate));
 
         Assertions.assertEquals(3, responseBody.size());
         Assertions.assertEquals("53. Hello general from user0", responseBody.get(0).get("content"));
@@ -153,11 +129,7 @@ public class MessagesPaginatedApiTests {
     void whenFetching_pageSize3_beforeMessage50_messagesFrom49To47AreReturned() {
         String stringDate = getMessageTimestampString(50);
 
-        ResponseEntity<List> response = testRestTemplate.withBasicAuth(
-                "user1", "password1").getForEntity("/api/messages/general?page[size]=3&page[before]=%s".formatted(stringDate),
-                List.class);
-
-        List<LinkedHashMap> responseBody = response.getBody();
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general?page[size]=3&page[before]=%s".formatted(stringDate));
 
         Assertions.assertEquals(3, responseBody.size());
         Assertions.assertEquals("49. Hello general from user0", responseBody.get(0).get("content"));

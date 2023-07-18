@@ -1,5 +1,6 @@
-package com.cgm.infolab.controller;
+package com.cgm.infolab.controller.api;
 
+import com.cgm.infolab.controller.FromEntitiesToDtosMapper;
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
@@ -15,6 +16,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.cgm.infolab.controller.api.ApiConstants.*;
 
 @RestController
 public class ChatApiMessagesController {
@@ -33,9 +36,9 @@ public class ChatApiMessagesController {
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/{roomName}")
     public List<ChatMessageDto> getAllMessages(@PathVariable("roomName") String roomName,
-                                               @RequestParam(required = false, name = "page[size]") Integer pageSize,
-                                               @RequestParam(required = false, name = "page[after]") String pageAfter,
-                                               @RequestParam(required = false, name = "page[before]") String pageBefore,
+                                               @RequestParam(required = false, name = PAGE_SIZE_API_NAME) Integer pageSize,
+                                               @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
+                                               @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
                                                Principal principal) {
         if (pageBefore != null && pageAfter != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Range Pagination Not Supported");
