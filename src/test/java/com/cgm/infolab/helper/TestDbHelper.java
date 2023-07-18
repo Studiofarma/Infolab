@@ -9,6 +9,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -66,5 +67,10 @@ public class TestDbHelper {
                 userPairs) {
             roomService.createPrivateRoomAndSubscribeUsers(p.getLeft().getName(), p.getRight().getName());
         }
+    }
+
+    public void insertCustomMessage(long messageId, long senderId, long recipientRoomId, LocalDateTime sentAt, String content) {
+        jdbcTemplate.update("INSERT INTO infolab.chatmessages (id, sender_id, recipient_room_id, sent_at, content) values" +
+                "(?, ?, ?, ?, ?)", messageId, senderId, recipientRoomId, sentAt, content);
     }
 }
