@@ -73,4 +73,9 @@ public class TestDbHelper {
         jdbcTemplate.update("INSERT INTO infolab.chatmessages (id, sender_id, recipient_room_id, sent_at, content) values" +
                 "(?, ?, ?, ?, ?)", messageId, senderId, recipientRoomId, sentAt, content);
     }
+
+    public void insertCustomReadDate(LocalDateTime timestamp, long message_id, long user_id) {
+        jdbcTemplate.update("INSERT INTO infolab.download_dates (download_timestamp, message_id, user_id) values" +
+                "(?, ?, ?)", timestamp, message_id, user_id);
+    }
 }

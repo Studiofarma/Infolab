@@ -30,13 +30,13 @@ public abstract class RowMappers {
                 .of(rs.getLong("message_id"),
                         user,
                         room,
-                        resultSetToLocalDateTime(rs),
+                        resultSetToLocalDateTime(rs, "sent_at"),
                         rs.getString("content"));
     }
 
-    private static LocalDateTime resultSetToLocalDateTime(ResultSet rs) throws SQLException {
+    private static LocalDateTime resultSetToLocalDateTime(ResultSet rs, String columnName) throws SQLException {
         return rs
-                .getTimestamp("sent_at")
+                .getTimestamp(columnName)
                 .toInstant()
                 .atZone(ZoneId.of("Europe/Rome"))
                 .toLocalDateTime();
@@ -102,7 +102,11 @@ public abstract class RowMappers {
     }
 
     public static Pair<Long, LocalDateTime> mapLastDownloadedDate(ResultSet rs, int rowNum) throws SQLException {
-        return Pair.of(rs.getLong("id"), resultSetToLocalDateTime(rs));
+        if (rs.getTimestamp("download_timestamp") == null) {
+            return Pair.of(rs.getLong("id"), null);
+        } else {
+            return Pair.of(rs.getLong("id"), resultSetToLocalDateTime(rs, "download_timestamp"));
+        }
     }
 
     // TODO: remove when roomType will come from the db

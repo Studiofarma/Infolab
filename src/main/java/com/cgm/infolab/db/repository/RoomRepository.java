@@ -134,9 +134,13 @@ public class RoomRepository {
     public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
         List<RoomEntity> rooms = queryRooms(null, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
 
-        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(extractRoomIdsFromRoomList(rooms));
+        List<Long> roomIds = extractRoomIdsFromRoomList(rooms);
 
+        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(roomIds);
         rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
+
+        Map<Long, LocalDateTime> lastDownloadedDatesList = getLastDownloadedDatesGroupedByRoom(roomIds);
+        rooms = mergeRoomsAndLastDownloadedDate(rooms, lastDownloadedDatesList);
 
         return rooms;
     }
@@ -156,9 +160,13 @@ public class RoomRepository {
                 arguments
         );
 
-        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(extractRoomIdsFromRoomList(rooms));
+        List<Long> roomIds = extractRoomIdsFromRoomList(rooms);
 
+        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(roomIds);
         rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
+
+        Map<Long, LocalDateTime> lastDownloadedDatesList = getLastDownloadedDatesGroupedByRoom(roomIds);
+        rooms = mergeRoomsAndLastDownloadedDate(rooms, lastDownloadedDatesList);
 
         return rooms;
     }
@@ -169,6 +177,18 @@ public class RoomRepository {
             int count = countObj == null ? 0 : countObj;
 
             room.setNotDownloadedMessagesCount(count);
+
+            rooms.set(rooms.indexOf(room), room);
+        });
+
+        return rooms;
+    }
+
+    private List<RoomEntity> mergeRoomsAndLastDownloadedDate(List<RoomEntity> rooms, Map<Long, LocalDateTime> notDownloadedDatesList) {
+        rooms.forEach(room -> {
+            LocalDateTime timestamp = notDownloadedDatesList.get(room.getId());
+
+            room.setLastDownloadedDate(timestamp);
 
             rooms.set(rooms.indexOf(room), room);
         });
@@ -213,7 +233,7 @@ public class RoomRepository {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("roomIds", roomIds);
 
-        return getDownloadDates("SELECT DISTINCT ON (m.recipient_room_id) d.download_timestamp, m.recipient_room_id")
+        return getDownloadDates("SELECT DISTINCT ON (m.recipient_room_id) d.download_timestamp, m.recipient_room_id id")
                 .where(GET_DOWNLOAD_DATES_WHERE_IN_LIST)
                 .other("order by m.recipient_room_id, d.download_timestamp desc")
                 .executeForMap(RowMappers::mapLastDownloadedDate, arguments);
@@ -229,9 +249,7 @@ public class RoomRepository {
     private List<Long> extractRoomIdsFromRoomList(List<RoomEntity> rooms) {
         List<Long> roomIds = new ArrayList<>();
 
-        rooms.forEach((roomEntity -> {
-            roomIds.add(roomEntity.getId());
-        }));
+        rooms.forEach((roomEntity -> roomIds.add(roomEntity.getId())));
 
         return roomIds;
     }

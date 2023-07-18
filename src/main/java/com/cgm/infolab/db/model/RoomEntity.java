@@ -2,6 +2,7 @@ package com.cgm.infolab.db.model;
 
 import com.cgm.infolab.db.ID;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -13,6 +14,7 @@ public class RoomEntity {
     private RoomTypeEnum roomType;
     private String description;
     private int notDownloadedMessagesCount;
+    private LocalDateTime lastDownloadedDate;
     private List<ChatMessageEntity> messages;
     private List<UserEntity> otherParticipants;
 
@@ -22,7 +24,7 @@ public class RoomEntity {
                        RoomTypeEnum roomType,
                        String description,
                        int notDownloadedMessagesCount,
-                       List<ChatMessageEntity> messages,
+                       LocalDateTime lastDownloadedDate, List<ChatMessageEntity> messages,
                        List<UserEntity> otherParticipants) {
         this.id = id;
         this.name = name;
@@ -30,16 +32,17 @@ public class RoomEntity {
         this.roomType = roomType;
         this.description = description;
         this.notDownloadedMessagesCount = notDownloadedMessagesCount;
+        this.lastDownloadedDate = lastDownloadedDate;
         this.messages = messages;
         this.otherParticipants = otherParticipants;
     }
 
     public static RoomEntity of(RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType) {
-        return new RoomEntity(ID.None, name, visibility, roomType, "", 0,null, null);
+        return new RoomEntity(ID.None, name, visibility, roomType, "", 0, null, null, null);
     }
 
     public static RoomEntity of(RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType, String description) {
-        return new RoomEntity(ID.None, name, visibility, roomType, description, 0, null, null);
+        return new RoomEntity(ID.None, name, visibility, roomType, description, 0, null, null, null);
     }
 
     public static RoomEntity general() {
@@ -47,23 +50,23 @@ public class RoomEntity {
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType) {
-        return new RoomEntity(id, name, visibility, roomType, "", 0, null, null);
+        return new RoomEntity(id, name, visibility, roomType, "", 0, null, null, null);
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType, String description) {
-        return new RoomEntity(id, name, visibility, roomType, description, 0,null, null);
+        return new RoomEntity(id, name, visibility, roomType, description, 0, null, null, null);
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType, String description, List<ChatMessageEntity> messages) {
-        return new RoomEntity(id, name, visibility, roomType, description, 0, messages, new ArrayList<>());
+        return new RoomEntity(id, name, visibility, roomType, description, 0, null, messages, new ArrayList<>());
     }
 
     public static RoomEntity of(long id, RoomName name, VisibilityEnum visibility, RoomTypeEnum roomType, String description, List<ChatMessageEntity> messages, List<UserEntity> users) {
-        return new RoomEntity(id, name, visibility, roomType, description, 0, messages, users);
+        return new RoomEntity(id, name, visibility, roomType, description, 0, null, messages, users);
     }
 
     public static RoomEntity empty() {
-        return new RoomEntity(ID.None, RoomName.empty(), null, null, "", 0, new ArrayList<>(), new ArrayList<>());
+        return new RoomEntity(ID.None, RoomName.empty(), null, null, "", 0, null, new ArrayList<>(), new ArrayList<>());
     }
 
     public long getId() {
@@ -112,6 +115,14 @@ public class RoomEntity {
 
     public void setNotDownloadedMessagesCount(int notDownloadedMessagesCount) {
         this.notDownloadedMessagesCount = notDownloadedMessagesCount;
+    }
+
+    public LocalDateTime getLastDownloadedDate() {
+        return lastDownloadedDate;
+    }
+
+    public void setLastDownloadedDate(LocalDateTime lastDownloadedDate) {
+        this.lastDownloadedDate = lastDownloadedDate;
     }
 
     public List<ChatMessageEntity> getMessages() {

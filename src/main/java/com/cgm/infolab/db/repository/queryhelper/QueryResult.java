@@ -49,7 +49,11 @@ public record QueryResult (NamedParameterJdbcTemplate namedJdbcTemplate, String 
     public <T, K> Map<T, K> executeForMap(RowMapper<Pair<T, K>> rowMapper,
                                           Map<String, ?> queryParams) throws UserQueryResult.InvalidUserKeyException, EmptyResultDataAccessException {
 
-        List<Pair<T, K>> result = namedJdbcTemplate.query(this.query(), queryParams, rowMapper);
+        List<Pair<T, K>> result = namedJdbcTemplate
+                .query(this.query(), queryParams, rowMapper)
+                .stream()
+                .filter(tkPair -> tkPair.getValue() != null)
+                .toList();
 
         return result.stream().collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
