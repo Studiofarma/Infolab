@@ -183,7 +183,11 @@ public class MessagesPaginatedApiTests {
     }
 
     private String getMessageTimestampString(int messageNumber) {
-        LocalDateTime dateTime = STARTING_TIME.plusSeconds(messageNumber);
+        LocalDateTime dateTime = jdbcTemplate.queryForObject(
+                "select * from infolab.chatmessages where content = '%d. Hello general from user0'".formatted(messageNumber),
+                this::dateTimeMapper
+        );
+//        LocalDateTime dateTime = STARTING_TIME.plusSeconds(messageNumber);
         return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 }
