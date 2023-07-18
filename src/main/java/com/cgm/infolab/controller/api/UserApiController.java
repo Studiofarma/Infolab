@@ -1,6 +1,6 @@
-package com.cgm.infolab.controller;
+package com.cgm.infolab.controller.api;
 
-import com.cgm.infolab.db.model.CursorEnum;
+import com.cgm.infolab.controller.FromEntitiesToDtosMapper;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.UserDto;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.cgm.infolab.controller.ApiConstants.*;
+import static com.cgm.infolab.controller.api.ApiConstants.*;
 
 @RestController
 public class UserApiController {

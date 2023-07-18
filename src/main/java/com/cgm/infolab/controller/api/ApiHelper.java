@@ -1,4 +1,4 @@
-package com.cgm.infolab.controller;
+package com.cgm.infolab.controller.api;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;

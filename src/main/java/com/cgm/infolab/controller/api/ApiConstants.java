@@ -1,4 +1,4 @@
-package com.cgm.infolab.controller;
+package com.cgm.infolab.controller.api;
 
 public abstract class ApiConstants {
 
