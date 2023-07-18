@@ -3,51 +3,46 @@ package com.cgm.infolab.controller;
 import com.cgm.infolab.db.model.CursorEnum;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
-import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.UserDto;
+import com.cgm.infolab.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.cgm.infolab.controller.ApiConstants.*;
+
 @RestController
 public class UserApiController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final ApiHelper apiHelper;
     private final Logger log = LoggerFactory.getLogger(UserApiController.class);
 
 
     @Autowired
-    public UserApiController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserApiController(UserService userService, ApiHelper apiHelper) {
+        this.userService = userService;
+        this.apiHelper = apiHelper;
     }
 
     @GetMapping("/api/users")
     public List<UserDto> getUsername(@RequestParam("user") String user,
-                                     @RequestParam(required = false, name = "page[size]") Integer pageSize,
-                                     @RequestParam(required = false, name = "page[before]") String pageBefore,
-                                     @RequestParam(required = false, name = "page[after]") String pageAfter) {
+                                     @RequestParam(required = false, name = PAGE_SIZE_API_NAME) Integer pageSize,
+                                     @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
+                                     @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter) {
 
         if (pageBefore != null && pageAfter != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Range Pagination Not Supported");
+            apiHelper.throwOnRangePagination();
         }
 
         if (pageSize == null) pageSize = -1;
 
         List<UserDto> UserDtos = new ArrayList<>();
-        List<UserEntity> userEntities;
-        if (pageBefore == null && pageAfter == null) {
-            userEntities = userRepository.getByUsernameWithLike(Username.of(user), pageSize, CursorEnum.NONE, "");
-        } else if (pageBefore != null) {
-            userEntities = userRepository.getByUsernameWithLike(Username.of(user), pageSize, CursorEnum.PAGE_BEFORE, pageBefore);
-        } else { // pageAfter != null
-            userEntities = userRepository.getByUsernameWithLike(Username.of(user), pageSize, CursorEnum.PAGE_AFTER, pageAfter);
-        }
+        List<UserEntity> userEntities = userService.getUsersPaginatedWithLike(pageSize, pageBefore, pageAfter, Username.of(user));
 
         if (userEntities.size() > 0) {
             UserDtos = userEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
