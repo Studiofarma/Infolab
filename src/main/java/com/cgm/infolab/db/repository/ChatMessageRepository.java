@@ -97,9 +97,6 @@ public class ChatMessageRepository {
 
     private List<ChatMessageEntity> queryUserMessages(String where, String other, Username username, Map<String, ?> queryParams) {
         try {
-            System.out.println(getMessages(username)
-                    .where(where)
-                    .other(other).query());
             return getMessages(username)
                     .where(where)
                     .other(other)
