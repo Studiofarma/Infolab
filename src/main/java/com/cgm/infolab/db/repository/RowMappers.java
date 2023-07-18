@@ -101,6 +101,10 @@ public abstract class RowMappers {
         return Pair.of(rs.getLong("id"), rs.getInt("not_downloaded_count"));
     }
 
+    public static Pair<Long, LocalDateTime> mapLastDownloadedDate(ResultSet rs, int rowNum) throws SQLException {
+        return Pair.of(rs.getLong("id"), resultSetToLocalDateTime(rs));
+    }
+
     // TODO: remove when roomType will come from the db
     private static RoomTypeEnum getRoomType(String roomName) {
         return roomName.equals("general") ? RoomTypeEnum.GROUP : RoomTypeEnum.USER2USER;

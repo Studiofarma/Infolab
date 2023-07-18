@@ -25,13 +25,9 @@ public class LastDownloadDateUpdateTests {
     @Autowired
     public ChatService chatService;
     @Autowired
-    public RoomService roomService;
-    @Autowired
     public JdbcTemplate jdbcTemplate;
     @Autowired
     public DownloadDateRepository downloadDateRepository;
-    @Autowired
-    public UserRepository userRepository;
     @Autowired
     public TestDbHelper testDbHelper;
 
