@@ -129,7 +129,12 @@ export class Tooltip extends LitElement {
     this.style.cssText = "";
     computePosition(this.target, this, {
       strategy: "fixed",
-      middleware: [offset(this.offset), shift(), flip(), autoPlacement()],
+      middleware: [
+        offset(this.offset),
+        shift(),
+        flip(),
+        autoPlacement({ allowedPlacements: ["top", "bottom"] }),
+      ],
     }).then(({ x, y }) => {
       this.style.left = `${x}px`;
       this.style.top = `${y}px`;
