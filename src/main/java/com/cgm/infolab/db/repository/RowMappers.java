@@ -6,10 +6,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
 
 public abstract class RowMappers {
 
@@ -32,19 +29,8 @@ public abstract class RowMappers {
                 .of(rs.getLong("message_id"),
                         user,
                         room,
-                        resultSetToLocalDateTime(rs, "sent_at"),
+                        rs.getObject("sent_at", LocalDateTime.class),
                         rs.getString("content"));
-    }
-
-    public static LocalDateTime resultSetToLocalDateTime(ResultSet rs, String columnName) throws SQLException {
-        Calendar now = Calendar.getInstance();
-        TimeZone timeZone = now.getTimeZone();
-
-        return rs
-                .getTimestamp(columnName)
-                .toInstant()
-                .atZone(timeZone.toZoneId())
-                .toLocalDateTime();
     }
 
     public static RoomEntity mapToRoomEntity(ResultSet rs, int rowNum) throws SQLException {
@@ -110,7 +96,7 @@ public abstract class RowMappers {
         if (rs.getTimestamp("download_timestamp") == null) {
             return Pair.of(rs.getLong("id"), null);
         } else {
-            return Pair.of(rs.getLong("id"), resultSetToLocalDateTime(rs, "download_timestamp"));
+            return Pair.of(rs.getLong("id"), rs.getObject("download_timestamp", LocalDateTime.class));
         }
     }
 
