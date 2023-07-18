@@ -66,8 +66,7 @@ public class MessagesPaginatedApiTests {
         Long user0Id = jdbcTemplate.queryForObject("select * from infolab.users where username = 'user0'", (rs, rowNum) -> rs.getLong("id"));
 
         for (int i = 0; i < messageDtos.length; i++) {
-            jdbcTemplate.update("INSERT INTO infolab.chatmessages (id, sender_id, recipient_room_id, sent_at, content) values" +
-                    "(?, ?, ?, ?, ?)", i, user0Id, generalId, STARTING_TIME.plusSeconds(i), "%d. Hello general from user0".formatted(i));
+            testDbHelper.insertCustomMessage(i, user0Id, generalId, STARTING_TIME.plusSeconds(i), "%d. Hello general from user0".formatted(i));
         }
     }
 
