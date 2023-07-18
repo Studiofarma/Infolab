@@ -32,6 +32,8 @@ public class RoomRepository {
 
     private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
 
+    private final String GET_DOWNLOAD_DATES_FROM = "infolab.chatmessages m";
+    private final String GET_DOWNLOAD_DATES_INNER_JOIN = "join infolab.download_dates d on d.message_id = m.id";
     private final String GET_DOWNLOAD_DATES_WHERE_IN_LIST = "m.recipient_room_id IN (:roomIds)";
 
     public RoomRepository(QueryHelper queryHelper, DataSource dataSource) {
@@ -223,7 +225,10 @@ public class RoomRepository {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("roomIds", roomIds);
 
-        return getDownloadDates("SELECT COUNT(*) not_downloaded_count, m.recipient_room_id id")
+        return queryHelper
+                .query("SELECT COUNT(*) not_downloaded_count, m.recipient_room_id id")
+                .from(GET_DOWNLOAD_DATES_FROM)
+                .join("left %s".formatted(GET_DOWNLOAD_DATES_INNER_JOIN))
                 .where("%s and %s".formatted(GET_DOWNLOAD_DATES_WHERE_IN_LIST, DOWNLOAD_DATES_WHERE_NULL))
                 .other("GROUP BY m.recipient_room_id")
                 .executeForMap(RowMappers::mapNotDownloadedMessagesCount, arguments);
@@ -233,7 +238,10 @@ public class RoomRepository {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("roomIds", roomIds);
 
-        return getDownloadDates("SELECT DISTINCT ON (m.recipient_room_id) d.download_timestamp, m.recipient_room_id id")
+        return queryHelper
+                .query("SELECT DISTINCT ON (m.recipient_room_id) d.download_timestamp, m.recipient_room_id id")
+                .from(GET_DOWNLOAD_DATES_FROM)
+                .join(GET_DOWNLOAD_DATES_INNER_JOIN)
                 .where(GET_DOWNLOAD_DATES_WHERE_IN_LIST)
                 .other("order by m.recipient_room_id, d.download_timestamp desc")
                 .executeForMap(RowMappers::mapLastDownloadedDate, arguments);
