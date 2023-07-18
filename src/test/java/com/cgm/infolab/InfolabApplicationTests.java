@@ -7,6 +7,7 @@ import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.RoomService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -52,18 +53,17 @@ class InfolabApplicationTests {
     public ChatMessageRepository chatMessageRepository;
 
     @Autowired
-    public UserRepository userRepository;
+    public TestDbHelper testDbHelper;
 
     WebSocketStompClient websocket;
 
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
     UserEntity user1 = UserEntity.of(Username.of("user1"));
 
-    @Autowired
-    RoomService roomService;
-
     @BeforeAll
     public void setupAll(){
+        testDbHelper.clearDbExceptForGeneral();
+
         websocket =
             new WebSocketStompClient(
                 new SockJsClient(
@@ -75,8 +75,10 @@ class InfolabApplicationTests {
         messageConverter.setObjectMapper(objectMapper);
 
         websocket.setMessageConverter(messageConverter);
-        userRepository.add(userBanana);
-        roomService.createPrivateRoomAndSubscribeUsers(user1.getName(), userBanana.getName());
+
+        testDbHelper.addUsers(user1, userBanana);
+
+        testDbHelper.addPrivateRoomsAndSubscribeUsers(List.of(Pair.of(user1, userBanana)));
     }
 
     @Test

@@ -37,8 +37,6 @@ public class MessagesPaginatedApiTests {
     @Autowired
     TestDbHelper testDbHelper;
     @Autowired
-    ChatService chatService;
-    @Autowired
     TestRestTemplate testRestTemplate;
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -48,17 +46,13 @@ public class MessagesPaginatedApiTests {
                     UserEntity.of(Username.of("user1")),
                     UserEntity.of(Username.of("user2")),
                     UserEntity.of(Username.of("user3"))};
-
-    public UserEntity loggedInUser = users[0]; // user0
-
-    public RoomEntity general = RoomEntity.general();
     public ChatMessageDto[] messageDtos = new ChatMessageDto[80];
 
     public static final LocalDateTime STARTING_TIME = LocalDateTime.of(2023, 6, 1, 1, 1, 1);
 
     @BeforeAll
     void setUp() {
-        testDbHelper.clearDbExceptForRooms();
+        testDbHelper.clearDbExceptForGeneral();
 
         testDbHelper.addUsers(users);
 
@@ -178,16 +172,8 @@ public class MessagesPaginatedApiTests {
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
     }
 
-    private LocalDateTime dateTimeMapper(ResultSet rs, int rowNum) throws SQLException {
-        return RowMappers.resultSetToLocalDateTime(rs);
-    }
-
     private String getMessageTimestampString(int messageNumber) {
-        LocalDateTime dateTime = jdbcTemplate.queryForObject(
-                "select * from infolab.chatmessages where content = '%d. Hello general from user0'".formatted(messageNumber),
-                this::dateTimeMapper
-        );
-//        LocalDateTime dateTime = STARTING_TIME.plusSeconds(messageNumber);
+        LocalDateTime dateTime = STARTING_TIME.plusSeconds(messageNumber);
         return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 }
