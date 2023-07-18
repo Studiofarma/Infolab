@@ -2,6 +2,7 @@ import { LitElement, html } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
 import { IconNames } from "../enums/icon-names";
+import { TooltipTexts } from "../enums/tooltip-texts";
 
 import "./button-icon";
 import "./input-with-icon";
@@ -21,6 +22,9 @@ export class InputSearch extends LitElement {
         .iconName=${this.getInputWithIconRefValue()
           ? IconNames.close
           : IconNames.magnify}
+        .iconTooltipText=${this.getInputWithIconRefValue()
+          ? TooltipTexts.clearButton
+          : undefined}
         @input=${this.onInput}
         @il:icon-clicked=${this.handleIconClicked}
         placeholder="Cerca o inizia una nuova conversazione"
