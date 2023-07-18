@@ -46,17 +46,13 @@ public class ChatApiMessagesController {
         }
 
         List<ChatMessageDto> chatMessageDtos = new ArrayList<>();
-        List<ChatMessageEntity> chatMessageEntities;
-        if (pageAfter == null && pageBefore == null) {
-            chatMessageEntities =
-                    chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName, CursorEnum.NONE, null);
-        } else if (pageBefore != null) {
-            chatMessageEntities =
-                    chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName, CursorEnum.PAGE_BEFORE, pageBefore);
-        } else { // pageAfter != null
-            chatMessageEntities =
-                    chatService.getAllMessages(pageSize, Username.of(principal.getName()), roomName, CursorEnum.PAGE_AFTER, pageAfter);
-        }
+        List<ChatMessageEntity> chatMessageEntities = chatService.getAllMessages(
+                pageSize,
+                Username.of(principal.getName()),
+                RoomName.of(roomName),
+                pageBefore,
+                pageAfter
+        );
 
         if (chatMessageEntities.size() > 0) {
             chatMessageDtos = chatMessageEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToChatMessageDto).toList();

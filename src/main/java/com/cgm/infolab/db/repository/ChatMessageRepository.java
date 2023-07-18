@@ -60,6 +60,16 @@ public class ChatMessageRepository {
         arguments.put("roomName", roomName.value());
         arguments.put("beforeOrAfterTimestamp", beforeOrAfterTimestamp);
 
+        // IMPORTANT NOTE: the ordering method (ASC or DESC) needs to be changed based on the
+        // cursor type (before or after) because if it was always DESC then page[after] would not work.
+        // This because the limit clause returns the first N results that satisfy the condition of being before the cursor.
+        // But if the ordering is DESC the first N records will be returned, not the closest ones to the cursor.
+        // ----------------------------------------
+        // Example: A B C D E F G. This list is ordered with timestamp DESC.
+        // If I want to get 2 records after (timestamp) F then the set of records that are after the cursor
+        // are A B C D E. Limit takes the first 2 records of the result, so it will take A and B, but we want D and E.
+        // ----------------------------------------
+        // By switching ordering method this gets resolved.
         String beforeOrAfterCondition;
         String ascOrDesc;
         if(beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
@@ -78,7 +88,7 @@ public class ChatMessageRepository {
         }
 
         String limit = "";
-        if (pageSize != -1) {
+        if (pageSize >= 0) {
             limit = "LIMIT :pageSize";
             arguments.put("pageSize", pageSize);
         }
