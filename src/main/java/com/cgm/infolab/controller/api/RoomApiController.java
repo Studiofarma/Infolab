@@ -1,5 +1,6 @@
-package com.cgm.infolab.controller;
+package com.cgm.infolab.controller.api;
 
+import com.cgm.infolab.controller.FromEntitiesToDtosMapper;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.RoomDto;
