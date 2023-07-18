@@ -87,17 +87,18 @@ public class MessagesPaginatedApiTests {
     }
 
     @Test
-    void whenFetching_withPageSize10_responseIsLast10Messages() {
+    void whenFetching_withPageSize3_responseIsLast3Messages() {
         ResponseEntity<List> response = testRestTemplate.withBasicAuth(
-                "user1", "password1").getForEntity("/api/messages/general?page[size]=10",
+                "user1", "password1").getForEntity("/api/messages/general?page[size]=3",
                 List.class);
 
         List<LinkedHashMap> responseBody = response.getBody();
 
-        Assertions.assertEquals(10, responseBody.size());
+        Assertions.assertEquals(3, responseBody.size());
 
         Assertions.assertEquals("79. Hello general from user0", responseBody.get(0).get("content"));
-        Assertions.assertEquals("70. Hello general from user0", responseBody.get(9).get("content"));
+        Assertions.assertEquals("78. Hello general from user0", responseBody.get(1).get("content"));
+        Assertions.assertEquals("77. Hello general from user0", responseBody.get(2).get("content"));
     }
 
     @Test
@@ -111,8 +112,10 @@ public class MessagesPaginatedApiTests {
         List<LinkedHashMap> responseBody = response.getBody();
 
         Assertions.assertEquals(49, responseBody.size());
-        Assertions.assertEquals("79. Hello general from user0", responseBody.get(0).get("content"));
-        Assertions.assertEquals("31. Hello general from user0", responseBody.get(48).get("content"));
+
+        for (int i = 0, c = 79; i < responseBody.size(); i++, c--) {
+            Assertions.assertEquals("%d. Hello general from user0".formatted(c), responseBody.get(i).get("content"));
+        }
     }
 
     @Test
@@ -125,39 +128,41 @@ public class MessagesPaginatedApiTests {
 
         List<LinkedHashMap> responseBody = response.getBody();
 
-        Assertions.assertEquals(30, responseBody.size());
-        Assertions.assertEquals("29. Hello general from user0", responseBody.get(0).get("content"));
-        Assertions.assertEquals("0. Hello general from user0", responseBody.get(29).get("content"));
+        for (int i = 0, c = 29; i < responseBody.size(); i++, c--) {
+            Assertions.assertEquals("%d. Hello general from user0".formatted(c), responseBody.get(i).get("content"));
+        }
     }
 
     @Test
-    void whenFetching_pageSize10_afterMessage50_messagesFrom60To51AreReturned() {
+    void whenFetching_pageSize3_afterMessage50_messagesFrom53To51AreReturned() {
         String stringDate = getMessageTimestampString(50);
 
         ResponseEntity<List> response = testRestTemplate.withBasicAuth(
-                "user1", "password1").getForEntity("/api/messages/general?page[size]=10&page[after]=%s".formatted(stringDate),
+                "user1", "password1").getForEntity("/api/messages/general?page[size]=3&page[after]=%s".formatted(stringDate),
                 List.class);
 
         List<LinkedHashMap> responseBody = response.getBody();
 
-        Assertions.assertEquals(10, responseBody.size());
-        Assertions.assertEquals("60. Hello general from user0", responseBody.get(0).get("content"));
-        Assertions.assertEquals("51. Hello general from user0", responseBody.get(9).get("content"));
+        Assertions.assertEquals(3, responseBody.size());
+        Assertions.assertEquals("53. Hello general from user0", responseBody.get(0).get("content"));
+        Assertions.assertEquals("52. Hello general from user0", responseBody.get(1).get("content"));
+        Assertions.assertEquals("51. Hello general from user0", responseBody.get(2).get("content"));
     }
 
     @Test
-    void whenFetching_pageSize10_beforeMessage50_messagesFrom49To40AreReturned() {
+    void whenFetching_pageSize3_beforeMessage50_messagesFrom49To47AreReturned() {
         String stringDate = getMessageTimestampString(50);
 
         ResponseEntity<List> response = testRestTemplate.withBasicAuth(
-                "user1", "password1").getForEntity("/api/messages/general?page[size]=10&page[before]=%s".formatted(stringDate),
+                "user1", "password1").getForEntity("/api/messages/general?page[size]=3&page[before]=%s".formatted(stringDate),
                 List.class);
 
         List<LinkedHashMap> responseBody = response.getBody();
 
-        Assertions.assertEquals(10, responseBody.size());
+        Assertions.assertEquals(3, responseBody.size());
         Assertions.assertEquals("49. Hello general from user0", responseBody.get(0).get("content"));
-        Assertions.assertEquals("40. Hello general from user0", responseBody.get(9).get("content"));
+        Assertions.assertEquals("48. Hello general from user0", responseBody.get(1).get("content"));
+        Assertions.assertEquals("47. Hello general from user0", responseBody.get(2).get("content"));
     }
 
     @Test
