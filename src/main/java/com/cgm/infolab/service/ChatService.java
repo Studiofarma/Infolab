@@ -16,7 +16,9 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,13 +87,16 @@ public class ChatService {
         });
     }
 
-    public List<ChatMessageEntity> getAllMessages(int numberOfMessages, Username username, String roomName) {
+    public List<ChatMessageEntity> getAllMessages(int pageSize, Username username, RoomName roomName, String pageBefore, String pageAfter) {
         List<ChatMessageEntity> chatMessageEntities = new ArrayList<>();
         try {
-            chatMessageEntities = chatMessageRepository
-                    .getByRoomNameNumberOfMessages(RoomName.of(roomName),
-                            numberOfMessages,
-                            username);
+            if (pageAfter == null && pageBefore == null) {
+                chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.NONE, null, username);
+            } else if (pageBefore != null) {
+                chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.PAGE_BEFORE, fromStringToDate(pageBefore), username);
+            } else { // pageAfter != null
+                chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.PAGE_AFTER, fromStringToDate(pageAfter), username);
+            }
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());
             return chatMessageEntities;
@@ -102,6 +107,15 @@ public class ChatService {
 
     public void updateReadTimestamp(Username user, RoomName room) {
         downloadDateRepository.addWhereNotDownloadedYetForUser(user, room);
+    }
+
+    private LocalDateTime fromStringToDate(String date) {
+        if (date == null) {
+            return null;
+        } else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            return LocalDateTime.parse(date, formatter);
+        }
     }
 }
 

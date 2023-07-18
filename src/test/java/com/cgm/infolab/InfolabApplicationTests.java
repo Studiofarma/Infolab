@@ -1,15 +1,12 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.RoomName;
-import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
-import com.cgm.infolab.db.repository.UserRepository;
+import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
-import com.cgm.infolab.service.RoomService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -35,7 +32,6 @@ import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
 import java.lang.reflect.Type;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -55,18 +51,17 @@ class InfolabApplicationTests {
     public ChatMessageRepository chatMessageRepository;
 
     @Autowired
-    public UserRepository userRepository;
+    public TestDbHelper testDbHelper;
 
     WebSocketStompClient websocket;
 
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
     UserEntity user1 = UserEntity.of(Username.of("user1"));
 
-    @Autowired
-    RoomService roomService;
-
     @BeforeAll
     public void setupAll(){
+        testDbHelper.clearDbExceptForGeneral();
+
         websocket =
             new WebSocketStompClient(
                 new SockJsClient(
@@ -78,8 +73,10 @@ class InfolabApplicationTests {
         messageConverter.setObjectMapper(objectMapper);
 
         websocket.setMessageConverter(messageConverter);
-        userRepository.add(userBanana);
-        roomService.createPrivateRoomAndSubscribeUsers(user1.getName(), userBanana.getName());
+
+        testDbHelper.addUsers(user1, userBanana);
+
+        testDbHelper.addPrivateRoomsAndSubscribeUsers(List.of(Pair.of(user1, userBanana)));
     }
 
     @Test
@@ -134,7 +131,7 @@ class InfolabApplicationTests {
                 Assertions.assertEquals(sentMessage.getContent(), received.getContent());
                 Assertions.assertEquals(sentMessage.getSender(), received.getSender());
             });
-        List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("general"), 1, Username.of("user1"));
+        List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("general"), 1, CursorEnum.NONE, null, Username.of("user1"));
         Assertions.assertEquals(1,messages.size());
         Assertions.assertEquals(sentMessage.getContent(),messages.get(0).getContent());
     }
@@ -188,7 +185,7 @@ class InfolabApplicationTests {
                 Assertions.assertEquals(sentMessage.getSender(), received.getSender());
             });
 
-        List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("banana-user1"), 1, Username.of("user1"));
+        List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("banana-user1"), 1, CursorEnum.NONE, null, Username.of("user1"));
         Assertions.assertEquals(1,messages.size());
         Assertions.assertEquals(sentMessage.getContent(),messages.get(0).getContent());
     }
