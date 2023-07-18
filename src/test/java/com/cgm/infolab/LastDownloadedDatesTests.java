@@ -63,7 +63,7 @@ public class LastDownloadedDatesTests {
 
     @BeforeAll
     void setUpAll() {
-        testDbHelper.clearDbExceptForRooms();
+        testDbHelper.clearDbExceptForGeneral();
 
         testDbHelper.addUsers(users);
 
