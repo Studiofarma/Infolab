@@ -7,7 +7,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 public abstract class RowMappers {
 
@@ -35,10 +37,13 @@ public abstract class RowMappers {
     }
 
     public static LocalDateTime resultSetToLocalDateTime(ResultSet rs, String columnName) throws SQLException {
+        Calendar now = Calendar.getInstance();
+        TimeZone timeZone = now.getTimeZone();
+
         return rs
                 .getTimestamp(columnName)
                 .toInstant()
-                .atZone(ZoneId.of("Europe/Rome"))
+                .atZone(timeZone.toZoneId())
                 .toLocalDateTime();
     }
 

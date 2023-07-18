@@ -247,13 +247,6 @@ public class RoomRepository {
                 .executeForMap(RowMappers::mapLastDownloadedDate, arguments);
     }
 
-    private QueryResult getDownloadDates(String select) {
-        return queryHelper
-                .query(select)
-                .from("infolab.chatmessages m")
-                .join("left join infolab.download_dates d on d.message_id = m.id");
-    }
-
     private List<Long> extractRoomIdsFromRoomList(List<RoomEntity> rooms) {
         List<Long> roomIds = new ArrayList<>();
 
