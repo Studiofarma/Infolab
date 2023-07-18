@@ -34,7 +34,7 @@ public abstract class RowMappers {
                         rs.getString("content"));
     }
 
-    private static LocalDateTime resultSetToLocalDateTime(ResultSet rs, String columnName) throws SQLException {
+    public static LocalDateTime resultSetToLocalDateTime(ResultSet rs, String columnName) throws SQLException {
         return rs
                 .getTimestamp(columnName)
                 .toInstant()
