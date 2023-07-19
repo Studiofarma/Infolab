@@ -19,7 +19,9 @@ import {
 const enterEvents = ["pointerenter", "focus"];
 const leaveEvents = ["pointerleave", "blur", "keydown", "click"];
 
-export class Tooltip extends LitElement {
+import { ElementMixin } from "../models/element-mixin";
+
+export class Tooltip extends ElementMixin(LitElement) {
   static properties = {
     showing: { reflect: true, type: Boolean },
     offset: { type: Number },
@@ -92,67 +94,6 @@ export class Tooltip extends LitElement {
     this.showing = false;
     // Position offset
     this.offset = 4;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    // Setup target if needed
-    this.target ??= this.previousElementSibling;
-    // Ensure hidden at start
-    this.finishHide();
-
-    document.addEventListener("change-theme", () => {
-      // changing the adoptedStylesheet
-      let stylesheet = this.shadowRoot.adoptedStyleSheets[0];
-      let rules = stylesheet.cssRules;
-
-      let index = Object.values(rules).findIndex(
-        (rule) => rule.selectorText === "*"
-      );
-
-      let newSelectorText = `
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      ${ThemeColorService.getThemeVariables().toString()};
-    }
-    
-    `;
-
-      stylesheet.deleteRule(index);
-      stylesheet.insertRule(newSelectorText, index);
-
-      // updating pseudo elements
-
-      for (let i = 0; i < rules.length; i++) {
-        if (rules[i].selectorText?.includes("::")) {
-          let selectorName = rules[i].selectorText;
-
-          let properties = rules[i].cssText
-            .slice(
-              rules[i].cssText.indexOf("{") + 1,
-              rules[i].cssText.indexOf("}")
-            )
-            .split(";")
-            .map((prop) => prop.trim())
-            .filter((prop) => !prop.startsWith("--"))
-            .join(";\n");
-
-          let newCSS = `
-              ${selectorName} {
-                ${properties}
-                ${ThemeColorService.getThemeVariables()}
-              }
-            `;
-
-          stylesheet.deleteRule(i);
-          stylesheet.insertRule(newCSS, i);
-        }
-      }
-
-      adoptStyles(this.shadowRoot, [stylesheet]);
-    });
   }
 
   // Target for which to show tooltip
