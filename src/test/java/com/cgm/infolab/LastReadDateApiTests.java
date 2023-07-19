@@ -54,7 +54,7 @@ public class LastReadDateApiTests {
             {ChatMessageDto.of("1 Hello general from user0", users[0].getName().value()),
                     ChatMessageDto.of("2 Visible only to user0 and user1", users[1].getName().value()),
                     ChatMessageDto.of("3 Visible only to user1 and user2", users[1].getName().value()),
-                    ChatMessageDto.of("4 Visible only to user0 and user2", users[2].getName().value()),
+                    ChatMessageDto.of("4 Hello general from user2", users[2].getName().value()),
                     ChatMessageDto.of("5 Visible only to user0 and user1", users[0].getName().value()),
                     ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())};
     public RoomEntity general = RoomEntity.general();
@@ -77,7 +77,7 @@ public class LastReadDateApiTests {
         chatService.saveMessageInDb(messageDtos[0], users[0].getName(), general.getName(), null);
         chatService.saveMessageInDb(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"), users[0].getName());
         chatService.saveMessageInDb(messageDtos[2], users[2].getName(), RoomName.of("user1-user2"), users[2].getName());
-        chatService.saveMessageInDb(messageDtos[3], users[0].getName(), RoomName.of("user0-user2"), users[0].getName());
+        chatService.saveMessageInDb(messageDtos[3], users[0].getName(), general.getName(), users[0].getName());
         chatService.saveMessageInDb(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"), users[1].getName());
         chatService.saveMessageInDb(messageDtos[5], users[1].getName(), RoomName.of("user1-user2"), users[1].getName());
     }
@@ -154,6 +154,25 @@ public class LastReadDateApiTests {
 
         Assertions.assertTrue(readDate2.isAfter(sentDate2));
         Assertions.assertTrue(readDate2.isBefore(LocalDateTime.now()));
+    }
+
+    @Test
+    void whenTryingToSetMultipleReadDates_forSameMessageAndUser_errorIsThrown() throws Exception {
+        List<IdDto> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = '4 Hello general from user2'", this::messageIdMapper);
+
+        Assertions.assertEquals(1, ids.size());
+
+        ids.add(IdDto.of(ids.get(0).id()));
+
+        Assertions.assertEquals(2, ids.size());
+
+        postToApiForUser1("/api/messages/lastread", ids);
+
+        Assertions.assertDoesNotThrow(() -> { // if the result was of more than 1 object an exception would be thrown
+            LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ? or message_id = 2",
+                    (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
+                    ids.get(0).id());
+        });
     }
 
     private void postToApiForUser1(String url, List list) throws Exception {
