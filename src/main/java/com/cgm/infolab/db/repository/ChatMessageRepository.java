@@ -23,6 +23,8 @@ public class ChatMessageRepository {
 
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
+    private final String JOIN_MESSAGES = "LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id";
+
     public ChatMessageRepository(DataSource dataSource, QueryHelper queryHelper) {
         this.dataSource = dataSource;
         this.queryHelper = queryHelper;
@@ -39,6 +41,7 @@ public class ChatMessageRepository {
         parameters.put("recipient_room_id", message.getRoom().getId());
         parameters.put("sent_at", message.getTimestamp());
         parameters.put("content", message.getContent());
+        parameters.put("status", message.getStatus());
 
         return ChatMessageEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters),
                 message.getSender(),
@@ -123,7 +126,20 @@ public class ChatMessageRepository {
     private UserQueryResult getMessages(Username username) {
         return queryHelper
                 .forUser(username)
-                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content")
-                .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id");
+                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status")
+                .join("%s LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id".formatted(JOIN_MESSAGES));
+    }
+
+    public void deleteMessage(Username username, long idToDelete) {
+        Map<String, Long> params = new HashMap<>();
+        params.put("idToDelete", idToDelete);
+
+        queryHelper
+                .forUser(username)
+                .query("UPDATE infolab.chatmessages SET content = '', status = 'DELETED' WHERE id IN (select m.id")
+                .join(JOIN_MESSAGES)
+                .where("m.sender_id = u.id and m.id = :idToDelete")
+                .other(")")
+                .update(params);
     }
 }

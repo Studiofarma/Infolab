@@ -57,4 +57,8 @@ public record QueryResult (NamedParameterJdbcTemplate namedJdbcTemplate, String 
 
         return result.stream().collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
+
+    public void update(Map<String, ?> queryParams) {
+        namedJdbcTemplate.update(this.query(), queryParams);
+    }
 }
