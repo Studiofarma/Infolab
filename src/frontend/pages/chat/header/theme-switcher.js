@@ -73,7 +73,7 @@ export class ThemeSwitcher extends ElementMixin(LitElement) {
       <il-accordion-checkbox
         placeholder="Tema"
         ${ref(this.accordionCheckBoxRef)}
-        @selected-item=${this.foo}
+        @selected-item=${this.selectThemeHandler}
       >
         <div slot="current">
           <div class="theme-option">
@@ -87,7 +87,11 @@ export class ThemeSwitcher extends ElementMixin(LitElement) {
         <div slot="selection-list">
           ${this.themes.map(
             (themeName) => html`
-              <div class="theme-option" ?hidden=${this.theme === themeName}>
+              <div
+                class="theme-option"
+                data-key=${themeName}
+                ?hidden=${this.theme === themeName}
+              >
                 <il-button-icon
                   content=${this.getThemeIcon(themeName) ?? ""}
                 ></il-button-icon>
@@ -97,41 +101,7 @@ export class ThemeSwitcher extends ElementMixin(LitElement) {
           )}
         </div>
       </il-accordion-checkbox>
-
-      <!-- <div class="container">
-        <div class="theme-option current" @click=${this.toggleThemesSelection}>
-          <il-button-icon
-            content=${this.getThemeIcon(this.theme) ?? ""}
-          ></il-button-icon>
-          <p>${this.theme}</p>
-          <span>${this.isThemesSelectionOpened ? "-" : "+"}</span>
-        </div>
-
-        <div
-          class=${"themes-selection " +
-      (this.isThemesSelectionOpened ? "open" : "")}
-        >
-          ${this.themes.map(
-        (themeName) => html`
-          <div
-            class="theme-option"
-            ?hidden=${this.theme === themeName}
-            @click=${() => this.setTheme(themeName)}
-          >
-            <il-button-icon
-              content=${this.getThemeIcon(themeName) ?? ""}
-            ></il-button-icon>
-            <p>${themeName}</p>
-          </div>
-        `
-      )}
-        </div>
-      </div> -->
     `;
-  }
-
-  foo(event) {
-    console.log(event.detail.target);
   }
 
   firstUpdated() {
@@ -173,7 +143,14 @@ export class ThemeSwitcher extends ElementMixin(LitElement) {
     return icon;
   }
 
-  setTheme(themeName) {
+  selectThemeHandler(event) {
+    // Getting the option selected
+
+    const target = event.detail.target;
+    const themeName = target.closest(".theme-option").dataset.key;
+
+    // Setting the choosen theme
+
     this.theme = themeName;
     ThemeColorService.setCurrentThemeName(themeName);
 
