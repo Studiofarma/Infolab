@@ -7,6 +7,7 @@ import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.helper.TestApiHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
+import com.cgm.infolab.model.IdDto;
 import com.cgm.infolab.service.ChatService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
@@ -85,7 +86,7 @@ public class LastReadDateApiTests {
     void whenUpdatingDownloadDate_forMessage1_itIsAfterSendDateAndBeforeNow() throws Exception {
         long message1Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '1 Hello general from user0'", this::messageIdMapper);
 
-        postToApiForUser1("/api/messages/lastread", List.of(message1Id));
+        postToApiForUser1("/api/messages/lastread", List.of(IdDto.of(message1Id)));
 
         LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
@@ -103,9 +104,7 @@ public class LastReadDateApiTests {
     void whenUpdatingDownloadDate_forMessage2_itIsAfterSendDateAndBeforeNow_message5DoesNotHaveIt() throws Exception {
         long message2Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '2 Visible only to user0 and user1'", this::messageIdMapper);
 
-        System.out.println(message2Id);
-
-        postToApiForUser1("/api/messages/lastread", List.of(message2Id));
+        postToApiForUser1("/api/messages/lastread", List.of(IdDto.of(message2Id)));
 
         LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
