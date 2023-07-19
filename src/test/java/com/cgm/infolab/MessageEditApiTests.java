@@ -83,7 +83,7 @@ public class MessageEditApiTests {
     }
 
     @Test
-    void whenOneMessageIsDeleted_itsContentIsEmpty_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
+    void whenOneMessageIsEdited_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
         long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '2 Visible only to user0 and user1'",
@@ -107,7 +107,7 @@ public class MessageEditApiTests {
     }
 
     @Test
-    void whenTryingToDelete_messageSentByAnotherUser_messageDoesNotGetDeleted() throws Exception {
+    void whenTryingToEdit_messageSentByAnotherUser_messageDoesNotGetEdited() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
         long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
