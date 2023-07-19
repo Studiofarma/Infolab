@@ -13,12 +13,16 @@ import java.util.List;
 public abstract class FromEntitiesToDtosMapper {
 
     public static ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
+        String status = messageEntity.getStatus() != null ? messageEntity.getStatus().toString() : null;
+
         return ChatMessageDto.of(
                 messageEntity.getId(),
                 messageEntity.getContent(),
                 messageEntity.getTimestamp(),
                 messageEntity.getSender().getName().value(),
-                messageEntity.getRoom().getName().value());
+                messageEntity.getRoom().getName().value(),
+                status
+        );
     }
 
     public static LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
