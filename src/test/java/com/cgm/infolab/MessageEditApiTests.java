@@ -5,7 +5,6 @@ import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.enums.Username;
-import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
@@ -15,27 +14,36 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static com.cgm.infolab.db.model.enums.StatusEnum.DELETED;
 import static com.cgm.infolab.db.model.enums.StatusEnum.EDITED;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "local"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class MessageEditTests {
+@AutoConfigureMockMvc
+public class MessageEditApiTests {
     @Autowired
     public TestDbHelper testDbHelper;
     @Autowired
     public ChatService chatService;
     @Autowired
-    public ChatMessageRepository chatMessageRepository;
-    @Autowired
     public JdbcTemplate jdbcTemplate;
+    @Autowired
+    public MockMvc mvc;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -75,46 +83,57 @@ public class MessageEditTests {
     }
 
     @Test
-    void whenOneMessageIsEdited_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() {
+    void whenOneMessageIsDeleted_itsContentIsEmpty_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
+        long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '2 Visible only to user0 and user1'",
                 (rs, rowNum) -> rs.getLong("id"));
 
-        chatMessageRepository.editMessage(users[0].getName(), message5Id, "5 Message edited!!");
+        apiPutForUser1("/api/messages/user0-user1/%d".formatted(message2Id), "Edited yayy!");
 
         List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
 
         Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
 
-        ChatMessageEntity editedMessage = messagesAfter.stream().filter(message -> message.getId() == message5Id).toList().get(0);
+        ChatMessageEntity editedMessage = messagesAfter.stream().filter(message -> message.getId() == message2Id).toList().get(0);
 
         Assertions.assertEquals(EDITED, editedMessage.getStatus());
-        Assertions.assertEquals("5 Message edited!!", editedMessage.getContent());
+        Assertions.assertEquals("Edited yayy!", editedMessage.getContent());
 
-        messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message5Id).toList();
-        messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message5Id).toList();
+        messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message2Id).toList();
+        messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message2Id).toList();
 
         Assertions.assertEquals(messagesBefore, messagesAfter);
     }
 
     @Test
-    void whenTryingToEdit_messageSentByAnotherUser_messageDoesNotGetEdited() {
+    void whenTryingToDelete_messageSentByAnotherUser_messageDoesNotGetDeleted() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '1 Hello general from user0'",
+        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
                 (rs, rowNum) -> rs.getLong("id"));
 
-        chatMessageRepository.editMessage(users[0].getName(), message1Id, "Trying to edit message (｀∀´)Ψ");
+        apiPutForUser1("/api/messages/user0-user1/%d".formatted(message5Id), "Trying to edit ψ(｀∇´)ψ");
 
         List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
 
         Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
 
-        ChatMessageEntity messageTriedToBeDeleted = messagesAfter.stream().filter(message -> message.getId() == message1Id).toList().get(0);
+        ChatMessageEntity messageTriedToBeEdited = messagesAfter.stream().filter(message -> message.getId() == message5Id).toList().get(0);
 
-        Assertions.assertNull(messageTriedToBeDeleted.getStatus());
+        Assertions.assertNull(messageTriedToBeEdited.getStatus());
 
         Assertions.assertEquals(messagesBefore, messagesAfter);
+    }
+
+    private void apiPutForUser1(String url, String body) throws Exception {
+
+        mvc.perform(
+                put(url)
+                        .with(csrf().asHeader())
+                        .with(user("user1").password("password1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body)
+        ).andExpect(status().isOk());
     }
 }

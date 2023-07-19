@@ -68,10 +68,18 @@ public class ChatApiMessagesController {
         return chatMessageDtos;
     }
 
-    @DeleteMapping(value = "/api/messages/{roomName}/{id}")
+    @DeleteMapping("/api/messages/{roomName}/{id}")
     public void deleteMessageById(@PathVariable("roomName") String roomName,
                                   @PathVariable("id") Long id,
                                   Principal principal) {
         chatService.deleteMessageById(Username.of(principal.getName()), id);
+    }
+
+    @PutMapping("/api/messages/{roomName}/{id}")
+    public void editMessageById(@PathVariable("roomName") String roomName,
+                                @PathVariable("id") Long id,
+                                @RequestBody String newContent,
+                                Principal principal) {
+        chatService.editMessageById(Username.of(principal.getName()), id, newContent);
     }
 }

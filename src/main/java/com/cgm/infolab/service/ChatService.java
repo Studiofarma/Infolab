@@ -112,6 +112,10 @@ public class ChatService {
         chatMessageRepository.deleteMessage(user, messageId);
     }
 
+    public void editMessageById(Username user, Long messageId, String newContent) {
+        chatMessageRepository.editMessage(user, messageId, newContent);
+    }
+
     private LocalDateTime fromStringToDate(String date) {
         if (date == null) {
             return null;
