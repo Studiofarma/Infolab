@@ -108,6 +108,10 @@ public class ChatService {
         downloadDateRepository.addWhereNotDownloadedYetForUser(user, room);
     }
 
+    public void deleteMessageById(Username user, Long messageId) {
+        chatMessageRepository.deleteMessage(user, messageId);
+    }
+
     private LocalDateTime fromStringToDate(String date) {
         if (date == null) {
             return null;
@@ -116,5 +120,6 @@ public class ChatService {
             return LocalDateTime.parse(date, formatter);
         }
     }
+
 }
 
