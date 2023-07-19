@@ -8,33 +8,40 @@ import com.cgm.infolab.helper.TestApiHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 public class LastReadDateApiTests {
-
-    @Autowired
-    TestApiHelper testApiHelper;
     @Autowired
     TestDbHelper testDbHelper;
     @Autowired
     ChatService chatService;
     @Autowired
     JdbcTemplate jdbcTemplate;
+    @Autowired
+    MockMvc mvc;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -77,7 +84,7 @@ public class LastReadDateApiTests {
     void whenUpdatingDownloadDate_forMessage1_itIsAfterSendDateAndBeforeNow() throws Exception {
         long message1Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '1 Hello general from user0'", this::messageIdMapper);
 
-        testApiHelper.postToApiForUser1v2("/api/messages/lastread", List.of(message1Id));
+        postToApiForUser1("/api/messages/lastread", List.of(message1Id));
 
         LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
@@ -89,6 +96,19 @@ public class LastReadDateApiTests {
 
         Assertions.assertTrue(readDate.isAfter(sentDate));
         Assertions.assertTrue(readDate.isBefore(LocalDateTime.now()));
+    }
+
+    private void postToApiForUser1(String url, List list) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonArray = objectMapper.writeValueAsString(list);
+
+        mvc.perform(
+                post(url)
+                        .with(csrf().asHeader())
+                        .with(user("user1").password("password1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonArray)
+        ).andExpect(status().isOk());
     }
 
     private long messageIdMapper(ResultSet rs, int rowNum) throws SQLException {

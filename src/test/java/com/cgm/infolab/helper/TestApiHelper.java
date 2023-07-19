@@ -21,11 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TestApiHelper {
 
     private final TestRestTemplate testRestTemplate;
-    private final MockMvc mvc;
 
-    public TestApiHelper(TestRestTemplate testRestTemplate, MockMvc client, MockMvc mvc) {
+    public TestApiHelper(TestRestTemplate testRestTemplate) {
         this.testRestTemplate = testRestTemplate;
-        this.mvc = mvc;
     }
 
     public List<LinkedHashMap> getFromApiForUser1(String url) {
@@ -36,18 +34,5 @@ public class TestApiHelper {
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
         return (List<LinkedHashMap>) response.getBody();
-    }
-
-    public void postToApiForUser1v2(String url, List messageIds) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String jsonArray = objectMapper.writeValueAsString(messageIds);
-
-        mvc.perform(
-                post(url)
-                        .with(csrf().asHeader())
-                        .with(user("user1").password("password1"))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonArray)
-        ).andExpect(status().isOk());
     }
 }
