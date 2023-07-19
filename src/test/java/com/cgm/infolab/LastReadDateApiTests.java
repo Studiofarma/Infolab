@@ -14,6 +14,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
@@ -96,6 +97,33 @@ public class LastReadDateApiTests {
 
         Assertions.assertTrue(readDate.isAfter(sentDate));
         Assertions.assertTrue(readDate.isBefore(LocalDateTime.now()));
+    }
+
+    @Test
+    void whenUpdatingDownloadDate_forMessage2_itIsAfterSendDateAndBeforeNow_message5DoesNotHaveIt() throws Exception {
+        long message2Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '2 Visible only to user0 and user1'", this::messageIdMapper);
+
+        System.out.println(message2Id);
+
+        postToApiForUser1("/api/messages/lastread", List.of(message2Id));
+
+        LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
+                (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
+                message2Id);
+
+        LocalDateTime sentDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE id = ?",
+                (rs, rowNum) -> timestampMapper(rs, "sent_at"),
+                message2Id);
+
+        Assertions.assertTrue(readDate.isAfter(sentDate));
+        Assertions.assertTrue(readDate.isBefore(LocalDateTime.now()));
+
+        long message5Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '5 Visible only to user0 and user1'", this::messageIdMapper);
+
+        Assertions.assertThrows(EmptyResultDataAccessException.class,
+                () -> jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
+                        (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
+                        message5Id));
     }
 
     private void postToApiForUser1(String url, List list) throws Exception {
