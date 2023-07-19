@@ -26,7 +26,8 @@ public abstract class FromEntitiesToDtosMapper {
     }
 
     public static LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
-        return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender());
+        String status = messageEntity.getStatus() != null ? messageEntity.getStatus().toString() : null;
+        return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender(), status);
     }
 
     public static RoomDto fromEntityToDto(RoomEntity roomEntity) {
