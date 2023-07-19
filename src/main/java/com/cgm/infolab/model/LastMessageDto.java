@@ -8,24 +8,25 @@ import java.time.LocalDateTime;
 public class LastMessageDto {
     private String content;
     private LocalDateTime timestamp;
-
     private String sender;
+    private String status;
 
     private LastMessageDto() {
     }
 
-    private LastMessageDto(String content, LocalDateTime timestamp, String sender) {
+    private LastMessageDto(String content, LocalDateTime timestamp, String sender, String status) {
         this.content = content;
         this.timestamp = timestamp;
         this.sender = sender;
+        this.status = status;
     }
 
-    public static LastMessageDto of(String lastMessagePreview, LocalDateTime lastMessageTimestamp, UserEntity sender) {
-        return new LastMessageDto(lastMessagePreview, lastMessageTimestamp, sender.getName().value());
+    public static LastMessageDto of(String lastMessagePreview, LocalDateTime lastMessageTimestamp, UserEntity sender, String status) {
+        return new LastMessageDto(lastMessagePreview, lastMessageTimestamp, sender.getName().value(), status);
     }
 
     public static LastMessageDto empty() {
-        return new LastMessageDto(null, null, null);
+        return new LastMessageDto(null, null, null, null);
     }
 
     public String getContent() {
@@ -47,5 +48,17 @@ public class LastMessageDto {
 
     public String getSender() {
         return this.sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

@@ -15,31 +15,25 @@ public class ChatMessageDto {
     private LocalDateTime timestamp;
     private String sender;
     private String roomName;
+    private String status;
 
     private ChatMessageDto() {
     }
 
-    private ChatMessageDto(long id, String content, LocalDateTime timestamp, String sender, String roomName) {
+    private ChatMessageDto(long id, String content, LocalDateTime timestamp, String sender, String roomName, String status) {
         this.id = id;
         this.content = content;
         this.timestamp = timestamp;
         this.sender = sender;
         this.roomName = roomName;
+        this.status = status;
     }
 
     public static ChatMessageDto of(String content, String sender) {
-        return new ChatMessageDto(ID.None, content, null, sender, "");
+        return new ChatMessageDto(ID.None, content, null, sender, "", null);
     }
-
-    public static ChatMessageDto of(String content, LocalDateTime timestamp, String sender) {
-        return new ChatMessageDto(ID.None, content, timestamp, sender, "");
-    }
-
-    public static ChatMessageDto of(String content, LocalDateTime timestamp, String sender, String roomName) {
-        return new ChatMessageDto(ID.None, content, timestamp, sender, roomName);
-    }
-    public static ChatMessageDto of(long id, String content, LocalDateTime timestamp, String sender, String roomName) {
-        return new ChatMessageDto(id, content, timestamp, sender, roomName);
+    public static ChatMessageDto of(long id, String content, LocalDateTime timestamp, String sender, String roomName, String status) {
+        return new ChatMessageDto(id, content, timestamp, sender, roomName, status);
     }
 
     public long getId() {
@@ -80,6 +74,14 @@ public class ChatMessageDto {
 
     public void setSender(String sender) {
         this.sender = sender;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
