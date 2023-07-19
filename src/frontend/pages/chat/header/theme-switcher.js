@@ -1,4 +1,5 @@
 import { LitElement, html, css } from "lit";
+import { ref, createRef } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../../../services/theme-color-service";
 
@@ -6,12 +7,12 @@ import { IconNames } from "../../../enums/icon-names";
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "../../../components/button-icon";
+import "../../../components/accordion-checkbox";
 
 import { ElementMixin } from "../../../models/element-mixin";
 
 export class ThemeSwitcher extends ElementMixin(LitElement) {
   static properties = {
-    isThemesSelectionOpened: { type: Boolean },
     initialTheme: { type: String },
     theme: { type: String },
     themes: { type: Array },
@@ -19,10 +20,12 @@ export class ThemeSwitcher extends ElementMixin(LitElement) {
 
   constructor() {
     super();
-    this.isThemesSelectionOpened = false;
     this.theme = ThemeColorService.getCurrentThemeName();
     this.themes = ["light", "dark"];
     this.initialTheme = "";
+
+    // Refs
+    this.accordionCheckBoxRef = createRef();
   }
 
   static styles = css`
@@ -103,7 +106,21 @@ export class ThemeSwitcher extends ElementMixin(LitElement) {
 
   render() {
     return html`
-      <div class="container">
+      <il-accordion-checkbox
+        ${ref(this.accordionCheckBoxRef)}
+        @selected-item=${this.foo}
+      >
+        <p slot="current">lorem 1</p>
+
+        <div slot="selection-list">
+          <p>lorem 2</p>
+          <p>lorem 3</p>
+          <p>lorem 4</p>
+          <p>lorem 5</p>
+        </div>
+      </il-accordion-checkbox>
+
+      <!-- <div class="container">
         <div class="theme-option current" @click=${this.toggleThemesSelection}>
           <il-button-icon
             content=${this.getThemeIcon(this.theme) ?? ""}
@@ -114,25 +131,29 @@ export class ThemeSwitcher extends ElementMixin(LitElement) {
 
         <div
           class=${"themes-selection " +
-          (this.isThemesSelectionOpened ? "open" : "")}
+      (this.isThemesSelectionOpened ? "open" : "")}
         >
           ${this.themes.map(
-            (themeName) => html`
-              <div
-                class="theme-option"
-                ?hidden=${this.theme === themeName}
-                @click=${() => this.setTheme(themeName)}
-              >
-                <il-button-icon
-                  content=${this.getThemeIcon(themeName) ?? ""}
-                ></il-button-icon>
-                <p>${themeName}</p>
-              </div>
-            `
-          )}
+        (themeName) => html`
+          <div
+            class="theme-option"
+            ?hidden=${this.theme === themeName}
+            @click=${() => this.setTheme(themeName)}
+          >
+            <il-button-icon
+              content=${this.getThemeIcon(themeName) ?? ""}
+            ></il-button-icon>
+            <p>${themeName}</p>
+          </div>
+        `
+      )}
         </div>
-      </div>
+      </div> -->
     `;
+  }
+
+  foo(event) {
+    console.log(event.detail.target);
   }
 
   firstUpdated() {
@@ -142,7 +163,7 @@ export class ThemeSwitcher extends ElementMixin(LitElement) {
   // Getters & Setters
 
   setIsThemesSelectionOpened(value) {
-    this.isThemesSelectionOpened = value;
+    this.accordionCheckBoxRef.value?.setIsSelectionListOpened(value);
   }
 
   setTheme(value) {
@@ -158,10 +179,6 @@ export class ThemeSwitcher extends ElementMixin(LitElement) {
   }
 
   // ----------------------------
-
-  toggleThemesSelection() {
-    this.isThemesSelectionOpened = !this.isThemesSelectionOpened;
-  }
 
   getThemeIcon(themeName) {
     let icon;

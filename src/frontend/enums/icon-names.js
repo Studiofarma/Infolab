@@ -39,4 +39,6 @@ export const IconNames = {
   circle: "mdiCircle",
   sun: "mdiWhiteBalanceSunny",
   moon: "mdiMoonWaningCrescent",
+  menuDown: "mdiMenuDown",
+  menuUp: "mdiMenuUp",
 };
