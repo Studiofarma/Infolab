@@ -84,17 +84,17 @@ public class LastReadDateApiTests {
 
     @Test
     void whenUpdatingDownloadDate_forMessage1_itIsAfterSendDateAndBeforeNow() throws Exception {
-        long message1Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '1 Hello general from user0'", this::messageIdMapper);
+        IdDto message1Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '1 Hello general from user0'", this::messageIdMapper);
 
-        postToApiForUser1("/api/messages/lastread", List.of(IdDto.of(message1Id)));
+        postToApiForUser1("/api/messages/lastread", List.of(message1Id));
 
         LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
-                message1Id);
+                message1Id.id());
 
         LocalDateTime sentDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "sent_at"),
-                message1Id);
+                message1Id.id());
 
         Assertions.assertTrue(readDate.isAfter(sentDate));
         Assertions.assertTrue(readDate.isBefore(LocalDateTime.now()));
@@ -102,27 +102,58 @@ public class LastReadDateApiTests {
 
     @Test
     void whenUpdatingDownloadDate_forMessage2_itIsAfterSendDateAndBeforeNow_message5DoesNotHaveIt() throws Exception {
-        long message2Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '2 Visible only to user0 and user1'", this::messageIdMapper);
+        IdDto message2Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '2 Visible only to user0 and user1'", this::messageIdMapper);
 
-        postToApiForUser1("/api/messages/lastread", List.of(IdDto.of(message2Id)));
+        postToApiForUser1("/api/messages/lastread", List.of(message2Id));
+
+
 
         LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
-                message2Id);
+                message2Id.id());
 
         LocalDateTime sentDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "sent_at"),
-                message2Id);
+                message2Id.id());
 
         Assertions.assertTrue(readDate.isAfter(sentDate));
         Assertions.assertTrue(readDate.isBefore(LocalDateTime.now()));
 
-        long message5Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '5 Visible only to user0 and user1'", this::messageIdMapper);
+        IdDto message5Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '5 Visible only to user0 and user1'", this::messageIdMapper);
 
         Assertions.assertThrows(EmptyResultDataAccessException.class,
                 () -> jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                         (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
-                        message5Id));
+                        message5Id.id()));
+    }
+
+    @Test
+    void whenUpdatingDownloadDates_forMessages3And6_theyAreAfterSendDateAndBeforeNow() throws Exception {
+        List<IdDto> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = '3 Visible only to user0 and user1' OR content = '6 Visible only to user1 and user2'", this::messageIdMapper);
+
+        postToApiForUser1("/api/messages/lastread", ids);
+
+        LocalDateTime readDate1 = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
+                (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
+                ids.get(0).id());
+
+        LocalDateTime sentDate1 = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE id = ?",
+                (rs, rowNum) -> timestampMapper(rs, "sent_at"),
+                ids.get(0).id());
+
+        Assertions.assertTrue(readDate1.isAfter(sentDate1));
+        Assertions.assertTrue(readDate1.isBefore(LocalDateTime.now()));
+
+        LocalDateTime readDate2 = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
+                (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
+                ids.get(0).id());
+
+        LocalDateTime sentDate2 = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE id = ?",
+                (rs, rowNum) -> timestampMapper(rs, "sent_at"),
+                ids.get(0).id());
+
+        Assertions.assertTrue(readDate2.isAfter(sentDate2));
+        Assertions.assertTrue(readDate2.isBefore(LocalDateTime.now()));
     }
 
     private void postToApiForUser1(String url, List list) throws Exception {
@@ -138,8 +169,8 @@ public class LastReadDateApiTests {
         ).andExpect(status().isOk());
     }
 
-    private long messageIdMapper(ResultSet rs, int rowNum) throws SQLException {
-        return rs.getLong("id");
+    private IdDto messageIdMapper(ResultSet rs, int rowNum) throws SQLException {
+        return IdDto.of(rs.getLong("id"));
     }
 
     private LocalDateTime timestampMapper(ResultSet rs, String columnName) throws SQLException {
