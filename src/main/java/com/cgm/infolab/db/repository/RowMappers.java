@@ -1,6 +1,9 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.enums.StatusEnum;
+import com.cgm.infolab.db.model.enums.Username;
+import com.cgm.infolab.db.model.enums.VisibilityEnum;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.ResultSet;
@@ -25,12 +28,16 @@ public abstract class RowMappers {
                 roomType
         );
 
+        StatusEnum status = rs.getString("status") != null ? StatusEnum.valueOf(rs.getString("status").trim()) : null;
+
         return ChatMessageEntity
                 .of(rs.getLong("message_id"),
                         user,
                         room,
                         rs.getObject("sent_at", LocalDateTime.class),
-                        rs.getString("content"));
+                        rs.getString("content"),
+                        status
+                );
     }
 
     public static RoomEntity mapToRoomEntity(ResultSet rs, int rowNum) throws SQLException {

@@ -1,7 +1,7 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enums.Username;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import org.junit.jupiter.api.Assertions;

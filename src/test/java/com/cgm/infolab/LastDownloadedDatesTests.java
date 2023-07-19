@@ -1,6 +1,7 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.enums.Username;
 import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.helper.TestDbHelper;

@@ -1,6 +1,8 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.enums.CursorEnum;
+import com.cgm.infolab.db.model.enums.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;

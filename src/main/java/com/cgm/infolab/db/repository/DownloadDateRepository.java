@@ -1,6 +1,7 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.enums.Username;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
