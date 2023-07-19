@@ -29,7 +29,6 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final DownloadDateRepository downloadDateRepository;
 
-    private final RoomSubscriptionRepository roomSubscriptionRepository;
     private final RoomService roomService;
 
     private final Logger log = LoggerFactory.getLogger(ChatService.class);
@@ -38,13 +37,11 @@ public class ChatService {
     public ChatService(UserRepository userRepository,
                        RoomRepository roomRepository,
                        ChatMessageRepository chatMessageRepository,
-                       RoomSubscriptionRepository roomSubscriptionRepository,
                        RoomService roomService,
                        DownloadDateRepository downloadDateRepository){
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
-        this.roomSubscriptionRepository = roomSubscriptionRepository;
         this.roomService = roomService;
         this.downloadDateRepository = downloadDateRepository;
     }
@@ -107,6 +104,10 @@ public class ChatService {
 
     public void updateReadTimestamp(Username user, RoomName room) {
         downloadDateRepository.addWhereNotDownloadedYetForUser(user, room);
+    }
+
+    public void addReadTimestampForMessages(Username user, List<Long> messageIds) {
+        downloadDateRepository.addDownloadDateToMessages(user, messageIds);
     }
 
     private LocalDateTime fromStringToDate(String date) {

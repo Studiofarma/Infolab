@@ -1,11 +1,9 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
-import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
-import com.cgm.infolab.service.ChatService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,16 +21,12 @@ import java.util.Map;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LastDownloadedDatesTests {
+public class LastDownloadedDatesForRoomsTests {
 
     @Autowired
     public TestDbHelper testDbHelper;
     @Autowired
-    public ChatService chatService;
-    @Autowired
     public RoomRepository roomRepository;
-    @Autowired
-    public DownloadDateRepository downloadDateRepository;
     @Autowired
     public JdbcTemplate jdbcTemplate;
 

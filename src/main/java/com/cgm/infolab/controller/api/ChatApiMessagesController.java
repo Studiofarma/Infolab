@@ -7,10 +7,7 @@ import com.cgm.infolab.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
@@ -68,5 +65,10 @@ public class ChatApiMessagesController {
         }
 
         return chatMessageDtos;
+    }
+
+    @PostMapping("/api/messages/lastread")
+    public void postLastReadDates(@RequestBody List<Long> messageIds, Principal principal) {
+        chatService.addReadTimestampForMessages(Username.of(principal.getName()), messageIds);
     }
 }

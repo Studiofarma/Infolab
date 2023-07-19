@@ -44,21 +44,21 @@ public class UserPaginatedApiTests {
 
     @Test
     void whenFetching_withoutPageSize_responseIsOfAllUsers() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/users?user=");
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/users?user=");
 
         Assertions.assertEquals(30, responseBody.size());
     }
 
     @Test
     void whenFetching_withPageSize2_responseIsOf2FirstUsers() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/users?user=&page[size]=2");
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/users?user=&page[size]=2");
 
         Assertions.assertEquals(2, responseBody.size());
     }
 
     @Test
     void whenFetching_withPageSize3_afterUserE_userFAndGAndHAreReturned() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/users?user=&page[size]=3&page[after]=userE desc");
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/users?user=&page[size]=3&page[after]=userE desc");
 
         Assertions.assertEquals(3, responseBody.size());
 
@@ -69,7 +69,7 @@ public class UserPaginatedApiTests {
 
     @Test
     void whenFetching_withPageSize3_beforeUserE_userBAndCAndDAreReturned() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/users?user=&page[size]=3&page[before]=userE desc");
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/users?user=&page[size]=3&page[before]=userE desc");
 
         Assertions.assertEquals(3, responseBody.size());
 
@@ -80,7 +80,7 @@ public class UserPaginatedApiTests {
 
     @Test
     void whenFetching_withoutPageSize_afterUserF_usersFromGTo_AreReturned() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/users?user=&page[after]=userF desc");
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/users?user=&page[after]=userF desc");
 
         Assertions.assertEquals(24, responseBody.size());
 
@@ -92,7 +92,7 @@ public class UserPaginatedApiTests {
 
     @Test
     void whenFetching_withoutPageSize_beforeUserF_usersFromEToAAreReturned() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/users?user=&page[before]=userF desc");
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/users?user=&page[before]=userF desc");
 
         Assertions.assertEquals(5, responseBody.size());
 
