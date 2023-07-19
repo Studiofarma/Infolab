@@ -3,7 +3,7 @@ export const darkTheme = {
   text: "#fff",
   actionText: "#fff",
   scrollbar: "#fff",
-  buttonBg: "#5C5E60",
+  buttonBg: "#101010",
   link: "#0000FF",
   boxShadowPrimary: "#5C5E60",
   boxShadowSecondary: "none",

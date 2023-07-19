@@ -79,6 +79,7 @@ export class profileSettings extends ElementMixin(LitElement) {
       display: flex;
       justify-content: center;
       align-items: center;
+      gap: 10px;
       cursor: pointer;
       background: ${ThemeCSSVariables.buttonBg};
       color: ${ThemeCSSVariables.actionText};
@@ -184,8 +185,7 @@ export class profileSettings extends ElementMixin(LitElement) {
       </section>
 
       <div class="fieldset">
-        <p>Tema:</p>
-
+        <p>Preferenze:</p>
         <il-theme-switcher ${ref(this.themeSwitcherRef)}></il-theme-switcher>
       </div>
 

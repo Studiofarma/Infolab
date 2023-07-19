@@ -36,59 +36,6 @@ export class ThemeSwitcher extends ElementMixin(LitElement) {
       ${ThemeColorService.getThemeVariables()};
     }
 
-    p {
-      color: ${ThemeCSSVariables.text};
-    }
-
-    .container {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      border: 2px solid ${ThemeCSSVariables.inputBorder};
-      border-radius: 10px;
-      overflow-x: hidden;
-    }
-
-    .theme-option {
-      position: relative;
-      width: 100%;
-      height: 50px;
-      padding: 0px 20px;
-      display: flex;
-      align-items: center;
-      gap: 1em;
-      background: ${ThemeCSSVariables.inputBackground};
-      cursor: pointer;
-      transition: 0.5s;
-    }
-
-    .theme-option[hidden] {
-      display: none;
-    }
-
-    .theme-option:hover {
-      background: ${ThemeCSSVariables.messageMenuBgHover};
-    }
-
-    .current span {
-      display: block;
-      margin-left: auto;
-      font-size: 20px;
-      font-weight: 900;
-      color: ${ThemeCSSVariables.actionText};
-    }
-
-    .themes-selection {
-      max-height: 0px;
-      overflow-y: hidden;
-      transition: max-height 0.5s;
-    }
-
-    .themes-selection.open {
-      max-height: 1000px;
-      overflow-y: auto;
-    }
-
     ::-webkit-scrollbar {
       width: 4px;
       margin-right: 10px;
@@ -102,21 +49,52 @@ export class ThemeSwitcher extends ElementMixin(LitElement) {
       border-radius: 10px;
       background-color: ${ThemeCSSVariables.scrollbar};
     }
+
+    .theme-option {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .theme-option[hidden] {
+      display: none;
+    }
+
+    div[slot="selection-list"] .theme-option {
+      padding: 10px 15px;
+      cursor: pointer;
+      background: ${ThemeCSSVariables.buttonBg};
+    }
   `;
 
   render() {
     return html`
       <il-accordion-checkbox
+        placeholder="Tema"
         ${ref(this.accordionCheckBoxRef)}
         @selected-item=${this.foo}
       >
-        <p slot="current">lorem 1</p>
+        <div slot="current">
+          <div class="theme-option">
+            <il-button-icon
+              content=${this.getThemeIcon(this.theme) ?? ""}
+            ></il-button-icon>
+            <p>${this.theme}</p>
+          </div>
+        </div>
 
         <div slot="selection-list">
-          <p>lorem 2</p>
-          <p>lorem 3</p>
-          <p>lorem 4</p>
-          <p>lorem 5</p>
+          ${this.themes.map(
+            (themeName) => html`
+              <div class="theme-option" ?hidden=${this.theme === themeName}>
+                <il-button-icon
+                  content=${this.getThemeIcon(themeName) ?? ""}
+                ></il-button-icon>
+                <p>${themeName}</p>
+              </div>
+            `
+          )}
         </div>
       </il-accordion-checkbox>
 

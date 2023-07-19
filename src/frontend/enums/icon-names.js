@@ -41,4 +41,5 @@ export const IconNames = {
   moon: "mdiMoonWaningCrescent",
   menuDown: "mdiMenuDown",
   menuUp: "mdiMenuUp",
+  lightDark: "mdiThemeLightDark",
 };
