@@ -65,12 +65,13 @@ public class DownloadDateRepository {
 
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("timestamp", timestamp);
+        arguments.put("username", username.value());
         arguments.put("messageIds", messageIds);
 
         queryHelper
                 .forUser(username)
-                .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, message_id) SELECT :timestamp, u_sub.id, m.id")
-                .join("join infolab.chatmessages m on m.recipient_room_id = r.id")
+                .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id")
+                .join("join infolab.chatmessages m on m.recipient_room_id = r.id join infolab.users u_logged on u_logged.username = :username")
                 .where("m.id IN (:messageIds)")
                 .update(arguments);
     }
