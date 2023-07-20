@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -54,9 +55,25 @@ public class DownloadDateRepository {
 
         queryHelper
                 .forUser(username)
-                .query("INSERT INTO infolab.download_dates(download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id")
+                .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id")
                 .join(DOWNLOAD_DATES_JOIN)
                 .where(DOWNLOAD_DATES_WHERE_NOT_DOWNLOADED_AND_ROOMNAME)
+                .update(arguments);
+    }
+
+    public void addDownloadDateToMessages(Username username, List<Long> messageIds) {
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("timestamp", timestamp);
+        arguments.put("username", username.value());
+        arguments.put("messageIds", messageIds);
+
+        queryHelper
+                .forUser(username)
+                .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id")
+                .join("join infolab.chatmessages m on m.recipient_room_id = r.id join infolab.users u_logged on u_logged.username = :username")
+                .where("m.id IN (:messageIds)")
                 .update(arguments);
     }
 }

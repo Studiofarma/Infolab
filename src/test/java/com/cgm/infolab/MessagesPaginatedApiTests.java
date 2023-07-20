@@ -72,14 +72,14 @@ public class MessagesPaginatedApiTests {
 
     @Test
     void whenFetching_withoutPageSize_responseIsOfAllMessages() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general");
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/messages/general");
 
         Assertions.assertEquals(80, responseBody.size());
     }
 
     @Test
     void whenFetching_withPageSize3_responseIsLast3Messages() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general?page[size]=3");
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/messages/general?page[size]=3");
 
         Assertions.assertEquals(3, responseBody.size());
 
@@ -92,7 +92,7 @@ public class MessagesPaginatedApiTests {
     void whenFetching_withoutPageSize_afterMessage30_messagesFrom79To31AreReturned() {
         String stringDate = getMessageTimestampString(30);
 
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general?page[after]=%s".formatted(stringDate));
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/messages/general?page[after]=%s".formatted(stringDate));
 
         Assertions.assertEquals(49, responseBody.size());
 
@@ -105,7 +105,7 @@ public class MessagesPaginatedApiTests {
     void whenFetching_withoutPageSize_beforeMessage30_messagesFrom29To0AreReturned() {
         String stringDate = getMessageTimestampString(30);
 
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general?page[before]=%s".formatted(stringDate));
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/messages/general?page[before]=%s".formatted(stringDate));
 
         for (int i = 0, c = 29; i < responseBody.size(); i++, c--) {
             Assertions.assertEquals("%d. Hello general from user0".formatted(c), responseBody.get(i).get("content"));
@@ -116,7 +116,7 @@ public class MessagesPaginatedApiTests {
     void whenFetching_pageSize3_afterMessage50_messagesFrom53To51AreReturned() {
         String stringDate = getMessageTimestampString(50);
 
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general?page[size]=3&page[after]=%s".formatted(stringDate));
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/messages/general?page[size]=3&page[after]=%s".formatted(stringDate));
 
         Assertions.assertEquals(3, responseBody.size());
         Assertions.assertEquals("53. Hello general from user0", responseBody.get(0).get("content"));
@@ -128,7 +128,7 @@ public class MessagesPaginatedApiTests {
     void whenFetching_pageSize3_beforeMessage50_messagesFrom49To47AreReturned() {
         String stringDate = getMessageTimestampString(50);
 
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApi("/api/messages/general?page[size]=3&page[before]=%s".formatted(stringDate));
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/messages/general?page[size]=3&page[before]=%s".formatted(stringDate));
 
         Assertions.assertEquals(3, responseBody.size());
         Assertions.assertEquals("49. Hello general from user0", responseBody.get(0).get("content"));
