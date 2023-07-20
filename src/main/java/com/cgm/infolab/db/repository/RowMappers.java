@@ -1,9 +1,10 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
-import com.cgm.infolab.db.model.enums.StatusEnum;
-import com.cgm.infolab.db.model.enums.Username;
-import com.cgm.infolab.db.model.enums.VisibilityEnum;
+import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
+import com.cgm.infolab.db.model.enumeration.StatusEnum;
+import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.ResultSet;

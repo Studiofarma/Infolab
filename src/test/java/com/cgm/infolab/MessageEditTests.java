@@ -1,6 +1,9 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.ChatMessageEntity;
+import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.RoomName;
+import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.helper.TestDbHelper;
@@ -16,16 +19,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
-import static com.cgm.infolab.db.model.enumeration.StatusEnum.DELETED;
+import static com.cgm.infolab.db.model.enumeration.StatusEnum.EDITED;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "local"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class MessageDeletionTests {
+public class MessageEditTests {
     @Autowired
     public TestDbHelper testDbHelper;
     @Autowired
@@ -73,32 +74,22 @@ public class MessageDeletionTests {
     }
 
     @Test
-    void whenOneMessageIsDeleted_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() {
+    void whenOneMessageIsEdited_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
         long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
                 (rs, rowNum) -> rs.getLong("id"));
 
-        chatMessageRepository.updateMessageAsDeleted(users[0].getName(), message5Id);
+        chatMessageRepository.editMessage(users[0].getName(), message5Id, "5 Message edited!!");
 
         List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
 
         Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
 
-        ChatMessageEntity deletedMessageBefore = messagesBefore.stream().filter(message -> message.getId() == message5Id).toList().get(0);
-        ChatMessageEntity deletedMessageAfter = messagesAfter.stream().filter(message -> message.getId() == message5Id).toList().get(0);
+        ChatMessageEntity editedMessage = messagesAfter.stream().filter(message -> message.getId() == message5Id).toList().get(0);
 
-        Assertions.assertEquals(DELETED, deletedMessageAfter.getStatus());
-        Assertions.assertEquals("", deletedMessageAfter.getContent());
-
-        ChatMessageEntity dbDeletedMessageContentAndId = testDbHelper
-                .getAllMessages(this::mapToChatMessageEntity)
-                .stream()
-                .filter(message -> message.getId() == message5Id)
-                .toList()
-                .get(0);
-
-        Assertions.assertEquals(deletedMessageBefore.getContent(), dbDeletedMessageContentAndId.getContent());
+        Assertions.assertEquals(EDITED, editedMessage.getStatus());
+        Assertions.assertEquals("5 Message edited!!", editedMessage.getContent());
 
         messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message5Id).toList();
         messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message5Id).toList();
@@ -107,13 +98,13 @@ public class MessageDeletionTests {
     }
 
     @Test
-    void whenTryingToDelete_messageSentByAnotherUser_messageDoesNotGetDeleted() {
+    void whenTryingToEdit_messageSentByAnotherUser_messageDoesNotGetEdited() {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
         long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '1 Hello general from user0'",
                 (rs, rowNum) -> rs.getLong("id"));
 
-        chatMessageRepository.updateMessageAsDeleted(users[0].getName(), message1Id);
+        chatMessageRepository.editMessage(users[0].getName(), message1Id, "Trying to edit message (｀∀´)Ψ");
 
         List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
 
@@ -124,9 +115,5 @@ public class MessageDeletionTests {
         Assertions.assertNull(messageTriedToBeDeleted.getStatus());
 
         Assertions.assertEquals(messagesBefore, messagesAfter);
-    }
-
-    public ChatMessageEntity mapToChatMessageEntity(ResultSet rs, int rowNum) throws SQLException {
-        return ChatMessageEntity.of(rs.getLong("message_id"), UserEntity.empty(), RoomEntity.empty(), null, rs.getString("content"), null);
     }
 }

@@ -1,7 +1,8 @@
 package com.cgm.infolab.db.model;
 
 import com.cgm.infolab.db.ID;
-import com.cgm.infolab.db.model.enums.VisibilityEnum;
+import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
+import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

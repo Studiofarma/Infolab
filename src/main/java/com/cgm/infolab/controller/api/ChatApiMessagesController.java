@@ -2,9 +2,8 @@ package com.cgm.infolab.controller.api;
 
 import com.cgm.infolab.controller.FromEntitiesToDtosMapper;
 import com.cgm.infolab.db.model.*;
-import com.cgm.infolab.db.model.enums.Username;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.ChatMessageDto;
-import com.cgm.infolab.model.IdDto;
 import com.cgm.infolab.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,9 +68,16 @@ public class ChatApiMessagesController {
         return chatMessageDtos;
     }
 
-    @DeleteMapping(value = "/api/messages/{roomName}/{id}")
+    @DeleteMapping("/api/messages/{roomName}/{id}")
     public void deleteMessageById(@PathVariable("id") Long id,
                                   Principal principal) {
         chatService.deleteMessageById(Username.of(principal.getName()), id);
+    }
+
+    @PutMapping("/api/messages/{roomName}/{id}")
+    public void editMessageById(@PathVariable("id") Long id,
+                                @RequestBody String newContent,
+                                Principal principal) {
+        chatService.editMessageById(Username.of(principal.getName()), id, newContent);
     }
 }

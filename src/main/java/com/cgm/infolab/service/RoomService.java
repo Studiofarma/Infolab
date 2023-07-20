@@ -1,8 +1,9 @@
 package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.*;
-import com.cgm.infolab.db.model.enums.Username;
-import com.cgm.infolab.db.model.enums.VisibilityEnum;
+import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
+import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;

@@ -1,8 +1,8 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
-import com.cgm.infolab.db.model.enums.CursorEnum;
-import com.cgm.infolab.db.model.enums.Username;
+import com.cgm.infolab.db.model.enumeration.CursorEnum;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import com.cgm.infolab.db.repository.queryhelper.UserQueryResult;
 import org.slf4j.Logger;
@@ -131,7 +131,7 @@ public class ChatMessageRepository {
     }
 
     public void updateMessageAsDeleted(Username username, long idToDelete) {
-        Map<String, Long> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("idToDelete", idToDelete);
 
         queryHelper
@@ -139,6 +139,20 @@ public class ChatMessageRepository {
                 .query("UPDATE infolab.chatmessages SET status = 'DELETED' WHERE id IN (select m.id")
                 .join(JOIN_MESSAGES)
                 .where("m.sender_id = u.id and m.id = :idToDelete")
+                .other(")")
+                .update(params);
+    }
+
+    public void editMessage(Username username, long idToEdit, String newContent) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("idToEdit", idToEdit);
+        params.put("newContent", newContent);
+
+        queryHelper
+                .forUser(username)
+                .query("UPDATE infolab.chatmessages SET content = :newContent, status = 'EDITED' WHERE id IN (select m.id")
+                .join(JOIN_MESSAGES)
+                .where("m.sender_id = u.id and m.id = :idToEdit")
                 .other(")")
                 .update(params);
     }

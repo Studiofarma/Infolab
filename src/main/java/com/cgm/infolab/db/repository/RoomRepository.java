@@ -1,7 +1,7 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
-import com.cgm.infolab.db.model.enums.Username;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import com.cgm.infolab.db.repository.queryhelper.QueryResult;
 import com.cgm.infolab.db.repository.queryhelper.UserQueryResult;

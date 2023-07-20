@@ -1,8 +1,10 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.ChatMessageEntity;
+import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.RoomName;
+import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
-import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
@@ -12,28 +14,35 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
-import static com.cgm.infolab.db.model.enumeration.StatusEnum.DELETED;
+import static com.cgm.infolab.db.model.enumeration.StatusEnum.EDITED;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "local"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class MessageDeletionTests {
+@AutoConfigureMockMvc
+public class MessageEditApiTests {
     @Autowired
     public TestDbHelper testDbHelper;
     @Autowired
     public ChatService chatService;
     @Autowired
-    public ChatMessageRepository chatMessageRepository;
-    @Autowired
     public JdbcTemplate jdbcTemplate;
+    @Autowired
+    public MockMvc mvc;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -73,60 +82,57 @@ public class MessageDeletionTests {
     }
 
     @Test
-    void whenOneMessageIsDeleted_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() {
+    void whenOneMessageIsEdited_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
+        long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '2 Visible only to user0 and user1'",
                 (rs, rowNum) -> rs.getLong("id"));
 
-        chatMessageRepository.updateMessageAsDeleted(users[0].getName(), message5Id);
+        apiPutForUser1("/api/messages/user0-user1/%d".formatted(message2Id), "Edited yayy!");
 
         List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
 
         Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
 
-        ChatMessageEntity deletedMessageBefore = messagesBefore.stream().filter(message -> message.getId() == message5Id).toList().get(0);
-        ChatMessageEntity deletedMessageAfter = messagesAfter.stream().filter(message -> message.getId() == message5Id).toList().get(0);
+        ChatMessageEntity editedMessage = messagesAfter.stream().filter(message -> message.getId() == message2Id).toList().get(0);
 
-        Assertions.assertEquals(DELETED, deletedMessageAfter.getStatus());
-        Assertions.assertEquals("", deletedMessageAfter.getContent());
+        Assertions.assertEquals(EDITED, editedMessage.getStatus());
+        Assertions.assertEquals("Edited yayy!", editedMessage.getContent());
 
-        ChatMessageEntity dbDeletedMessageContentAndId = testDbHelper
-                .getAllMessages(this::mapToChatMessageEntity)
-                .stream()
-                .filter(message -> message.getId() == message5Id)
-                .toList()
-                .get(0);
-
-        Assertions.assertEquals(deletedMessageBefore.getContent(), dbDeletedMessageContentAndId.getContent());
-
-        messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message5Id).toList();
-        messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message5Id).toList();
+        messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message2Id).toList();
+        messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message2Id).toList();
 
         Assertions.assertEquals(messagesBefore, messagesAfter);
     }
 
     @Test
-    void whenTryingToDelete_messageSentByAnotherUser_messageDoesNotGetDeleted() {
+    void whenTryingToEdit_messageSentByAnotherUser_messageDoesNotGetEdited() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '1 Hello general from user0'",
+        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
                 (rs, rowNum) -> rs.getLong("id"));
 
-        chatMessageRepository.updateMessageAsDeleted(users[0].getName(), message1Id);
+        apiPutForUser1("/api/messages/user0-user1/%d".formatted(message5Id), "Trying to edit ψ(｀∇´)ψ");
 
         List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
 
         Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
 
-        ChatMessageEntity messageTriedToBeDeleted = messagesAfter.stream().filter(message -> message.getId() == message1Id).toList().get(0);
+        ChatMessageEntity messageTriedToBeEdited = messagesAfter.stream().filter(message -> message.getId() == message5Id).toList().get(0);
 
-        Assertions.assertNull(messageTriedToBeDeleted.getStatus());
+        Assertions.assertNull(messageTriedToBeEdited.getStatus());
 
         Assertions.assertEquals(messagesBefore, messagesAfter);
     }
 
-    public ChatMessageEntity mapToChatMessageEntity(ResultSet rs, int rowNum) throws SQLException {
-        return ChatMessageEntity.of(rs.getLong("message_id"), UserEntity.empty(), RoomEntity.empty(), null, rs.getString("content"), null);
+    private void apiPutForUser1(String url, String body) throws Exception {
+
+        mvc.perform(
+                put(url)
+                        .with(csrf().asHeader())
+                        .with(user("user1").password("password1"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body)
+        ).andExpect(status().isOk());
     }
 }
