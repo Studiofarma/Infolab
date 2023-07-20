@@ -9,6 +9,8 @@ import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
+import com.cgm.infolab.model.IdDto;
+import com.cgm.infolab.model.LastMessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +30,6 @@ public class ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final DownloadDateRepository downloadDateRepository;
 
-    private final RoomSubscriptionRepository roomSubscriptionRepository;
     private final RoomService roomService;
 
     private final Logger log = LoggerFactory.getLogger(ChatService.class);
@@ -37,13 +38,11 @@ public class ChatService {
     public ChatService(UserRepository userRepository,
                        RoomRepository roomRepository,
                        ChatMessageRepository chatMessageRepository,
-                       RoomSubscriptionRepository roomSubscriptionRepository,
                        RoomService roomService,
                        DownloadDateRepository downloadDateRepository){
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.chatMessageRepository = chatMessageRepository;
-        this.roomSubscriptionRepository = roomSubscriptionRepository;
         this.roomService = roomService;
         this.downloadDateRepository = downloadDateRepository;
     }
@@ -108,6 +107,11 @@ public class ChatService {
         downloadDateRepository.addWhereNotDownloadedYetForUser(user, room);
     }
 
+    public void addReadTimestampForMessages(Username user, List<IdDto> messageIds) {
+        List<Long> ids = messageIds.stream().map(IdDto::id).toList();
+        downloadDateRepository.addDownloadDateToMessages(user, ids);
+    }
+
     public void deleteMessageById(Username user, Long messageId) {
         chatMessageRepository.updateMessageAsDeleted(user, messageId);
     }
@@ -120,6 +124,5 @@ public class ChatService {
             return LocalDateTime.parse(date, formatter);
         }
     }
-
 }
 
