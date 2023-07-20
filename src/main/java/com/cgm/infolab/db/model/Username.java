@@ -1,4 +1,4 @@
-package com.cgm.infolab.db.model.enums;
+package com.cgm.infolab.db.model;
 
 import java.util.Objects;
 

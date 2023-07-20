@@ -1,8 +1,8 @@
 package com.cgm.infolab.db.repository;
 
-import com.cgm.infolab.db.model.enums.CursorEnum;
+import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.enums.Username;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import com.cgm.infolab.db.repository.queryhelper.QueryResult;
 import org.springframework.dao.EmptyResultDataAccessException;

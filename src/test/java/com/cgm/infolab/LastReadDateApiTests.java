@@ -3,7 +3,7 @@ package com.cgm.infolab;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.enums.Username;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.IdDto;

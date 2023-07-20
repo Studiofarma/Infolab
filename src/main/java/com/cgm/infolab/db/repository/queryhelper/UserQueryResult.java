@@ -1,6 +1,6 @@
 package com.cgm.infolab.db.repository.queryhelper;
 
-import com.cgm.infolab.db.model.enums.Username;
+import com.cgm.infolab.db.model.Username;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

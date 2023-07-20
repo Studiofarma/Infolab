@@ -4,7 +4,7 @@ import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.enums.Username;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
@@ -23,8 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static com.cgm.infolab.db.model.enums.StatusEnum.DELETED;
-import static com.cgm.infolab.db.model.enums.StatusEnum.EDITED;
+import static com.cgm.infolab.db.model.enumeration.StatusEnum.EDITED;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;

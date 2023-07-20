@@ -1,9 +1,7 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
-import com.cgm.infolab.db.model.enums.StatusEnum;
-import com.cgm.infolab.db.model.enums.Username;
-import com.cgm.infolab.db.model.enums.VisibilityEnum;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
@@ -20,10 +18,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.cgm.infolab.db.model.enums.StatusEnum.DELETED;
+import static com.cgm.infolab.db.model.enumeration.StatusEnum.DELETED;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "local"})

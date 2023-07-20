@@ -1,16 +1,14 @@
 package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.*;
-import com.cgm.infolab.db.model.enums.CursorEnum;
-import com.cgm.infolab.db.model.enums.Username;
+import com.cgm.infolab.db.model.enumeration.CursorEnum;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
-import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.IdDto;
-import com.cgm.infolab.model.LastMessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

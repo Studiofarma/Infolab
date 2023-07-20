@@ -1,7 +1,5 @@
 package com.cgm.infolab.db.model;
 
-import com.cgm.infolab.db.model.enums.Username;
-
 import java.util.Arrays;
 import java.util.Objects;
 

@@ -4,7 +4,7 @@ import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.enums.Username;
+import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
@@ -21,8 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-import static com.cgm.infolab.db.model.enums.StatusEnum.DELETED;
-import static com.cgm.infolab.db.model.enums.StatusEnum.EDITED;
+import static com.cgm.infolab.db.model.enumeration.StatusEnum.EDITED;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "local"})
