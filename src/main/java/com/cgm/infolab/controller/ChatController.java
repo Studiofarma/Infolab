@@ -5,6 +5,8 @@ import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
+import com.cgm.infolab.model.WebSocketMessageDto;
+import com.cgm.infolab.model.WebSocketMessageTypeEnum;
 import com.cgm.infolab.service.ChatService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +56,7 @@ public class ChatController {
 
     }
 
+    //region ROOM GENERAL
     @MessageMapping("/chat.register")
     @SendTo("/topic/public")
     public ChatMessageDto register(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor){
@@ -68,10 +71,24 @@ public class ChatController {
         return FromEntitiesToDtosMapper.fromEntityToChatMessageDto(messageEntity);
     }
 
+    @MessageMapping("/chat.delete")
+    @SendTo("/topic/public")
+    public WebSocketMessageDto deleteMessage(@Payload WebSocketMessageDto messageDto, Principal principal) {
+        return null;
+    }
+
+    @MessageMapping("/chat.delete")
+    @SendTo("/topic/public")
+    public WebSocketMessageDto editMessage(@Payload WebSocketMessageDto messageDto, Principal principal) {
+        return null;
+    }
+    //endregion
+
+    //region PRIVATE ROOMS
     @MessageMapping("/chat.send.{destinationUser}")
     @SendTo("/queue/{destinationUser}")
     @SendToUser("/topic/me")
-    ChatMessageDto sendMessageToUser(
+    public ChatMessageDto sendMessageToUser(
             @Payload ChatMessageDto message,
             @DestinationVariable String destinationUser,
             SimpMessageHeaderAccessor headerAccessor,
@@ -86,5 +103,26 @@ public class ChatController {
         );
         return FromEntitiesToDtosMapper.fromEntityToChatMessageDto(messageEntity);
     }
+
+    @MessageMapping("/chat.delete.{destinationUser}")
+    @SendTo("/queue/{destinationUser}")
+    @SendToUser("/topic/me")
+    public WebSocketMessageDto deleteMessagePrivateRoom(
+            @Payload WebSocketMessageDto message,
+            @DestinationVariable String destinationUser,
+            Principal principal){
+        return null;
+    }
+
+    @MessageMapping("/chat.edit.{destinationUser}")
+    @SendTo("/queue/{destinationUser}")
+    @SendToUser("/topic/me")
+    public WebSocketMessageDto editMessagePrivateRoom(
+            @Payload WebSocketMessageDto message,
+            @DestinationVariable String destinationUser,
+            Principal principal){
+        return null;
+    }
+    //endregion
 }
 
