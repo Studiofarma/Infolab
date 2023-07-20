@@ -9,6 +9,7 @@ import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.service.RoomService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -86,5 +87,12 @@ public class TestDbHelper {
                 .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status " +
                         "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
                         "JOIN infolab.users u_mex ON u_mex.id = m.sender_id", RowMappers::mapToChatMessageEntity);
+    }
+
+    public <T> List<T> getAllMessages(RowMapper<T> rowMapper) {
+        return jdbcTemplate
+                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status " +
+                        "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
+                        "JOIN infolab.users u_mex ON u_mex.id = m.sender_id", rowMapper);
     }
 }
