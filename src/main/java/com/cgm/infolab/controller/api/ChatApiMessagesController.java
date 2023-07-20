@@ -75,8 +75,7 @@ public class ChatApiMessagesController {
     }
 
     @PutMapping("/api/messages/{roomName}/{id}")
-    public void editMessageById(@PathVariable("roomName") String roomName,
-                                @PathVariable("id") Long id,
+    public void editMessageById(@PathVariable("id") Long id,
                                 @RequestBody String newContent,
                                 Principal principal) {
         chatService.editMessageById(Username.of(principal.getName()), id, newContent);
