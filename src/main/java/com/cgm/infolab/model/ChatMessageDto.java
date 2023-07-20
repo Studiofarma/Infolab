@@ -29,6 +29,10 @@ public class ChatMessageDto {
         this.status = status;
     }
 
+    public static ChatMessageDto of(long id) {
+        return new ChatMessageDto(id, "", null, "", "", null);
+    }
+
     public static ChatMessageDto of(String content, String sender) {
         return new ChatMessageDto(ID.None, content, null, sender, "", null);
     }

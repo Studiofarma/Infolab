@@ -77,7 +77,7 @@ public class ChatController {
         return null;
     }
 
-    @MessageMapping("/chat.delete")
+    @MessageMapping("/chat.edit")
     @SendTo("/topic/public")
     public WebSocketMessageDto editMessage(@Payload WebSocketMessageDto messageDto, Principal principal) {
         return null;
