@@ -1,16 +1,13 @@
 package com.cgm.infolab.db.repository.queryhelper;
 
-import com.cgm.infolab.db.model.Username;
-import org.apache.commons.lang3.tuple.Pair;
+import com.cgm.infolab.db.model.enums.Username;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public record UserQueryResult(
     NamedParameterJdbcTemplate namedJdbcTemplate,

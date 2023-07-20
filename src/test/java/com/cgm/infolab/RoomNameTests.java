@@ -1,7 +1,7 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.RoomName;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enums.Username;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

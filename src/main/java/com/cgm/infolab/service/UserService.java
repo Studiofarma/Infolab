@@ -1,13 +1,11 @@
 package com.cgm.infolab.service;
 
-import com.cgm.infolab.db.model.CursorEnum;
+import com.cgm.infolab.db.model.enums.CursorEnum;
 import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enums.Username;
 import com.cgm.infolab.db.repository.UserRepository;
-import com.cgm.infolab.model.UserDto;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

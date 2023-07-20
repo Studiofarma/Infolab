@@ -90,4 +90,10 @@
             <column name="description" type="varchar(500)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="message_status" author="Lorenzo Rinaldi">
+        <addColumn schemaName="infolab" tableName="chatmessages">
+            <column name="status" type="char(20)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

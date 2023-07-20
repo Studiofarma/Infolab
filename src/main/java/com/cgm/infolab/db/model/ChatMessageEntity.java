@@ -1,8 +1,8 @@
 package com.cgm.infolab.db.model;
 
 import com.cgm.infolab.db.ID;
+import com.cgm.infolab.db.model.enums.StatusEnum;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -12,25 +12,27 @@ public class ChatMessageEntity {
     private RoomEntity room;
     private LocalDateTime timestamp;
     private String content;
+    private StatusEnum status;
 
-    private ChatMessageEntity(long id, UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content) {
+    private ChatMessageEntity(long id, UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content, StatusEnum status) {
         this.id = id;
         this.sender = sender;
         this.room = room;
         this.timestamp = timestamp;
         this.content = content;
+        this.status = status;
     }
 
     public static ChatMessageEntity of(UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content) {
-        return new ChatMessageEntity(ID.None, sender, room, timestamp, content);
+        return new ChatMessageEntity(ID.None, sender, room, timestamp, content, null);
     }
 
-    public static ChatMessageEntity of(long id, UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content) {
-        return new ChatMessageEntity(id, sender, room, timestamp, content);
+    public static ChatMessageEntity of(long id, UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content, StatusEnum status) {
+        return new ChatMessageEntity(id, sender, room, timestamp, content, status);
     }
 
     public static ChatMessageEntity empty() {
-        return new ChatMessageEntity(ID.None, UserEntity.empty(), RoomEntity.empty(), null, "");
+        return new ChatMessageEntity(ID.None, UserEntity.empty(), RoomEntity.empty(), null, "", null);
     }
 
     public long getId() {
@@ -71,6 +73,14 @@ public class ChatMessageEntity {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public StatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusEnum status) {
+        this.status = status;
     }
 
     @Override

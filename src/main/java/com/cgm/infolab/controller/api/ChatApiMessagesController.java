@@ -2,6 +2,7 @@ package com.cgm.infolab.controller.api;
 
 import com.cgm.infolab.controller.FromEntitiesToDtosMapper;
 import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.enums.Username;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.IdDto;
 import com.cgm.infolab.service.ChatService;
@@ -66,5 +67,11 @@ public class ChatApiMessagesController {
         }
 
         return chatMessageDtos;
+    }
+
+    @DeleteMapping(value = "/api/messages/{roomName}/{id}")
+    public void deleteMessageById(@PathVariable("id") Long id,
+                                  Principal principal) {
+        chatService.deleteMessageById(Username.of(principal.getName()), id);
     }
 }

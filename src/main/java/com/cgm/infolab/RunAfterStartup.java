@@ -1,6 +1,8 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.enums.Username;
+import com.cgm.infolab.db.model.enums.VisibilityEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import org.slf4j.Logger;
@@ -17,7 +19,7 @@ import java.util.Arrays;
 public class RunAfterStartup {
 
     public static final RoomEntity[] TEST_ROOMS =
-            {RoomEntity.of(RoomName.of("user1-user2"),VisibilityEnum.PRIVATE, RoomTypeEnum.USER2USER),
+            {RoomEntity.of(RoomName.of("user1-user2"), VisibilityEnum.PRIVATE, RoomTypeEnum.USER2USER),
             RoomEntity.of(RoomName.of("user1-user3"), VisibilityEnum.PRIVATE, RoomTypeEnum.USER2USER),
             RoomEntity.of(RoomName.of("user3-user4"), VisibilityEnum.PRIVATE, RoomTypeEnum.USER2USER)};
     public static final UserEntity[] TEST_USERS =

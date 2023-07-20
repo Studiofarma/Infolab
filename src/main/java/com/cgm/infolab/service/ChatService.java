@@ -1,6 +1,8 @@
 package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.enums.CursorEnum;
+import com.cgm.infolab.db.model.enums.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
@@ -12,12 +14,10 @@ import com.cgm.infolab.model.LastMessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -110,6 +110,10 @@ public class ChatService {
     public void addReadTimestampForMessages(Username user, List<IdDto> messageIds) {
         List<Long> ids = messageIds.stream().map(IdDto::id).toList();
         downloadDateRepository.addDownloadDateToMessages(user, ids);
+    }
+
+    public void deleteMessageById(Username user, Long messageId) {
+        chatMessageRepository.updateMessageAsDeleted(user, messageId);
     }
 
     private LocalDateTime fromStringToDate(String date) {

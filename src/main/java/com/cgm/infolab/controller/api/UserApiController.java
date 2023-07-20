@@ -2,7 +2,7 @@ package com.cgm.infolab.controller.api;
 
 import com.cgm.infolab.controller.FromEntitiesToDtosMapper;
 import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enums.Username;
 import com.cgm.infolab.model.UserDto;
 import com.cgm.infolab.service.UserService;
 import org.slf4j.Logger;
