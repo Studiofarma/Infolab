@@ -86,7 +86,7 @@ public class LastReadDateApiTests {
     void whenUpdatingDownloadDate_forMessage1_itIsAfterSendDateAndBeforeNow() throws Exception {
         IdDto message1Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '1 Hello general from user0'", this::messageIdMapper);
 
-        postToApiForUser1("/api/messages/lastread", List.of(message1Id));
+        postToApiForUser1("/api/commands/lastread", List.of(message1Id));
 
         LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
@@ -104,7 +104,7 @@ public class LastReadDateApiTests {
     void whenUpdatingDownloadDate_forMessage2_itIsAfterSendDateAndBeforeNow_message5DoesNotHaveIt() throws Exception {
         IdDto message2Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '2 Visible only to user0 and user1'", this::messageIdMapper);
 
-        postToApiForUser1("/api/messages/lastread", List.of(message2Id));
+        postToApiForUser1("/api/commands/lastread", List.of(message2Id));
 
 
 
@@ -131,7 +131,7 @@ public class LastReadDateApiTests {
     void whenUpdatingDownloadDates_forMessages3And6_theyAreAfterSendDateAndBeforeNow() throws Exception {
         List<IdDto> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = '3 Visible only to user0 and user1' OR content = '6 Visible only to user1 and user2'", this::messageIdMapper);
 
-        postToApiForUser1("/api/messages/lastread", ids);
+        postToApiForUser1("/api/commands/lastread", ids);
 
         LocalDateTime readDate1 = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
@@ -166,7 +166,7 @@ public class LastReadDateApiTests {
 
         Assertions.assertEquals(2, ids.size());
 
-        postToApiForUser1("/api/messages/lastread", ids);
+        postToApiForUser1("/api/commands/lastread", ids);
 
         Assertions.assertDoesNotThrow(() -> { // if the result was of more than 1 object an exception would be thrown
             LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ? or message_id = 2",
