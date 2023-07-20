@@ -7,6 +7,7 @@ import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.model.ChatMessageDto;
+import com.cgm.infolab.model.IdDto;
 import com.cgm.infolab.model.LastMessageDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,8 +107,9 @@ public class ChatService {
         downloadDateRepository.addWhereNotDownloadedYetForUser(user, room);
     }
 
-    public void addReadTimestampForMessages(Username user, List<Long> messageIds) {
-        downloadDateRepository.addDownloadDateToMessages(user, messageIds);
+    public void addReadTimestampForMessages(Username user, List<IdDto> messageIds) {
+        List<Long> ids = messageIds.stream().map(IdDto::id).toList();
+        downloadDateRepository.addDownloadDateToMessages(user, ids);
     }
 
     private LocalDateTime fromStringToDate(String date) {

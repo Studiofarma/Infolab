@@ -21,8 +21,6 @@ public class CommandsApiController {
 
     @PostMapping("/api/commands/lastread")
     public void postLastReadDates(@RequestBody List<IdDto> messageIds, Principal principal) {
-        List<Long> ids = messageIds.stream().map(IdDto::id).toList();
-
-        chatService.addReadTimestampForMessages(Username.of(principal.getName()), ids);
+        chatService.addReadTimestampForMessages(Username.of(principal.getName()), messageIds);
     }
 }
