@@ -69,8 +69,7 @@ public class ChatApiMessagesController {
     }
 
     @DeleteMapping("/api/messages/{roomName}/{id}")
-    public void deleteMessageById(@PathVariable("roomName") String roomName,
-                                  @PathVariable("id") Long id,
+    public void deleteMessageById(@PathVariable("id") Long id,
                                   Principal principal) {
         chatService.deleteMessageById(Username.of(principal.getName()), id);
     }

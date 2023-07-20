@@ -130,13 +130,13 @@ public class ChatMessageRepository {
                 .join("%s LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id".formatted(JOIN_MESSAGES));
     }
 
-    public void deleteMessage(Username username, long idToDelete) {
+    public void updateMessageAsDeleted(Username username, long idToDelete) {
         Map<String, Object> params = new HashMap<>();
         params.put("idToDelete", idToDelete);
 
         queryHelper
                 .forUser(username)
-                .query("UPDATE infolab.chatmessages SET content = '', status = 'DELETED' WHERE id IN (select m.id")
+                .query("UPDATE infolab.chatmessages SET status = 'DELETED' WHERE id IN (select m.id")
                 .join(JOIN_MESSAGES)
                 .where("m.sender_id = u.id and m.id = :idToDelete")
                 .other(")")

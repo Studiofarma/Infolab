@@ -30,12 +30,14 @@ public abstract class RowMappers {
 
         StatusEnum status = rs.getString("status") != null ? StatusEnum.valueOf(rs.getString("status").trim()) : null;
 
+        String content = status != null && status.equals(StatusEnum.DELETED) ? "" : rs.getString("content");
+
         return ChatMessageEntity
                 .of(rs.getLong("message_id"),
                         user,
                         room,
                         rs.getObject("sent_at", LocalDateTime.class),
-                        rs.getString("content"),
+                        content,
                         status
                 );
     }

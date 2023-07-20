@@ -109,7 +109,7 @@ public class ChatService {
     }
 
     public void deleteMessageById(Username user, Long messageId) {
-        chatMessageRepository.deleteMessage(user, messageId);
+        chatMessageRepository.updateMessageAsDeleted(user, messageId);
     }
 
     public void editMessageById(Username user, Long messageId, String newContent) {

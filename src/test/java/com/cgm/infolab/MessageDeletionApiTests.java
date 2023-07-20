@@ -20,6 +20,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 import static com.cgm.infolab.db.model.enums.StatusEnum.DELETED;
@@ -81,7 +83,7 @@ public class MessageDeletionApiTests {
     }
 
     @Test
-    void whenOneMessageIsDeleted_itsContentIsEmpty_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
+    void whenOneMessageIsDeleted_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
         long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '2 Visible only to user0 and user1'",
@@ -93,9 +95,20 @@ public class MessageDeletionApiTests {
 
         Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
 
-        ChatMessageEntity deletedMessage = messagesAfter.stream().filter(message -> message.getId() == message2Id).toList().get(0);
+        ChatMessageEntity deletedMessageBefore = messagesBefore.stream().filter(message -> message.getId() == message2Id).toList().get(0);
+        ChatMessageEntity deletedMessageAfter = messagesAfter.stream().filter(message -> message.getId() == message2Id).toList().get(0);
 
-        Assertions.assertEquals(DELETED, deletedMessage.getStatus());
+        Assertions.assertEquals(DELETED, deletedMessageAfter.getStatus());
+        Assertions.assertEquals("", deletedMessageAfter.getContent());
+
+        ChatMessageEntity dbDeletedMessageContentAndId = testDbHelper
+                .getAllMessages(this::mapToChatMessageEntity)
+                .stream()
+                .filter(message -> message.getId() == message2Id)
+                .toList()
+                .get(0);
+
+        Assertions.assertEquals(deletedMessageBefore.getContent(), dbDeletedMessageContentAndId.getContent());
 
         messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message2Id).toList();
         messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message2Id).toList();
@@ -130,5 +143,9 @@ public class MessageDeletionApiTests {
                         .with(csrf().asHeader())
                         .with(user("user1").password("password1"))
         ).andExpect(status().isOk());
+    }
+
+    public ChatMessageEntity mapToChatMessageEntity(ResultSet rs, int rowNum) throws SQLException {
+        return ChatMessageEntity.of(rs.getLong("message_id"), UserEntity.empty(), RoomEntity.empty(), null, rs.getString("content"), null);
     }
 }
