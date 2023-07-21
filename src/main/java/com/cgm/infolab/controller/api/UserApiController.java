@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Min;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 import static com.cgm.infolab.controller.api.ApiConstants.*;
 
 @RestController
+@Validated
 public class UserApiController {
 
     private final UserService userService;
