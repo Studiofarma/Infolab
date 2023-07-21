@@ -3,6 +3,8 @@ package com.cgm.infolab.model;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.util.Objects;
+
 public class WebSocketMessageDto {
     private WebSocketMessageTypeEnum type;
     private ChatMessageDto chat;
@@ -65,5 +67,28 @@ public class WebSocketMessageDto {
 
     public void setDelete(ChatMessageDto delete) {
         this.delete = delete;
+    }
+
+    @Override
+    public String toString() {
+        return "WebSocketMessageDto{" +
+                "type=" + type +
+                ", chat=" + chat +
+                ", edit=" + edit +
+                ", delete=" + delete +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WebSocketMessageDto that = (WebSocketMessageDto) o;
+        return type == that.type && Objects.equals(chat, that.chat) && Objects.equals(edit, that.edit) && Objects.equals(delete, that.delete);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, chat, edit, delete);
     }
 }

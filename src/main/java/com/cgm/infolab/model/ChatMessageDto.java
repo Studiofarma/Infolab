@@ -91,9 +91,12 @@ public class ChatMessageDto {
     @Override
     public String toString() {
         return "ChatMessageDto{" +
-                "content='" + content + '\'' +
+                "id=" + id +
+                ", content='" + content + '\'' +
                 ", timestamp=" + timestamp +
                 ", sender='" + sender + '\'' +
+                ", roomName='" + roomName + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 
