@@ -33,6 +33,10 @@ public class ChatMessageDto {
         return new ChatMessageDto(id, "", null, "", "", null);
     }
 
+    public static ChatMessageDto of(long id, String content) {
+        return new ChatMessageDto(id, content, null, "", "", null);
+    }
+
     public static ChatMessageDto of(String content, String sender) {
         return new ChatMessageDto(ID.None, content, null, sender, "", null);
     }

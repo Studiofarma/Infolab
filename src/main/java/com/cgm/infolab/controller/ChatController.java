@@ -71,13 +71,15 @@ public class ChatController {
     @MessageMapping("/chat.delete")
     @SendTo("/topic/public")
     public WebSocketMessageDto deleteMessage(@Payload WebSocketMessageDto messageDto, Principal principal) {
-        return null;
+        chatService.deleteMessageById(Username.of(principal.getName()), messageDto.getDelete().getId());
+        return messageDto;
     }
 
     @MessageMapping("/chat.edit")
     @SendTo("/topic/public")
     public WebSocketMessageDto editMessage(@Payload WebSocketMessageDto messageDto, Principal principal) {
-        return null;
+        chatService.editMessageById(Username.of(principal.getName()), messageDto.getEdit().getId(), messageDto.getEdit().getContent());
+        return messageDto;
     }
     //endregion
 
