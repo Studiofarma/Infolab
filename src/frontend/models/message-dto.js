@@ -4,8 +4,7 @@ export class MessageDto {
   timestamp = "";
   sender = "";
   roomName = "";
-  hasBeenEdited = false;
-  hasBeenDeleted = false;
+  status = "";
 
   constructor(obj) {
     this.id = obj.id !== undefined ? obj.id : 0;
@@ -13,9 +12,6 @@ export class MessageDto {
     this.timestamp = obj.timestamp !== undefined ? obj.timestamp : "";
     this.sender = obj.sender !== undefined ? obj.sender : "";
     this.roomName = obj.roomName !== undefined ? obj.roomName : "";
-    this.hasBeenEdited =
-      obj.hasBeenEdited !== undefined ? obj.hasBeenEdited : false;
-    this.hasBeenDeleted =
-      obj.hasBeenDeleted !== undefined ? obj.hasBeenDeleted : false;
+    this.status = obj.status !== undefined ? obj.status : "";
   }
 }

@@ -6,6 +6,7 @@ import { HtmlParserService } from "./../../../services/html-parser-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
+import { MessageStatus } from "../../../enums/message-status";
 
 export class MessageContent extends LitElement {
   static properties = {
@@ -207,7 +208,7 @@ export class MessageContent extends LitElement {
               () => html``
             )}
             ${when(
-              !this.message.hasBeenDeleted,
+              this.message.status !== MessageStatus.deleted,
               () => html`
                 <p class="message">
                   ${HtmlParserService.parseFromString(this.message.content)}
@@ -218,18 +219,18 @@ export class MessageContent extends LitElement {
 
             <div
               class=${
-                this.message.hasBeenDeleted
+                this.message.status === MessageStatus.deleted
                   ? "timestamp-deleted-container"
                   : "timestamp-edited-container"
               }
             >
               ${when(
-                this.message.hasBeenEdited && !this.message.hasBeenDeleted,
+                this.message.status === MessageStatus.edited,
                 () => html`<p class="edited">Modificato</p>`,
                 () => html``
               )}
               ${when(
-                this.message.hasBeenDeleted,
+                this.message.status === MessageStatus.deleted,
                 () =>
                   html`<p class="deleted">
                     Questo messaggio è stato eliminato

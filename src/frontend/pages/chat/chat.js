@@ -12,6 +12,7 @@ import { ThemeColorService } from "../../services/theme-color-service";
 import { IconNames } from "../../enums/icon-names";
 import { TooltipTexts } from "../../enums/tooltip-texts";
 import { ThemeCSSVariables } from "../../enums/theme-css-variables";
+import { MessageStatus } from "../../enums/message-status";
 
 import "./message/message";
 import "../../components/icon";
@@ -23,6 +24,7 @@ import "./empty-chat";
 import "./message/messages-list";
 import "../../components/snackbar";
 import "../../components/button-icon";
+import { WebSocketMessageDto } from "../../models/websocket-message-dto";
 
 export class Chat extends LitElement {
   static properties = {
@@ -391,7 +393,7 @@ export class Chat extends LitElement {
   deleteMessage() {
     this.messages[this.indexToBeDeleted] = {
       ...this.messages[this.indexToBeDeleted],
-      hasBeenDeleted: true,
+      status: MessageStatus.deleted,
     };
     this.messagesListRef.value?.requestUpdate();
     this.setDeletionConfirmationDialogRefIsOpened(false);
@@ -408,7 +410,7 @@ export class Chat extends LitElement {
     this.messages[index] = {
       ...message,
       content: message.content,
-      hasBeenEdited: true,
+      status: MessageStatus.edited,
     };
 
     if (index === this.messages.length - 1)
@@ -490,10 +492,12 @@ export class Chat extends LitElement {
     this.stompClient.send(
       "/app/chat.register",
       {},
-      JSON.stringify({
-        type: "CHAT",
-        chat: { sender: this.login.username, status: null },
-      })
+      JSON.stringify(
+        new WebSocketMessageDto({
+          type: "CHAT",
+          chat: { sender: this.login.username, status: null },
+        })
+      )
     );
   }
 
@@ -535,21 +539,12 @@ export class Chat extends LitElement {
   }
 
   onMessage(payload) {
-    let message = JSON.parse(payload.body);
+    let message = new WebSocketMessageDto(JSON.parse(payload.body));
 
     if (message.type === "CHAT") {
       let chatMessage = message.chat;
 
       if (chatMessage.content !== null) {
-        // TODO: rimuovere questa riga quando hasBeenEdited verrà dal db
-        chatMessage.hasBeenEdited = chatMessage.hasBeenEdited
-          ? chatMessage.hasBeenEdited
-          : false;
-
-        chatMessage.hasBeenDeleted = chatMessage.hasBeenDeleted
-          ? chatMessage.hasBeenDeleted
-          : false;
-
         if (this.activeChatName == chatMessage.roomName) {
           this.messages.push(chatMessage);
           this.messagesListRef.value.requestUpdate();
@@ -565,13 +560,13 @@ export class Chat extends LitElement {
 
   buildMessageAndSend(messageContent, type) {
     if (messageContent && this.stompClient) {
-      const chatMessage = {
+      const chatMessage = new WebSocketMessageDto({
         type: type,
         chat: {
           sender: this.login.username,
           content: messageContent,
         },
-      };
+      });
 
       let activeChatName = this.formatActiveChatName(this.activeChatName);
 
