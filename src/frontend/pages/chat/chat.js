@@ -25,6 +25,7 @@ import "./message/messages-list";
 import "../../components/snackbar";
 import "../../components/button-icon";
 import { WebSocketMessageDto } from "../../models/websocket-message-dto";
+import { MessageDto } from "../../models/message-dto";
 
 export class Chat extends LitElement {
   static properties = {
@@ -332,18 +333,19 @@ export class Chat extends LitElement {
   multipleForward(event) {
     if (event.detail.list[0] == undefined) return;
 
-    const chatMessage = {
+    const chatMessage = new MessageDto({
       sender: this.login.username,
       content: this.messageToForward,
-      type: "CHAT",
-    };
+    });
 
     event.detail.list.forEach((room) => {
       let chatName = this.formatActiveChatName(room);
       this.stompClient.send(
         `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
         {},
-        JSON.stringify(chatMessage)
+        JSON.stringify(
+          new WebSocketMessageDto({ type: "CHAT", chat: chatMessage })
+        )
       );
     });
 
