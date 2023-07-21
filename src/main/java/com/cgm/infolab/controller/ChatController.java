@@ -118,7 +118,12 @@ public class ChatController {
             @Payload WebSocketMessageDto message,
             @DestinationVariable String destinationUser,
             Principal principal){
-        return null;
+        int rowsAffected = chatService.deleteMessageById(Username.of(principal.getName()), message.getDelete().getId());
+        if (rowsAffected == 1) {
+            return message;
+        } else {
+            return null;
+        }
     }
 
     @MessageMapping("/chat.edit.{destinationUser}")
@@ -128,7 +133,12 @@ public class ChatController {
             @Payload WebSocketMessageDto message,
             @DestinationVariable String destinationUser,
             Principal principal){
-        return null;
+        int rowsAffected = chatService.editMessageById(Username.of(principal.getName()), message.getEdit().getId(), message.getEdit().getContent());
+        if (rowsAffected == 1) {
+            return message;
+        } else {
+            return null;
+        }
     }
     //endregion
 }
