@@ -5,9 +5,12 @@ import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,6 +21,7 @@ import java.util.List;
 import static com.cgm.infolab.controller.api.ApiConstants.*;
 
 @RestController
+@Validated
 public class ChatApiMessagesController {
     private final ChatService chatService;
     private final Logger log = LoggerFactory.getLogger(ChatApiMessagesController.class);
@@ -34,7 +38,7 @@ public class ChatApiMessagesController {
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/{roomName}")
     public List<ChatMessageDto> getAllMessages(@PathVariable("roomName") String roomName,
-                                               @RequestParam(required = false, name = PAGE_SIZE_API_NAME) Integer pageSize,
+                                               @RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(30) Integer pageSize,
                                                @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
                                                @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
                                                Principal principal) {

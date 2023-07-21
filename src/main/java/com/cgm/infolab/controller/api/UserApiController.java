@@ -5,6 +5,8 @@ import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.UserDto;
 import com.cgm.infolab.service.UserService;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,7 @@ public class UserApiController {
 
     @GetMapping("/api/users")
     public List<UserDto> getUsername(@RequestParam("user") String user,
-                                     @RequestParam(required = false, name = PAGE_SIZE_API_NAME) Integer pageSize,
+                                     @RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
                                      @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
                                      @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter) {
 
