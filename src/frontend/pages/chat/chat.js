@@ -500,8 +500,8 @@ export class Chat extends LitElement {
       {},
       JSON.stringify(
         new WebSocketMessageDto({
-          type: WebSocketMessageTypes.chat,
-          chat: { sender: this.login.username, status: null },
+          type: WebSocketMessageTypes.join,
+          join: { sender: this.login.username, status: null },
         })
       )
     );

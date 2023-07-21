@@ -99,12 +99,12 @@ class InfolabApplicationTests {
             }
         });
 
-        WebSocketMessageDto sentMessage = WebSocketMessageDto.ofChat(ChatMessageDto.of(null, Username.of("banana").value()));
-        client.send("/app/chat.register", sentMessage);
+        WebSocketMessageDto joinMessage = WebSocketMessageDto.ofJoin(ChatMessageDto.of(null, Username.of("banana").value()));
+        client.send("/app/chat.register", joinMessage);
 
         await()
             .atMost(1, TimeUnit.SECONDS)
-            .untilAsserted(() -> Assertions.assertEquals(sentMessage, receivedMessages.poll()));
+            .untilAsserted(() -> Assertions.assertEquals(joinMessage, receivedMessages.poll()));
     }
     @Test
     void whenMessageIsSentInGeneral_thenItShouldBeSavedInTheDbAndTheMessageIsReceived() throws Exception {

@@ -26,11 +26,20 @@ export class WebSocketMessageDto {
     roomName: "",
     status: "",
   };
+  join = {
+    id: 0,
+    content: "",
+    timestamp: "",
+    sender: "",
+    roomName: "",
+    status: "",
+  };
 
   constructor(obj) {
     this.type = obj.type !== undefined ? obj.type : "";
     this.chat = obj.chat !== undefined ? obj.chat : {};
     this.edit = obj.edit !== undefined ? obj.edit : {};
     this.delete = obj.delete !== undefined ? obj.delete : {};
+    this.join = obj.join !== undefined ? obj.join : {};
   }
 }

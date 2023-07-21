@@ -10,27 +10,34 @@ public class WebSocketMessageDto {
     private ChatMessageDto chat;
     private ChatMessageDto edit;
     private ChatMessageDto delete;
+    private ChatMessageDto join;
 
     private WebSocketMessageDto(@NonNull WebSocketMessageTypeEnum type,
                                 @Nullable ChatMessageDto chat,
                                 @Nullable ChatMessageDto edit,
-                                @Nullable ChatMessageDto delete) {
+                                @Nullable ChatMessageDto delete,
+                                @Nullable ChatMessageDto join) {
         this.type = type;
         this.chat = chat;
         this.edit = edit;
         this.delete = delete;
+        this.join = join;
     }
 
     public static WebSocketMessageDto ofChat(ChatMessageDto chat) {
-        return new WebSocketMessageDto(WebSocketMessageTypeEnum.CHAT, chat, null, null);
+        return new WebSocketMessageDto(WebSocketMessageTypeEnum.CHAT, chat, null, null, null);
     }
 
     public static WebSocketMessageDto ofEdit(ChatMessageDto edit) {
-        return new WebSocketMessageDto(WebSocketMessageTypeEnum.EDIT, null, edit, null);
+        return new WebSocketMessageDto(WebSocketMessageTypeEnum.EDIT, null, edit, null, null);
     }
 
     public static WebSocketMessageDto ofDelete(ChatMessageDto delete) {
-        return new WebSocketMessageDto(WebSocketMessageTypeEnum.DELETE, null, null, delete);
+        return new WebSocketMessageDto(WebSocketMessageTypeEnum.DELETE, null, null, delete, null);
+    }
+
+    public static WebSocketMessageDto ofJoin(ChatMessageDto join) {
+        return new WebSocketMessageDto(WebSocketMessageTypeEnum.DELETE, null, null, null, join);
     }
 
     @NonNull
@@ -67,6 +74,15 @@ public class WebSocketMessageDto {
 
     public void setDelete(ChatMessageDto delete) {
         this.delete = delete;
+    }
+
+    @Nullable
+    public ChatMessageDto getJoin() {
+        return join;
+    }
+
+    public void setJoin(ChatMessageDto join) {
+        this.join = join;
     }
 
     @Override
