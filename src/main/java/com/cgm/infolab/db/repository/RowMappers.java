@@ -29,7 +29,8 @@ public abstract class RowMappers {
                 roomType
         );
 
-        StatusEnum status = rs.getString("status") != null ? StatusEnum.valueOf(rs.getString("status").trim()) : null;
+        String statusString = rs.getString("status");
+        StatusEnum status = statusString != null && !statusString.trim().isEmpty() ? StatusEnum.valueOf(statusString.trim()) : null;
 
         String content = status != null && status.equals(StatusEnum.DELETED) ? "" : rs.getString("content");
 
