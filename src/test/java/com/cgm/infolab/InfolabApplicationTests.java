@@ -6,6 +6,7 @@ import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
+import com.cgm.infolab.model.WebSocketMessageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.tuple.Pair;
@@ -85,20 +86,20 @@ class InfolabApplicationTests {
     void whenSomeoneRegister_everyoneReceivesAJoinNotification() throws Exception {
         StompSession client = getStompSession();
 
-        BlockingQueue<ChatMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
+        BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
         client.subscribe("/topic/public", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
-                return ChatMessageDto.class;
+                return WebSocketMessageDto.class;
             }
 
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
-                receivedMessages.add((ChatMessageDto) payload);
+                receivedMessages.add((WebSocketMessageDto) payload);
             }
         });
 
-        ChatMessageDto sentMessage = ChatMessageDto.of(null, Username.of("banana").value());
+        WebSocketMessageDto sentMessage = WebSocketMessageDto.ofChat(ChatMessageDto.of(null, Username.of("banana").value()));
         client.send("/app/chat.register", sentMessage);
 
         await()
@@ -110,86 +111,86 @@ class InfolabApplicationTests {
 
         StompSession client = getStompSession();
 
-        BlockingQueue<ChatMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
+        BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
         client.subscribe("/topic/public", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
-                return ChatMessageDto.class;
+                return WebSocketMessageDto.class;
             }
 
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
-                receivedMessages.add((ChatMessageDto) payload);
+                receivedMessages.add((WebSocketMessageDto) payload);
             }
         });
 
-        ChatMessageDto sentMessage = ChatMessageDto.of("pippo", userBanana.getName().value());
+        WebSocketMessageDto sentMessage = WebSocketMessageDto.ofChat(ChatMessageDto.of("pippo", userBanana.getName().value()));
         client.send("/app/chat.send", sentMessage);
 
         await()
             .atMost(1, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                ChatMessageDto received = receivedMessages.poll();
-                Assertions.assertEquals(sentMessage.getContent(), received.getContent());
-                Assertions.assertEquals(sentMessage.getSender(), received.getSender());
+                WebSocketMessageDto received = receivedMessages.poll();
+                Assertions.assertEquals(sentMessage.getChat().getContent(), received.getChat().getContent());
+                Assertions.assertEquals(sentMessage.getChat().getSender(), received.getChat().getSender());
             });
         List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("general"), 1, CursorEnum.NONE, null, Username.of("user1"));
         Assertions.assertEquals(1,messages.size());
-        Assertions.assertEquals(sentMessage.getContent(),messages.get(0).getContent());
+        Assertions.assertEquals(sentMessage.getChat().getContent(),messages.get(0).getContent());
     }
 
     @Test
     void whenMessageIsSentInPrivateChat_thenMessageShouldBeSavedInDbAndReceivedByTheSenderAndByTheDestinationUser() throws Exception {
         StompSession client = getStompSession();
 
-        BlockingQueue<ChatMessageDto> receivedMessagesSender = new ArrayBlockingQueue<>(2);
-        BlockingQueue<ChatMessageDto> receivedMessagesDestination = new ArrayBlockingQueue<>(2);
+        BlockingQueue<WebSocketMessageDto> receivedMessagesSender = new ArrayBlockingQueue<>(2);
+        BlockingQueue<WebSocketMessageDto> receivedMessagesDestination = new ArrayBlockingQueue<>(2);
         client.subscribe("/queue/" + userBanana.getName().value(), new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
-                return ChatMessageDto.class;
+                return WebSocketMessageDto.class;
             }
 
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
-                receivedMessagesDestination.add((ChatMessageDto) payload);
+                receivedMessagesDestination.add((WebSocketMessageDto) payload);
             }
         });
 
         client.subscribe("/user/topic/me", new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
-                return ChatMessageDto.class;
+                return WebSocketMessageDto.class;
             }
 
             @Override
             public void handleFrame(StompHeaders headers, Object payload) {
-                receivedMessagesSender.add((ChatMessageDto) payload);
+                receivedMessagesSender.add((WebSocketMessageDto) payload);
             }
         });
 
-        ChatMessageDto sentMessage = ChatMessageDto.of("pippo", userBanana.getName().value());
+        WebSocketMessageDto sentMessage = WebSocketMessageDto.ofChat(ChatMessageDto.of("pippo", userBanana.getName().value()));
         client.send("/app/chat.send." + userBanana.getName().value(), sentMessage);
 
         await()
             .atMost(1, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                ChatMessageDto received = receivedMessagesSender.poll();
-                Assertions.assertEquals(sentMessage.getContent(), received.getContent());
-                Assertions.assertEquals(sentMessage.getSender(), received.getSender());
+                WebSocketMessageDto received = receivedMessagesSender.poll();
+                Assertions.assertEquals(sentMessage.getChat().getContent(), received.getChat().getContent());
+                Assertions.assertEquals(sentMessage.getChat().getSender(), received.getChat().getSender());
             });
 
         await()
             .atMost(1, TimeUnit.SECONDS)
             .untilAsserted(() -> {
-                ChatMessageDto received = receivedMessagesDestination.poll();
-                Assertions.assertEquals(sentMessage.getContent(), received.getContent());
-                Assertions.assertEquals(sentMessage.getSender(), received.getSender());
+                WebSocketMessageDto received = receivedMessagesDestination.poll();
+                Assertions.assertEquals(sentMessage.getChat().getContent(), received.getChat().getContent());
+                Assertions.assertEquals(sentMessage.getChat().getSender(), received.getChat().getSender());
             });
 
         List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("banana-user1"), 1, CursorEnum.NONE, null, Username.of("user1"));
         Assertions.assertEquals(1,messages.size());
-        Assertions.assertEquals(sentMessage.getContent(),messages.get(0).getContent());
+        Assertions.assertEquals(sentMessage.getChat().getContent(),messages.get(0).getContent());
     }
 
     private StompSession getStompSession() throws InterruptedException, ExecutionException, TimeoutException {

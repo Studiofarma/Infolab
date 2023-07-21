@@ -56,16 +56,16 @@ public class ChatController {
     //region ROOM GENERAL
     @MessageMapping("/chat.register")
     @SendTo("/topic/public")
-    public ChatMessageDto register(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor){
-        headerAccessor.getSessionAttributes().put("username", message.getSender());
+    public WebSocketMessageDto register(@Payload WebSocketMessageDto message, SimpMessageHeaderAccessor headerAccessor){
+        headerAccessor.getSessionAttributes().put("username", message.getChat().getSender());
         return message;
     }
 
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
-    public ChatMessageDto sendMessage(@Payload ChatMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-        ChatMessageEntity messageEntity = chatService.saveMessageInDb(message, Username.of(principal.getName()), RoomName.of("general"), null);
-        return FromEntitiesToDtosMapper.fromEntityToChatMessageDto(messageEntity);
+    public WebSocketMessageDto sendMessage(@Payload WebSocketMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
+        ChatMessageEntity messageEntity = chatService.saveMessageInDb(message.getChat(), Username.of(principal.getName()), RoomName.of("general"), null);
+        return WebSocketMessageDto.ofChat(FromEntitiesToDtosMapper.fromEntityToChatMessageDto(messageEntity));
     }
 
     @MessageMapping("/chat.delete")
@@ -95,20 +95,20 @@ public class ChatController {
     @MessageMapping("/chat.send.{destinationUser}")
     @SendTo("/queue/{destinationUser}")
     @SendToUser("/topic/me")
-    public ChatMessageDto sendMessageToUser(
-            @Payload ChatMessageDto message,
+    public WebSocketMessageDto sendMessageToUser(
+            @Payload WebSocketMessageDto message,
             @DestinationVariable String destinationUser,
             SimpMessageHeaderAccessor headerAccessor,
             Principal principal){
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         log.info(String.format("message from %s to %s", username, destinationUser));
         ChatMessageEntity messageEntity = chatService.saveMessageInDb(
-                message, Username.of(principal.getName()),
-                RoomName.of(Username.of(principal.getName()),
-                Username.of(destinationUser)),
+                message.getChat(),
+                Username.of(principal.getName()),
+                RoomName.of(Username.of(principal.getName()), Username.of(destinationUser)),
                 Username.of(destinationUser)
         );
-        return FromEntitiesToDtosMapper.fromEntityToChatMessageDto(messageEntity);
+        return WebSocketMessageDto.ofChat(FromEntitiesToDtosMapper.fromEntityToChatMessageDto(messageEntity));
     }
 
     @MessageMapping("/chat.delete.{destinationUser}")
