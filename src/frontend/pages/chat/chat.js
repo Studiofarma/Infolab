@@ -474,9 +474,9 @@ export class Chat extends LitElement {
   }
 
   onConnect() {
-    this.stompClient.subscribe("/topic/public", (payload) =>
-      this.onMessage(payload)
-    );
+    this.stompClient.subscribe("/topic/public", (payload) => {
+      this.onMessage(payload);
+    });
 
     // fixare questo
     this.stompClient.subscribe("/user/topic/me", (payload) =>
@@ -490,7 +490,10 @@ export class Chat extends LitElement {
     this.stompClient.send(
       "/app/chat.register",
       {},
-      JSON.stringify({ sender: this.login.username, type: "JOIN" })
+      JSON.stringify({
+        type: "CHAT",
+        chat: { sender: this.login.username, status: null },
+      })
     );
   }
 
@@ -534,34 +537,40 @@ export class Chat extends LitElement {
   onMessage(payload) {
     let message = JSON.parse(payload.body);
 
-    if (message.content !== null) {
-      // TODO: rimuovere questa riga quando hasBeenEdited verrà dal db
-      message.hasBeenEdited = message.hasBeenEdited
-        ? message.hasBeenEdited
-        : false;
+    if (message.type === "CHAT") {
+      let chatMessage = message.chat;
 
-      message.hasBeenDeleted = message.hasBeenDeleted
-        ? message.hasBeenDeleted
-        : false;
+      if (chatMessage.content !== null) {
+        // TODO: rimuovere questa riga quando hasBeenEdited verrà dal db
+        chatMessage.hasBeenEdited = chatMessage.hasBeenEdited
+          ? chatMessage.hasBeenEdited
+          : false;
 
-      if (this.activeChatName == message.roomName) {
-        this.messages.push(message);
-        this.messagesListRef.value.requestUpdate();
-        this.requestUpdate();
+        chatMessage.hasBeenDeleted = chatMessage.hasBeenDeleted
+          ? chatMessage.hasBeenDeleted
+          : false;
+
+        if (this.activeChatName == chatMessage.roomName) {
+          this.messages.push(chatMessage);
+          this.messagesListRef.value.requestUpdate();
+          this.requestUpdate();
+        }
+
+        this.updateLastMessageInConversationList(chatMessage);
       }
 
-      this.updateLastMessageInConversationList(message);
+      this.messageNotification(chatMessage);
     }
-
-    this.messageNotification(message);
   }
 
   buildMessageAndSend(messageContent, type) {
     if (messageContent && this.stompClient) {
       const chatMessage = {
-        sender: this.login.username,
-        content: messageContent,
         type: type,
+        chat: {
+          sender: this.login.username,
+          content: messageContent,
+        },
       };
 
       let activeChatName = this.formatActiveChatName(this.activeChatName);
