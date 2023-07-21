@@ -132,12 +132,12 @@ public class ChatMessageRepository {
                 .join("%s LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id".formatted(JOIN_MESSAGES));
     }
 
-    public void updateMessageAsDeleted(Username username, long idToDelete) {
+    public int updateMessageAsDeleted(Username username, long idToDelete) {
         Map<String, Object> params = new HashMap<>();
         params.put("idToDelete", idToDelete);
         params.put("username", username.value());
 
-        queryHelper
+        return queryHelper
                 .forUser(username)
                 .query("UPDATE infolab.chatmessages SET status = 'DELETED' WHERE id IN (select m.id")
                 .join(JOIN_MESSAGES_WITH_LOGGED_USER)
@@ -146,13 +146,13 @@ public class ChatMessageRepository {
                 .update(params);
     }
 
-    public void editMessage(Username username, long idToEdit, String newContent) {
+    public int editMessage(Username username, long idToEdit, String newContent) {
         Map<String, Object> params = new HashMap<>();
         params.put("idToEdit", idToEdit);
         params.put("username", username.value());
         params.put("newContent", newContent);
 
-        queryHelper
+        return queryHelper
                 .forUser(username)
                 .query("UPDATE infolab.chatmessages SET content = :newContent, status = 'EDITED' WHERE id IN (select m.id")
                 .join(JOIN_MESSAGES_WITH_LOGGED_USER)

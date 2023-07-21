@@ -96,12 +96,12 @@ public record UserQueryResult(
         return namedJdbcTemplate.queryForObject(this.query(), params, rowMapper);
     }
 
-    public void update(Map<String, ?> queryParams) {
+    public int update(Map<String, ?> queryParams) {
         checkInputKeysAndThrow(queryParams);
 
         MapSqlParameterSource params = addAllParams(queryParams);
 
-        namedJdbcTemplate.update(this.query(), params);
+        return namedJdbcTemplate.update(this.query(), params);
     }
 
     private void checkInputKeysAndThrow(Map<String, ?> queryParams) throws InvalidUserKeyException {

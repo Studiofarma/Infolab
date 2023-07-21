@@ -7,7 +7,6 @@ import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Assertions;
@@ -47,7 +46,7 @@ import static org.awaitility.Awaitility.await;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "local"})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WebSocketDeleteEditTests {
+public class WebSocketDeleteEditPublicTests {
     @LocalServerPort
     public Integer port;
     @Autowired
@@ -81,10 +80,10 @@ public class WebSocketDeleteEditTests {
         testDbHelper.addPrivateRoomsAndSubscribeUsers(List.of(Pair.of(user1, userBanana)));
 
         long generalId = testDbHelper.getRoomId("general");
-
         long bananaUser1Id = testDbHelper.getRoomId("banana-user1");
 
         long user1Id = testDbHelper.getUserId("user1");
+        long userBananaId = testDbHelper.getUserId("banana");
 
         testDbHelper.insertCustomMessage(
                 1,
@@ -96,27 +95,27 @@ public class WebSocketDeleteEditTests {
         testDbHelper.insertCustomMessage(
                 2,
                 user1Id,
-                bananaUser1Id,
-                LocalDateTime.of(2023, 1, 1, 1, 1, 2),
-                "1 Message in banana-user1 room");
-
-        testDbHelper.insertCustomMessage(
-                3,
-                user1Id,
                 generalId,
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "2 Message in general");
 
         testDbHelper.insertCustomMessage(
+                3,
+                userBananaId,
+                generalId,
+                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
+                "3 Message in general");
+
+        testDbHelper.insertCustomMessage(
                 4,
-                user1Id,
-                bananaUser1Id,
-                LocalDateTime.of(2023, 1, 1, 1, 1, 2),
-                "2 Message in banana-user1 room");
+                userBananaId,
+                generalId,
+                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
+                "4 Message in general");
     }
 
     @Test
-    void whenDeletingMessageThroughWebsocket_inRoomGeneral_deletionMessageIsReceived_andMessageIsActuallyDeleted() throws ExecutionException, InterruptedException, TimeoutException {
+    void whenDeletingMessageThroughWebsocket_deletionMessageIsReceived_andMessageIsActuallyDeleted() throws ExecutionException, InterruptedException, TimeoutException {
         StompSession client = getStompSession();
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
@@ -163,7 +162,7 @@ public class WebSocketDeleteEditTests {
     }
 
     @Test
-    void whenEditingMessageThroughWebsocket_inRoomGeneral_editMessageIsReceived_andMessageIsActuallyEdited() throws ExecutionException, InterruptedException, TimeoutException {
+    void whenDeletionFails_websocketReturnsNull() throws ExecutionException, InterruptedException, TimeoutException {
         StompSession client = getStompSession();
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
@@ -182,6 +181,54 @@ public class WebSocketDeleteEditTests {
         });
 
         long messageId = 3;
+        ChatMessageEntity messageEntityBefore = testDbHelper
+                .getAllMessages()
+                .stream()
+                .filter(message -> message.getId() == messageId)
+                .toList()
+                .get(0);
+
+        WebSocketMessageDto webSocketDeletedMessage = WebSocketMessageDto.ofDelete(ChatMessageDto.of(messageId));
+        client.send("/app/chat.delete", webSocketDeletedMessage);
+
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    ChatMessageEntity messageEntityAfter = testDbHelper
+                            .getAllMessages()
+                            .stream()
+                            .filter(message -> message.getId() == messageId)
+                            .toList()
+                            .get(0);
+
+                    Assertions.assertEquals(messageEntityBefore, messageEntityAfter);
+
+                    WebSocketMessageDto received = receivedMessages.poll();
+
+                    Assertions.assertNull(received);
+                });
+    }
+
+    @Test
+    void whenEditingMessageThroughWebsocket_editMessageIsReceived_andMessageIsActuallyEdited() throws ExecutionException, InterruptedException, TimeoutException {
+        StompSession client = getStompSession();
+
+        BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
+
+        client.subscribe("/topic/public", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessages.add((WebSocketMessageDto) payload);
+                client.disconnect();
+            }
+        });
+
+        long messageId = 2;
         WebSocketMessageDto webSocketEditedMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageId, "New content : )"));
         client.send("/app/chat.edit", webSocketEditedMessage);
 
@@ -206,6 +253,54 @@ public class WebSocketDeleteEditTests {
 
                     Assertions.assertEquals(EDITED, messageEntity.getStatus());
                     Assertions.assertEquals("New content : )", messageEntity.getContent());
+                });
+    }
+
+    @Test
+    void whenEditFails_websocketReturnsNull() throws ExecutionException, InterruptedException, TimeoutException {
+        StompSession client = getStompSession();
+
+        BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
+
+        client.subscribe("/topic/public", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessages.add((WebSocketMessageDto) payload);
+                client.disconnect();
+            }
+        });
+
+        long messageId = 4;
+        ChatMessageEntity messageEntityBefore = testDbHelper
+                .getAllMessages()
+                .stream()
+                .filter(message -> message.getId() == messageId)
+                .toList()
+                .get(0);
+
+        WebSocketMessageDto webSocketDeletedMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageId, "Edit that fails"));
+        client.send("/app/chat.edit", webSocketDeletedMessage);
+
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    ChatMessageEntity messageEntityAfter = testDbHelper
+                            .getAllMessages()
+                            .stream()
+                            .filter(message -> message.getId() == messageId)
+                            .toList()
+                            .get(0);
+
+                    Assertions.assertEquals(messageEntityBefore, messageEntityAfter);
+
+                    WebSocketMessageDto received = receivedMessages.poll();
+
+                    Assertions.assertNull(received);
                 });
     }
 

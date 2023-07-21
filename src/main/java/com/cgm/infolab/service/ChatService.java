@@ -101,21 +101,21 @@ public class ChatService {
         return chatMessageEntities;
     }
 
-    public void updateReadTimestamp(Username user, RoomName room) {
-        downloadDateRepository.addWhereNotDownloadedYetForUser(user, room);
+    public int updateReadTimestamp(Username user, RoomName room) {
+        return downloadDateRepository.addWhereNotDownloadedYetForUser(user, room);
     }
 
-    public void addReadTimestampForMessages(Username user, List<IdDto> messageIds) {
+    public int addReadTimestampForMessages(Username user, List<IdDto> messageIds) {
         List<Long> ids = messageIds.stream().map(IdDto::id).toList();
-        downloadDateRepository.addDownloadDateToMessages(user, ids);
+        return downloadDateRepository.addDownloadDateToMessages(user, ids);
     }
 
-    public void deleteMessageById(Username user, Long messageId) {
-        chatMessageRepository.updateMessageAsDeleted(user, messageId);
+    public int deleteMessageById(Username user, Long messageId) {
+        return chatMessageRepository.updateMessageAsDeleted(user, messageId);
     }
 
-    public void editMessageById(Username user, Long messageId, String newContent) {
-        chatMessageRepository.editMessage(user, messageId, newContent);
+    public int editMessageById(Username user, Long messageId, String newContent) {
+        return chatMessageRepository.editMessage(user, messageId, newContent);
     }
 
     private LocalDateTime fromStringToDate(String date) {
