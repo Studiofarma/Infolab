@@ -38,15 +38,12 @@ public class ChatController {
     //@Autowired
     //public JdbcTemplate jdbcTemplate;
 
-    private final UserRepository userRepository;
     private final ChatService chatService;
 
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     @Autowired
-    public ChatController(UserRepository userRepository,
-                          ChatService chatService) {
-        this.userRepository = userRepository;
+    public ChatController(ChatService chatService) {
         this.chatService = chatService;
     }
 

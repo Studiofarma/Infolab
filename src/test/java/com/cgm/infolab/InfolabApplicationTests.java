@@ -54,6 +54,8 @@ class InfolabApplicationTests {
 
     @Autowired
     public TestDbHelper testDbHelper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     WebSocketStompClient websocket;
 
@@ -70,8 +72,6 @@ class InfolabApplicationTests {
                         List.of(new WebSocketTransport(new StandardWebSocketClient()))));
 
         MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
-        ObjectMapper objectMapper = messageConverter.getObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
         messageConverter.setObjectMapper(objectMapper);
 
         websocket.setMessageConverter(messageConverter);
