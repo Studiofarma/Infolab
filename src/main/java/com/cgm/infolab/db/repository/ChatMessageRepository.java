@@ -23,7 +23,9 @@ public class ChatMessageRepository {
 
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
-    private final String JOIN_MESSAGES = "LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id";
+    private final String JOIN_MESSAGES =
+            "LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id";
+    private final String JOIN_MESSAGES_WITH_LOGGED_USER = "%s JOIN infolab.users u_logged ON u_logged.username = :username".formatted(JOIN_MESSAGES);
 
     public ChatMessageRepository(DataSource dataSource, QueryHelper queryHelper) {
         this.dataSource = dataSource;
@@ -133,12 +135,13 @@ public class ChatMessageRepository {
     public void updateMessageAsDeleted(Username username, long idToDelete) {
         Map<String, Object> params = new HashMap<>();
         params.put("idToDelete", idToDelete);
+        params.put("username", username.value());
 
         queryHelper
                 .forUser(username)
                 .query("UPDATE infolab.chatmessages SET status = 'DELETED' WHERE id IN (select m.id")
-                .join(JOIN_MESSAGES)
-                .where("m.sender_id = u.id and m.id = :idToDelete")
+                .join(JOIN_MESSAGES_WITH_LOGGED_USER)
+                .where("m.sender_id = u_logged.id and m.id = :idToDelete")
                 .other(")")
                 .update(params);
     }
@@ -146,13 +149,14 @@ public class ChatMessageRepository {
     public void editMessage(Username username, long idToEdit, String newContent) {
         Map<String, Object> params = new HashMap<>();
         params.put("idToEdit", idToEdit);
+        params.put("username", username.value());
         params.put("newContent", newContent);
 
         queryHelper
                 .forUser(username)
                 .query("UPDATE infolab.chatmessages SET content = :newContent, status = 'EDITED' WHERE id IN (select m.id")
-                .join(JOIN_MESSAGES)
-                .where("m.sender_id = u.id and m.id = :idToEdit")
+                .join(JOIN_MESSAGES_WITH_LOGGED_USER)
+                .where("m.sender_id = u_logged.id and m.id = :idToEdit")
                 .other(")")
                 .update(params);
     }

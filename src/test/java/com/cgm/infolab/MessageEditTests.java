@@ -74,7 +74,7 @@ public class MessageEditTests {
     }
 
     @Test
-    void whenOneMessageIsEdited_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() {
+    void whenOneMessageIsEdited_inPrivateRoom_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
         long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
@@ -98,19 +98,43 @@ public class MessageEditTests {
     }
 
     @Test
-    void whenTryingToEdit_messageSentByAnotherUser_messageDoesNotGetEdited() {
+    void whenOneMessageIsEdited_inPublicRoom_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
         long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '1 Hello general from user0'",
                 (rs, rowNum) -> rs.getLong("id"));
 
-        chatMessageRepository.editMessage(users[0].getName(), message1Id, "Trying to edit message (｀∀´)Ψ");
+        chatMessageRepository.editMessage(users[0].getName(), message1Id, "1 Message edited!!");
 
         List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
 
         Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
 
-        ChatMessageEntity messageTriedToBeDeleted = messagesAfter.stream().filter(message -> message.getId() == message1Id).toList().get(0);
+        ChatMessageEntity editedMessage = messagesAfter.stream().filter(message -> message.getId() == message1Id).toList().get(0);
+
+        Assertions.assertEquals(EDITED, editedMessage.getStatus());
+        Assertions.assertEquals("1 Message edited!!", editedMessage.getContent());
+
+        messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message1Id).toList();
+        messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message1Id).toList();
+
+        Assertions.assertEquals(messagesBefore, messagesAfter);
+    }
+
+    @Test
+    void whenTryingToEdit_messageSentByAnotherUser_messageDoesNotGetEdited() {
+        List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
+
+        long message4Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '4 Visible only to user0 and user2'",
+                (rs, rowNum) -> rs.getLong("id"));
+
+        chatMessageRepository.editMessage(users[0].getName(), message4Id, "Trying to edit message (｀∀´)Ψ");
+
+        List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
+
+        Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
+
+        ChatMessageEntity messageTriedToBeDeleted = messagesAfter.stream().filter(message -> message.getId() == message4Id).toList().get(0);
 
         Assertions.assertNull(messageTriedToBeDeleted.getStatus());
 

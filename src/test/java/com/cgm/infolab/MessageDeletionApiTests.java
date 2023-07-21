@@ -51,7 +51,7 @@ public class MessageDeletionApiTests {
                     UserEntity.of(Username.of("user2")),
                     UserEntity.of(Username.of("user3"))};
     public ChatMessageDto[] messageDtos =
-            {ChatMessageDto.of("1 Hello general from user0", users[0].getName().value()),
+            {ChatMessageDto.of("1 Hello general from user0", users[1].getName().value()), // Note: this is different from the other test classes
                     ChatMessageDto.of("2 Visible only to user0 and user1", users[1].getName().value()),
                     ChatMessageDto.of("3 Visible only to user1 and user2", users[1].getName().value()),
                     ChatMessageDto.of("4 Visible only to user0 and user2", users[2].getName().value()),
@@ -83,7 +83,7 @@ public class MessageDeletionApiTests {
     }
 
     @Test
-    void whenOneMessageIsDeleted_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
+    void whenOneMessageIsDeleted_inPrivateRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
         long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '2 Visible only to user0 and user1'",
@@ -112,6 +112,40 @@ public class MessageDeletionApiTests {
 
         messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message2Id).toList();
         messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message2Id).toList();
+
+        Assertions.assertEquals(messagesBefore, messagesAfter);
+    }
+
+    @Test
+    void whenOneMessageIsDeleted_inPublicRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
+        List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
+
+        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '1 Hello general from user0'",
+                (rs, rowNum) -> rs.getLong("id"));
+
+        apiDeleteForUser1("/api/messages/user0-user1/%d".formatted(message1Id));
+
+        List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
+
+        Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
+
+        ChatMessageEntity deletedMessageBefore = messagesBefore.stream().filter(message -> message.getId() == message1Id).toList().get(0);
+        ChatMessageEntity deletedMessageAfter = messagesAfter.stream().filter(message -> message.getId() == message1Id).toList().get(0);
+
+        Assertions.assertEquals(DELETED, deletedMessageAfter.getStatus());
+        Assertions.assertEquals("", deletedMessageAfter.getContent());
+
+        ChatMessageEntity dbDeletedMessageContentAndId = testDbHelper
+                .getAllMessages(this::mapToChatMessageEntity)
+                .stream()
+                .filter(message -> message.getId() == message1Id)
+                .toList()
+                .get(0);
+
+        Assertions.assertEquals(deletedMessageBefore.getContent(), dbDeletedMessageContentAndId.getContent());
+
+        messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message1Id).toList();
+        messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message1Id).toList();
 
         Assertions.assertEquals(messagesBefore, messagesAfter);
     }
