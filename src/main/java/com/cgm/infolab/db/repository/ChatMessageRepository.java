@@ -156,7 +156,7 @@ public class ChatMessageRepository {
                 .forUser(username)
                 .query("UPDATE infolab.chatmessages SET content = :newContent, status = 'EDITED' WHERE id IN (select m.id")
                 .join(JOIN_MESSAGES_WITH_LOGGED_USER)
-                .where("m.sender_id = u_logged.id and m.id = :idToEdit")
+                .where("m.sender_id = u_logged.id and m.id = :idToEdit and (m.status IS NULL or m.status NOT LIKE 'DELETED%')")
                 .other(")")
                 .update(params);
     }
