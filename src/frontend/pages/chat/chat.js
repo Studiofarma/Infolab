@@ -12,7 +12,8 @@ import { ThemeColorService } from "../../services/theme-color-service";
 import { IconNames } from "../../enums/icon-names";
 import { TooltipTexts } from "../../enums/tooltip-texts";
 import { ThemeCSSVariables } from "../../enums/theme-css-variables";
-import { MessageStatus } from "../../enums/message-status";
+import { MessageStatuses } from "../../enums/message-statuses";
+import { WebSocketMessageTypes } from "../../enums/websocket-message-types";
 
 import "./message/message";
 import "../../components/icon";
@@ -344,7 +345,10 @@ export class Chat extends LitElement {
         `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
         {},
         JSON.stringify(
-          new WebSocketMessageDto({ type: "CHAT", chat: chatMessage })
+          new WebSocketMessageDto({
+            type: WebSocketMessageTypes.chat,
+            chat: chatMessage,
+          })
         )
       );
     });
@@ -395,7 +399,7 @@ export class Chat extends LitElement {
   deleteMessage() {
     this.messages[this.indexToBeDeleted] = {
       ...this.messages[this.indexToBeDeleted],
-      status: MessageStatus.deleted,
+      status: MessageStatuses.deleted,
     };
     this.messagesListRef.value?.requestUpdate();
     this.setDeletionConfirmationDialogRefIsOpened(false);
@@ -412,7 +416,7 @@ export class Chat extends LitElement {
     this.messages[index] = {
       ...message,
       content: message.content,
-      status: MessageStatus.edited,
+      status: MessageStatuses.edited,
     };
 
     if (index === this.messages.length - 1)
@@ -496,7 +500,7 @@ export class Chat extends LitElement {
       {},
       JSON.stringify(
         new WebSocketMessageDto({
-          type: "CHAT",
+          type: WebSocketMessageTypes.chat,
           chat: { sender: this.login.username, status: null },
         })
       )
@@ -543,7 +547,7 @@ export class Chat extends LitElement {
   onMessage(payload) {
     let message = new WebSocketMessageDto(JSON.parse(payload.body));
 
-    if (message.type === "CHAT") {
+    if (message.type === WebSocketMessageTypes.chat) {
       let chatMessage = message.chat;
 
       if (chatMessage.content !== null) {

@@ -11,7 +11,7 @@ import "./message-options";
 import "../../../components/popover";
 import "./message-content";
 import "./message-menu-popover";
-import { MessageStatus } from "../../../enums/message-status";
+import { MessageStatuses } from "../../../enums/message-statuses";
 
 export class Message extends LitElement {
   static properties = {
@@ -107,7 +107,7 @@ export class Message extends LitElement {
         ></il-message-content>
 
         ${when(
-          this.message.status === MessageStatus.deleted,
+          this.message.status === MessageStatuses.deleted,
           () => html``,
           () => html`
             <il-message-menu-popover

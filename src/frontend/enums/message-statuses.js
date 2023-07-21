@@ -1,4 +1,4 @@
-export const MessageStatus = {
+export const MessageStatuses = {
   deleted: "DELETED",
   edited: "EDITED",
 };
