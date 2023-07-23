@@ -515,6 +515,24 @@ class ConversationList extends LitElement {
     this.requestUpdate();
   }
 
+  incrementUnreadMessageCounter(message) {
+    let index = this.conversationList.findIndex(
+      (conversation) => conversation.roomName === message.roomName
+    );
+
+    if (index === -1) {
+      index = this.newConversationList.findIndex(
+        (conversation) => conversation.roomName === message.roomName
+      );
+
+      this.newConversationList[index].unreadMessages += 1;
+    } else {
+      this.conversationList[index].unreadMessages += 1;
+    }
+
+    this.requestUpdate();
+  }
+
   setUsersList(user) {
     let cookie = CookieService.getCookie();
 

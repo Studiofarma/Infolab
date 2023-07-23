@@ -551,6 +551,13 @@ export class Chat extends LitElement {
       }
 
       this.updateLastMessageInConversationList(message);
+
+      // set the message as unread:
+
+      if (this.login.username !== message.sender) {
+        // the counter won't be update if you are the sender
+        this.conversationListRef.value?.incrementUnreadMessageCounter(message);
+      }
     }
 
     this.messageNotification(message);
