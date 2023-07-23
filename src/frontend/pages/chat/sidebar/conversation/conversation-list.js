@@ -31,6 +31,7 @@ class ConversationList extends LitElement {
     newConversationListFiltered: { type: Array },
     indexOfSelectedChat: { type: Number },
     selectedRoom: { type: Object },
+    activeChatName: { type: String },
     isForwardList: false,
     selectedChats: {},
     isOpen: false,
@@ -412,6 +413,9 @@ class ConversationList extends LitElement {
       })
     );
 
+    // unset the unread messages counter
+    this.unsetUnreadMessages(conversation.roomName);
+
     this.fetchMessages(conversation);
     this.cleanSearchInput();
     this.requestUpdate();
@@ -528,6 +532,29 @@ class ConversationList extends LitElement {
       this.newConversationList[index].unreadMessages += 1;
     } else {
       this.conversationList[index].unreadMessages += 1;
+    }
+
+    if (this.activeChatName === message.roomName) {
+      // If I have open the chat of the user who has just sended me a message, this laster will be automatically set as read.
+      setTimeout(() => this.unsetUnreadMessages(message.roomName), 1000);
+    }
+
+    this.requestUpdate();
+  }
+
+  unsetUnreadMessages(conversationRoomName) {
+    let index = this.conversationList.findIndex(
+      (conv) => conv.roomName === conversationRoomName
+    );
+
+    if (index === -1) {
+      index = this.newConversationList.findIndex(
+        (conv) => conv.roomName === conversationRoomName
+      );
+
+      this.newConversationList[index].unreadMessages = 0;
+    } else {
+      this.conversationList[index].unreadMessages = 0;
     }
 
     this.requestUpdate();

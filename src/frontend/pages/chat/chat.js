@@ -181,6 +181,7 @@ export class Chat extends LitElement {
               ${ref(this.conversationListRef)}
               id="#sidebar"
               class="conversation-list"
+              activeChatName=${this.activeChatName}
               @il:messages-fetched=${this.fetchMessages}
               @il:conversation-changed=${(event) => {
                 this.setActiveChat(event);
