@@ -6,10 +6,10 @@ import { darkTheme } from "../enums/themes/darkTheme";
 export class ThemeColorService {
   static changeThemeEvent = new CustomEvent("change-theme");
 
-  static ThemesEnum = new Map([
-    ["light", lightTheme],
-    ["dark", darkTheme],
-  ]);
+  static ThemesEnum = {
+    light: lightTheme,
+    dark: darkTheme,
+  };
 
   static getCurrentThemeName() {
     return sessionStorage.getItem("theme") ?? "light";
