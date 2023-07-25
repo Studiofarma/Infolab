@@ -7,7 +7,7 @@ import { IconNames } from "../../../enums/icon-names";
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "../../../components/button-icon";
-import "../../../components/accordion-checkbox";
+import "../../../components/combo-box";
 
 import { BaseComponent } from "../../../components/base-component";
 
@@ -70,7 +70,7 @@ export class ThemeSwitcher extends BaseComponent {
 
   render() {
     return html`
-      <il-accordion-checkbox
+      <il-combo-box
         placeholder="Tema"
         ${ref(this.accordionCheckBoxRef)}
         @selected-item=${this.selectThemeHandler}
@@ -100,7 +100,7 @@ export class ThemeSwitcher extends BaseComponent {
             `
           )}
         </div>
-      </il-accordion-checkbox>
+      </il-combo-box>
     `;
   }
 

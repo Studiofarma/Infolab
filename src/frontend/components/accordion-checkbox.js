@@ -9,7 +9,7 @@ import { BaseComponent } from "./base-component";
 
 import "./button-icon";
 
-export class AccordionCheckBox extends BaseComponent {
+export class ComboBox extends BaseComponent {
   static properties = {
     IsSelectionListOpened: { type: Boolean },
     placeholder: { type: String },
@@ -130,4 +130,4 @@ export class AccordionCheckBox extends BaseComponent {
   }
 }
 
-customElements.define("il-accordion-checkbox", AccordionCheckBox);
+customElements.define("il-combo-box", ComboBox);
