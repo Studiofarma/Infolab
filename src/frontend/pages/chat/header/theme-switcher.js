@@ -21,7 +21,7 @@ export class ThemeSwitcher extends BaseComponent {
   constructor() {
     super();
     this.theme = ThemeColorService.getCurrentThemeName();
-    this.themes = ["light", "dark"];
+    this.themes = Array.from(ThemeColorService.ThemesEnum.keys());
     this.initialTheme = "";
 
     // Refs
