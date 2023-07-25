@@ -490,49 +490,27 @@ class ConversationList extends LitElement {
   }
 
   updateLastMessage(message) {
-    let index = this.conversationList.findIndex(
-      (conversation) => conversation.roomName == message.roomName
-    );
+    let conversation = this.findConversationByRoomName(message.roomName);
 
-    if (index === -1) {
-      index = this.newConversationList.findIndex(
-        (conversation) => conversation.roomName == message.roomName
-      );
+    conversation.lastMessage = {
+      content: message.content,
+      timestamp: message.timestamp,
+      sender: message.sender,
+    };
 
-      this.newConversationList[index].lastMessage = {
-        content: message.content,
-        timestamp: message.timestamp,
-        sender: message.sender,
-      };
-
-      this.newConversationList.sort(this.compareTimestamp);
-    } else {
-      this.conversationList[index].lastMessage = {
-        content: message.content,
-        timestamp: message.timestamp,
-        sender: message.sender,
-      };
-
+    if (this.isInConversationList(message.roomName)) {
       this.conversationList.sort(this.compareTimestamp);
+    } else {
+      this.newConversationList.sort(this.compareTimestamp);
     }
 
     this.requestUpdate();
   }
 
   incrementUnreadMessageCounter(message) {
-    let index = this.conversationList.findIndex(
-      (conversation) => conversation.roomName === message.roomName
-    );
+    let conversation = this.findConversationByRoomName(message.roomName);
 
-    if (index === -1) {
-      index = this.newConversationList.findIndex(
-        (conversation) => conversation.roomName === message.roomName
-      );
-
-      this.newConversationList[index].unreadMessages += 1;
-    } else {
-      this.conversationList[index].unreadMessages += 1;
-    }
+    conversation.unreadMessages += 1;
 
     if (this.activeChatName === message.roomName) {
       // If I have open the chat of the user who has just sended me a message, this laster will be automatically set as read.
@@ -543,19 +521,9 @@ class ConversationList extends LitElement {
   }
 
   unsetUnreadMessages(conversationRoomName) {
-    let index = this.conversationList.findIndex(
-      (conv) => conv.roomName === conversationRoomName
-    );
+    let conversation = this.findConversationByRoomName(conversationRoomName);
 
-    if (index === -1) {
-      index = this.newConversationList.findIndex(
-        (conv) => conv.roomName === conversationRoomName
-      );
-
-      this.newConversationList[index].unreadMessages = 0;
-    } else {
-      this.conversationList[index].unreadMessages = 0;
-    }
+    conversation.unreadMessages = 0;
 
     this.requestUpdate();
   }
@@ -655,7 +623,7 @@ class ConversationList extends LitElement {
     return array.join("-");
   }
 
-  findConversation(username) {
+  findConversationByUsername(username) {
     let index = this.conversationList.findIndex((conv) =>
       this.isUsernameInRoomName(conv.roomName, username)
     );
@@ -670,6 +638,29 @@ class ConversationList extends LitElement {
     }
 
     return this.conversationList[index];
+  }
+
+  findConversationByRoomName(roomName) {
+    let index = this.conversationList.findIndex(
+      (conv) => conv.roomName === roomName
+    );
+    if (index === -1) {
+      index = this.newConversationList.findIndex(
+        (conv) => conv.roomName === roomName
+      );
+
+      if (index === -1) return;
+
+      return this.newConversationList[index];
+    }
+
+    return this.conversationList[index];
+  }
+
+  isInConversationList(roomName) {
+    return this.conversationList.some(
+      (conversation) => conversation.roomName === roomName
+    );
   }
 
   // TODO: rimuovere quando gli utenti in una stanza arriveranno dal backend

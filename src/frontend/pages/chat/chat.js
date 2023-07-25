@@ -380,7 +380,9 @@ export class Chat extends LitElement {
   wentToChatHandler(event) {
     this.conversationListRef.value?.changeRoom(
       new CustomEvent(event.type),
-      this.conversationListRef.value?.findConversation(event.detail.user)
+      this.conversationListRef.value?.findConversationByUsername(
+        event.detail.user
+      )
     );
   }
 
