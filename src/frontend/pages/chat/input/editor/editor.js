@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../../../../services/theme-color-service";
@@ -7,9 +7,9 @@ import { ThemeCSSVariables } from "../../../../enums/theme-css-variables";
 
 const enterKey = "Enter";
 
-import { ElementMixin } from "../../../../models/element-mixin";
+import { BaseComponent } from "../../../../components/base-component";
 
-export class Editor extends ElementMixin(LitElement) {
+export class Editor extends BaseComponent {
   static properties = {
     isFormattingMode: false,
   };

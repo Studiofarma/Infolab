@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
 import { UsersService } from "../../../services/users-service";
@@ -14,11 +14,11 @@ import "../../../components/snackbar";
 import "../../../components/input-with-icon";
 import "./theme-switcher";
 
-import { ElementMixin } from "../../../models/element-mixin";
+import { BaseComponent } from "../../../components/base-component";
 
 const maxLength = 30;
 
-export class profileSettings extends ElementMixin(LitElement) {
+export class profileSettings extends BaseComponent {
   static properties = {
     isFocused: { type: Boolean },
     imagePath: { type: String },

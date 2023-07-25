@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { when } from "lit/directives/when.js";
 import { choose } from "lit/directives/choose.js";
 
@@ -8,11 +8,11 @@ import "./icon";
 import { IconNames } from "../enums/icon-names";
 import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
-import { ElementMixin } from "../models/element-mixin";
+import { BaseComponent } from "./base-component";
 
 const maxInitials = 3;
 
-export class Avatar extends ElementMixin(LitElement) {
+export class Avatar extends BaseComponent {
   static get properties() {
     return {
       avatarLink: "",

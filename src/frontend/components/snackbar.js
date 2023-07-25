@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
@@ -7,9 +7,9 @@ import "./button-icon";
 import { IconNames } from "../enums/icon-names";
 import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
-import { ElementMixin } from "../models/element-mixin";
+import { BaseComponent } from "./base-component";
 
-export class Snackbar extends ElementMixin(LitElement) {
+export class Snackbar extends BaseComponent {
   constructor() {
     super();
 

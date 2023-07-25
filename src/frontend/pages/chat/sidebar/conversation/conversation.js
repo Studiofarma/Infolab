@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { when } from "lit/directives/when.js";
 
 import { IconNames } from "../../../../enums/icon-names";
@@ -8,12 +8,12 @@ import { ThemeColorService } from "../../../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../../../enums/theme-css-variables";
 
-import { ElementMixin } from "../../../../models/element-mixin";
+import { BaseComponent } from "../../../../components/base-component";
 
 import "../../../../components/icon";
 import "../../../../components/button-icon";
 
-class Conversation extends ElementMixin(LitElement) {
+class Conversation extends BaseComponent {
   static properties = {
     conversation: {},
     isSelectable: false,

@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 
@@ -8,9 +8,9 @@ import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
 import "./button-icon";
 
-import { ElementMixin } from "../models/element-mixin";
+import { BaseComponent } from "./base-component";
 
-export class InputField extends ElementMixin(LitElement) {
+export class InputField extends BaseComponent {
   static get properties() {
     return {
       placeholder: "",

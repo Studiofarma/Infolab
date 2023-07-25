@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 
 import { ThemeColorService } from "../../../services/theme-color-service";
 
@@ -6,9 +6,9 @@ import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "../../../components/icon";
 
-import { ElementMixin } from "../../../models/element-mixin";
+import { BaseComponent } from "../../../components/base-component";
 
-export class MessageButtonOption extends ElementMixin(LitElement) {
+export class MessageButtonOption extends BaseComponent {
   static properties = {
     iconName: { type: String },
     text: { type: String },

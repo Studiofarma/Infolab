@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
 import { LoginService } from "../../services/login-service";
@@ -7,15 +7,15 @@ import { ThemeColorService } from "../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 
-import { ElementMixin } from "../../models/element-mixin";
-
 import "../../components/snackbar";
 import "../../components/button-icon";
 import "../../components/button-text";
 import "../../components/input-field";
 import "../../components/input-password";
 
-export class Login extends ElementMixin(LitElement) {
+import { BaseComponent } from "../../components/base-component";
+
+export class Login extends BaseComponent {
   static properties = {
     username: "",
     password: "",

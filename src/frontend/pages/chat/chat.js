@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { when } from "lit/directives/when.js";
 import { createRef, ref } from "lit/directives/ref.js";
 
@@ -13,7 +13,7 @@ import { IconNames } from "../../enums/icon-names";
 import { TooltipTexts } from "../../enums/tooltip-texts";
 import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 
-import { ElementMixin } from "../../models/element-mixin";
+import { BaseComponent } from "../../components/base-component";
 
 import "./message/message";
 import "../../components/icon";
@@ -26,7 +26,7 @@ import "./message/messages-list";
 import "../../components/snackbar";
 import "../../components/button-icon";
 
-export class Chat extends ElementMixin(LitElement) {
+export class Chat extends BaseComponent {
   static properties = {
     stompClient: {},
     messages: [],

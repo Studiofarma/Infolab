@@ -1,12 +1,12 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
-import { ElementMixin } from "../models/element-mixin";
+import { BaseComponent } from "./base-component";
 
-export class ButtonText extends ElementMixin(LitElement) {
+export class ButtonText extends BaseComponent {
   static get properties() {
     return {
       text: { type: String },

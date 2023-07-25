@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../../../services/theme-color-service";
@@ -9,9 +9,9 @@ import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 import "../../../components/button-icon";
 import "../../../components/accordion-checkbox";
 
-import { ElementMixin } from "../../../models/element-mixin";
+import { BaseComponent } from "../../../components/base-component";
 
-export class ThemeSwitcher extends ElementMixin(LitElement) {
+export class ThemeSwitcher extends BaseComponent {
   static properties = {
     initialTheme: { type: String },
     theme: { type: String },

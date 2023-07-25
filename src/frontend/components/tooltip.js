@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { Directive, directive } from "lit/directive.js";
 import { render } from "lit";
 
@@ -19,9 +19,9 @@ import {
 const enterEvents = ["pointerenter", "focus"];
 const leaveEvents = ["pointerleave", "blur", "keydown", "click"];
 
-import { ElementMixin } from "../models/element-mixin";
+import { BaseComponent } from "./base-component";
 
-export class Tooltip extends ElementMixin(LitElement) {
+export class Tooltip extends BaseComponent {
   static properties = {
     showing: { reflect: true, type: Boolean },
     offset: { type: Number },

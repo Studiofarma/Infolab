@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service.js";
@@ -10,9 +10,9 @@ import { ThemeCSSVariables } from "../../../enums/theme-css-variables.js";
 
 import "./message-button-option.js";
 
-import { ElementMixin } from "../../../models/element-mixin";
+import { BaseComponent } from "../../../components/base-component";
 
-export class MessageOptions extends ElementMixin(LitElement) {
+export class MessageOptions extends BaseComponent {
   static get properties() {
     return {
       message: { type: Object },

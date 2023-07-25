@@ -1,4 +1,4 @@
-import { html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
@@ -7,9 +7,7 @@ import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
 import { InputField } from "./input-field";
 
-import { ElementMixin } from "../models/element-mixin";
-
-export class InputWithIcon extends ElementMixin(InputField) {
+export class InputWithIcon extends InputField {
   static properties = {
     iconName: { type: String },
     iconTooltipText: { type: String },

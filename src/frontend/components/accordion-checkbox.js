@@ -1,15 +1,15 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
 import { IconNames } from "../enums/icon-names";
 import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
-import { ElementMixin } from "../models/element-mixin";
+import { BaseComponent } from "./base-component";
 
 import "./button-icon";
 
-export class AccordionCheckBox extends ElementMixin(LitElement) {
+export class AccordionCheckBox extends BaseComponent {
   static properties = {
     IsSelectionListOpened: { type: Boolean },
     placeholder: { type: String },

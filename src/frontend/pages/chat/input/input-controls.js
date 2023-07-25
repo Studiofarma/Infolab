@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../../../services/theme-color-service";
@@ -14,9 +14,9 @@ import "./emoji-picker";
 const emojiPickerBottomOffset = 90;
 const enterKey = "Enter";
 
-import { ElementMixin } from "../../../models/element-mixin";
+import { BaseComponent } from "../../../components/base-component";
 
-export class InputControls extends ElementMixin(LitElement) {
+export class InputControls extends BaseComponent {
   static properties = {
     message: "",
     isEmojiPickerOpen: false,

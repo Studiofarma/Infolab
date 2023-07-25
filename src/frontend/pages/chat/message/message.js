@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 
@@ -12,9 +12,9 @@ import "../../../components/popover";
 import "./message-content";
 import "./message-menu-popover";
 
-import { ElementMixin } from "../../../models/element-mixin";
+import { BaseComponent } from "../../../components/base-component";
 
-export class Message extends ElementMixin(LitElement) {
+export class Message extends BaseComponent {
   static properties = {
     messages: { type: Array },
     message: { type: Object },

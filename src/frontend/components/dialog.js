@@ -1,12 +1,12 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
-import { ElementMixin } from "../models/element-mixin";
-export class Dialog extends ElementMixin(LitElement) {
+import { BaseComponent } from "./base-component";
+export class Dialog extends BaseComponent {
   static properties = {
     isOpened: { type: Boolean },
     type: { type: String },

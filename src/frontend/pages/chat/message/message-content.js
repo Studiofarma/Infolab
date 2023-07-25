@@ -1,4 +1,4 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
@@ -7,9 +7,9 @@ import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
-import { ElementMixin } from "../../../models/element-mixin";
+import { BaseComponent } from "../../../components/base-component";
 
-export class MessageContent extends ElementMixin(LitElement) {
+export class MessageContent extends BaseComponent {
   static properties = {
     message: { type: Object },
     activeChatName: { type: String },

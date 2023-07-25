@@ -1,11 +1,11 @@
-import { LitElement, html, css, adoptStyles } from "lit";
+import { html, css } from "lit";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
-import { ElementMixin } from "../../../models/element-mixin";
+import { BaseComponent } from "../../../components/base-component";
 
-export class EmptyMessages extends ElementMixin(LitElement) {
+export class EmptyMessages extends BaseComponent {
   static styles = css`
     * {
       ${ThemeColorService.getThemeVariables()};

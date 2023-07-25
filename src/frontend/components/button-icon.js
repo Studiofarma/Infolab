@@ -1,4 +1,4 @@
-import { LitElement, html, css, unsafeCSS, adoptStyles } from "lit";
+import { html, css, unsafeCSS } from "lit";
 import { when } from "lit/directives/when.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
@@ -8,9 +8,8 @@ import { ThemeCSSVariables } from "../enums/theme-css-variables";
 import "./icon";
 import "./tooltip";
 
-import { ElementMixin } from "../models/element-mixin";
-
-export class ButtonIcon extends ElementMixin(LitElement) {
+import { BaseComponent } from "./base-component";
+export class ButtonIcon extends BaseComponent {
   static properties = {
     content: { type: String },
     color: { type: String },
