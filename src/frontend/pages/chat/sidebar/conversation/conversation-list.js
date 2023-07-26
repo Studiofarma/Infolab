@@ -490,7 +490,7 @@ class ConversationList extends LitElement {
   }
 
   updateLastMessage(message) {
-    let conversation = this.findConversationByRoomName(message.roomName);
+    let conversation = this.getConversation(message.roomName);
 
     conversation.lastMessage = {
       content: message.content,
@@ -508,7 +508,7 @@ class ConversationList extends LitElement {
   }
 
   incrementUnreadMessageCounter(message) {
-    let conversation = this.findConversationByRoomName(message.roomName);
+    let conversation = this.getConversation(message.roomName);
 
     conversation.unreadMessages += 1;
 
@@ -521,7 +521,7 @@ class ConversationList extends LitElement {
   }
 
   unsetUnreadMessages(conversationRoomName) {
-    let conversation = this.findConversationByRoomName(conversationRoomName);
+    let conversation = this.getConversation(conversationRoomName);
 
     conversation.unreadMessages = 0;
 
@@ -640,7 +640,7 @@ class ConversationList extends LitElement {
     return this.conversationList[index];
   }
 
-  findConversationByRoomName(roomName) {
+  getConversation(roomName) {
     let index = this.conversationList.findIndex(
       (conv) => conv.roomName === roomName
     );
