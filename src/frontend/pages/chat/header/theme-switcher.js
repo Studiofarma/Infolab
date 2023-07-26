@@ -25,7 +25,7 @@ export class ThemeSwitcher extends BaseComponent {
     this.initialTheme = "";
 
     // Refs
-    this.accordionCheckBoxRef = createRef();
+    this.comboBoxRef = createRef();
   }
 
   static styles = css`
@@ -72,7 +72,7 @@ export class ThemeSwitcher extends BaseComponent {
     return html`
       <il-combo-box
         placeholder="Tema"
-        ${ref(this.accordionCheckBoxRef)}
+        ${ref(this.comboBoxRef)}
         @selected-item=${this.selectThemeHandler}
       >
         <div slot="current">
@@ -111,7 +111,7 @@ export class ThemeSwitcher extends BaseComponent {
   // Getters & Setters
 
   setIsThemesSelectionOpened(value) {
-    this.accordionCheckBoxRef.value?.setIsSelectionListOpened(value);
+    this.comboBoxRef.value?.setIsSelectionListOpened(value);
   }
 
   setTheme(value) {
@@ -153,6 +153,10 @@ export class ThemeSwitcher extends BaseComponent {
 
     this.theme = themeName;
     ThemeColorService.setCurrentThemeName(themeName);
+
+    // closing the combo box
+
+    this.setIsThemesSelectionOpened(false);
 
     document.dispatchEvent(ThemeColorService.changeThemeEvent);
   }
