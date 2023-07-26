@@ -84,8 +84,10 @@ export class ChatHeader extends BaseComponent {
     }
 
     .profile-modal {
-      width: 700px;
-      height: fit-content;
+      width: 400px;
+      max-width: 100%;
+      height: 90vh;
+      overflow-y: hidden;
     }
   `;
 

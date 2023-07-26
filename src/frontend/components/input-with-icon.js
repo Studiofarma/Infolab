@@ -21,6 +21,7 @@ export class InputWithIcon extends InputField {
   static styles = css`
     * {
       ${ThemeColorService.getThemeVariables()};
+      box-sizing: border-box;
     }
 
     div {

@@ -30,7 +30,7 @@ export class ComboBox extends BaseComponent {
 
     .container {
       position: relative;
-      width: 300px;
+      width: 100%;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -39,7 +39,7 @@ export class ComboBox extends BaseComponent {
     .current {
       position: relative;
       width: 100%;
-      padding: 10px 15px;
+      padding: 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
