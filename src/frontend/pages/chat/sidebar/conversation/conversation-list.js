@@ -490,7 +490,7 @@ class ConversationList extends LitElement {
   }
 
   updateLastMessage(message) {
-    let conversation = this.getConversation(message.roomName);
+    let conversation = this.findConversationByRoomName(message.roomName);
 
     conversation.lastMessage = {
       content: message.content,
@@ -508,7 +508,7 @@ class ConversationList extends LitElement {
   }
 
   incrementUnreadMessageCounter(message) {
-    let conversation = this.getConversation(message.roomName);
+    let conversation = this.findConversationByRoomName(message.roomName);
 
     conversation.unreadMessages += 1;
 
@@ -521,7 +521,7 @@ class ConversationList extends LitElement {
   }
 
   unsetUnreadMessages(conversationRoomName) {
-    let conversation = this.getConversation(conversationRoomName);
+    let conversation = this.findConversationByRoomName(conversationRoomName);
 
     conversation.unreadMessages = 0;
 
@@ -640,21 +640,20 @@ class ConversationList extends LitElement {
     return this.conversationList[index];
   }
 
-  getConversation(roomName) {
-    let index = this.conversationList.findIndex(
-      (conv) => conv.roomName === roomName
+  findConversationByRoomName(roomName) {
+    const allConversations = [
+      ...this.conversationList,
+      ...this.newConversationList,
+    ];
+    const conversationListLength = this.conversationList.length;
+
+    const index = allConversations.findIndex(
+      (conversation) => conversation.roomName === roomName
     );
-    if (index === -1) {
-      index = this.newConversationList.findIndex(
-        (conv) => conv.roomName === roomName
-      );
 
-      if (index === -1) return;
-
-      return this.newConversationList[index];
-    }
-
-    return this.conversationList[index];
+    return index > conversationListLength - 1
+      ? this.newConversationList[index - conversationListLength]
+      : this.conversationList[index];
   }
 
   isInConversationList(roomName) {
