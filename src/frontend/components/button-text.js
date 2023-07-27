@@ -1,10 +1,12 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
-export class ButtonText extends LitElement {
+import { BaseComponent } from "./base-component";
+
+export class ButtonText extends BaseComponent {
   static get properties() {
     return {
       text: { type: String },
