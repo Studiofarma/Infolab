@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { html, css } from "lit";
 import { when } from "lit/directives/when.js";
 
 import { CookieService } from "../../../services/cookie-service";
@@ -7,7 +7,9 @@ import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
-export class MessageContent extends LitElement {
+import { BaseComponent } from "../../../components/base-component";
+
+export class MessageContent extends BaseComponent {
   static properties = {
     message: { type: Object },
     activeChatName: { type: String },
@@ -63,7 +65,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: -1px;
       right: -13px;
-      border-top: 11px solid ${ThemeCSSVariables.messageSenderBg};
+      border-top: 11px solid ${ThemeCSSVariables.boxShadowSecondary};
       border-left: 0px solid transparent;
       border-right: 12px solid transparent;
       filter: blur(0.8px);
@@ -96,7 +98,7 @@ export class MessageContent extends LitElement {
       position: absolute;
       top: -1px;
       left: -13px;
-      border-top: 11px solid ${ThemeCSSVariables.messageReceiverBg};
+      border-top: 11px solid ${ThemeCSSVariables.boxShadowSecondary};
       border-right: 0px solid transparent;
       border-left: 12px solid transparent;
       filter: blur(0.8px);
@@ -140,7 +142,14 @@ export class MessageContent extends LitElement {
     .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: ${ThemeCSSVariables.timestampMessageText};
+    }
+
+    .sender .message-timestamp {
+      color: ${ThemeCSSVariables.timestampMessageTextSender};
+    }
+
+    .receiver .message-timestamp {
+      color: ${ThemeCSSVariables.timestampMessageTextReceiver};
     }
 
     .edited {

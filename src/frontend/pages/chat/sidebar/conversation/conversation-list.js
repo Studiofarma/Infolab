@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 import { repeat } from "lit/directives/repeat.js";
@@ -15,6 +15,7 @@ import "./conversation";
 import "../../../../components/input-search";
 import "../../../../components/button-text";
 import { ConversationDto } from "../../../../models/conversation-dto";
+import { BaseComponent } from "../../../../components/base-component";
 
 const arrowUp = "ArrowUp";
 const arrowDown = "ArrowDown";
@@ -22,7 +23,7 @@ const enter = "Enter";
 
 const noResult = html`<p class="no-result">Nessun risultato</p>`;
 
-class ConversationList extends LitElement {
+class ConversationList extends BaseComponent {
   static properties = {
     conversationList: { type: Array },
     newConversationList: { type: Array },

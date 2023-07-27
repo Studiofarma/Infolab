@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { html, css } from "lit";
 import { CookieService } from "../../../services/cookie-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
@@ -8,11 +8,13 @@ import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "../../../components/button-icon";
 
+import { BaseComponent } from "../../../components/base-component";
+
 const menuOptionLeft = "-73px";
 const menuOptionRight = "33px";
 const lastMenuOptionTop = "-86px";
 
-export class MessageMenuPopover extends LitElement {
+export class MessageMenuPopover extends BaseComponent {
   static properties = {
     messages: { type: Array },
     message: { type: Object },

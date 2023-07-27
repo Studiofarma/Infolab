@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 
@@ -12,7 +12,9 @@ import "../../../components/popover";
 import "./message-content";
 import "./message-menu-popover";
 
-export class Message extends LitElement {
+import { BaseComponent } from "../../../components/base-component";
+
+export class Message extends BaseComponent {
   static properties = {
     messages: { type: Array },
     message: { type: Object },
@@ -62,7 +64,14 @@ export class Message extends LitElement {
     .message-timestamp {
       text-align: end;
       font-size: 11px;
-      color: ${ThemeCSSVariables.timestampMessageText};
+    }
+
+    .message-body:has(.sender) .message-timestamp {
+      color: ${ThemeCSSVariables.timestampMessageTextSender};
+    }
+
+    .message-body:has(.receiver) .message-timestamp {
+      color: ${ThemeCSSVariables.timestampMessageTextReceiver};
     }
 
     .message-date {
@@ -70,6 +79,7 @@ export class Message extends LitElement {
       padding: 5px;
       border-radius: 6px;
       background-color: ${ThemeCSSVariables.datetimeMessageBg};
+      color: ${ThemeCSSVariables.datetimeMessageText};
     }
 
     il-message-menu-popover {

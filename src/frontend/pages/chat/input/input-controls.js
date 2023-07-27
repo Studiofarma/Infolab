@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../../../services/theme-color-service";
@@ -14,7 +14,9 @@ import "./emoji-picker";
 const emojiPickerBottomOffset = 90;
 const enterKey = "Enter";
 
-export class InputControls extends LitElement {
+import { BaseComponent } from "../../../components/base-component";
+
+export class InputControls extends BaseComponent {
   static properties = {
     message: "",
     isEmojiPickerOpen: false,
@@ -89,7 +91,6 @@ export class InputControls extends LitElement {
     }
 
     il-editor {
-      background-color: ${ThemeCSSVariables.editorBg};
       border-radius: 10px;
     }
   `;

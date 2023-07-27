@@ -37,4 +37,9 @@ export const IconNames = {
   undo: "mdiUndoVariant",
   redo: "mdiRedoVariant",
   circle: "mdiCircle",
+  sun: "mdiWhiteBalanceSunny",
+  moon: "mdiMoonWaningCrescent",
+  menuDown: "mdiMenuDown",
+  menuUp: "mdiMenuUp",
+  lightDark: "mdiThemeLightDark",
 };
