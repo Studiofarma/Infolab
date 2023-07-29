@@ -18,6 +18,7 @@ export class MessagesList extends LitElement {
     messages: { type: Array },
     activeChatName: { type: String },
     activeDescription: { type: String },
+    roomType: { type: String },
     usersList: { type: Array },
   };
 
@@ -99,6 +100,7 @@ export class MessagesList extends LitElement {
                 .messageIndex=${index}
                 .activeChatName=${this.activeChatName}
                 .activeDescription=${this.activeDescription}
+                .roomType=${this.roomType}
                 @il:message-copied=${(event) => {
                   this.dispatchEvent(new CustomEvent(event.type));
                 }}

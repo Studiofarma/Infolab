@@ -58,6 +58,7 @@ export class Chat extends BaseComponent {
     this.activeDescription = CookieService.getCookieByKey(
       CookieService.Keys.lastDescription
     );
+    this.roomType = "";
 
     window.addEventListener("resize", () => {
       this.scrollToBottom();
@@ -207,6 +208,7 @@ export class Chat extends BaseComponent {
                   .messages=${this.messages}
                   .activeChatName=${this.activeChatName}
                   .activeDescription=${this.activeDescription}
+                  .roomType=${this.roomType}
                   @il:message-forwarded=${this.openForwardMenu}
                   @il:went-to-chat=${this.wentToChatHandler}
                   @il:message-copied=${() =>
@@ -433,6 +435,7 @@ export class Chat extends BaseComponent {
 
     this.activeChatName = e.detail.conversation.roomName;
     this.activeDescription = e.detail.conversation.description;
+    this.roomType = e.detail.conversation.roomType;
 
     this.inputControlsRef?.value?.focusEditor();
   }

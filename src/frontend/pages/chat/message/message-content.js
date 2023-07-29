@@ -9,10 +9,12 @@ import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import { BaseComponent } from "../../../components/base-component";
 
+const roomTypeGroup = "GROUP";
 export class MessageContent extends BaseComponent {
   static properties = {
     message: { type: Object },
     activeChatName: { type: String },
+    roomType: { type: String },
     user: { type: Object },
   };
 
@@ -205,15 +207,13 @@ export class MessageContent extends BaseComponent {
             }
           >
             ${when(
-              this.activeChatName.indexOf(this.cookie.username) === -1,
+              this.roomType === roomTypeGroup,
               () => html` <p class="receiver-name">
                 ${when(
                   this.message.sender != this.cookie.username,
-                  () => this.user?.description,
-                  () => ""
+                  () => this.user?.description
                 )}
-              </p>`,
-              () => html``
+              </p>`
             )}
             ${when(
               !this.message.hasBeenDeleted,

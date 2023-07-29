@@ -458,6 +458,8 @@ class ConversationList extends BaseComponent {
             unreadMessages: room.unreadMessages,
             description: room.description,
             lastMessage: room.lastMessage || "",
+            visibility: room.visibility,
+            roomType: room.roomType,
           });
           this.conversationList = [...this.conversationList, conversation];
         }
@@ -542,6 +544,8 @@ class ConversationList extends BaseComponent {
         sender: null,
         timestamp: null,
       },
+      visibility: "PRIVATE",
+      roomType: "USER2USER",
     });
   }
 

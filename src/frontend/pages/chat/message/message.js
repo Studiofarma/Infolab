@@ -21,6 +21,7 @@ export class Message extends BaseComponent {
     messageIndex: { type: Number },
     activeChatName: { type: String },
     activeDescription: { type: String },
+    roomType: { type: String },
     userList: { type: Array },
     user: { type: Object },
   };
@@ -113,6 +114,7 @@ export class Message extends BaseComponent {
             : "receiver"}
           .message=${this.message}
           .activeChatName=${this.activeChatName}
+          .roomType=${this.roomType}
         ></il-message-content>
 
         ${when(
