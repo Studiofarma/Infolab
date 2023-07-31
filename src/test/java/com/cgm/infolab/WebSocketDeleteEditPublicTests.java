@@ -4,6 +4,7 @@ import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.helper.TestDbHelper;
+import com.cgm.infolab.helper.TestStompHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,11 +51,9 @@ public class WebSocketDeleteEditPublicTests {
     @LocalServerPort
     public Integer port;
     @Autowired
-    public TestRestTemplate rest;
-    @Autowired
     public TestDbHelper testDbHelper;
     @Autowired
-    public ObjectMapper objectMapper;
+    public TestStompHelper testStompHelper;
 
     WebSocketStompClient websocket;
 
@@ -65,15 +64,7 @@ public class WebSocketDeleteEditPublicTests {
     public void setupAll(){
         testDbHelper.clearDbExceptForGeneral();
 
-        websocket =
-                new WebSocketStompClient(
-                        new SockJsClient(
-                                List.of(new WebSocketTransport(new StandardWebSocketClient()))));
-
-        MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
-        messageConverter.setObjectMapper(objectMapper);
-
-        websocket.setMessageConverter(messageConverter);
+        websocket = testStompHelper.initWebsocket();
 
         testDbHelper.addUsers(user1, userBanana);
 
@@ -128,7 +119,7 @@ public class WebSocketDeleteEditPublicTests {
 
     @Test
     void whenDeletingMessageThroughWebsocket_deletionMessageIsReceived_andMessageIsActuallyDeleted() throws ExecutionException, InterruptedException, TimeoutException {
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
 
@@ -175,7 +166,7 @@ public class WebSocketDeleteEditPublicTests {
 
     @Test
     void whenDeletionFails_websocketReturnsNull() throws ExecutionException, InterruptedException, TimeoutException {
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
 
@@ -223,7 +214,7 @@ public class WebSocketDeleteEditPublicTests {
 
     @Test
     void whenSendingInvalidDto_toDeleteMessage_nullIsReturned_messageIsNotDeleted() throws ExecutionException, InterruptedException, TimeoutException {
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
 
@@ -309,7 +300,7 @@ public class WebSocketDeleteEditPublicTests {
 
     @Test
     void whenEditingMessageThroughWebsocket_editMessageIsReceived_andMessageIsActuallyEdited() throws ExecutionException, InterruptedException, TimeoutException {
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
 
@@ -356,7 +347,7 @@ public class WebSocketDeleteEditPublicTests {
 
     @Test
     void whenEditFails_websocketReturnsNull() throws ExecutionException, InterruptedException, TimeoutException {
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
 
@@ -404,7 +395,7 @@ public class WebSocketDeleteEditPublicTests {
 
     @Test
     void whenSendingInvalidDto_toEditMessage_nullIsReturned_messageIsNotEdited() throws ExecutionException, InterruptedException, TimeoutException {
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
 
@@ -488,43 +479,5 @@ public class WebSocketDeleteEditPublicTests {
 
                     Assertions.assertNull(received);
                 });
-    }
-
-    private StompSession getStompSession() throws InterruptedException, ExecutionException, TimeoutException {
-        String basicAuth = basicAuth(user1.getName().value(), "password1");
-
-        ResponseEntity<MyCsrfToken> csrfResponse = rest.exchange(
-                RequestEntity
-                        .get("/csrf")
-                        .header(HttpHeaders.AUTHORIZATION, basicAuth)
-                        .build(),
-                MyCsrfToken.class);
-
-        StompHeaders stompHeaders = new StompHeaders();
-        MyCsrfToken csrf = csrfResponse.getBody();
-        stompHeaders.add(csrf.headerName(), csrf.token());
-
-        WebSocketHttpHeaders headers = setCookies(csrfResponse);
-        StompSession session = websocket
-                .connectAsync(String.format("http://localhost:%d/chat?access_token=%s", port, encodedAuth("user1", "password1")), headers, stompHeaders, new StompSessionHandlerAdapter() {})
-                .get(1, TimeUnit.SECONDS);
-        return session;
-    }
-
-    private static String basicAuth(String user, String password) {
-        return String.format("Basic %s", encodedAuth(user, password));
-    }
-
-    private static String encodedAuth(String user, String password) {
-        return Base64.encodeBase64String(String.format("%s:%s", user, password).getBytes());
-    }
-
-    private static WebSocketHttpHeaders setCookies(ResponseEntity<MyCsrfToken> csrfResponse) {
-        String cookies = csrfResponse.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
-        assert cookies != null;
-        String sessionId = cookies.split(";")[0];
-        WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
-        headers.add(HttpHeaders.COOKIE, sessionId);
-        return headers;
     }
 }

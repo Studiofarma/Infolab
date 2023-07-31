@@ -5,6 +5,7 @@ import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.helper.TestDbHelper;
+import com.cgm.infolab.helper.TestStompHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,17 +46,13 @@ import static org.awaitility.Awaitility.await;
 class InfolabApplicationTests {
     @LocalServerPort
     public Integer port;
-
-    @Autowired
-    public TestRestTemplate rest;
-
     @Autowired
     public ChatMessageRepository chatMessageRepository;
 
     @Autowired
     public TestDbHelper testDbHelper;
     @Autowired
-    private ObjectMapper objectMapper;
+    private TestStompHelper testStompHelper;
 
     WebSocketStompClient websocket;
 
@@ -66,15 +63,7 @@ class InfolabApplicationTests {
     public void setupAll(){
         testDbHelper.clearDbExceptForGeneral();
 
-        websocket =
-            new WebSocketStompClient(
-                new SockJsClient(
-                        List.of(new WebSocketTransport(new StandardWebSocketClient()))));
-
-        MappingJackson2MessageConverter messageConverter = new MappingJackson2MessageConverter();
-        messageConverter.setObjectMapper(objectMapper);
-
-        websocket.setMessageConverter(messageConverter);
+        websocket = testStompHelper.initWebsocket();
 
         testDbHelper.addUsers(user1, userBanana);
 
@@ -83,7 +72,7 @@ class InfolabApplicationTests {
 
     @Test
     void whenSomeoneRegister_everyoneReceivesAJoinNotification() throws Exception {
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
         client.subscribe("/topic/public", new StompFrameHandler() {
@@ -108,7 +97,7 @@ class InfolabApplicationTests {
 
     @Test
     void whenInvalidDtoIsSent_toRegisterToWebSocket_nullIsReturned() throws Exception {
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
         client.subscribe("/topic/public", new StompFrameHandler() {
@@ -148,7 +137,7 @@ class InfolabApplicationTests {
     @Test
     void whenMessageIsSentInGeneral_thenItShouldBeSavedInTheDbAndTheMessageIsReceived() throws Exception {
 
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
         client.subscribe("/topic/public", new StompFrameHandler() {
@@ -181,7 +170,7 @@ class InfolabApplicationTests {
     @Test
     void whenInvalidDtoIsSent_inGeneral_nullIsReturned_messageIsNotSaved() throws Exception {
 
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
         client.subscribe("/topic/public", new StompFrameHandler() {
@@ -215,7 +204,7 @@ class InfolabApplicationTests {
 
     @Test
     void whenMessageIsSentInPrivateChat_thenMessageShouldBeSavedInDbAndReceivedByTheSenderAndByTheDestinationUser() throws Exception {
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessagesSender = new ArrayBlockingQueue<>(2);
         BlockingQueue<WebSocketMessageDto> receivedMessagesDestination = new ArrayBlockingQueue<>(2);
@@ -270,7 +259,7 @@ class InfolabApplicationTests {
     @Test
     void whenInvalidDtoIsSent_inPrivateRoom_nullIsReturned_messageIsNotSaved() throws Exception {
 
-        StompSession client = getStompSession();
+        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
 
         BlockingQueue<WebSocketMessageDto> receivedMessagesSender = new ArrayBlockingQueue<>(2);
         BlockingQueue<WebSocketMessageDto> receivedMessagesDestination = new ArrayBlockingQueue<>(2);
@@ -354,43 +343,5 @@ class InfolabApplicationTests {
 
                     Assertions.assertEquals(0, messageEntities.size());
                 });
-    }
-
-    private StompSession getStompSession() throws InterruptedException, ExecutionException, TimeoutException {
-        String basicAuth = basicAuth(user1.getName().value(), "password1");
-
-        ResponseEntity<MyCsrfToken> csrfResponse = rest.exchange(
-                RequestEntity
-                    .get("/csrf")
-                    .header(HttpHeaders.AUTHORIZATION, basicAuth)
-                    .build(),
-                MyCsrfToken.class);
-
-        StompHeaders stompHeaders = new StompHeaders();
-        MyCsrfToken csrf = csrfResponse.getBody();
-        stompHeaders.add(csrf.headerName(), csrf.token());
-
-        WebSocketHttpHeaders headers = setCookies(csrfResponse);
-        StompSession session = websocket
-            .connectAsync(String.format("http://localhost:%d/chat?access_token=%s", port, encodedAuth("user1", "password1")), headers, stompHeaders, new StompSessionHandlerAdapter() {})
-            .get(1, TimeUnit.SECONDS);
-        return session;
-    }
-
-    private static String basicAuth(String user, String password) {
-        return String.format("Basic %s", encodedAuth(user, password));
-    }
-
-    private static String encodedAuth(String user, String password) {
-        return Base64.encodeBase64String(String.format("%s:%s", user, password).getBytes());
-    }
-
-    private static WebSocketHttpHeaders setCookies(ResponseEntity<MyCsrfToken> csrfResponse) {
-        String cookies = csrfResponse.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
-        assert cookies != null;
-        String sessionId = cookies.split(";")[0];
-        WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
-        headers.add(HttpHeaders.COOKIE, sessionId);
-        return headers;
     }
 }
