@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 
@@ -8,7 +8,9 @@ import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
 import "./button-icon";
 
-export class InputField extends LitElement {
+import { BaseComponent } from "./base-component";
+
+export class InputField extends BaseComponent {
   static get properties() {
     return {
       placeholder: "",
@@ -40,6 +42,7 @@ export class InputField extends LitElement {
       height: 40px;
       padding: 5px 10px;
       color: ${ThemeCSSVariables.inputText};
+      background-color: ${ThemeCSSVariables.inputBackground};
       border: none;
       outline: none;
       font-size: 15pt;

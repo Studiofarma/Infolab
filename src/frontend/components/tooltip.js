@@ -1,4 +1,4 @@
-import { html, css, LitElement } from "lit";
+import { html, css } from "lit";
 import { Directive, directive } from "lit/directive.js";
 import { render } from "lit";
 
@@ -19,7 +19,9 @@ import {
 const enterEvents = ["pointerenter", "focus"];
 const leaveEvents = ["pointerleave", "blur", "keydown", "click"];
 
-export class Tooltip extends LitElement {
+import { BaseComponent } from "./base-component";
+
+export class Tooltip extends BaseComponent {
   static properties = {
     showing: { reflect: true, type: Boolean },
     offset: { type: Number },
@@ -92,14 +94,6 @@ export class Tooltip extends LitElement {
     this.showing = false;
     // Position offset
     this.offset = 4;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    // Setup target if needed
-    this.target ??= this.previousElementSibling;
-    // Ensure hidden at start
-    this.finishHide();
   }
 
   // Target for which to show tooltip

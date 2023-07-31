@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { when } from "lit/directives/when.js";
 import { createRef, ref } from "lit/directives/ref.js";
 
@@ -13,6 +13,8 @@ import { IconNames } from "../../enums/icon-names";
 import { TooltipTexts } from "../../enums/tooltip-texts";
 import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 
+import { BaseComponent } from "../../components/base-component";
+
 import "./message/message";
 import "../../components/icon";
 import "../../components/modal";
@@ -24,7 +26,7 @@ import "./message/messages-list";
 import "../../components/snackbar";
 import "../../components/button-icon";
 
-export class Chat extends LitElement {
+export class Chat extends BaseComponent {
   static properties = {
     stompClient: {},
     messages: [],
@@ -140,6 +142,7 @@ export class Chat extends LitElement {
 
     .deletion-confirmation {
       padding: 10px;
+      color: ${ThemeCSSVariables.text};
     }
 
     .deletion-confirmation-buttons {
@@ -181,6 +184,7 @@ export class Chat extends LitElement {
               ${ref(this.conversationListRef)}
               id="#sidebar"
               class="conversation-list"
+              activeChatName=${this.activeChatName}
               @il:messages-fetched=${this.fetchMessages}
               @il:conversation-changed=${(event) => {
                 this.setActiveChat(event);
@@ -379,7 +383,9 @@ export class Chat extends LitElement {
   wentToChatHandler(event) {
     this.conversationListRef.value?.changeRoom(
       new CustomEvent(event.type),
-      this.conversationListRef.value?.findConversation(event.detail.user)
+      this.conversationListRef.value?.findConversationByUsername(
+        event.detail.user
+      )
     );
   }
 
@@ -551,6 +557,13 @@ export class Chat extends LitElement {
       }
 
       this.updateLastMessageInConversationList(message);
+
+      // set the message as unread:
+
+      if (this.login.username !== message.sender) {
+        // the counter won't be update if you are the sender
+        this.conversationListRef.value?.incrementUnreadMessageCounter(message);
+      }
     }
 
     this.messageNotification(message);

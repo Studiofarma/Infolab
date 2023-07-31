@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
 import { UsersService } from "../../../services/users-service";
@@ -9,13 +9,16 @@ import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "../../../components/avatar";
 import "../../../components/button-text";
-import "../../../components/icon";
+import "../../../components/button-icon";
 import "../../../components/snackbar";
 import "../../../components/input-with-icon";
+import "./theme-switcher";
+
+import { BaseComponent } from "../../../components/base-component";
 
 const maxLength = 30;
 
-export class profileSettings extends LitElement {
+export class profileSettings extends BaseComponent {
   static properties = {
     isFocused: { type: Boolean },
     imagePath: { type: String },
@@ -34,6 +37,7 @@ export class profileSettings extends LitElement {
     this.inputFileRef = createRef();
     this.snackbarRef = createRef();
     this.avatarRef = createRef();
+    this.themeSwitcherRef = createRef();
   }
 
   static styles = css`
@@ -42,18 +46,27 @@ export class profileSettings extends LitElement {
       padding: 0;
       box-sizing: border-box;
       ${ThemeColorService.getThemeVariables()};
+      color: ${ThemeCSSVariables.text};
+    }
+
+    main {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
     }
 
     header h2 {
       text-align: center;
+      color: ${ThemeCSSVariables.text};
     }
 
     section {
-      display: flex;
-      align-items: center;
-      gap: 30px;
-      padding: 2em;
-      margin-bottom: 50px;
+      overflow-y: auto;
+      flex-grow: 1;
+      padding: 0px 4px 60px 4px;
     }
 
     .avatarContainer {
@@ -68,12 +81,14 @@ export class profileSettings extends LitElement {
       width: 100%;
       border: none;
       outline: none;
-      padding: 5px 10px;
       border-radius: 8px;
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 5px 0px;
+      gap: 10px;
       cursor: pointer;
+      background: ${ThemeCSSVariables.buttonBg};
       color: ${ThemeCSSVariables.actionText};
     }
 
@@ -82,42 +97,49 @@ export class profileSettings extends LitElement {
     }
 
     .fieldset {
-      flex-grow: 1;
+      max-width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 15px 0px;
+      overflow-x: hidden;
     }
 
-    p {
+    .fieldset p {
       display: block;
-      font-size: 20px;
-      margin-bottom: 15px;
+      font-size: 15px;
+      color: ${ThemeCSSVariables.text};
     }
 
-    .inputContainer {
-      position: relative;
-    }
-
-    .inputContainer il-icon {
-      position: absolute;
-      transform: translateY(-50%);
-      top: 50%;
-      right: 5px;
-      transition: 0.5s;
-      cursor: pointer;
-    }
-
-    .inputContainer input:focus ~ il-icon {
-      display: none;
+    .fieldset > * {
+      width: 100%;
     }
 
     footer {
+      width: 100%;
+      padding: 10px 0px;
+      background: ${ThemeCSSVariables.dialogBg};
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 1000;
       position: absolute;
       bottom: 0px;
       left: 0px;
-      width: 100%;
-      display: flex;
-      justify-content: end;
-      align-items: center;
-      gap: 10px;
-      padding: 1em 2em;
+    }
+
+    ::-webkit-scrollbar {
+      width: 4px;
+      margin-left: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background-color: none;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: ${ThemeCSSVariables.scrollbar};
     }
   `;
 
@@ -131,11 +153,11 @@ export class profileSettings extends LitElement {
 
   render() {
     return html`
-      <header>
-        <h2>Personalizzazione profilo</h2>
-      </header>
+      <main>
+        <header>
+          <h2>Personalizzazione profilo</h2>
+        </header>
 
-      <section>
         <div class="avatarContainer">
           <il-avatar
             .user=${this.user}
@@ -150,10 +172,10 @@ export class profileSettings extends LitElement {
               this.inputFileRef.value.click();
             }}
           >
-            <il-icon
+            <il-button-icon
               @click=${() => this.usernameInputRef.value.focus()}
-              name=${IconNames.update}
-            ></il-icon>
+              content=${IconNames.update}
+            ></il-button-icon>
             Carica immagine
           </button>
           <input
@@ -164,31 +186,40 @@ export class profileSettings extends LitElement {
           />
         </div>
 
-        <div class="fieldset">
-          <p>Nome Utente:</p>
+        <section>
+          <div class="fieldset">
+            <p>Nome Utente:</p>
 
-          <il-input-with-icon
-            ${ref(this.usernameInputRef)}
-            .iconName=${IconNames.pencil}
-            @input=${this.setUsername}
-            @il:icon-clicked=${this.focusAndSelectInput}
-            placeholder="Inserisci un nome utente"
-            value=${this.username}
-          ></il-input-with-icon>
-        </div>
-      </section>
+            <il-input-with-icon
+              ${ref(this.usernameInputRef)}
+              .iconName=${IconNames.pencil}
+              @input=${this.setUsername}
+              @il:icon-clicked=${this.focusAndSelectInput}
+              placeholder="Inserisci un nome utente"
+              value=${this.username}
+            ></il-input-with-icon>
+          </div>
 
-      <footer>
-        <il-button-text
-          text="Annulla"
-          color=${`${ThemeCSSVariables.buttonUndoBg}`}
-          @click=${this.restoreDefault}
-        ></il-button-text>
-        <il-button-text
-          text="Conferma"
-          @click=${this.confirmChanges}
-        ></il-button-text>
-      </footer>
+          <div class="fieldset">
+            <p>Preferenze:</p>
+            <il-theme-switcher
+              ${ref(this.themeSwitcherRef)}
+            ></il-theme-switcher>
+          </div>
+        </section>
+
+        <footer>
+          <il-button-text
+            text="Annulla"
+            color=${`${ThemeCSSVariables.buttonUndoBg}`}
+            @click=${this.restoreDefault}
+          ></il-button-text>
+          <il-button-text
+            text="Conferma"
+            @click=${this.confirmChanges}
+          ></il-button-text>
+        </footer>
+      </main>
 
       <il-snackbar ${ref(this.snackbarRef)}></il-snackbar>
     `;
@@ -229,11 +260,23 @@ export class profileSettings extends LitElement {
   }
 
   restoreDefault() {
+    // restoring profile
     this.username = this.currentUsername;
     this.usernameInputRef.value?.setInputValue(this.currentUsername);
 
     this.imagePath = this.currentAvatarURL;
     this.inputFileRef.value.value = this.currentAvatarURL;
+
+    // restoring theme
+    const restoredTheme = this.themeSwitcherRef.value?.getInitialTheme();
+
+    ThemeColorService.setCurrentThemeName(restoredTheme);
+
+    this.themeSwitcherRef.value?.setTheme(restoredTheme);
+
+    document.dispatchEvent(ThemeColorService.changeThemeEvent);
+
+    this.themeSwitcherRef.value?.setIsThemesSelectionOpened(false);
 
     this.closeMenu();
   }
@@ -258,6 +301,12 @@ export class profileSettings extends LitElement {
       this.dispatchEvent(new CustomEvent("il:new-avatar-set"));
       UsersService.setUserAvatar(this.imagePath);
     }
+
+    // confirming theme
+    this.themeSwitcherRef.value?.setIsThemesSelectionOpened(false);
+    this.themeSwitcherRef.value?.setInitialTheme(
+      ThemeColorService.getCurrentThemeName()
+    );
 
     this.closeMenu();
   }

@@ -1,11 +1,15 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
+
+import { ThemeColorService } from "../../../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../../../enums/theme-css-variables";
 
 const enterKey = "Enter";
 
-export class Editor extends LitElement {
+import { BaseComponent } from "../../../../components/base-component";
+
+export class Editor extends BaseComponent {
   static properties = {
     isFormattingMode: false,
   };
@@ -20,7 +24,15 @@ export class Editor extends LitElement {
   }
 
   static styles = css`
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      ${ThemeColorService.getThemeVariables()};
+    }
+
     #editor {
+      color: ${ThemeCSSVariables.text};
       background-color: ${ThemeCSSVariables.editorInputBg};
       flex: 1;
       padding: 20px;
