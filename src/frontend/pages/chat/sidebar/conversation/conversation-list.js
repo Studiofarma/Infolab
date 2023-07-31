@@ -642,10 +642,13 @@ class ConversationList extends BaseComponent {
   }
 
   findConversationByRoomName(roomName) {
-    const openConversation = this.findInOpenConversationList(roomName);
-    const newConversation = this.findInNewConversationList(roomName);
+    let conversation = this.findInOpenConversationList(roomName);
 
-    return openConversation ?? newConversation;
+    if (!conversation) {
+      conversation = this.findInNewConversationList(roomName);
+    }
+
+    return conversation;
   }
 
   findInOpenConversationList(roomName) {
