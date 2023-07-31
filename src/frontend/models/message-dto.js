@@ -1,3 +1,5 @@
+import { MessageStatuses } from "../enums/message-statuses";
+
 export class MessageDto {
   id = 0;
   content = "";
@@ -13,5 +15,13 @@ export class MessageDto {
     this.sender = obj.sender !== undefined ? obj.sender : "";
     this.roomName = obj.roomName !== undefined ? obj.roomName : "";
     this.status = obj.status !== undefined ? obj.status : "";
+  }
+
+  hasBeenDeleted() {
+    return this.status === MessageStatuses.deleted;
+  }
+
+  hasBeenEdited() {
+    return this.status === MessageStatuses.edited;
   }
 }

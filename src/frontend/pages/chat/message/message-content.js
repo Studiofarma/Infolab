@@ -6,7 +6,6 @@ import { HtmlParserService } from "./../../../services/html-parser-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
-import { MessageStatuses } from "../../../enums/message-statuses";
 
 import { BaseComponent } from "../../../components/base-component";
 
@@ -196,6 +195,8 @@ export class MessageContent extends BaseComponent {
   `;
 
   render() {
+    console.log(this.message.hasBeenDeleted());
+
     return html`
         <main>
           <div
@@ -217,7 +218,7 @@ export class MessageContent extends BaseComponent {
               () => html``
             )}
             ${when(
-              this.message.status !== MessageStatuses.deleted,
+              !this.message.hasBeenDeleted(),
               () => html`
                 <p class="message">
                   ${HtmlParserService.parseFromString(this.message.content)}
@@ -228,18 +229,18 @@ export class MessageContent extends BaseComponent {
 
             <div
               class=${
-                this.message.status === MessageStatuses.deleted
+                this.message.hasBeenDeleted()
                   ? "timestamp-deleted-container"
                   : "timestamp-edited-container"
               }
             >
               ${when(
-                this.message.status === MessageStatuses.edited,
+                this.message.hasBeenEdited(),
                 () => html`<p class="edited">Modificato</p>`,
                 () => html``
               )}
               ${when(
-                this.message.status === MessageStatuses.deleted,
+                this.message.hasBeenDeleted(),
                 () =>
                   html`<p class="deleted">
                     Questo messaggio è stato eliminato

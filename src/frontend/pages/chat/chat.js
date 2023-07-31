@@ -400,10 +400,10 @@ export class Chat extends BaseComponent {
   }
 
   deleteMessage() {
-    this.messages[this.indexToBeDeleted] = {
+    this.messages[this.indexToBeDeleted] = new MessageDto({
       ...this.messages[this.indexToBeDeleted],
       status: MessageStatuses.deleted,
-    };
+    });
     this.messagesListRef.value?.requestUpdate();
     this.setDeletionConfirmationDialogRefIsOpened(false);
   }
@@ -416,11 +416,11 @@ export class Chat extends BaseComponent {
     let message = event.detail.message;
     let index = event.detail.index;
 
-    this.messages[index] = {
+    this.messages[index] = new MessageDto({
       ...message,
       content: message.content,
       status: MessageStatuses.edited,
-    };
+    });
 
     if (index === this.messages.length - 1)
       this.updateLastMessageInConversationList(message);
