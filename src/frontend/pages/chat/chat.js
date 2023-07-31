@@ -188,6 +188,7 @@ export class Chat extends BaseComponent {
               ${ref(this.conversationListRef)}
               id="#sidebar"
               class="conversation-list"
+              activeChatName=${this.activeChatName}
               @il:messages-fetched=${this.fetchMessages}
               @il:conversation-changed=${(event) => {
                 this.setActiveChat(event);
@@ -390,7 +391,9 @@ export class Chat extends BaseComponent {
   wentToChatHandler(event) {
     this.conversationListRef.value?.changeRoom(
       new CustomEvent(event.type),
-      this.conversationListRef.value?.findConversation(event.detail.user)
+      this.conversationListRef.value?.findConversationByUsername(
+        event.detail.user
+      )
     );
   }
 
@@ -561,6 +564,13 @@ export class Chat extends BaseComponent {
         }
 
         this.updateLastMessageInConversationList(chatMessage);
+
+        // set the message as unread:
+
+        if (this.login.username !== chatMessage.sender) {
+          // the counter won't be update if you are the sender
+          this.conversationListRef.value?.incrementUnreadMessageCounter(chatMessage);
+        }
       }
 
       this.messageNotification(chatMessage);
