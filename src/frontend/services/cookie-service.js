@@ -7,7 +7,6 @@ export class CookieService {
     header: "header",
     token: "token",
     lastChat: "last-chat",
-    lastDescription: "last-description",
   };
 
   static getCookieByKey(name) {
@@ -34,17 +33,12 @@ export class CookieService {
 
     const lastChat = CookieService.getCookieByKey(CookieService.Keys.lastChat);
 
-    const lastDescription = CookieService.getCookieByKey(
-      CookieService.Keys.lastDescription
-    );
-
     let cookie = {
       username: username,
       password: password,
       header: header,
       token: token,
       lastChat: lastChat,
-      lastDescription: lastDescription,
       isValid: isValid,
     };
 

@@ -12,6 +12,7 @@ import "../../../components/popover";
 import "./message-content";
 import "./message-menu-popover";
 
+import { ConversationDto } from "../../../models/conversation-dto";
 import { BaseComponent } from "../../../components/base-component";
 
 export class Message extends BaseComponent {
@@ -20,7 +21,7 @@ export class Message extends BaseComponent {
     message: { type: Object },
     messageIndex: { type: Number },
     activeChatName: { type: String },
-    activeDescription: { type: String },
+    activeConversation: { type: ConversationDto },
     roomType: { type: String },
     userList: { type: Array },
     user: { type: Object },
@@ -114,7 +115,7 @@ export class Message extends BaseComponent {
             : "receiver"}
           .message=${this.message}
           .activeChatName=${this.activeChatName}
-          .roomType=${this.roomType}
+          .activeConversation=${this.activeConversation}
         ></il-message-content>
 
         ${when(

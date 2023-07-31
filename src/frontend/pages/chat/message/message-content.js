@@ -15,6 +15,7 @@ export class MessageContent extends BaseComponent {
   static properties = {
     message: { type: Object },
     activeChatName: { type: String },
+    activeConversation: { type: ConversationDto },
     roomType: { type: String },
     user: { type: Object },
   };
@@ -208,7 +209,8 @@ export class MessageContent extends BaseComponent {
             }
           >
             ${when(
-              this.roomType === ConversationDto.roomTypeEnum.group,
+              this.activeConversation?.roomType ===
+                ConversationDto.roomTypeEnum.group,
               () => html` <p class="receiver-name">
                 ${when(
                   this.message.sender != this.cookie.username,

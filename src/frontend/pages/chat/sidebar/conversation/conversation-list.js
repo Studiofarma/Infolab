@@ -301,15 +301,6 @@ class ConversationList extends BaseComponent {
     this.cookie.lastChat = value;
   }
 
-  getActiveDescription() {
-    return this.activeDescription;
-  }
-
-  setActiveDescription(value) {
-    this.activeDescription = value;
-    this.cookie.lastDescription = value;
-  }
-
   getConversationList() {
     return [...this.conversationList];
   }
@@ -396,12 +387,7 @@ class ConversationList extends BaseComponent {
       conversation.roomName
     );
 
-    CookieService.setCookieByKey(
-      CookieService.Keys.lastDescription,
-      conversation.description
-    );
     this.cookie.lastChat = conversation.roomName;
-    this.cookie.lastDescription = conversation.description;
 
     this.dispatchEvent(
       new CustomEvent("il:conversation-changed", {
