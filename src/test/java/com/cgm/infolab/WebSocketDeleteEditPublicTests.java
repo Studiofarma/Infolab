@@ -111,6 +111,19 @@ public class WebSocketDeleteEditPublicTests {
                 generalId,
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "4 Message in general");
+        testDbHelper.insertCustomMessage(
+                5,
+                user1Id,
+                generalId,
+                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
+                "5 Message in general");
+        testDbHelper.insertCustomMessage(
+                6,
+                user1Id,
+                generalId,
+                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
+                "6 Message in general");
+
     }
 
     @Test
@@ -209,6 +222,92 @@ public class WebSocketDeleteEditPublicTests {
     }
 
     @Test
+    void whenSendingInvalidDto_toDeleteMessage_nullIsReturned_messageIsNotDeleted() throws ExecutionException, InterruptedException, TimeoutException {
+        StompSession client = getStompSession();
+
+        BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
+
+        client.subscribe("/topic/public", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessages.add((WebSocketMessageDto) payload);
+                client.disconnect();
+            }
+        });
+
+        long messageId = 5;
+        ChatMessageEntity messageEntityBefore = testDbHelper
+                .getAllMessages()
+                .stream()
+                .filter(message -> message.getId() == messageId)
+                .toList()
+                .get(0);
+
+        WebSocketMessageDto webSocketChatMessage = WebSocketMessageDto.ofChat(ChatMessageDto.of(messageId));
+        client.send("/app/chat.delete", webSocketChatMessage);
+
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    ChatMessageEntity messageEntityAfter = testDbHelper
+                            .getAllMessages()
+                            .stream()
+                            .filter(message -> message.getId() == messageId)
+                            .toList()
+                            .get(0);
+
+                    Assertions.assertEquals(messageEntityBefore, messageEntityAfter);
+
+                    WebSocketMessageDto received = receivedMessages.poll();
+
+                    Assertions.assertNull(received);
+                });
+
+        WebSocketMessageDto webSocketEditMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageId));
+        client.send("/app/chat.delete", webSocketEditMessage);
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    ChatMessageEntity messageEntityAfter = testDbHelper
+                            .getAllMessages()
+                            .stream()
+                            .filter(message -> message.getId() == messageId)
+                            .toList()
+                            .get(0);
+
+                    Assertions.assertEquals(messageEntityBefore, messageEntityAfter);
+
+                    WebSocketMessageDto received = receivedMessages.poll();
+
+                    Assertions.assertNull(received);
+                });
+
+        WebSocketMessageDto webSocketJoinMessage = WebSocketMessageDto.ofJoin(ChatMessageDto.of(messageId));
+        client.send("/app/chat.delete", webSocketJoinMessage);
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    ChatMessageEntity messageEntityAfter = testDbHelper
+                            .getAllMessages()
+                            .stream()
+                            .filter(message -> message.getId() == messageId)
+                            .toList()
+                            .get(0);
+
+                    Assertions.assertEquals(messageEntityBefore, messageEntityAfter);
+
+                    WebSocketMessageDto received = receivedMessages.poll();
+
+                    Assertions.assertNull(received);
+                });
+    }
+
+    @Test
     void whenEditingMessageThroughWebsocket_editMessageIsReceived_andMessageIsActuallyEdited() throws ExecutionException, InterruptedException, TimeoutException {
         StompSession client = getStompSession();
 
@@ -284,6 +383,94 @@ public class WebSocketDeleteEditPublicTests {
 
         WebSocketMessageDto webSocketEditedMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageId, "Edit that fails"));
         client.send("/app/chat.edit", webSocketEditedMessage);
+
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    ChatMessageEntity messageEntityAfter = testDbHelper
+                            .getAllMessages()
+                            .stream()
+                            .filter(message -> message.getId() == messageId)
+                            .toList()
+                            .get(0);
+
+                    Assertions.assertEquals(messageEntityBefore, messageEntityAfter);
+
+                    WebSocketMessageDto received = receivedMessages.poll();
+
+                    Assertions.assertNull(received);
+                });
+    }
+
+    @Test
+    void whenSendingInvalidDto_toEditMessage_nullIsReturned_messageIsNotEdited() throws ExecutionException, InterruptedException, TimeoutException {
+        StompSession client = getStompSession();
+
+        BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
+
+        client.subscribe("/topic/public", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessages.add((WebSocketMessageDto) payload);
+                client.disconnect();
+            }
+        });
+
+        long messageId = 6;
+        ChatMessageEntity messageEntityBefore = testDbHelper
+                .getAllMessages()
+                .stream()
+                .filter(message -> message.getId() == messageId)
+                .toList()
+                .get(0);
+
+        WebSocketMessageDto webSocketChatMessage = WebSocketMessageDto.ofChat(ChatMessageDto.of(messageId, "Edit that fails"));
+        client.send("/app/chat.edit", webSocketChatMessage);
+
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    ChatMessageEntity messageEntityAfter = testDbHelper
+                            .getAllMessages()
+                            .stream()
+                            .filter(message -> message.getId() == messageId)
+                            .toList()
+                            .get(0);
+
+                    Assertions.assertEquals(messageEntityBefore, messageEntityAfter);
+
+                    WebSocketMessageDto received = receivedMessages.poll();
+
+                    Assertions.assertNull(received);
+                });
+
+        WebSocketMessageDto webSocketDeleteMessage = WebSocketMessageDto.ofDelete(ChatMessageDto.of(messageId, "Edit that fails"));
+        client.send("/app/chat.edit", webSocketDeleteMessage);
+
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    ChatMessageEntity messageEntityAfter = testDbHelper
+                            .getAllMessages()
+                            .stream()
+                            .filter(message -> message.getId() == messageId)
+                            .toList()
+                            .get(0);
+
+                    Assertions.assertEquals(messageEntityBefore, messageEntityAfter);
+
+                    WebSocketMessageDto received = receivedMessages.poll();
+
+                    Assertions.assertNull(received);
+                });
+
+        WebSocketMessageDto webSocketEditMessage = WebSocketMessageDto.ofJoin(ChatMessageDto.of(messageId, "Edit that fails"));
+        client.send("/app/chat.edit", webSocketEditMessage);
 
         await()
                 .atMost(1, TimeUnit.SECONDS)

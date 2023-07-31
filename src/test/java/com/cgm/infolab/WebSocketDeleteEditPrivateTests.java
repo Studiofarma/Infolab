@@ -111,6 +111,18 @@ public class WebSocketDeleteEditPrivateTests {
                 bananaUser1Id,
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "4 Message in banana-user1");
+        testDbHelper.insertCustomMessage(
+                5,
+                user1Id,
+                bananaUser1Id,
+                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
+                "5 Message in banana-user1");
+        testDbHelper.insertCustomMessage(
+                6,
+                user1Id,
+                bananaUser1Id,
+                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
+                "6 Message in banana-user1");
     }
 
     @Test
@@ -227,30 +239,62 @@ public class WebSocketDeleteEditPrivateTests {
         WebSocketMessageDto webSocketDeletedMessage = WebSocketMessageDto.ofDelete(ChatMessageDto.of(messageId));
         client.send("/app/chat.delete." + userBanana.getName().value(), webSocketDeletedMessage);
 
-        await()
-                .atMost(1, TimeUnit.SECONDS)
-                .untilAsserted(() -> {
-                    ChatMessageEntity messageEntityAfter = testDbHelper
-                            .getAllMessages()
-                            .stream()
-                            .filter(message -> message.getId() == messageId)
-                            .toList()
-                            .get(0);
+        assertMessageHasNotBeenDeletedAndReturnIsNull(receivedMessagesSender, receivedMessagesDestination, messageId, messageEntityBefore);
+    }
 
-                    Assertions.assertEquals(messageEntityBefore, messageEntityAfter);
+    @Test
+    void whenSendingInvalidDto_toDeleteMessage_nullIsReturned_messageIsNotDeleted() throws ExecutionException, InterruptedException, TimeoutException {
+        StompSession client = getStompSession();
 
-                    WebSocketMessageDto received = receivedMessagesSender.poll();
+        BlockingQueue<WebSocketMessageDto> receivedMessagesSender = new ArrayBlockingQueue<>(2);
+        BlockingQueue<WebSocketMessageDto> receivedMessagesDestination = new ArrayBlockingQueue<>(2);
 
-                    Assertions.assertNull(received);
-                });
+        client.subscribe("/queue/" + userBanana.getName().value(), new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
 
-        await()
-                .atMost(1, TimeUnit.SECONDS)
-                .untilAsserted(() -> {
-                    WebSocketMessageDto received = receivedMessagesDestination.poll();
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessagesDestination.add((WebSocketMessageDto) payload);
+            }
+        });
 
-                    Assertions.assertNull(received);
-                });
+        client.subscribe("/user/topic/me", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessagesSender.add((WebSocketMessageDto) payload);
+            }
+        });
+
+        long messageId = 5;
+        ChatMessageEntity messageEntityBefore = testDbHelper
+                .getAllMessages()
+                .stream()
+                .filter(message -> message.getId() == messageId)
+                .toList()
+                .get(0);
+
+        WebSocketMessageDto webSocketChatMessage = WebSocketMessageDto.ofChat(ChatMessageDto.of(messageId));
+        client.send("/app/chat.delete." + userBanana.getName().value(), webSocketChatMessage);
+
+        assertMessageHasNotBeenDeletedAndReturnIsNull(receivedMessagesSender, receivedMessagesDestination, messageId, messageEntityBefore);
+
+        WebSocketMessageDto webSocketEditMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageId));
+        client.send("/app/chat.delete." + userBanana.getName().value(), webSocketEditMessage);
+
+        assertMessageHasNotBeenDeletedAndReturnIsNull(receivedMessagesSender, receivedMessagesDestination, messageId, messageEntityBefore);
+
+        WebSocketMessageDto webSocketJoinMessage = WebSocketMessageDto.ofJoin(ChatMessageDto.of(messageId));
+        client.send("/app/chat.delete." + userBanana.getName().value(), webSocketJoinMessage);
+
+        assertMessageHasNotBeenDeletedAndReturnIsNull(receivedMessagesSender, receivedMessagesDestination, messageId, messageEntityBefore);
     }
 
     @Test
@@ -288,41 +332,7 @@ public class WebSocketDeleteEditPrivateTests {
         WebSocketMessageDto webSocketEditedMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageId, "New content."));
         client.send("/app/chat.edit." + userBanana.getName().value(), webSocketEditedMessage);
 
-        await()
-                .atMost(1, TimeUnit.SECONDS)
-                .untilAsserted(() -> {
-                    WebSocketMessageDto received = receivedMessagesSender.poll();
-
-                    Assertions.assertNotNull(received.getEdit());
-                    Assertions.assertEquals(webSocketEditedMessage.getEdit().getId(), received.getEdit().getId());
-                    Assertions.assertEquals(EDIT, received.getType());
-
-                    Assertions.assertNull(received.getChat());
-                    Assertions.assertNull(received.getDelete());
-
-                    ChatMessageEntity messageEntity = testDbHelper
-                            .getAllMessages()
-                            .stream()
-                            .filter(message -> message.getId() == messageId)
-                            .toList()
-                            .get(0);
-
-                    Assertions.assertEquals(EDITED, messageEntity.getStatus());
-                    Assertions.assertEquals("New content.", messageEntity.getContent());
-                });
-
-        await()
-                .atMost(1, TimeUnit.SECONDS)
-                .untilAsserted(() -> {
-                    WebSocketMessageDto received = receivedMessagesDestination.poll();
-
-                    Assertions.assertNotNull(received.getEdit());
-                    Assertions.assertEquals(webSocketEditedMessage.getEdit().getId(), received.getEdit().getId());
-                    Assertions.assertEquals(EDIT, received.getType());
-
-                    Assertions.assertNull(received.getChat());
-                    Assertions.assertNull(received.getDelete());
-                });
+        assertMessageHasNotBeenEditedAndReturnedIsNull(receivedMessagesSender, receivedMessagesDestination, messageId, webSocketEditedMessage);
     }
 
     @Test
@@ -367,6 +377,65 @@ public class WebSocketDeleteEditPrivateTests {
         WebSocketMessageDto webSocketEditedMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageId, "Trying to edit message"));
         client.send("/app/chat.edit." + userBanana.getName().value(), webSocketEditedMessage);
 
+        assertMessageHasNotBeenDeletedAndReturnIsNull(receivedMessagesSender, receivedMessagesDestination, messageId, messageEntityBefore);
+    }
+
+    @Test
+    void whenSendingInvalidDto_toEditMessage_nullIsReturned_messageIsNotEdited() throws ExecutionException, InterruptedException, TimeoutException {
+        StompSession client = getStompSession();
+
+        BlockingQueue<WebSocketMessageDto> receivedMessagesSender = new ArrayBlockingQueue<>(2);
+        BlockingQueue<WebSocketMessageDto> receivedMessagesDestination = new ArrayBlockingQueue<>(2);
+
+        client.subscribe("/queue/" + userBanana.getName().value(), new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessagesDestination.add((WebSocketMessageDto) payload);
+            }
+        });
+
+        client.subscribe("/user/topic/me", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessagesSender.add((WebSocketMessageDto) payload);
+            }
+        });
+
+        long messageId = 4;
+        ChatMessageEntity messageEntityBefore = testDbHelper
+                .getAllMessages()
+                .stream()
+                .filter(message -> message.getId() == messageId)
+                .toList()
+                .get(0);
+
+        WebSocketMessageDto webSocketChatMessage = WebSocketMessageDto.ofChat(ChatMessageDto.of(messageId, "Trying to edit message"));
+        client.send("/app/chat.edit." + userBanana.getName().value(), webSocketChatMessage);
+
+        assertMessageHasNotBeenDeletedAndReturnIsNull(receivedMessagesSender, receivedMessagesDestination, messageId, messageEntityBefore);
+
+        WebSocketMessageDto webSocketDeleteMessage = WebSocketMessageDto.ofDelete(ChatMessageDto.of(messageId, "Trying to edit message"));
+        client.send("/app/chat.edit." + userBanana.getName().value(), webSocketDeleteMessage);
+
+        assertMessageHasNotBeenDeletedAndReturnIsNull(receivedMessagesSender, receivedMessagesDestination, messageId, messageEntityBefore);
+
+        WebSocketMessageDto webSocketJoinMessage = WebSocketMessageDto.ofJoin(ChatMessageDto.of(messageId, "Trying to edit message"));
+        client.send("/app/chat.edit." + userBanana.getName().value(), webSocketJoinMessage);
+
+        assertMessageHasNotBeenDeletedAndReturnIsNull(receivedMessagesSender, receivedMessagesDestination, messageId, messageEntityBefore);
+    }
+
+    private void assertMessageHasNotBeenDeletedAndReturnIsNull(BlockingQueue<WebSocketMessageDto> receivedMessagesSender, BlockingQueue<WebSocketMessageDto> receivedMessagesDestination, long messageId, ChatMessageEntity messageEntityBefore) {
         await()
                 .atMost(1, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
@@ -390,6 +459,44 @@ public class WebSocketDeleteEditPrivateTests {
                     WebSocketMessageDto received = receivedMessagesDestination.poll();
 
                     Assertions.assertNull(received);
+                });
+    }
+
+    private void assertMessageHasNotBeenEditedAndReturnedIsNull(BlockingQueue<WebSocketMessageDto> receivedMessagesSender, BlockingQueue<WebSocketMessageDto> receivedMessagesDestination, long messageId, WebSocketMessageDto webSocketEditedMessage) {
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    WebSocketMessageDto received = receivedMessagesSender.poll();
+
+                    Assertions.assertNotNull(received.getEdit());
+                    Assertions.assertEquals(webSocketEditedMessage.getEdit().getId(), received.getEdit().getId());
+                    Assertions.assertEquals(EDIT, received.getType());
+
+                    Assertions.assertNull(received.getChat());
+                    Assertions.assertNull(received.getDelete());
+
+                    ChatMessageEntity messageEntity = testDbHelper
+                            .getAllMessages()
+                            .stream()
+                            .filter(message -> message.getId() == messageId)
+                            .toList()
+                            .get(0);
+
+                    Assertions.assertEquals(EDITED, messageEntity.getStatus());
+                    Assertions.assertEquals("New content.", messageEntity.getContent());
+                });
+
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    WebSocketMessageDto received = receivedMessagesDestination.poll();
+
+                    Assertions.assertNotNull(received.getEdit());
+                    Assertions.assertEquals(webSocketEditedMessage.getEdit().getId(), received.getEdit().getId());
+                    Assertions.assertEquals(EDIT, received.getType());
+
+                    Assertions.assertNull(received.getChat());
+                    Assertions.assertNull(received.getDelete());
                 });
     }
 

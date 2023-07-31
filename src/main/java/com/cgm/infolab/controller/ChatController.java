@@ -57,23 +57,42 @@ public class ChatController {
     @MessageMapping("/chat.register")
     @SendTo("/topic/public")
     public WebSocketMessageDto register(@Payload WebSocketMessageDto message, SimpMessageHeaderAccessor headerAccessor){
-        headerAccessor.getSessionAttributes().put("username", message.getJoin().getSender());
+        ChatMessageDto joinMessage = message.getJoin();
+        if (joinMessage == null) {
+            log.warn("Received WebSocketMessageDto has been ignored because it has join field equals to null");
+            return null;
+        }
+
+        headerAccessor.getSessionAttributes().put("username", joinMessage.getSender());
         return message;
     }
 
     @MessageMapping("/chat.send")
     @SendTo("/topic/public")
     public WebSocketMessageDto sendMessage(@Payload WebSocketMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
-        ChatMessageEntity messageEntity = chatService.saveMessageInDb(message.getChat(), Username.of(principal.getName()), RoomName.of("general"), null);
+        ChatMessageDto chatMessage = message.getChat();
+        if (chatMessage == null) {
+            log.warn("Received WebSocketMessageDto has been ignored because it has chat field equals to null");
+            return null;
+        }
+
+        ChatMessageEntity messageEntity =
+                chatService.saveMessageInDb(chatMessage, Username.of(principal.getName()), RoomName.of("general"), null);
         return WebSocketMessageDto.ofChat(FromEntitiesToDtosMapper.fromEntityToChatMessageDto(messageEntity));
     }
 
     @MessageMapping("/chat.delete")
     @SendTo("/topic/public")
-    public WebSocketMessageDto deleteMessage(@Payload WebSocketMessageDto messageDto, Principal principal) {
-        int rowsAffected = chatService.deleteMessageById(Username.of(principal.getName()), messageDto.getDelete().getId());
+    public WebSocketMessageDto deleteMessage(@Payload WebSocketMessageDto message, Principal principal) {
+        ChatMessageDto deleteMessage = message.getDelete();
+        if (deleteMessage == null) {
+            log.warn("Received WebSocketMessageDto has been ignored because it has delete field equals to null");
+            return null;
+        }
+
+        int rowsAffected = chatService.deleteMessageById(Username.of(principal.getName()), deleteMessage.getId());
         if (rowsAffected == 1) {
-            return messageDto;
+            return message;
         } else {
             return null;
         }
@@ -81,10 +100,16 @@ public class ChatController {
 
     @MessageMapping("/chat.edit")
     @SendTo("/topic/public")
-    public WebSocketMessageDto editMessage(@Payload WebSocketMessageDto messageDto, Principal principal) {
-        int rowsAffected = chatService.editMessageById(Username.of(principal.getName()), messageDto.getEdit().getId(), messageDto.getEdit().getContent());
+    public WebSocketMessageDto editMessage(@Payload WebSocketMessageDto message, Principal principal) {
+        ChatMessageDto editMessage = message.getEdit();
+        if (editMessage == null) {
+            log.warn("Received WebSocketMessageDto has been ignored because it has edit field equals to null");
+            return null;
+        }
+
+        int rowsAffected = chatService.editMessageById(Username.of(principal.getName()), editMessage.getId(), editMessage.getContent());
         if (rowsAffected == 1) {
-            return messageDto;
+            return message;
         } else {
             return null;
         }
@@ -99,7 +124,14 @@ public class ChatController {
             @Payload WebSocketMessageDto message,
             @DestinationVariable String destinationUser,
             SimpMessageHeaderAccessor headerAccessor,
-            Principal principal){
+            Principal principal) {
+
+        ChatMessageDto chatMessage = message.getChat();
+        if (chatMessage == null) {
+            log.warn("Received WebSocketMessageDto has been ignored because it has chat field equals to null");
+            return null;
+        }
+
         String username = (String) headerAccessor.getSessionAttributes().get("username");
         log.info(String.format("message from %s to %s", username, destinationUser));
         ChatMessageEntity messageEntity = chatService.saveMessageInDb(
@@ -109,6 +141,7 @@ public class ChatController {
                 Username.of(destinationUser)
         );
         return WebSocketMessageDto.ofChat(FromEntitiesToDtosMapper.fromEntityToChatMessageDto(messageEntity));
+
     }
 
     @MessageMapping("/chat.delete.{destinationUser}")
@@ -117,7 +150,13 @@ public class ChatController {
     public WebSocketMessageDto deleteMessagePrivateRoom(
             @Payload WebSocketMessageDto message,
             @DestinationVariable String destinationUser,
-            Principal principal){
+            Principal principal) {
+        ChatMessageDto deleteMessage = message.getDelete();
+        if (deleteMessage == null) {
+            log.warn("Received WebSocketMessageDto has been ignored because it has delete field equals to null");
+            return null;
+        }
+
         int rowsAffected = chatService.deleteMessageById(Username.of(principal.getName()), message.getDelete().getId());
         if (rowsAffected == 1) {
             return message;
@@ -132,7 +171,13 @@ public class ChatController {
     public WebSocketMessageDto editMessagePrivateRoom(
             @Payload WebSocketMessageDto message,
             @DestinationVariable String destinationUser,
-            Principal principal){
+            Principal principal) {
+        ChatMessageDto editMessage = message.getEdit();
+        if (editMessage == null) {
+            log.warn("Received WebSocketMessageDto has been ignored because it has edit field equals to null");
+            return null;
+        }
+        
         int rowsAffected = chatService.editMessageById(Username.of(principal.getName()), message.getEdit().getId(), message.getEdit().getContent());
         if (rowsAffected == 1) {
             return message;
