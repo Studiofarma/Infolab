@@ -8,7 +8,6 @@ import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Assertions;
@@ -106,6 +105,46 @@ class InfolabApplicationTests {
             .atMost(1, TimeUnit.SECONDS)
             .untilAsserted(() -> Assertions.assertEquals(joinMessage, receivedMessages.poll()));
     }
+
+    @Test
+    void whenInvalidDtoIsSent_toRegisterToWebSocket_nullIsReturned() throws Exception {
+        StompSession client = getStompSession();
+
+        BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
+        client.subscribe("/topic/public", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessages.add((WebSocketMessageDto) payload);
+            }
+        });
+
+        WebSocketMessageDto chatMessage = WebSocketMessageDto.ofChat(ChatMessageDto.of(null, Username.of("banana").value()));
+        client.send("/app/chat.register", chatMessage);
+
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> Assertions.assertNull(receivedMessages.poll()));
+
+        WebSocketMessageDto deleteMessage = WebSocketMessageDto.ofDelete(ChatMessageDto.of(null, Username.of("banana").value()));
+        client.send("/app/chat.register", deleteMessage);
+
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> Assertions.assertNull(receivedMessages.poll()));
+
+        WebSocketMessageDto editMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(null, Username.of("banana").value()));
+        client.send("/app/chat.register", editMessage);
+
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> Assertions.assertNull(receivedMessages.poll()));
+    }
+
     @Test
     void whenMessageIsSentInGeneral_thenItShouldBeSavedInTheDbAndTheMessageIsReceived() throws Exception {
 
@@ -137,6 +176,41 @@ class InfolabApplicationTests {
         List<ChatMessageEntity> messages = chatMessageRepository.getByRoomNameNumberOfMessages(RoomName.of("general"), 1, CursorEnum.NONE, null, Username.of("user1"));
         Assertions.assertEquals(1,messages.size());
         Assertions.assertEquals(sentMessage.getChat().getContent(),messages.get(0).getContent());
+    }
+
+    @Test
+    void whenInvalidDtoIsSent_inGeneral_nullIsReturned_messageIsNotSaved() throws Exception {
+
+        StompSession client = getStompSession();
+
+        BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
+        client.subscribe("/topic/public", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessages.add((WebSocketMessageDto) payload);
+            }
+        });
+
+        String messageText = "pippo not valid";
+        WebSocketMessageDto joinMessage = WebSocketMessageDto.ofJoin(ChatMessageDto.of(messageText, userBanana.getName().value()));
+        client.send("/app/chat.send", joinMessage);
+
+        assertMessageIsNotReceivedAndNotSavedToDbInPublicRoom(receivedMessages, messageText);
+
+        WebSocketMessageDto deleteMessage = WebSocketMessageDto.ofDelete(ChatMessageDto.of(messageText, userBanana.getName().value()));
+        client.send("/app/chat.send", deleteMessage);
+
+        assertMessageIsNotReceivedAndNotSavedToDbInPublicRoom(receivedMessages, messageText);
+
+        WebSocketMessageDto editMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageText, userBanana.getName().value()));
+        client.send("/app/chat.send", editMessage);
+
+        assertMessageIsNotReceivedAndNotSavedToDbInPublicRoom(receivedMessages, messageText);
     }
 
     @Test
@@ -193,6 +267,95 @@ class InfolabApplicationTests {
         Assertions.assertEquals(sentMessage.getChat().getContent(),messages.get(0).getContent());
     }
 
+    @Test
+    void whenInvalidDtoIsSent_inPrivateRoom_nullIsReturned_messageIsNotSaved() throws Exception {
+
+        StompSession client = getStompSession();
+
+        BlockingQueue<WebSocketMessageDto> receivedMessagesSender = new ArrayBlockingQueue<>(2);
+        BlockingQueue<WebSocketMessageDto> receivedMessagesDestination = new ArrayBlockingQueue<>(2);
+        client.subscribe("/queue/" + userBanana.getName().value(), new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessagesDestination.add((WebSocketMessageDto) payload);
+            }
+        });
+
+        client.subscribe("/user/topic/me", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return WebSocketMessageDto.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                receivedMessagesSender.add((WebSocketMessageDto) payload);
+            }
+        });
+
+        String messageText = "pippo not valid";
+        WebSocketMessageDto joinMessage = WebSocketMessageDto.ofJoin(ChatMessageDto.of(messageText, userBanana.getName().value()));
+        client.send("/app/chat.send." + userBanana.getName().value(), joinMessage);
+
+        assertMessageIsNotReceivedAndNotSavedToDbInPrivateRoom(receivedMessagesSender, receivedMessagesDestination, messageText);
+
+        WebSocketMessageDto deleteMessage = WebSocketMessageDto.ofDelete(ChatMessageDto.of(messageText, userBanana.getName().value()));
+        client.send("/app/chat.send." + userBanana.getName().value(), deleteMessage);
+
+        assertMessageIsNotReceivedAndNotSavedToDbInPrivateRoom(receivedMessagesSender, receivedMessagesDestination, messageText);
+
+        WebSocketMessageDto editMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageText, userBanana.getName().value()));
+        client.send("/app/chat.send." + userBanana.getName().value(), editMessage);
+
+        assertMessageIsNotReceivedAndNotSavedToDbInPrivateRoom(receivedMessagesSender, receivedMessagesDestination, messageText);
+    }
+
+    private void assertMessageIsNotReceivedAndNotSavedToDbInPrivateRoom(BlockingQueue<WebSocketMessageDto> receivedMessagesSender, BlockingQueue<WebSocketMessageDto> receivedMessagesDestination, String messageText) {
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    WebSocketMessageDto received = receivedMessagesSender.poll();
+                    Assertions.assertNull(received);
+                });
+
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    WebSocketMessageDto received = receivedMessagesDestination.poll();
+                    Assertions.assertNull(received);
+                });
+
+        List<ChatMessageEntity> messageEntities = testDbHelper
+                .getAllMessages()
+                .stream()
+                .filter(message -> message.getContent().equals(messageText))
+                .toList();
+
+        Assertions.assertEquals(0, messageEntities.size());
+    }
+
+    private void assertMessageIsNotReceivedAndNotSavedToDbInPublicRoom(BlockingQueue<WebSocketMessageDto> receivedMessages, String messageText) {
+        await()
+                .atMost(1, TimeUnit.SECONDS)
+                .untilAsserted(() -> {
+                    WebSocketMessageDto received = receivedMessages.poll();
+                    Assertions.assertNull(received);
+
+                    List<ChatMessageEntity> messageEntities = testDbHelper
+                            .getAllMessages()
+                            .stream()
+                            .filter(message -> message.getContent().equals(messageText))
+                            .toList();
+
+                    Assertions.assertEquals(0, messageEntities.size());
+                });
+    }
+
     private StompSession getStompSession() throws InterruptedException, ExecutionException, TimeoutException {
         String basicAuth = basicAuth(user1.getName().value(), "password1");
 
@@ -230,5 +393,4 @@ class InfolabApplicationTests {
         headers.add(HttpHeaders.COOKIE, sessionId);
         return headers;
     }
-
 }
