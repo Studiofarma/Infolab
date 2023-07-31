@@ -32,7 +32,7 @@ public class RoomApiController {
         List<RoomEntity> roomEntities = roomService.getRooms(date, Username.of(principal.getName()));
 
 
-        if (roomEntities.size() > 0) {
+        if (!roomEntities.isEmpty()) {
 
             roomDtos = roomEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
         } else {
