@@ -107,14 +107,24 @@ Cypress.Commands.add("clickOnTheLastOptionsMenu", () => {
     .click({ force: true });
 });
 
+/**
+ * IMPORTANT NOTE: do NOT use this function to click on a button that copies text.
+ * This because sometimes it will throw a "Document is not focused" exception, causing the test to fail.
+ * To avoid this problem use the function getOptionButton, then focus it and then call realClick function.
+ * Source: https://github.com/cypress-io/cypress/issues/18198#issuecomment-1003756021
+ */
 Cypress.Commands.add("clickOptionButton", (option) => {
-  cy.getLitElement(
-    "il-app, il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options"
-  )
+  cy.getOptionButton(option).click({ force: true });
+});
+
+Cypress.Commands.add("getOptionButton", (option) => {
+  return cy
+    .getLitElement(
+      "il-app, il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options"
+    )
     .last()
     .find("il-message-button-option")
     .shadow()
     .find("div")
-    .filter(`:contains("${option}")`)
-    .click({ force: true });
+    .filter(`:contains("${option}")`);
 });

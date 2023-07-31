@@ -86,7 +86,8 @@ describe("messages spec", () => {
     cy.sendTestMessages(1);
     cy.hoverOnTheLast();
     cy.clickOnTheLastOptionsMenu();
-    cy.clickOptionButton("Copia");
+    cy.getOptionButton("Copia").focus().realClick();
+
     // checking the clipboard content
     cy.window().then((win) => {
       win.navigator.clipboard.readText().then((text) => {
