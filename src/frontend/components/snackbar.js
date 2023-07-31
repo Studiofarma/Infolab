@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
@@ -7,7 +7,9 @@ import "./button-icon";
 import { IconNames } from "../enums/icon-names";
 import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
-export class Snackbar extends LitElement {
+import { BaseComponent } from "./base-component";
+
+export class Snackbar extends BaseComponent {
   constructor() {
     super();
 

@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 
@@ -11,7 +11,9 @@ import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
-export class ChatHeader extends LitElement {
+import { BaseComponent } from "../../../components/base-component";
+
+export class ChatHeader extends BaseComponent {
   static get properties() {
     return {
       otherUser: {},
@@ -82,8 +84,10 @@ export class ChatHeader extends LitElement {
     }
 
     .profile-modal {
-      width: 700px;
-      height: fit-content;
+      width: 400px;
+      max-width: 100%;
+      height: 90vh;
+      overflow-y: hidden;
     }
   `;
 

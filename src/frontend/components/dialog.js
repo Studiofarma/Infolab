@@ -1,11 +1,12 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 
 import { ThemeColorService } from "../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
-export class Dialog extends LitElement {
+import { BaseComponent } from "./base-component";
+export class Dialog extends BaseComponent {
   static properties = {
     isOpened: { type: Boolean },
     type: { type: String },
@@ -27,6 +28,7 @@ export class Dialog extends LitElement {
       width: fit-content;
       border: none;
       outline: none;
+      background-color: ${ThemeCSSVariables.dialogBg};
       box-shadow: ${ThemeCSSVariables.boxShadowSecondary} 0px 1px 4px;
       border-radius: 6px;
       padding: 8px;

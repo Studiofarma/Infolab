@@ -1,4 +1,4 @@
-import { LitElement, html, css } from "lit";
+import { html, css } from "lit";
 import { when } from "lit/directives/when.js";
 import { createRef, ref } from "lit/directives/ref.js";
 
@@ -15,6 +15,8 @@ import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 import { MessageStatuses } from "../../enums/message-statuses";
 import { WebSocketMessageTypes } from "../../enums/websocket-message-types";
 
+import { BaseComponent } from "../../components/base-component";
+
 import "./message/message";
 import "../../components/icon";
 import "../../components/modal";
@@ -28,7 +30,7 @@ import "../../components/button-icon";
 import { WebSocketMessageDto } from "../../models/websocket-message-dto";
 import { MessageDto } from "../../models/message-dto";
 
-export class Chat extends LitElement {
+export class Chat extends BaseComponent {
   static properties = {
     stompClient: {},
     messages: [],
@@ -144,6 +146,7 @@ export class Chat extends LitElement {
 
     .deletion-confirmation {
       padding: 10px;
+      color: ${ThemeCSSVariables.text};
     }
 
     .deletion-confirmation-buttons {

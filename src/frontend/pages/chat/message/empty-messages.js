@@ -1,9 +1,11 @@
-import { LitElement, css, html } from "lit";
+import { html, css } from "lit";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
-export class EmptyMessages extends LitElement {
+import { BaseComponent } from "../../../components/base-component";
+
+export class EmptyMessages extends BaseComponent {
   static styles = css`
     * {
       ${ThemeColorService.getThemeVariables()};

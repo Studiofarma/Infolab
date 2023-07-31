@@ -1,21 +1,28 @@
 import { css } from "lit";
 
-import { lightTheme } from "../enums/themes/lightTheme"
-import { darkTheme } from "../enums/themes/darkTheme"
-
+import { lightTheme } from "../enums/themes/lightTheme";
+import { darkTheme } from "../enums/themes/darkTheme";
 
 export class ThemeColorService {
+  static changeThemeEvent = new CustomEvent("change-theme");
+
+  static ThemesEnum = {
+    light: lightTheme,
+    dark: darkTheme,
+  };
+
+  static getCurrentThemeName() {
+    return sessionStorage.getItem("theme") ?? "light";
+  }
+
+  static setCurrentThemeName(value) {
+    sessionStorage.setItem("theme", value);
+  }
+
   static getCurrentTheme() {
-    // TODO: implementare il controllo del tema attuale dell'utente nel session storage e ritornarlo
-    const currentTheme = "light";
+    const currentTheme = this.getCurrentThemeName();
 
-    switch(currentTheme) {
-
-      case "light": return lightTheme;
-
-      case "dark": return darkTheme;
-
-    }
+    return this.ThemesEnum[currentTheme];
   }
 
   static getThemeVariables() {
