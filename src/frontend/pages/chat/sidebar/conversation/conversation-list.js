@@ -544,8 +544,6 @@ class ConversationList extends BaseComponent {
         sender: null,
         timestamp: null,
       },
-      visibility: "PRIVATE",
-      roomType: "USER2USER",
     });
   }
 

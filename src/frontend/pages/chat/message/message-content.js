@@ -5,11 +5,12 @@ import { CookieService } from "../../../services/cookie-service";
 import { HtmlParserService } from "./../../../services/html-parser-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
+import { ConversationDto } from "../../../models/conversation-dto";
+
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import { BaseComponent } from "../../../components/base-component";
 
-const roomTypeGroup = "GROUP";
 export class MessageContent extends BaseComponent {
   static properties = {
     message: { type: Object },
@@ -207,7 +208,7 @@ export class MessageContent extends BaseComponent {
             }
           >
             ${when(
-              this.roomType === roomTypeGroup,
+              this.roomType === ConversationDto.roomTypeEnum.group,
               () => html` <p class="receiver-name">
                 ${when(
                   this.message.sender != this.cookie.username,
