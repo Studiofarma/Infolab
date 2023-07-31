@@ -195,8 +195,6 @@ export class MessageContent extends BaseComponent {
   `;
 
   render() {
-    console.log(this.message.hasBeenDeleted());
-
     return html`
         <main>
           <div
@@ -208,13 +206,14 @@ export class MessageContent extends BaseComponent {
           >
             ${when(
               this.activeChatName.indexOf(this.cookie.username) === -1,
-              () => html` <p class="receiver-name">
-                ${when(
-                  this.message.sender != this.cookie.username,
-                  () => this.user?.description,
-                  () => ""
-                )}
-              </p>`,
+              () =>
+                html` <p class="receiver-name">
+                  ${when(
+                    this.message.sender != this.cookie.username,
+                    () => this.user?.description,
+                    () => ""
+                  )}
+                </p>`,
               () => html``
             )}
             ${when(

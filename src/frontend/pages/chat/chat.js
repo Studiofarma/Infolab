@@ -206,83 +206,86 @@ export class Chat extends BaseComponent {
             ${when(
               this.activeChatName === "",
               () => html`<il-empty-chat></il-empty-chat>`,
-              () => html` <il-messages-list
-                  ${ref(this.messagesListRef)}
-                  @scroll=${this.manageScrollButtonVisility}
-                  .messages=${this.messages}
-                  .activeChatName=${this.activeChatName}
-                  .activeDescription=${this.activeDescription}
-                  @il:message-forwarded=${this.openForwardMenu}
-                  @il:went-to-chat=${this.wentToChatHandler}
-                  @il:message-copied=${() =>
-                    this.snackbarRef.value.openSnackbar(
-                      "MESSAGGIO COPIATO",
-                      "info",
-                      2000
-                    )}
-                  @il:message-edited=${this.editMessage}
-                  @il:message-deleted=${this.askDeletionConfirmation}
-                ></il-messages-list>
+              () =>
+                html` <il-messages-list
+                    ${ref(this.messagesListRef)}
+                    @scroll=${this.manageScrollButtonVisility}
+                    .messages=${this.messages}
+                    .activeChatName=${this.activeChatName}
+                    .activeDescription=${this.activeDescription}
+                    @il:message-forwarded=${this.openForwardMenu}
+                    @il:went-to-chat=${this.wentToChatHandler}
+                    @il:message-copied=${() =>
+                      this.snackbarRef.value.openSnackbar(
+                        "MESSAGGIO COPIATO",
+                        "info",
+                        2000
+                      )}
+                    @il:message-edited=${this.editMessage}
+                    @il:message-deleted=${this.askDeletionConfirmation}
+                  ></il-messages-list>
 
-                <il-modal
-                  @modal-closed=${() => this.requestUpdate()}
-                  ${ref(this.forwardListRef)}
-                >
-                  <div class="forward-list">
-                    ${when(
-                      this.getForwardListRefIsOpened(),
-                      () =>
-                        html`<il-conversation-list
-                          id="forwardList"
-                          isForwardList="true"
-                          @il:multiple-forwarded=${this.multipleForward}
-                          @il:conversation-changed=${(event) => {
-                            this.forwardMessage(event);
-                            this.focusOnEditor(event);
-                          }}
-                        ></il-conversation-list>`
-                    )}
-                  </div>
-                </il-modal>
-
-                <il-modal
-                  ${ref(this.deletionConfirmationDialogRef)}
-                  @modal-closed=${() => this.requestUpdate()}
-                >
-                  <div class="deletion-confirmation">
-                    <h3>Eliminazione messaggio</h3>
-                    <br />
-                    <p>Confermare l'eliminazione del messaggio?</p>
-                    <br />
-                    <div class="deletion-confirmation-buttons">
-                      <il-button-text
-                        text="Annulla"
-                        @click=${() =>
-                          this.setDeletionConfirmationDialogRefIsOpened(false)}
-                      ></il-button-text>
-                      <il-button-text
-                        color="#DC2042"
-                        @click=${this.deleteMessage}
-                        text="Elimina"
-                      ></il-button-text>
+                  <il-modal
+                    @modal-closed=${() => this.requestUpdate()}
+                    ${ref(this.forwardListRef)}
+                  >
+                    <div class="forward-list">
+                      ${when(
+                        this.getForwardListRefIsOpened(),
+                        () =>
+                          html`<il-conversation-list
+                            id="forwardList"
+                            isForwardList="true"
+                            @il:multiple-forwarded=${this.multipleForward}
+                            @il:conversation-changed=${(event) => {
+                              this.forwardMessage(event);
+                              this.focusOnEditor(event);
+                            }}
+                          ></il-conversation-list>`
+                      )}
                     </div>
-                  </div>
-                </il-modal>
+                  </il-modal>
 
-                <il-button-icon
-                  ${ref(this.scrollButtonRef)}
-                  style="bottom: 120px"
-                  @click="${this.scrollToBottom}"
-                  .content=${IconNames.scrollDownArrow}
-                  .tooltipText=${TooltipTexts.scrollToBottom}
-                ></il-button-icon>
+                  <il-modal
+                    ${ref(this.deletionConfirmationDialogRef)}
+                    @modal-closed=${() => this.requestUpdate()}
+                  >
+                    <div class="deletion-confirmation">
+                      <h3>Eliminazione messaggio</h3>
+                      <br />
+                      <p>Confermare l'eliminazione del messaggio?</p>
+                      <br />
+                      <div class="deletion-confirmation-buttons">
+                        <il-button-text
+                          text="Annulla"
+                          @click=${() =>
+                            this.setDeletionConfirmationDialogRefIsOpened(
+                              false
+                            )}
+                        ></il-button-text>
+                        <il-button-text
+                          color="#DC2042"
+                          @click=${this.deleteMessage}
+                          text="Elimina"
+                        ></il-button-text>
+                      </div>
+                    </div>
+                  </il-modal>
 
-                <il-input-controls
-                  ${ref(this.inputControlsRef)}
-                  @il:message-sent=${this.sendMessage}
-                  @il:text-editor-resized=${this.handleTextEditorResized}
-                  @il:edit-confirmed=${this.confirmEdit}
-                ></il-input-controls>`
+                  <il-button-icon
+                    ${ref(this.scrollButtonRef)}
+                    style="bottom: 120px"
+                    @click="${this.scrollToBottom}"
+                    .content=${IconNames.scrollDownArrow}
+                    .tooltipText=${TooltipTexts.scrollToBottom}
+                  ></il-button-icon>
+
+                  <il-input-controls
+                    ${ref(this.inputControlsRef)}
+                    @il:message-sent=${this.sendMessage}
+                    @il:text-editor-resized=${this.handleTextEditorResized}
+                    @il:edit-confirmed=${this.confirmEdit}
+                  ></il-input-controls>`
             )}
           </div>
         </section>
@@ -554,7 +557,7 @@ export class Chat extends BaseComponent {
     let message = new WebSocketMessageDto(JSON.parse(payload.body));
 
     if (message.type === WebSocketMessageTypes.chat) {
-      let chatMessage = message.chat;
+      let chatMessage = new MessageDto(message.chat);
 
       if (chatMessage.content !== null) {
         if (this.activeChatName == chatMessage.roomName) {
@@ -569,7 +572,9 @@ export class Chat extends BaseComponent {
 
         if (this.login.username !== chatMessage.sender) {
           // the counter won't be update if you are the sender
-          this.conversationListRef.value?.incrementUnreadMessageCounter(chatMessage);
+          this.conversationListRef.value?.incrementUnreadMessageCounter(
+            chatMessage
+          );
         }
       }
 
