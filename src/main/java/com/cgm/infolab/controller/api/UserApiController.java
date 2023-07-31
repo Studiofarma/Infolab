@@ -48,7 +48,7 @@ public class UserApiController {
         List<UserDto> UserDtos = new ArrayList<>();
         List<UserEntity> userEntities = userService.getUsersPaginatedWithLike(pageSize, pageBefore, pageAfter, Username.of(user));
 
-        if (userEntities.size() > 0) {
+        if (!userEntities.isEmpty()) {
             UserDtos = userEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
         } else {
             log.info("Non sono stati trovati users");

@@ -59,7 +59,7 @@ public class ChatApiMessagesController {
                 pageAfter
         );
 
-        if (chatMessageEntities.size() > 0) {
+        if (!chatMessageEntities.isEmpty()) {
             chatMessageDtos = chatMessageEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToChatMessageDto).toList();
             chatService.updateReadTimestamp(
                     Username.of(principal.getName()),
