@@ -39,7 +39,7 @@ export class MessageButtonOption extends BaseComponent {
 
   render() {
     return html`
-      <div>
+      <div tabindex="-1">
         <il-icon name=${this.iconName}></il-icon>
         ${this.text}
       </div>

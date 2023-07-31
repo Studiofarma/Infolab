@@ -32,6 +32,7 @@
     "@lit/reactive-element": "^2.0.0-pre.0",
     "@mdi/js": "^7.1.96",
     "axios": "^1.2.3",
+    "cypress-real-events": "^1.9.1",
     "emoji-picker-element": "^1.15.1",
     "lit": "^3.0.0-pre.0",
     "lit-element": "^4.0.0-pre.0",

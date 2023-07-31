@@ -48,12 +48,13 @@ export class MessageOptions extends BaseComponent {
 
         ${when(
           this.type === "receiver" && this.message.roomName === "general",
-          () => html` <il-message-button-option
-            iconName=${IconNames.mdiMessage}
-            text="Scrivi in privato"
-            @click=${this.wentToChat}
-          >
-          </il-message-button-option>`
+          () =>
+            html` <il-message-button-option
+              iconName=${IconNames.mdiMessage}
+              text="Scrivi in privato"
+              @click=${this.wentToChat}
+            >
+            </il-message-button-option>`
         )}
 
         <il-message-button-option
@@ -65,18 +66,19 @@ export class MessageOptions extends BaseComponent {
 
         ${when(
           this.type === "sender",
-          () => html`<il-message-button-option
-              iconName=${IconNames.pencil}
-              text="Modifica"
-              @click=${this.editHandler}
-            ></il-message-button-option>
+          () =>
+            html`<il-message-button-option
+                iconName=${IconNames.pencil}
+                text="Modifica"
+                @click=${this.editHandler}
+              ></il-message-button-option>
 
-            <il-message-button-option
-              iconName=${IconNames.mdiDelete}
-              text="Elimina"
-              @click=${this.deleteMessageHandler}
-            >
-            </il-message-button-option>`,
+              <il-message-button-option
+                iconName=${IconNames.mdiDelete}
+                text="Elimina"
+                @click=${this.deleteMessageHandler}
+              >
+              </il-message-button-option>`,
           () => html``
         )}
       </div>

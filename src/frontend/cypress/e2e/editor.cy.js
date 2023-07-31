@@ -24,6 +24,8 @@ describe("Editor spec", () => {
   it("Editor types", () => {
     const editor = getEditor();
 
+    editor.click({ force: true });
+
     editor.type("ABC");
 
     getEditor().then(($div) => {
@@ -40,6 +42,8 @@ describe("Editor spec", () => {
   it("Editor empty after enter pressed", () => {
     const editor = getEditor();
 
+    editor.click({ force: true });
+
     editor.type("Test12345{enter}");
 
     editor.should("have.value", "");
@@ -47,6 +51,8 @@ describe("Editor spec", () => {
 
   it("Editor empty after send button pressed", () => {
     const editor = getEditor();
+
+    editor.click({ force: true });
 
     editor.type("Test67890");
 
