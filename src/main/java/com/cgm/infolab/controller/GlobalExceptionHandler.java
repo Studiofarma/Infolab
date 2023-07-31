@@ -23,11 +23,13 @@ public class GlobalExceptionHandler {
         List<String> errors =
                 ex.getConstraintViolations()
                         .stream()
-                        .map(constraintViolation -> constraintViolation.getPropertyPath().toString() + " " + constraintViolation.getMessage())
+                        .map(constraintViolation -> constraintViolation.getRootBean().toString() + " " + constraintViolation.getPropertyPath().toString() + " " + constraintViolation.getMessage())
                         .collect(Collectors.toList());
 
-        log.info("Caught ConstraintViolationException");
-        errors.forEach(log::info);
+        log.error(
+            "Caught ConstraintViolationException: %s"
+                .formatted(String.join(System.lineSeparator(), errors)),
+            ex);
 
         return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
