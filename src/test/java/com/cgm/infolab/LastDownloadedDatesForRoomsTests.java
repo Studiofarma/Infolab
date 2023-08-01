@@ -97,12 +97,16 @@ public class LastDownloadedDatesForRoomsTests {
 
     @Test
     void whenFetchingLastReadDates_fromGeneralAndFromPrivateRoom_theyAreTheExpectedOnes() {
-        Map<Long, LocalDateTime> downloadDates = roomRepository.getLastDownloadedDatesGroupedByRoom(List.of(generalId, user0user1Id));
+        Map<Long, LocalDateTime> downloadDatesUser0 = roomRepository.getLastDownloadedDatesGroupedByRoom(List.of(generalId, user0user1Id), users[0].getName());
 
-        Assertions.assertEquals(2, downloadDates.size());
+        Assertions.assertEquals(2, downloadDatesUser0.size());
 
-        Assertions.assertEquals(STARTING_TIME.plusSeconds(11), downloadDates.get(generalId));
-        Assertions.assertEquals(STARTING_TIME.plusSeconds(21), downloadDates.get(user0user1Id));
+        Assertions.assertEquals(STARTING_TIME.plusSeconds(11), downloadDatesUser0.get(generalId));
+        Assertions.assertEquals(STARTING_TIME.plusSeconds(21), downloadDatesUser0.get(user0user1Id));
+
+        Map<Long, LocalDateTime> downloadDatesUser1 = roomRepository.getLastDownloadedDatesGroupedByRoom(List.of(generalId, user0user1Id), users[1].getName());
+
+        Assertions.assertEquals(0, downloadDatesUser1.size());
     }
 
     @Test
