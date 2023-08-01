@@ -133,13 +133,14 @@ public class RoomAndMessagesVisibilityTests {
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
 
-        Assertions.assertEquals(6, roomEntities.size());
+        Assertions.assertEquals(7, roomEntities.size());
 
         Assertions.assertEquals("general", roomEntities.get(0).getName().value());
         Assertions.assertEquals("public2", roomEntities.get(1).getName().value());
         Assertions.assertEquals("user0-user1", roomEntities.get(2).getName().value());
         Assertions.assertEquals("user0-user2", roomEntities.get(3).getName().value());
-        Assertions.assertEquals("user4", roomEntities.get(4).getName().value());
-        Assertions.assertEquals("user5", roomEntities.get(5).getName().value());
+        Assertions.assertEquals("user0-user3", roomEntities.get(4).getName().value());
+        Assertions.assertEquals("user4", roomEntities.get(5).getName().value());
+        Assertions.assertEquals("user5", roomEntities.get(6).getName().value());
     }
 }

@@ -154,25 +154,24 @@ public class RoomRepository {
                         "join infolab.rooms_subscriptions s2 on s2.room_id = s1.room_id and s2.user_id <> s1.user_id " +
                         "where s1.username = :username " +
                         ") " +
-                        "SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, r.visibility, m.sender_id user_id, m.sender_name username, m.id message_id, m.sent_at, m.content, m.sender_id, m.status, " +
-                        "u_other.id other_user_id, u_other.username other_username, u_other.description other_description, " +
-                        "CASE " +
-                        "WHEN r.visibility = 'PUBLIC' THEN r.description " +
-                        "ELSE u_other.description " +
-                        "END AS description " +
-                        "FROM infolab.rooms r " +
-                        "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
-                        "left JOIN infolab.chatmessages m ON r.id = m.recipient_room_id " +
-                        "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
-                        "left join infolab.users u_other on u_other.id = s_other.user_id " +
-                        "WHERE (s.username = :accessControlUsername or r.visibility='PUBLIC') " +
-                        "AND (m.id IS NOT NULL OR r.visibility = 'PUBLIC') " +
+                            "SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, r.visibility, m.sender_id user_id, m.sender_name username, m.id message_id, m.sent_at, m.content, m.sender_id, m.status, " +
+                            "u_other.id other_user_id, u_other.username other_username, u_other.description other_description, " +
+                            "CASE " +
+                            "WHEN r.visibility = 'PUBLIC' THEN r.description " +
+                            "ELSE u_other.description " +
+                            "END AS description " +
+                            "FROM infolab.rooms r " +
+                            "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+                            "left JOIN infolab.chatmessages m ON r.id = m.recipient_room_id " +
+                            "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
+                            "left join infolab.users u_other on u_other.id = s_other.user_id " +
+                            "WHERE (s.username = :accessControlUsername or r.visibility='PUBLIC') " +
                         "UNION " +
-                        "select 0 as room_id, u.username as roomname, null as visibility, null as user_id, null username, null as message_id, null as sent_at, null as content, null sender_id, null as status, " +
-                        "u.id other_user_id, u.username other_username, u.description other_description, u.description " +
-                        "from infolab.users u " +
-                        "where u.id NOT IN (select user_id from users_with_room) and u.username <> :username " +
-                        "ORDER BY sent_at DESC NULLS LAST, roomname asc", params, RowMappers::mapToRoomEntityWithMessages);
+                            "select 0 as room_id, u.username as roomname, null as visibility, null as user_id, null username, null as message_id, null as sent_at, null as content, null sender_id, null as status, " +
+                            "u.id other_user_id, u.username other_username, u.description other_description, u.description " +
+                            "from infolab.users u " +
+                            "where u.id NOT IN (select user_id from users_with_room) and u.username <> :username " +
+                            "ORDER BY sent_at DESC NULLS LAST, roomname asc", params, RowMappers::mapToRoomEntityWithMessages);
 
         List<Long> roomIds = extractRoomIdsFromRoomList(rooms);
 
