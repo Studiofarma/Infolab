@@ -61,9 +61,9 @@ public class MessagesPaginatedApiTests {
 
         testDbHelper.addPrivateRoomsAndSubscribeUsers(pairs);
 
-        Long generalId = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = 'general'", (rs, rowNum) -> rs.getLong("id"));
+        Long generalId = testDbHelper.getRoomId("general");
 
-        Long user0Id = jdbcTemplate.queryForObject("select * from infolab.users where username = 'user0'", (rs, rowNum) -> rs.getLong("id"));
+        Long user0Id = testDbHelper.getUserId("user0");
 
         for (int i = 0; i < messageDtos.length; i++) {
             testDbHelper.insertCustomMessage(i, user0Id, generalId, STARTING_TIME.plusSeconds(i), "%d. Hello general from user0".formatted(i));
@@ -137,7 +137,7 @@ public class MessagesPaginatedApiTests {
     }
 
     @Test
-    void whenTryingToUseRangePagination_BadRequestStatusCodeIsReturned() {
+    void whenTryingToUseRangePagination_badRequestStatusCodeIsReturned() {
         String stringDateBefore = getMessageTimestampString(30);
         String stringDateAfter = getMessageTimestampString(50);
 
@@ -146,6 +146,21 @@ public class MessagesPaginatedApiTests {
                 Object.class);
 
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void whenTryingToSetPageSizeOutsideOfPermittedRange_badRequestCodeIsReturned() {
+        ResponseEntity<Object> response1 = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/messages/general?page[size]=0",
+                Object.class);
+
+        Assertions.assertEquals(response1.getStatusCode(), HttpStatus.BAD_REQUEST);
+
+        ResponseEntity<Object> response2 = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/messages/general?page[size]=20",
+                Object.class);
+
+        Assertions.assertEquals(response1.getStatusCode(), HttpStatus.BAD_REQUEST);
     }
 
     private String getMessageTimestampString(int messageNumber) {

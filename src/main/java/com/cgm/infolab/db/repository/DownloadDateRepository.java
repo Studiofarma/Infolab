@@ -45,7 +45,7 @@ public class DownloadDateRepository {
         simpleJdbcInsert.execute(parameters);
     }
 
-    public void addWhereNotDownloadedYetForUser(Username username, RoomName roomName) throws IllegalArgumentException {
+    public int addWhereNotDownloadedYetForUser(Username username, RoomName roomName) throws IllegalArgumentException {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         Map<String, Object> arguments = new HashMap<>();
@@ -53,7 +53,7 @@ public class DownloadDateRepository {
         arguments.put("username", username.value());
         arguments.put("roomName", roomName.value());
 
-        queryHelper
+        return queryHelper
                 .forUser(username)
                 .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id")
                 .join(DOWNLOAD_DATES_JOIN)
@@ -61,7 +61,7 @@ public class DownloadDateRepository {
                 .update(arguments);
     }
 
-    public void addDownloadDateToMessages(Username username, List<Long> messageIds) {
+    public int addDownloadDateToMessages(Username username, List<Long> messageIds) {
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
         Map<String, Object> arguments = new HashMap<>();
@@ -69,7 +69,7 @@ public class DownloadDateRepository {
         arguments.put("username", username.value());
         arguments.put("messageIds", messageIds);
 
-        queryHelper
+        return queryHelper
                 .forUser(username)
                 .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id")
                 .join("join infolab.chatmessages m on m.recipient_room_id = r.id join infolab.users u_logged on u_logged.username = :username")

@@ -11,6 +11,7 @@ import "./message-options";
 import "../../../components/popover";
 import "./message-content";
 import "./message-menu-popover";
+import { MessageStatuses } from "../../../enums/message-statuses";
 
 import { ConversationDto } from "../../../models/conversation-dto";
 import { BaseComponent } from "../../../components/base-component";
@@ -119,7 +120,7 @@ export class Message extends BaseComponent {
         ></il-message-content>
 
         ${when(
-          this.message.hasBeenDeleted,
+          this.message.status === MessageStatuses.deleted,
           () => html``,
           () => html`
             <il-message-menu-popover

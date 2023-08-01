@@ -95,4 +95,12 @@ public class TestDbHelper {
                         "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
                         "JOIN infolab.users u_mex ON u_mex.id = m.sender_id", rowMapper);
     }
+
+    public Long getRoomId(String roomName) {
+        return jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?", (rs, rowNum) -> rs.getLong("id"), roomName);
+    }
+
+    public Long getUserId(String username) {
+        return jdbcTemplate.queryForObject("select * from infolab.users where username = ?", (rs, rowNum) -> rs.getLong("id"), username);
+    }
 }

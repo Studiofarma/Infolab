@@ -103,11 +103,26 @@ public class UserPaginatedApiTests {
     }
 
     @Test
-    void whenTryingToUseRangePagination_BadRequestStatusCodeIsReturned() {
+    void whenTryingToUseRangePagination_badRequestStatusCodeIsReturned() {
         ResponseEntity<Object> response = testRestTemplate.withBasicAuth(
                 "user1", "password1").getForEntity("/api/users?user=&page[before]=userF desc&page[after]=userQ desc",
                 Object.class);
 
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    void whenTryingToSetPageSizeOutsideOfPermittedRange_badRequestCodeIsReturned() {
+        ResponseEntity<Object> response1 = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/users?user=&page[size]=0",
+                Object.class);
+
+        Assertions.assertEquals(response1.getStatusCode(), HttpStatus.BAD_REQUEST);
+
+        ResponseEntity<Object> response2 = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/users?user=&page[size]=20",
+                Object.class);
+
+        Assertions.assertEquals(response1.getStatusCode(), HttpStatus.BAD_REQUEST);
     }
 }
