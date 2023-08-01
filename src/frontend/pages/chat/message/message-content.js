@@ -206,17 +206,18 @@ export class MessageContent extends BaseComponent {
           >
             ${when(
               this.activeChatName.indexOf(this.cookie.username) === -1,
-              () => html` <p class="receiver-name">
-                ${when(
-                  this.message.sender != this.cookie.username,
-                  () => this.user?.description,
-                  () => ""
-                )}
-              </p>`,
+              () =>
+                html` <p class="receiver-name">
+                  ${when(
+                    this.message.sender != this.cookie.username,
+                    () => this.user?.description,
+                    () => ""
+                  )}
+                </p>`,
               () => html``
             )}
             ${when(
-              !this.message.hasBeenDeleted,
+              !this.message.hasBeenDeleted(),
               () => html`
                 <p class="message">
                   ${HtmlParserService.parseFromString(this.message.content)}
@@ -227,18 +228,18 @@ export class MessageContent extends BaseComponent {
 
             <div
               class=${
-                this.message.hasBeenDeleted
+                this.message.hasBeenDeleted()
                   ? "timestamp-deleted-container"
                   : "timestamp-edited-container"
               }
             >
               ${when(
-                this.message.hasBeenEdited && !this.message.hasBeenDeleted,
+                this.message.hasBeenEdited(),
                 () => html`<p class="edited">Modificato</p>`,
                 () => html``
               )}
               ${when(
-                this.message.hasBeenDeleted,
+                this.message.hasBeenDeleted(),
                 () =>
                   html`<p class="deleted">
                     Questo messaggio è stato eliminato

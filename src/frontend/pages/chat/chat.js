@@ -12,6 +12,8 @@ import { ThemeColorService } from "../../services/theme-color-service";
 import { IconNames } from "../../enums/icon-names";
 import { TooltipTexts } from "../../enums/tooltip-texts";
 import { ThemeCSSVariables } from "../../enums/theme-css-variables";
+import { MessageStatuses } from "../../enums/message-statuses";
+import { WebSocketMessageTypes } from "../../enums/websocket-message-types";
 
 import { BaseComponent } from "../../components/base-component";
 
@@ -25,6 +27,8 @@ import "./empty-chat";
 import "./message/messages-list";
 import "../../components/snackbar";
 import "../../components/button-icon";
+import { WebSocketMessageDto } from "../../models/websocket-message-dto";
+import { MessageDto } from "../../models/message-dto";
 
 export class Chat extends BaseComponent {
   static properties = {
@@ -202,83 +206,86 @@ export class Chat extends BaseComponent {
             ${when(
               this.activeChatName === "",
               () => html`<il-empty-chat></il-empty-chat>`,
-              () => html` <il-messages-list
-                  ${ref(this.messagesListRef)}
-                  @scroll=${this.manageScrollButtonVisility}
-                  .messages=${this.messages}
-                  .activeChatName=${this.activeChatName}
-                  .activeDescription=${this.activeDescription}
-                  @il:message-forwarded=${this.openForwardMenu}
-                  @il:went-to-chat=${this.wentToChatHandler}
-                  @il:message-copied=${() =>
-                    this.snackbarRef.value.openSnackbar(
-                      "MESSAGGIO COPIATO",
-                      "info",
-                      2000
-                    )}
-                  @il:message-edited=${this.editMessage}
-                  @il:message-deleted=${this.askDeletionConfirmation}
-                ></il-messages-list>
+              () =>
+                html` <il-messages-list
+                    ${ref(this.messagesListRef)}
+                    @scroll=${this.manageScrollButtonVisility}
+                    .messages=${this.messages}
+                    .activeChatName=${this.activeChatName}
+                    .activeDescription=${this.activeDescription}
+                    @il:message-forwarded=${this.openForwardMenu}
+                    @il:went-to-chat=${this.wentToChatHandler}
+                    @il:message-copied=${() =>
+                      this.snackbarRef.value.openSnackbar(
+                        "MESSAGGIO COPIATO",
+                        "info",
+                        2000
+                      )}
+                    @il:message-edited=${this.editMessage}
+                    @il:message-deleted=${this.askDeletionConfirmation}
+                  ></il-messages-list>
 
-                <il-modal
-                  @modal-closed=${() => this.requestUpdate()}
-                  ${ref(this.forwardListRef)}
-                >
-                  <div class="forward-list">
-                    ${when(
-                      this.getForwardListRefIsOpened(),
-                      () =>
-                        html`<il-conversation-list
-                          id="forwardList"
-                          isForwardList="true"
-                          @il:multiple-forwarded=${this.multipleForward}
-                          @il:conversation-changed=${(event) => {
-                            this.forwardMessage(event);
-                            this.focusOnEditor(event);
-                          }}
-                        ></il-conversation-list>`
-                    )}
-                  </div>
-                </il-modal>
-
-                <il-modal
-                  ${ref(this.deletionConfirmationDialogRef)}
-                  @modal-closed=${() => this.requestUpdate()}
-                >
-                  <div class="deletion-confirmation">
-                    <h3>Eliminazione messaggio</h3>
-                    <br />
-                    <p>Confermare l'eliminazione del messaggio?</p>
-                    <br />
-                    <div class="deletion-confirmation-buttons">
-                      <il-button-text
-                        text="Annulla"
-                        @click=${() =>
-                          this.setDeletionConfirmationDialogRefIsOpened(false)}
-                      ></il-button-text>
-                      <il-button-text
-                        color="#DC2042"
-                        @click=${this.deleteMessage}
-                        text="Elimina"
-                      ></il-button-text>
+                  <il-modal
+                    @modal-closed=${() => this.requestUpdate()}
+                    ${ref(this.forwardListRef)}
+                  >
+                    <div class="forward-list">
+                      ${when(
+                        this.getForwardListRefIsOpened(),
+                        () =>
+                          html`<il-conversation-list
+                            id="forwardList"
+                            isForwardList="true"
+                            @il:multiple-forwarded=${this.multipleForward}
+                            @il:conversation-changed=${(event) => {
+                              this.forwardMessage(event);
+                              this.focusOnEditor(event);
+                            }}
+                          ></il-conversation-list>`
+                      )}
                     </div>
-                  </div>
-                </il-modal>
+                  </il-modal>
 
-                <il-button-icon
-                  ${ref(this.scrollButtonRef)}
-                  style="bottom: 120px"
-                  @click="${this.scrollToBottom}"
-                  .content=${IconNames.scrollDownArrow}
-                  .tooltipText=${TooltipTexts.scrollToBottom}
-                ></il-button-icon>
+                  <il-modal
+                    ${ref(this.deletionConfirmationDialogRef)}
+                    @modal-closed=${() => this.requestUpdate()}
+                  >
+                    <div class="deletion-confirmation">
+                      <h3>Eliminazione messaggio</h3>
+                      <br />
+                      <p>Confermare l'eliminazione del messaggio?</p>
+                      <br />
+                      <div class="deletion-confirmation-buttons">
+                        <il-button-text
+                          text="Annulla"
+                          @click=${() =>
+                            this.setDeletionConfirmationDialogRefIsOpened(
+                              false
+                            )}
+                        ></il-button-text>
+                        <il-button-text
+                          color="#DC2042"
+                          @click=${this.deleteMessage}
+                          text="Elimina"
+                        ></il-button-text>
+                      </div>
+                    </div>
+                  </il-modal>
 
-                <il-input-controls
-                  ${ref(this.inputControlsRef)}
-                  @il:message-sent=${this.sendMessage}
-                  @il:text-editor-resized=${this.handleTextEditorResized}
-                  @il:edit-confirmed=${this.confirmEdit}
-                ></il-input-controls>`
+                  <il-button-icon
+                    ${ref(this.scrollButtonRef)}
+                    style="bottom: 120px"
+                    @click="${this.scrollToBottom}"
+                    .content=${IconNames.scrollDownArrow}
+                    .tooltipText=${TooltipTexts.scrollToBottom}
+                  ></il-button-icon>
+
+                  <il-input-controls
+                    ${ref(this.inputControlsRef)}
+                    @il:message-sent=${this.sendMessage}
+                    @il:text-editor-resized=${this.handleTextEditorResized}
+                    @il:edit-confirmed=${this.confirmEdit}
+                  ></il-input-controls>`
             )}
           </div>
         </section>
@@ -334,18 +341,22 @@ export class Chat extends BaseComponent {
   multipleForward(event) {
     if (event.detail.list[0] == undefined) return;
 
-    const chatMessage = {
+    const chatMessage = new MessageDto({
       sender: this.login.username,
       content: this.messageToForward,
-      type: "CHAT",
-    };
+    });
 
     event.detail.list.forEach((room) => {
       let chatName = this.formatActiveChatName(room);
       this.stompClient.send(
         `/app/chat.send${room != "general" ? `.${chatName}` : ""}`,
         {},
-        JSON.stringify(chatMessage)
+        JSON.stringify(
+          new WebSocketMessageDto({
+            type: WebSocketMessageTypes.chat,
+            chat: chatMessage,
+          })
+        )
       );
     });
 
@@ -395,10 +406,10 @@ export class Chat extends BaseComponent {
   }
 
   deleteMessage() {
-    this.messages[this.indexToBeDeleted] = {
+    this.messages[this.indexToBeDeleted] = new MessageDto({
       ...this.messages[this.indexToBeDeleted],
-      hasBeenDeleted: true,
-    };
+      status: MessageStatuses.deleted,
+    });
     this.messagesListRef.value?.requestUpdate();
     this.setDeletionConfirmationDialogRefIsOpened(false);
   }
@@ -411,11 +422,11 @@ export class Chat extends BaseComponent {
     let message = event.detail.message;
     let index = event.detail.index;
 
-    this.messages[index] = {
+    this.messages[index] = new MessageDto({
       ...message,
       content: message.content,
-      hasBeenEdited: true,
-    };
+      status: MessageStatuses.edited,
+    });
 
     if (index === this.messages.length - 1)
       this.updateLastMessageInConversationList(message);
@@ -480,9 +491,9 @@ export class Chat extends BaseComponent {
   }
 
   onConnect() {
-    this.stompClient.subscribe("/topic/public", (payload) =>
-      this.onMessage(payload)
-    );
+    this.stompClient.subscribe("/topic/public", (payload) => {
+      this.onMessage(payload);
+    });
 
     // fixare questo
     this.stompClient.subscribe("/user/topic/me", (payload) =>
@@ -496,7 +507,12 @@ export class Chat extends BaseComponent {
     this.stompClient.send(
       "/app/chat.register",
       {},
-      JSON.stringify({ sender: this.login.username, type: "JOIN" })
+      JSON.stringify(
+        new WebSocketMessageDto({
+          type: WebSocketMessageTypes.join,
+          join: { sender: this.login.username, status: null },
+        })
+      )
     );
   }
 
@@ -538,44 +554,43 @@ export class Chat extends BaseComponent {
   }
 
   onMessage(payload) {
-    let message = JSON.parse(payload.body);
+    let message = new WebSocketMessageDto(JSON.parse(payload.body));
 
-    if (message.content !== null) {
-      // TODO: rimuovere questa riga quando hasBeenEdited verrà dal db
-      message.hasBeenEdited = message.hasBeenEdited
-        ? message.hasBeenEdited
-        : false;
+    if (message.type === WebSocketMessageTypes.chat) {
+      let chatMessage = new MessageDto(message.chat);
 
-      message.hasBeenDeleted = message.hasBeenDeleted
-        ? message.hasBeenDeleted
-        : false;
+      if (chatMessage.content !== null) {
+        if (this.activeChatName == chatMessage.roomName) {
+          this.messages.push(chatMessage);
+          this.messagesListRef.value.requestUpdate();
+          this.requestUpdate();
+        }
 
-      if (this.activeChatName == message.roomName) {
-        this.messages.push(message);
-        this.messagesListRef.value.requestUpdate();
-        this.requestUpdate();
+        this.updateLastMessageInConversationList(chatMessage);
+
+        // set the message as unread:
+
+        if (this.login.username !== chatMessage.sender) {
+          // the counter won't be update if you are the sender
+          this.conversationListRef.value?.incrementUnreadMessageCounter(
+            chatMessage
+          );
+        }
       }
 
-      this.updateLastMessageInConversationList(message);
-
-      // set the message as unread:
-
-      if (this.login.username !== message.sender) {
-        // the counter won't be update if you are the sender
-        this.conversationListRef.value?.incrementUnreadMessageCounter(message);
-      }
+      this.messageNotification(chatMessage);
     }
-
-    this.messageNotification(message);
   }
 
   buildMessageAndSend(messageContent, type) {
     if (messageContent && this.stompClient) {
-      const chatMessage = {
-        sender: this.login.username,
-        content: messageContent,
+      const chatMessage = new WebSocketMessageDto({
         type: type,
-      };
+        chat: {
+          sender: this.login.username,
+          content: messageContent,
+        },
+      });
 
       let activeChatName = this.formatActiveChatName(this.activeChatName);
 
