@@ -29,6 +29,14 @@ public class ChatMessageDto {
         this.status = status;
     }
 
+    public static ChatMessageDto of(long id) {
+        return new ChatMessageDto(id, "", null, "", "", null);
+    }
+
+    public static ChatMessageDto of(long id, String content) {
+        return new ChatMessageDto(id, content, null, "", "", null);
+    }
+
     public static ChatMessageDto of(String content, String sender) {
         return new ChatMessageDto(ID.None, content, null, sender, "", null);
     }
@@ -87,9 +95,12 @@ public class ChatMessageDto {
     @Override
     public String toString() {
         return "ChatMessageDto{" +
-                "content='" + content + '\'' +
+                "id=" + id +
+                ", content='" + content + '\'' +
                 ", timestamp=" + timestamp +
                 ", sender='" + sender + '\'' +
+                ", roomName='" + roomName + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 

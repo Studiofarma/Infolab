@@ -73,7 +73,7 @@ public class MessageDeletionTests {
     }
 
     @Test
-    void whenOneMessageIsDeleted_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() {
+    void whenOneMessageIsDeleted_inPrivateRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
         long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
@@ -107,7 +107,7 @@ public class MessageDeletionTests {
     }
 
     @Test
-    void whenTryingToDelete_messageSentByAnotherUser_messageDoesNotGetDeleted() {
+    void whenOneMessageIsDeleted_inPublicRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
         long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '1 Hello general from user0'",
@@ -119,7 +119,41 @@ public class MessageDeletionTests {
 
         Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
 
-        ChatMessageEntity messageTriedToBeDeleted = messagesAfter.stream().filter(message -> message.getId() == message1Id).toList().get(0);
+        ChatMessageEntity deletedMessageBefore = messagesBefore.stream().filter(message -> message.getId() == message1Id).toList().get(0);
+        ChatMessageEntity deletedMessageAfter = messagesAfter.stream().filter(message -> message.getId() == message1Id).toList().get(0);
+
+        Assertions.assertEquals(DELETED, deletedMessageAfter.getStatus());
+        Assertions.assertEquals("", deletedMessageAfter.getContent());
+
+        ChatMessageEntity dbDeletedMessageContentAndId = testDbHelper
+                .getAllMessages(this::mapToChatMessageEntity)
+                .stream()
+                .filter(message -> message.getId() == message1Id)
+                .toList()
+                .get(0);
+
+        Assertions.assertEquals(deletedMessageBefore.getContent(), dbDeletedMessageContentAndId.getContent());
+
+        messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message1Id).toList();
+        messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message1Id).toList();
+
+        Assertions.assertEquals(messagesBefore, messagesAfter);
+    }
+
+    @Test
+    void whenTryingToDelete_messageSentByAnotherUser_messageDoesNotGetDeleted() {
+        List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
+
+        long message4Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '4 Visible only to user0 and user2'",
+                (rs, rowNum) -> rs.getLong("id"));
+
+        chatMessageRepository.updateMessageAsDeleted(users[0].getName(), message4Id);
+
+        List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
+
+        Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
+
+        ChatMessageEntity messageTriedToBeDeleted = messagesAfter.stream().filter(message -> message.getId() == message4Id).toList().get(0);
 
         Assertions.assertNull(messageTriedToBeDeleted.getStatus());
 

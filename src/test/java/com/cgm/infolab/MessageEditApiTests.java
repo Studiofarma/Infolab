@@ -50,7 +50,7 @@ public class MessageEditApiTests {
                     UserEntity.of(Username.of("user2")),
                     UserEntity.of(Username.of("user3"))};
     public ChatMessageDto[] messageDtos =
-            {ChatMessageDto.of("1 Hello general from user0", users[0].getName().value()),
+            {ChatMessageDto.of("1 Hello general from user0", users[1].getName().value()), // Note: this is different from the other test classes
                     ChatMessageDto.of("2 Visible only to user0 and user1", users[1].getName().value()),
                     ChatMessageDto.of("3 Visible only to user1 and user2", users[1].getName().value()),
                     ChatMessageDto.of("4 Visible only to user0 and user2", users[2].getName().value()),
@@ -82,7 +82,7 @@ public class MessageEditApiTests {
     }
 
     @Test
-    void whenOneMessageIsEdited_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() throws Exception {
+    void whenOneMessageIsEdited_inPrivateRoom_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
         long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '2 Visible only to user0 and user1'",
@@ -101,6 +101,30 @@ public class MessageEditApiTests {
 
         messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message2Id).toList();
         messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message2Id).toList();
+
+        Assertions.assertEquals(messagesBefore, messagesAfter);
+    }
+
+    @Test
+    void whenOneMessageIsEdited_inPublicRoom_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() throws Exception {
+        List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
+
+        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '1 Hello general from user0'",
+                (rs, rowNum) -> rs.getLong("id"));
+
+        apiPutForUser1("/api/messages/user0-user1/%d".formatted(message1Id), "Edited yayy!");
+
+        List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
+
+        Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
+
+        ChatMessageEntity editedMessage = messagesAfter.stream().filter(message -> message.getId() == message1Id).toList().get(0);
+
+        Assertions.assertEquals(EDITED, editedMessage.getStatus());
+        Assertions.assertEquals("Edited yayy!", editedMessage.getContent());
+
+        messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message1Id).toList();
+        messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message1Id).toList();
 
         Assertions.assertEquals(messagesBefore, messagesAfter);
     }

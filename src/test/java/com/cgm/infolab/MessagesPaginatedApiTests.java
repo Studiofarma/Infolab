@@ -64,9 +64,9 @@ public class MessagesPaginatedApiTests {
 
         testDbHelper.addPrivateRoomsAndSubscribeUsers(pairs);
 
-        Long generalId = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = 'general'", (rs, rowNum) -> rs.getLong("id"));
+        Long generalId = testDbHelper.getRoomId("general");
 
-        Long user0Id = jdbcTemplate.queryForObject("select * from infolab.users where username = 'user0'", (rs, rowNum) -> rs.getLong("id"));
+        Long user0Id = testDbHelper.getUserId("user0");
 
         for (int i = 0; i < messageDtos.length; i++) {
             testDbHelper.insertCustomMessage(i, user0Id, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME.plusSeconds(i), "%d. Hello general from user0".formatted(i));
