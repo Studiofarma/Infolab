@@ -38,7 +38,9 @@ public class ChatMessageRepository {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("sender_id", message.getSender().getId());
+        parameters.put("sender_name", message.getSender().getName().value());
         parameters.put("recipient_room_id", message.getRoom().getId());
+        parameters.put("recipient_room_name", message.getRoom().getName().value());
         parameters.put("sent_at", message.getTimestamp());
         parameters.put("content", message.getContent());
         parameters.put("status", message.getStatus());

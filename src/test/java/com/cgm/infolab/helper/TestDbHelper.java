@@ -72,14 +72,14 @@ public class TestDbHelper {
         }
     }
 
-    public void insertCustomMessage(long messageId, long senderId, long recipientRoomId, LocalDateTime sentAt, String content) {
-        jdbcTemplate.update("INSERT INTO infolab.chatmessages (id, sender_id, recipient_room_id, sent_at, content) values" +
-                "(?, ?, ?, ?, ?)", messageId, senderId, recipientRoomId, sentAt, content);
+    public void insertCustomMessage(long messageId, long senderId, String senderName, long recipientRoomId, String recipientRoomName, LocalDateTime sentAt, String content) {
+        jdbcTemplate.update("INSERT INTO infolab.chatmessages (id, sender_id, sender_name, recipient_room_id, recipient_room_name, sent_at, content) values" +
+                "(?, ?, ?, ?, ?, ?, ?)", messageId, senderId, senderName, recipientRoomId, recipientRoomName, sentAt, content);
     }
 
-    public void insertCustomReadDate(LocalDateTime timestamp, long message_id, long user_id) {
-        jdbcTemplate.update("INSERT INTO infolab.download_dates (download_timestamp, message_id, user_id) values" +
-                "(?, ?, ?)", timestamp, message_id, user_id);
+    public void insertCustomReadDate(LocalDateTime timestamp, long message_id, long user_id, String username) {
+        jdbcTemplate.update("INSERT INTO infolab.download_dates (download_timestamp, message_id, user_id, username) values" +
+                "(?, ?, ?, ?)", timestamp, message_id, user_id, username);
     }
 
     public List<ChatMessageEntity> getAllMessages() {

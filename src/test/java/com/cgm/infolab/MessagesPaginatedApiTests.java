@@ -1,5 +1,6 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.helper.TestApiHelper;
@@ -44,6 +45,8 @@ public class MessagesPaginatedApiTests {
                     UserEntity.of(Username.of("user3"))};
     public ChatMessageDto[] messageDtos = new ChatMessageDto[80];
 
+    public RoomEntity general = RoomEntity.general();
+
     public static final LocalDateTime STARTING_TIME = LocalDateTime.of(2023, 6, 1, 1, 1, 1);
 
     @BeforeAll
@@ -66,7 +69,7 @@ public class MessagesPaginatedApiTests {
         Long user0Id = jdbcTemplate.queryForObject("select * from infolab.users where username = 'user0'", (rs, rowNum) -> rs.getLong("id"));
 
         for (int i = 0; i < messageDtos.length; i++) {
-            testDbHelper.insertCustomMessage(i, user0Id, generalId, STARTING_TIME.plusSeconds(i), "%d. Hello general from user0".formatted(i));
+            testDbHelper.insertCustomMessage(i, user0Id, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME.plusSeconds(i), "%d. Hello general from user0".formatted(i));
         }
     }
 

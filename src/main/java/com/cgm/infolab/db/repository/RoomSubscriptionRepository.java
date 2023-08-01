@@ -26,7 +26,10 @@ public class RoomSubscriptionRepository {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("room_id", entity.getRoomId());
+        parameters.put("roomname", entity.getRoomName().value());
         parameters.put("user_id", entity.getUserId());
+        parameters.put("username", entity.getUsername().value());
+
         simpleJdbcInsert.execute(parameters);
     }
 }

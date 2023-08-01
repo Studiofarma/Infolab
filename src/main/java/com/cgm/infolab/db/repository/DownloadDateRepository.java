@@ -41,6 +41,7 @@ public class DownloadDateRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("timestamp", entity.getTimestamp());
         parameters.put("user_id", entity.getUserId());
+        parameters.put("username", entity.getUsername().value());
         parameters.put("message_id", entity.getMessageId());
         simpleJdbcInsert.execute(parameters);
     }
@@ -55,7 +56,7 @@ public class DownloadDateRepository {
 
         queryHelper
                 .forUser(username)
-                .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id")
+                .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, username, message_id) SELECT :timestamp, u_logged.id, :username, m.id")
                 .join(DOWNLOAD_DATES_JOIN)
                 .where(DOWNLOAD_DATES_WHERE_NOT_DOWNLOADED_AND_ROOMNAME)
                 .update(arguments);
@@ -71,7 +72,7 @@ public class DownloadDateRepository {
 
         queryHelper
                 .forUser(username)
-                .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, message_id) SELECT :timestamp, u_logged.id, m.id")
+                .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, username, message_id) SELECT :timestamp, u_logged.id, :username, m.id")
                 .join("join infolab.chatmessages m on m.recipient_room_id = r.id join infolab.users u_logged on u_logged.username = :username")
                 .where("m.id IN (:messageIds)")
                 .update(arguments);

@@ -70,7 +70,9 @@ public class RoomService {
             });
 
             roomSubscription.setRoomId(room.getId());
+            roomSubscription.setRoomName(roomName);
             roomSubscription.setUserId(user.getId());
+            roomSubscription.setUsername(username);
 
             roomSubscriptionRepository.add(roomSubscription);
         } catch (DuplicateKeyException e) {
