@@ -93,7 +93,7 @@ public class RoomRepository {
     public Optional<RoomEntity> getById(long id, Username username) {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("roomId", id);
-        return  queryRoom("AND r.id = :roomId", username, arguments);
+        return  queryRoom("r.id = :roomId", username, arguments);
     }
 
     private Optional<RoomEntity> queryRoom(String where, Username username, Map<String, ?> queryParams) {

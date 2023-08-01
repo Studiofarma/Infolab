@@ -18,9 +18,9 @@ public class DownloadDateRepository {
     private final DataSource dataSource;
 
     protected static final String DOWNLOAD_DATES_JOIN =
-            "LEFT JOIN infolab.chatmessages m " +
+            "JOIN infolab.chatmessages m " +
                     "ON m.recipient_room_id = r.id " +
-                    "LEFT JOIN infolab.users u_logged " +
+                    "JOIN infolab.users u_logged " +
                     "ON u_logged.username = :username " +
                     "LEFT JOIN infolab.download_dates d " +
                     "ON d.user_id = u_logged.id AND d.message_id = m.id";

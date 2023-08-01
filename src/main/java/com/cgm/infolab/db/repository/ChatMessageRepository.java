@@ -24,8 +24,7 @@ public class ChatMessageRepository {
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
     private final String JOIN_MESSAGES =
-            "LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id";
-    private final String JOIN_MESSAGES_WITH_LOGGED_USER = "%s JOIN infolab.users u_logged ON u_logged.username = :username".formatted(JOIN_MESSAGES);
+            "JOIN infolab.chatmessages m ON r.id = m.recipient_room_id";
 
     public ChatMessageRepository(DataSource dataSource, QueryHelper queryHelper) {
         this.dataSource = dataSource;
@@ -130,8 +129,8 @@ public class ChatMessageRepository {
     private UserQueryResult getMessages(Username username) {
         return queryHelper
                 .forUser(username)
-                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status")
-                .join("%s LEFT JOIN infolab.users u_mex ON u_mex.id = m.sender_id".formatted(JOIN_MESSAGES));
+                .query("SELECT m.id message_id, m.sender_id user_id, m.sender_name username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status")
+                .join(JOIN_MESSAGES);
     }
 
     public int updateMessageAsDeleted(Username username, long idToDelete) {
@@ -142,8 +141,8 @@ public class ChatMessageRepository {
         return queryHelper
                 .forUser(username)
                 .query("UPDATE infolab.chatmessages SET status = 'DELETED' WHERE id IN (select m.id")
-                .join(JOIN_MESSAGES_WITH_LOGGED_USER)
-                .where("m.sender_id = u_logged.id and m.id = :idToDelete")
+                .join(JOIN_MESSAGES)
+                .where("m.sender_name = :username and m.id = :idToDelete")
                 .other(")")
                 .update(params);
     }
@@ -157,8 +156,8 @@ public class ChatMessageRepository {
         return queryHelper
                 .forUser(username)
                 .query("UPDATE infolab.chatmessages SET content = :newContent, status = 'EDITED' WHERE id IN (select m.id")
-                .join(JOIN_MESSAGES_WITH_LOGGED_USER)
-                .where("m.sender_id = u_logged.id and m.id = :idToEdit and (m.status IS NULL or m.status NOT LIKE 'DELETED%')")
+                .join(JOIN_MESSAGES)
+                .where("m.sender_name = :username and m.id = :idToEdit and (m.status IS NULL or m.status NOT LIKE 'DELETED%')")
                 .other(")")
                 .update(params);
     }
