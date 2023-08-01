@@ -5,8 +5,10 @@ import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import com.cgm.infolab.db.repository.queryhelper.QueryResult;
 import com.cgm.infolab.db.repository.queryhelper.UserQueryResult;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,8 @@ import static com.cgm.infolab.db.repository.DownloadDateRepository.*;
 public class RoomRepository {
     private final QueryHelper queryHelper;
     private final DataSource dataSource;
+    @Autowired
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private final String ROOMS_WHERE_ROOMNAME = "r.roomname = :roomName";
     private final String CASE_QUERY =
@@ -32,6 +36,7 @@ public class RoomRepository {
             "left join infolab.users u_other on u_other.id = s_other.user_id";
 
     private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
+    private final String ROOMS_WHERE_NOT_NULL_OR_PUBLIC = "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')";
 
     private final String GET_DOWNLOAD_DATES_FROM = "infolab.chatmessages m";
     private final String GET_DOWNLOAD_DATES_INNER_JOIN = "join infolab.download_dates d on d.message_id = m.id and d.username = :username";
@@ -134,6 +139,52 @@ public class RoomRepository {
                 .join("left join infolab.rooms_subscriptions s on r.id = s.room_id %s".formatted(JOIN));
     }
 
+    public List<RoomEntity> getExistingRoomsAndUsersWithoutRoomAsRooms(Username username) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", username.value());
+
+        // temp
+        params.put("accessControlUsername", username.value());
+
+        // temp
+        List<RoomEntity> rooms = namedParameterJdbcTemplate
+                .query("WITH users_with_room as ( " +
+                        "select s2.username, s2.user_id " +
+                        "from infolab.rooms_subscriptions s1 " +
+                        "join infolab.rooms_subscriptions s2 on s2.room_id = s1.room_id and s2.user_id <> s1.user_id " +
+                        "where s1.username = :username " +
+                        ") " +
+                        "SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, r.visibility, m.sender_id user_id, m.sender_name username, m.id message_id, m.sent_at, m.content, m.sender_id, m.status, " +
+                        "u_other.id other_user_id, u_other.username other_username, u_other.description other_description, " +
+                        "CASE " +
+                        "WHEN r.visibility = 'PUBLIC' THEN r.description " +
+                        "ELSE u_other.description " +
+                        "END AS description " +
+                        "FROM infolab.rooms r " +
+                        "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+                        "left JOIN infolab.chatmessages m ON r.id = m.recipient_room_id " +
+                        "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
+                        "left join infolab.users u_other on u_other.id = s_other.user_id " +
+                        "WHERE (s.username = :accessControlUsername or r.visibility='PUBLIC') " +
+                        "AND (m.id IS NOT NULL OR r.visibility = 'PUBLIC') " +
+                        "UNION " +
+                        "select 0 as room_id, u.username as roomname, null as visibility, null as user_id, null username, null as message_id, null as sent_at, null as content, null sender_id, null as status, " +
+                        "u.id other_user_id, u.username other_username, u.description other_description, u.description " +
+                        "from infolab.users u " +
+                        "where u.id NOT IN (select user_id from users_with_room) and u.username <> :username " +
+                        "ORDER BY sent_at DESC NULLS LAST, roomname asc", params, RowMappers::mapToRoomEntityWithMessages);
+
+        List<Long> roomIds = extractRoomIdsFromRoomList(rooms);
+
+        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(roomIds, username);
+        rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
+
+        Map<Long, LocalDateTime> lastDownloadedDatesList = getLastDownloadedDatesGroupedByRoom(roomIds, username);
+        rooms = mergeRoomsAndLastDownloadedDate(rooms, lastDownloadedDatesList);
+
+        return rooms;
+    }
+
     public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
         List<RoomEntity> rooms = queryRooms(null, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
 
@@ -200,7 +251,7 @@ public class RoomRepository {
     }
 
     private List<RoomEntity> queryRooms(String where, String other, Username username, Map<String, ?> queryParams) {
-        where = (where == null || where.equals("")) ? "(m.id IS NOT NULL OR r.visibility = 'PUBLIC')" : "(m.id IS NOT NULL OR r.visibility = 'PUBLIC') AND %s".formatted(where);
+        where = (where == null || where.equals("")) ? ROOMS_WHERE_NOT_NULL_OR_PUBLIC : "%s AND %s".formatted(ROOMS_WHERE_NOT_NULL_OR_PUBLIC, where);
         try {
             return getRooms(username)
                     .where(where)
@@ -253,7 +304,10 @@ public class RoomRepository {
     private List<Long> extractRoomIdsFromRoomList(List<RoomEntity> rooms) {
         List<Long> roomIds = new ArrayList<>();
 
-        rooms.forEach((roomEntity -> roomIds.add(roomEntity.getId())));
+        rooms.forEach(roomEntity -> {
+            if (roomEntity.getId() != 0)
+                roomIds.add(roomEntity.getId());
+        });
 
         return roomIds;
     }

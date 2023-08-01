@@ -63,10 +63,12 @@ public abstract class RowMappers {
 
         ChatMessageEntity messageEntity = rs.getString("content") != null ?  mapToChatMessageEntity(rs, rowNum) : ChatMessageEntity.empty();
 
+        VisibilityEnum visibility = rs.getString("visibility") != null ? VisibilityEnum.valueOf(rs.getString("visibility").trim()) : VisibilityEnum.PRIVATE;
+
         RoomEntity room = RoomEntity.of(
                 rs.getLong("room_id"),
                 RoomName.of(roomName),
-                VisibilityEnum.valueOf(rs.getString("visibility").trim()),
+                visibility,
                 roomType,
                 rs.getString("description"),
                 List.of(messageEntity)

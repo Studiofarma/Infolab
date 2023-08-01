@@ -39,7 +39,10 @@ public class RoomAndMessagesVisibilityTests {
         {UserEntity.of(Username.of("user0")),
         UserEntity.of(Username.of("user1")),
         UserEntity.of(Username.of("user2")),
-        UserEntity.of(Username.of("user3"))};
+        UserEntity.of(Username.of("user3")),
+        UserEntity.of(Username.of("user4")),
+        UserEntity.of(Username.of("user5")),
+        };
 
     public UserEntity loggedInUser = users[0]; // user0
 
@@ -121,5 +124,22 @@ public class RoomAndMessagesVisibilityTests {
         Assertions.assertEquals(2, chatMessageRepository.getByRoomName(RoomName.of("user0-user1"), loggedInUser.getName()).size());
         Assertions.assertEquals(1, chatMessageRepository.getByRoomName(RoomName.of("user0-user2"), loggedInUser.getName()).size());
         Assertions.assertEquals(0, chatMessageRepository.getByRoomName(RoomName.of("user1-user2"), loggedInUser.getName()).size());
+    }
+
+    @Test
+    void whenUser0QueriesForRoomsAndUsers_canSee_rightRoomsAndRightUsers() {
+        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        Assertions.assertEquals(6, roomEntities.size());
+
+        Assertions.assertEquals("general", roomEntities.get(0).getName().value());
+        Assertions.assertEquals("public2", roomEntities.get(1).getName().value());
+        Assertions.assertEquals("user0-user1", roomEntities.get(2).getName().value());
+        Assertions.assertEquals("user0-user2", roomEntities.get(3).getName().value());
+        Assertions.assertEquals("user4", roomEntities.get(4).getName().value());
+        Assertions.assertEquals("user5", roomEntities.get(5).getName().value());
     }
 }
