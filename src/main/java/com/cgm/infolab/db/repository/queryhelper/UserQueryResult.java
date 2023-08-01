@@ -64,11 +64,10 @@ public record UserQueryResult(
     public String query() {
         return query + "infolab.rooms r %s".formatted(joinKey) +
             "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
-            "left join infolab.users u on u.id = s.user_id " +
             (join == null
                 ? ""
                 : join) +
-            "where (u.username = :accessControlUsername or r.visibility='PUBLIC')" +
+            "where (s.username = :accessControlUsername or r.visibility='PUBLIC')" +
             (conditions == null
                 ? ""
                 : " and (%s)".formatted(conditions)) +
