@@ -44,14 +44,8 @@
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="chatmessages_pk" />
             </column>
-            <column name="sender_id" type="bigint" >
-                <constraints foreignKeyName="fk_sender_id" references="infolab.users(id)"/>
-            </column>
             <column name="sender_name" type="varchar(50)" >
                 <constraints foreignKeyName="fk_sender_name" references="infolab.users(username)"/>
-            </column>
-            <column name="recipient_room_id" type="bigint">
-                <constraints foreignKeyName="fk_recipient_room_id" references="infolab.rooms(id)"/>
             </column>
             <column name="recipient_room_name" type="varchar(255)">
                 <constraints foreignKeyName="fk_recipient_room_name" references="infolab.rooms(roomname)"/>
@@ -74,14 +68,8 @@
 
         <!-- Table RoomsSubscriptions -->
         <createTable schemaName="infolab" tableName="rooms_subscriptions">
-            <column name="room_id" type="bigint">
-                <constraints foreignKeyName="fk_rooms_subscriptions_room_id" references="infolab.rooms(id)" nullable="false"/>
-            </column>
             <column name="roomname" type="varchar(255)">
                 <constraints foreignKeyName="fk_rooms_subscriptions_roomname" references="infolab.rooms(roomname)" nullable="false"/>
-            </column>
-            <column name="user_id" type="bigint">
-                <constraints foreignKeyName="fk_rooms_subscriptions_user_id" references="infolab.users(id)" nullable="false"/>
             </column>
             <column name="username" type="varchar(50)">
                 <constraints foreignKeyName="fk_rooms_subscriptions_username" references="infolab.users(username)" nullable="false"/>
@@ -100,9 +88,6 @@
             <column name="download_timestamp" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="bigint">
-                <constraints foreignKeyName="fk_download_dates_user_id" references="infolab.users(id)" nullable="false"/>
-            </column>
             <column name="username" type="varchar(50)">
                 <constraints foreignKeyName="fk_download_dates_username" references="infolab.users(username)" nullable="false"/>
             </column>
@@ -110,6 +95,12 @@
                 <constraints foreignKeyName="fk_message_id" references="infolab.chatmessages(id)" nullable="false"/>
             </column>
         </createTable>
+        <createIndex schemaName="infolab" tableName="download_dates" indexName="download_dates_username_index">
+            <column name="username"/>
+        </createIndex>
+        <createIndex schemaName="infolab" tableName="download_dates" indexName="download_dates_message_id_index">
+            <column name="message_id"/>
+        </createIndex>
         <addPrimaryKey schemaName="infolab" tableName="download_dates" columnNames="download_timestamp, username, message_id"/>
     </changeSet>
 </databaseChangeLog>

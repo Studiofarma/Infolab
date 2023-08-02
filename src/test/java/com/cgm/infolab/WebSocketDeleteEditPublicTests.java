@@ -76,57 +76,42 @@ public class WebSocketDeleteEditPublicTests {
         long generalId = testDbHelper.getRoomId("general");
         general.setId(generalId);
 
-        long user1Id = testDbHelper.getUserId("user1");
-        long userBananaId = testDbHelper.getUserId("banana");
-
         testDbHelper.insertCustomMessage(
                 1,
-                user1Id,
                 user1.getName().value(),
-                generalId,
                 general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "1 Message in general");
 
         testDbHelper.insertCustomMessage(
                 2,
-                user1Id,
                 user1.getName().value(),
-                generalId,
                 general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "2 Message in general");
 
         testDbHelper.insertCustomMessage(
                 3,
-                userBananaId,
                 userBanana.getName().value(),
-                generalId,
                 general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "3 Message in general");
 
         testDbHelper.insertCustomMessage(
                 4,
-                userBananaId,
                 userBanana.getName().value(),
-                generalId,
                 general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "4 Message in general");
         testDbHelper.insertCustomMessage(
                 5,
-                user1Id,
                 user1.getName().value(),
-                generalId,
                 general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "5 Message in general");
         testDbHelper.insertCustomMessage(
                 6,
-                user1Id,
                 user1.getName().value(),
-                generalId,
                 general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "6 Message in general");

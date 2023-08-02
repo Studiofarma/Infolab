@@ -1,33 +1,21 @@
 package com.cgm.infolab.db.model;
 
-import com.cgm.infolab.db.ID;
+import java.util.Objects;
 
 public class RoomSubscriptionEntity {
-    private long roomId;
     private RoomName roomName;
-    private long userId;
     private Username username;
 
     private RoomSubscriptionEntity() {
     }
 
-    private RoomSubscriptionEntity(long roomId, RoomName roomName, long userId, Username username) {
-        this.roomId = roomId;
+    private RoomSubscriptionEntity(RoomName roomName, Username username) {
         this.roomName = roomName;
-        this.userId = userId;
         this.username = username;
     }
 
     public static RoomSubscriptionEntity empty() {
-        return new RoomSubscriptionEntity(ID.None, RoomName.empty(), ID.None, Username.empty());
-    }
-
-    public long getRoomId() {
-        return roomId;
-    }
-
-    public void setRoomId(long roomId) {
-        this.roomId = roomId;
+        return new RoomSubscriptionEntity(RoomName.empty(), Username.empty());
     }
 
     public RoomName getRoomName() {
@@ -36,14 +24,6 @@ public class RoomSubscriptionEntity {
 
     public void setRoomName(RoomName roomName) {
         this.roomName = roomName;
-    }
-
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
     }
 
     public Username getUsername() {
@@ -57,8 +37,21 @@ public class RoomSubscriptionEntity {
     @Override
     public String toString() {
         return "RoomSubscriptionEntity{" +
-                "roomId=" + roomId +
-                ", userId=" + userId +
-                "}";
+                "roomName=" + roomName +
+                ", username=" + username +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoomSubscriptionEntity that = (RoomSubscriptionEntity) o;
+        return Objects.equals(roomName, that.roomName) && Objects.equals(username, that.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(roomName, username);
     }
 }

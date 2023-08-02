@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -61,22 +62,13 @@ public class RoomService {
     private void subscribeUserToRoom(RoomName roomName, Username username) {
         RoomSubscriptionEntity roomSubscription = RoomSubscriptionEntity.empty();
         try {
-            RoomEntity room = roomRepository.getByRoomNameEvenIfNotSubscribed(roomName).orElseThrow(() -> {
-                throw new IllegalArgumentException(String.format("Room roomName=\"%s\" non trovata.", roomName.value()));
-            });
-
-            UserEntity user = userRepository.getByUsername(username).orElseThrow(() -> {
-                throw new IllegalArgumentException(String.format("User username=\"%s\" non trovato.", username.value()));
-            });
-
-            roomSubscription.setRoomId(room.getId());
             roomSubscription.setRoomName(roomName);
-            roomSubscription.setUserId(user.getId());
             roomSubscription.setUsername(username);
-
             roomSubscriptionRepository.add(roomSubscription);
         } catch (DuplicateKeyException e) {
             log.info("RoomSubscription " + roomSubscription + "già esistente nel database");
+        } catch (SQLIntegrityConstraintViolationException e) {
+            log.error("Lo user con username=" + username.value() + " o la room con roomname=" + roomName.value() + " non esistono nel database");
         }
     }
 

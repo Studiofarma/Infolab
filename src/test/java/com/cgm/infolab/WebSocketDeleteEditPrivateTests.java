@@ -74,57 +74,42 @@ public class WebSocketDeleteEditPrivateTests {
         long bananaUser1Id = testDbHelper.getRoomId("banana-user1");
         bananaUser1.setId(bananaUser1Id);
 
-        long user1Id = testDbHelper.getUserId("user1");
-        long userBananaId = testDbHelper.getUserId("banana");
-
         testDbHelper.insertCustomMessage(
                 1,
-                user1Id,
                 user1.getName().value(),
-                bananaUser1Id,
                 bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "1 Message in banana-user1");
 
         testDbHelper.insertCustomMessage(
                 2,
-                user1Id,
                 user1.getName().value(),
-                bananaUser1Id,
                 bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "2 Message in banana-user1");
 
         testDbHelper.insertCustomMessage(
                 3,
-                userBananaId,
                 userBanana.getName().value(),
-                bananaUser1Id,
                 bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "3 Message in banana-user1");
 
         testDbHelper.insertCustomMessage(
                 4,
-                userBananaId,
                 userBanana.getName().value(),
-                bananaUser1Id,
                 bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "4 Message in banana-user1");
         testDbHelper.insertCustomMessage(
                 5,
-                user1Id,
                 user1.getName().value(),
-                bananaUser1Id,
                 bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "5 Message in banana-user1");
         testDbHelper.insertCustomMessage(
                 6,
-                user1Id,
                 user1.getName().value(),
-                bananaUser1Id,
                 bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "6 Message in banana-user1");

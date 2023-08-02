@@ -72,28 +72,28 @@ public class TestDbHelper {
         }
     }
 
-    public void insertCustomMessage(long messageId, long senderId, String senderName, long recipientRoomId, String recipientRoomName, LocalDateTime sentAt, String content) {
-        jdbcTemplate.update("INSERT INTO infolab.chatmessages (id, sender_id, sender_name, recipient_room_id, recipient_room_name, sent_at, content) values" +
-                "(?, ?, ?, ?, ?, ?, ?)", messageId, senderId, senderName, recipientRoomId, recipientRoomName, sentAt, content);
+    public void insertCustomMessage(long messageId, String senderName, String recipientRoomName, LocalDateTime sentAt, String content) {
+        jdbcTemplate.update("INSERT INTO infolab.chatmessages (id, sender_name, recipient_room_name, sent_at, content) values" +
+                "(?, ?, ?, ?, ?)", messageId, senderName, recipientRoomName, sentAt, content);
     }
 
-    public void insertCustomReadDate(LocalDateTime timestamp, long message_id, long user_id, String username) {
-        jdbcTemplate.update("INSERT INTO infolab.download_dates (download_timestamp, message_id, user_id, username) values" +
-                "(?, ?, ?, ?)", timestamp, message_id, user_id, username);
+    public void insertCustomReadDate(LocalDateTime timestamp, long message_id, String username) {
+        jdbcTemplate.update("INSERT INTO infolab.download_dates (download_timestamp, message_id, username) values" +
+                "(?, ?, ?)", timestamp, message_id, username);
     }
 
     public List<ChatMessageEntity> getAllMessages() {
         return jdbcTemplate
-                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname roomname2, r.visibility, m.sent_at, m.content, m.status " +
-                        "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
-                        "JOIN infolab.users u_mex ON u_mex.id = m.sender_id", RowMappers::mapToChatMessageEntity);
+                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, r.id room_id, r.roomname roomname2, r.visibility, m.sent_at, m.content, m.status " +
+                        "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.roomname = m.recipient_room_name " +
+                        "JOIN infolab.users u_mex ON u_mex.username = m.sender_name", RowMappers::mapToChatMessageEntity);
     }
 
     public <T> List<T> getAllMessages(RowMapper<T> rowMapper) {
         return jdbcTemplate
-                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname roomname2, r.visibility, m.sent_at, m.content, m.status " +
-                        "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
-                        "JOIN infolab.users u_mex ON u_mex.id = m.sender_id", rowMapper);
+                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, r.id room_id, r.roomname roomname2, r.visibility, m.sent_at, m.content, m.status " +
+                        "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.roomname = m.recipient_room_name " +
+                        "JOIN infolab.users u_mex ON u_mex.username = m.sender_name", rowMapper);
     }
 
     public Long getRoomId(String roomName) {

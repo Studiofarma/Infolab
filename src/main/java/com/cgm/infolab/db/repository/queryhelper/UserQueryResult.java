@@ -63,7 +63,7 @@ public record UserQueryResult(
     @Override
     public String query() {
         return query + "infolab.rooms r %s".formatted(joinKey) +
-            "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+            "left join infolab.rooms_subscriptions s on r.roomname = s.roomname " +
             (join == null
                 ? ""
                 : join) +

@@ -22,7 +22,7 @@ public class QueryHelperTests {
 
         String expectedQuery = "Select * " +
             "from infolab.rooms r " +
-            "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+            "left join infolab.rooms_subscriptions s on r.roomname = s.roomname " +
             "where (s.username = :accessControlUsername or r.visibility='PUBLIC')";
 
         Assertions.assertEquals(expectedQuery, query.query());
@@ -39,7 +39,7 @@ public class QueryHelperTests {
         String expectedQuery = "Select * " +
             "from _anotherTable x " +
             "right join infolab.rooms r on r.id = x.banana_id " +
-            "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+            "left join infolab.rooms_subscriptions s on r.roomname = s.roomname " +
             "where (s.username = :accessControlUsername or r.visibility='PUBLIC')";
 
         Assertions.assertEquals(expectedQuery, query.query());
@@ -55,7 +55,7 @@ public class QueryHelperTests {
 
         String expectedQuery = "Select * " +
             "from infolab.rooms r " +
-            "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+            "left join infolab.rooms_subscriptions s on r.roomname = s.roomname " +
             "where (s.username = :accessControlUsername or r.visibility='PUBLIC')" +
             " and (x=? AND bla='foo')"
             ;
@@ -75,7 +75,7 @@ public class QueryHelperTests {
         String expectedQuery = "Select * " +
             "from _anotherTable x " +
             "right join infolab.rooms r on r.id = x._anotherTable_id " +
-            "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+            "left join infolab.rooms_subscriptions s on r.roomname = s.roomname " +
             "where (s.username = :accessControlUsername or r.visibility='PUBLIC')" +
             " and (x=? AND bla='foo')"
             ;
@@ -93,7 +93,7 @@ public class QueryHelperTests {
 
         String expectedQuery = "Select * " +
                 "from infolab.rooms r " +
-                "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+                "left join infolab.rooms_subscriptions s on r.roomname = s.roomname " +
                 "left join _another_table x on x._foreign_key_id = r.id " +
                 "where (s.username = :accessControlUsername or r.visibility='PUBLIC')"
                 ;
@@ -112,7 +112,7 @@ public class QueryHelperTests {
 
         String expectedQuery = "Select * " +
                 "from infolab.rooms r " +
-                "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+                "left join infolab.rooms_subscriptions s on r.roomname = s.roomname " +
                 "left join _another_table x on x._foreign_key_id = r.id " +
                 "where (s.username = :accessControlUsername or r.visibility='PUBLIC') " +
                 "and (x=? and OwO = 'foo')"
@@ -131,7 +131,7 @@ public class QueryHelperTests {
 
         String expectedQuery = "Select * " +
                 "from infolab.rooms r " +
-                "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+                "left join infolab.rooms_subscriptions s on r.roomname = s.roomname " +
                 "where (s.username = :accessControlUsername or r.visibility='PUBLIC') " +
                 "order by foo desc limit 69"
                 ;
@@ -150,7 +150,7 @@ public class QueryHelperTests {
 
         String expectedQuery = "Select * " +
                 "from infolab.rooms r " +
-                "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+                "left join infolab.rooms_subscriptions s on r.roomname = s.roomname " +
                 "left join _another_table x on x._foreign_key_id = r.id " +
                 "where (s.username = :accessControlUsername or r.visibility='PUBLIC') " +
                 "order by foo desc limit 69"
@@ -171,7 +171,7 @@ public class QueryHelperTests {
 
         String expectedQuery = "Select * " +
                 "from infolab.rooms r " +
-                "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
+                "left join infolab.rooms_subscriptions s on r.roomname = s.roomname " +
                 "left join _another_table x on x._foreign_key_id = r.id " +
                 "where (s.username = :accessControlUsername or r.visibility='PUBLIC') " +
                 "and (cool = true or t=?) " +
