@@ -20,23 +20,24 @@ import java.util.List;
 
 @Service
 public class RoomService {
-    private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final RoomSubscriptionRepository roomSubscriptionRepository;
 
     private final Logger log = LoggerFactory.getLogger(RoomService.class);
 
     @Autowired
-    public RoomService(UserRepository userRepository,
-                       RoomRepository roomRepository,
+    public RoomService(RoomRepository roomRepository,
                        RoomSubscriptionRepository roomSubscriptionRepository) {
-        this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.roomSubscriptionRepository = roomSubscriptionRepository;
     }
 
     public List<RoomEntity> getRooms(String date, Username username) {
         return roomRepository.getAfterDate(fromStringToDate(date), username);
+    }
+
+    public List<RoomEntity> getRoomsAndUsers(Username username) {
+        return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(username);
     }
 
     private LocalDate fromStringToDate(String date) {

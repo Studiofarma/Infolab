@@ -33,7 +33,21 @@ public class RoomApiController {
 
 
         if (!roomEntities.isEmpty()) {
+            roomDtos = roomEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
+        } else {
+            log.info("Non sono state trovate room");
+        }
+        return roomDtos;
+    }
 
+    @GetMapping("/api/rooms2")
+    public List<RoomDto> getAllRooms2(Principal principal) {
+
+        List<RoomDto> roomDtos = new ArrayList<>();
+        List<RoomEntity> roomEntities = roomService.getRoomsAndUsers(Username.of(principal.getName()));
+
+
+        if (!roomEntities.isEmpty()) {
             roomDtos = roomEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
         } else {
             log.info("Non sono state trovate room");
