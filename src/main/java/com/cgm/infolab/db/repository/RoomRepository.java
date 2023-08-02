@@ -46,12 +46,10 @@ public class RoomRepository {
                     "r.id room_id, " +
                     "r.visibility, " +
                     "u_other.description description, " +
-                    "m.sender_id user_id, " +
                     "m.sender_name username, " +
                     "m.id message_id, " +
                     "m.sent_at, " +
                     "m.content, " +
-                    "m.sender_id, " +
                     "m.status,  " +
                     "u_other.id other_user_id, " +
                     "u_other.username other_username, " +
@@ -64,11 +62,11 @@ public class RoomRepository {
                     "ELSE r.roomname " +
                 "END AS roomname2 " +
             "FROM infolab.users u " +
-            "LEFT JOIN infolab.rooms_subscriptions s ON s.user_id = u.id " +
-            "LEFT JOIN infolab.rooms r ON r.id = s.room_id " +
-            "LEFT JOIN infolab.chatmessages m ON m.recipient_room_id = r.id " +
-            "LEFT JOIN infolab.rooms_subscriptions s_other ON r.id = s_other.room_id and s_other.user_id <> s.user_id " +
-            "LEFT JOIN infolab.users u_other ON u_other.id = s_other.user_id " +
+            "LEFT JOIN infolab.rooms_subscriptions s ON s.username = u.username " +
+            "LEFT JOIN infolab.rooms r ON r.roomname = s.roomname " +
+            "LEFT JOIN infolab.chatmessages m ON m.recipient_room_name = r.roomname " +
+            "LEFT JOIN infolab.rooms_subscriptions s_other ON r.roomname = s_other.roomname and s_other.username <> s.username " +
+            "LEFT JOIN infolab.users u_other ON u_other.username = s_other.username " +
             "WHERE (s.username = :username OR s.username IS NULL) " +
             "ORDER BY roomname2, sent_at DESC " +
             "), " +
@@ -78,12 +76,10 @@ public class RoomRepository {
                     "r.id room_id, " +
                     "r.visibility, " +
                     "r.description description, " +
-                    "m.sender_id user_id, " +
                     "m.sender_name username, " +
                     "m.id message_id, " +
                     "m.sent_at, " +
                     "m.content, " +
-                    "m.sender_id, " +
                     "m.status,  " +
                     "CAST(NULL AS bigint) other_user_id, " +
                     "NULL other_username, " +
@@ -93,7 +89,7 @@ public class RoomRepository {
                     "NULL new_user_description, " +
                     "r.roomname roomname2 " +
             "FROM infolab.rooms r " +
-            "LEFT JOIN infolab.chatmessages m on m.recipient_room_id = r.id " +
+            "LEFT JOIN infolab.chatmessages m on m.recipient_room_name = r.roomname " +
             "WHERE r.visibility = 'PUBLIC' " +
             "ORDER BY roomname2, sent_at DESC " +
             ") " +
@@ -208,12 +204,12 @@ public class RoomRepository {
         List<RoomEntity> rooms = namedParameterJdbcTemplate
                 .query(GET_ALL_ROOMS_NEW_QUERY, params, RowMappers::mapToRoomEntityWithMessages2);
 
-        List<Long> roomIds = extractRoomIdsFromRoomList(rooms);
+        List<RoomName> roomNames = extractRoomNamesFromRoomList(rooms);
 
-        Map<Long, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(roomIds, username);
+        Map<RoomName, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(roomNames, username);
         rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
 
-        Map<Long, LocalDateTime> lastDownloadedDatesList = getLastDownloadedDatesGroupedByRoom(roomIds, username);
+        Map<RoomName, LocalDateTime> lastDownloadedDatesList = getLastDownloadedDatesGroupedByRoom(roomNames, username);
         rooms = mergeRoomsAndLastDownloadedDate(rooms, lastDownloadedDatesList);
 
         return rooms;
