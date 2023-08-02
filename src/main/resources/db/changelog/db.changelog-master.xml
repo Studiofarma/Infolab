@@ -95,6 +95,12 @@
                 <constraints foreignKeyName="fk_message_id" references="infolab.chatmessages(id)" nullable="false"/>
             </column>
         </createTable>
+        <createIndex schemaName="infolab" tableName="download_dates" indexName="download_dates_username_index">
+            <column name="username"/>
+        </createIndex>
+        <createIndex schemaName="infolab" tableName="download_dates" indexName="download_dates_message_id_index">
+            <column name="message_id"/>
+        </createIndex>
         <addPrimaryKey schemaName="infolab" tableName="download_dates" columnNames="download_timestamp, username, message_id"/>
     </changeSet>
 </databaseChangeLog>
