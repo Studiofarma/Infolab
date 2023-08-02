@@ -37,7 +37,10 @@ public class RoomRepositoryTests {
             {UserEntity.of(Username.of("user0"), "user0 desc"),
                     UserEntity.of(Username.of("user1"), "user1 desc"),
                     UserEntity.of(Username.of("user2"), "user2 desc"),
-                    UserEntity.of(Username.of("user3"), "user3 desc")};
+                    UserEntity.of(Username.of("user3"), "user3 desc"),
+                    UserEntity.of(Username.of("user4"), "user4 desc"),
+                    UserEntity.of(Username.of("user5"), "user5 desc"),
+            };
 
     public UserEntity loggedInUser = users[0]; // user0
 
@@ -190,5 +193,27 @@ public class RoomRepositoryTests {
 
         Assertions.assertEquals("user1", roomsFromDb.get(1).getOtherParticipants().get(0).getName().value());
         Assertions.assertEquals("user2", roomsFromDb.get(2).getOtherParticipants().get(0).getName().value());
+    }
+
+    @Test
+    void whenFetchingAllRoomsAndUsers_usersAreOfTheExpectedFormat() {
+        List<RoomEntity> roomsFromDb = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        Assertions.assertEquals(6, roomsFromDb.size());
+
+        RoomEntity user4AsRoom = roomsFromDb.get(4);
+        Assertions.assertEquals("user4", user4AsRoom.getName().value());
+        Assertions.assertEquals("user4 desc", user4AsRoom.getDescription());
+        Assertions.assertEquals("user4", user4AsRoom.getOtherParticipants().get(0).getName().value());
+        Assertions.assertEquals("user4 desc", user4AsRoom.getOtherParticipants().get(0).getDescription());
+
+        RoomEntity user5AsRoom = roomsFromDb.get(5);
+        Assertions.assertEquals("user5", user5AsRoom.getName().value());
+        Assertions.assertEquals("user5 desc", user5AsRoom.getDescription());
+        Assertions.assertEquals("user5", user5AsRoom.getOtherParticipants().get(0).getName().value());
+        Assertions.assertEquals("user5 desc", user5AsRoom.getOtherParticipants().get(0).getDescription());
     }
 }

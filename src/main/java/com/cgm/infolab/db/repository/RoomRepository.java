@@ -97,7 +97,7 @@ public class RoomRepository {
             "SELECT * FROM private_rooms_and_users " +
             "UNION " +
             "SELECT * FROM public_rooms " +
-            "ORDER BY sent_at DESC NULLS LAST, roomname2";
+            "ORDER BY sent_at DESC NULLS LAST, description";
 
     public RoomRepository(QueryHelper queryHelper, DataSource dataSource, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.queryHelper = queryHelper;

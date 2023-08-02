@@ -92,12 +92,14 @@ public abstract class RowMappers {
         Long roomId = rs.getObject("room_id", Long.class);
         roomId = roomId != null ? roomId : ID.None;
 
+        String description = rs.getString("description") != null ? rs.getString("description") : rs.getString("new_user_description");
+
         RoomEntity room = RoomEntity.of(
                 roomId,
                 RoomName.of(roomName),
                 visibility,
                 roomType,
-                rs.getString("description"),
+                description,
                 List.of(messageEntity)
         );
 
