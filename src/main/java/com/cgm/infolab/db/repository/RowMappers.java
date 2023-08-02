@@ -98,15 +98,15 @@ public abstract class RowMappers {
         );
     }
 
-    public static Pair<String, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
-        return Pair.of(rs.getString("roomname"), rs.getInt("not_downloaded_count"));
+    public static Pair<RoomName, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
+        return Pair.of(RoomName.of(rs.getString("roomname")), rs.getInt("not_downloaded_count"));
     }
 
-    public static Pair<String, LocalDateTime> mapLastDownloadedDate(ResultSet rs, int rowNum) throws SQLException {
+    public static Pair<RoomName, LocalDateTime> mapLastDownloadedDate(ResultSet rs, int rowNum) throws SQLException {
         if (rs.getTimestamp("download_timestamp") == null) {
-            return Pair.of(rs.getString("roomname"), null);
+            return Pair.of(RoomName.of(rs.getString("roomname")), null);
         } else {
-            return Pair.of(rs.getString("roomname"), rs.getObject("download_timestamp", LocalDateTime.class));
+            return Pair.of(RoomName.of(rs.getString("roomname")), rs.getObject("download_timestamp", LocalDateTime.class));
         }
     }
 

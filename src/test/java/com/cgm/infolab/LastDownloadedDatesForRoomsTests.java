@@ -97,14 +97,14 @@ public class LastDownloadedDatesForRoomsTests {
 
     @Test
     void whenFetchingLastReadDates_fromGeneralAndFromPrivateRoom_theyAreTheExpectedOnes() {
-        Map<String, LocalDateTime> downloadDatesUser0 = roomRepository.getLastDownloadedDatesGroupedByRoom(List.of(general.getName().value(), user0Uuser1RoomName.value()), users[0].getName());
+        Map<RoomName, LocalDateTime> downloadDatesUser0 = roomRepository.getLastDownloadedDatesGroupedByRoom(List.of(general.getName(), user0Uuser1RoomName), users[0].getName());
 
         Assertions.assertEquals(2, downloadDatesUser0.size());
 
-        Assertions.assertEquals(STARTING_TIME.plusSeconds(11), downloadDatesUser0.get(general.getName().value()));
-        Assertions.assertEquals(STARTING_TIME.plusSeconds(21), downloadDatesUser0.get(user0Uuser1RoomName.value()));
+        Assertions.assertEquals(STARTING_TIME.plusSeconds(11), downloadDatesUser0.get(general.getName()));
+        Assertions.assertEquals(STARTING_TIME.plusSeconds(21), downloadDatesUser0.get(user0Uuser1RoomName));
 
-        Map<String, LocalDateTime> downloadDatesUser1 = roomRepository.getLastDownloadedDatesGroupedByRoom(List.of(general.getName().value(), user0Uuser1RoomName.value()), users[1].getName());
+        Map<RoomName, LocalDateTime> downloadDatesUser1 = roomRepository.getLastDownloadedDatesGroupedByRoom(List.of(general.getName(), user0Uuser1RoomName), users[1].getName());
 
         Assertions.assertEquals(0, downloadDatesUser1.size());
     }
