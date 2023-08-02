@@ -57,6 +57,7 @@ public class RoomRepository {
                     "u.id new_user_id, " +
                     "u.username new_user_username, " +
                     "u.description new_user_description, " +
+                    "u_sender.description sender_description, " +
                 "CASE " +
                     "WHEN r.roomname IS NULL THEN u.username " +
                     "ELSE r.roomname " +
@@ -65,6 +66,7 @@ public class RoomRepository {
             "LEFT JOIN infolab.rooms_subscriptions s ON s.username = u.username " +
             "LEFT JOIN infolab.rooms r ON r.roomname = s.roomname " +
             "LEFT JOIN infolab.chatmessages m ON m.recipient_room_name = r.roomname " +
+            "LEFT JOIN infolab.users u_sender ON u_sender.username = m.sender_name " +
             "LEFT JOIN infolab.rooms_subscriptions s_other ON r.roomname = s_other.roomname and s_other.username <> s.username " +
             "LEFT JOIN infolab.users u_other ON u_other.username = s_other.username " +
             "WHERE (s.username = :username OR s.username IS NULL) " +
@@ -87,9 +89,11 @@ public class RoomRepository {
                     "CAST(NULL AS bigint) new_user_id, " +
                     "NULL new_user_username, " +
                     "NULL new_user_description, " +
+                    "u.description sender_description, " +
                     "r.roomname roomname2 " +
             "FROM infolab.rooms r " +
             "LEFT JOIN infolab.chatmessages m on m.recipient_room_name = r.roomname " +
+            "LEFT JOIN infolab.users u ON u.username = m.sender_name " +
             "WHERE r.visibility = 'PUBLIC' " +
             "ORDER BY roomname2, sent_at DESC " +
             ") " +
@@ -296,9 +300,10 @@ public class RoomRepository {
         return queryHelper
                 .forUser(username)
                 .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname roomname2, " +
-                        "r.visibility, m.sender_name username, m.id message_id, m.sent_at, m.content, m.status, " +
+                        "r.visibility, m.sender_name username, u.description sender_description, m.id message_id, m.sent_at, m.content, m.status, " +
                         "u_other.id other_user_id, u_other.username other_username, u_other.description other_description, %s".formatted(CASE_QUERY))
                 .join("LEFT JOIN infolab.chatmessages m ON r.roomname = m.recipient_room_name " +
+                        "left join infolab.users u ON u.username = m.sender_name " +
                         "left join infolab.rooms_subscriptions s_other on r.roomname = s_other.roomname and s_other.username <> s.username " +
                         "left join infolab.users u_other on u_other.username = s_other.username");
     }

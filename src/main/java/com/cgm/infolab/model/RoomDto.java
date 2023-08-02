@@ -6,6 +6,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RoomDto {
     private String roomName;
@@ -119,5 +120,33 @@ public class RoomDto {
 
     public void setOtherParticipants(List<UserDto> otherParticipants) {
         this.otherParticipants = otherParticipants;
+    }
+
+    @Override
+    public String toString() {
+        return "RoomDto{" +
+                "roomName='" + roomName + '\'' +
+                ", avatarLink=" + avatarLink +
+                ", unreadMessages=" + unreadMessages +
+                ", lastReadTimestamp=" + lastReadTimestamp +
+                ", description='" + description + '\'' +
+                ", visibility='" + visibility + '\'' +
+                ", roomType='" + roomType + '\'' +
+                ", lastMessage=" + lastMessage +
+                ", otherParticipants=" + otherParticipants +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RoomDto roomDto = (RoomDto) o;
+        return unreadMessages == roomDto.unreadMessages && Objects.equals(roomName, roomDto.roomName) && Objects.equals(avatarLink, roomDto.avatarLink) && Objects.equals(lastReadTimestamp, roomDto.lastReadTimestamp) && Objects.equals(description, roomDto.description) && Objects.equals(visibility, roomDto.visibility) && Objects.equals(roomType, roomDto.roomType) && Objects.equals(lastMessage, roomDto.lastMessage) && Objects.equals(otherParticipants, roomDto.otherParticipants);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(roomName, avatarLink, unreadMessages, lastReadTimestamp, description, visibility, roomType, lastMessage, otherParticipants);
     }
 }
