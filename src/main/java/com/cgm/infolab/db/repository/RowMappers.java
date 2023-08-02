@@ -16,8 +16,7 @@ public abstract class RowMappers {
 
     public static ChatMessageEntity mapToChatMessageEntity(ResultSet rs, int rowNum) throws SQLException {
 
-        UserEntity user = UserEntity.of(rs.getLong("user_id"),
-                Username.of(rs.getString("username")));
+        UserEntity user = UserEntity.of(Username.of(rs.getString("username")));
 
         String roomName = rs.getString("roomname");
         RoomTypeEnum roomType = getRoomType(roomName);

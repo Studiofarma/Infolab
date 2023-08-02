@@ -38,7 +38,6 @@ public class ChatMessageRepository {
                 .usingGeneratedKeyColumns("id");
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("sender_id", message.getSender().getId());
         parameters.put("sender_name", message.getSender().getName().value());
         parameters.put("recipient_room_id", message.getRoom().getId());
         parameters.put("recipient_room_name", message.getRoom().getName().value());
@@ -129,7 +128,7 @@ public class ChatMessageRepository {
     private UserQueryResult getMessages(Username username) {
         return queryHelper
                 .forUser(username)
-                .query("SELECT m.id message_id, m.sender_id user_id, m.sender_name username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status")
+                .query("SELECT m.id message_id, m.sender_name username, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status")
                 .join(JOIN_MESSAGES);
     }
 

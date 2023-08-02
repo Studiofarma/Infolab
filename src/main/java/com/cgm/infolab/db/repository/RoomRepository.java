@@ -215,7 +215,7 @@ public class RoomRepository {
         return queryHelper
                 .forUser(username)
                 .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, " +
-                        "r.visibility, m.sender_id user_id, m.sender_name username, m.id message_id, m.sent_at, m.content, m.sender_id, m.status, " +
+                        "r.visibility, m.sender_name username, m.id message_id, m.sent_at, m.content, m.status, " +
                         "u_other.id other_user_id, u_other.username other_username, u_other.description other_description, %s".formatted(CASE_QUERY))
                 .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id " +
                         "left join infolab.rooms_subscriptions s_other on r.roomname = s_other.roomname and s_other.username <> s.username " +

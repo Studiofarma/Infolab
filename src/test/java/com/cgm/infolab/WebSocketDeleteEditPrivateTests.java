@@ -79,7 +79,6 @@ public class WebSocketDeleteEditPrivateTests {
 
         testDbHelper.insertCustomMessage(
                 1,
-                user1Id,
                 user1.getName().value(),
                 bananaUser1Id,
                 bananaUser1.getName().value(),
@@ -88,7 +87,6 @@ public class WebSocketDeleteEditPrivateTests {
 
         testDbHelper.insertCustomMessage(
                 2,
-                user1Id,
                 user1.getName().value(),
                 bananaUser1Id,
                 bananaUser1.getName().value(),
@@ -97,7 +95,6 @@ public class WebSocketDeleteEditPrivateTests {
 
         testDbHelper.insertCustomMessage(
                 3,
-                userBananaId,
                 userBanana.getName().value(),
                 bananaUser1Id,
                 bananaUser1.getName().value(),
@@ -106,7 +103,6 @@ public class WebSocketDeleteEditPrivateTests {
 
         testDbHelper.insertCustomMessage(
                 4,
-                userBananaId,
                 userBanana.getName().value(),
                 bananaUser1Id,
                 bananaUser1.getName().value(),
@@ -114,7 +110,6 @@ public class WebSocketDeleteEditPrivateTests {
                 "4 Message in banana-user1");
         testDbHelper.insertCustomMessage(
                 5,
-                user1Id,
                 user1.getName().value(),
                 bananaUser1Id,
                 bananaUser1.getName().value(),
@@ -122,7 +117,6 @@ public class WebSocketDeleteEditPrivateTests {
                 "5 Message in banana-user1");
         testDbHelper.insertCustomMessage(
                 6,
-                user1Id,
                 user1.getName().value(),
                 bananaUser1Id,
                 bananaUser1.getName().value(),

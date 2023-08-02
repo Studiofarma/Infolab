@@ -78,11 +78,11 @@ public class LastDownloadedDatesForRoomsTests {
         loggedInUserId = jdbcTemplate.queryForObject("select * from infolab.users where username = 'user0'", (rs, rowNum) -> rs.getLong("id"));
 
         // Adding messages and read dates
-        testDbHelper.insertCustomMessage(0, loggedInUserId, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME, messageDtos[0].getContent());
-        testDbHelper.insertCustomMessage(1, loggedInUserId, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME.plusSeconds(1), messageDtos[1].getContent());
+        testDbHelper.insertCustomMessage(0, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME, messageDtos[0].getContent());
+        testDbHelper.insertCustomMessage(1, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME.plusSeconds(1), messageDtos[1].getContent());
 
-        testDbHelper.insertCustomMessage(2, loggedInUserId, users[0].getName().value(), user0user1Id, user0Uuser1RoomName.value(), STARTING_TIME.plusSeconds(2), messageDtos[4].getContent());
-        testDbHelper.insertCustomMessage(3, loggedInUserId, users[0].getName().value(), user0user1Id, user0Uuser1RoomName.value(), STARTING_TIME.plusSeconds(3), messageDtos[5].getContent());
+        testDbHelper.insertCustomMessage(2, users[0].getName().value(), user0user1Id, user0Uuser1RoomName.value(), STARTING_TIME.plusSeconds(2), messageDtos[4].getContent());
+        testDbHelper.insertCustomMessage(3, users[0].getName().value(), user0user1Id, user0Uuser1RoomName.value(), STARTING_TIME.plusSeconds(3), messageDtos[5].getContent());
 
         testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(10), 0, users[0].getName().value());
         testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(11), 1, users[0].getName().value());
@@ -91,8 +91,8 @@ public class LastDownloadedDatesForRoomsTests {
         testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(21), 3, users[0].getName().value());
 
         // Adding the remaining messages
-        testDbHelper.insertCustomMessage(4, loggedInUserId, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME.plusSeconds(4), messageDtos[2].getContent());
-        testDbHelper.insertCustomMessage(5, loggedInUserId, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME.plusSeconds(5), messageDtos[3].getContent());
+        testDbHelper.insertCustomMessage(4, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME.plusSeconds(4), messageDtos[2].getContent());
+        testDbHelper.insertCustomMessage(5, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME.plusSeconds(5), messageDtos[3].getContent());
     }
 
     @Test

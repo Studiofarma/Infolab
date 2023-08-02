@@ -44,9 +44,6 @@
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="chatmessages_pk" />
             </column>
-            <column name="sender_id" type="bigint" >
-                <constraints foreignKeyName="fk_sender_id" references="infolab.users(id)"/>
-            </column>
             <column name="sender_name" type="varchar(50)" >
                 <constraints foreignKeyName="fk_sender_name" references="infolab.users(username)"/>
             </column>
