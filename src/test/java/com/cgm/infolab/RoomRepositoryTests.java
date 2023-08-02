@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -215,5 +216,61 @@ public class RoomRepositoryTests {
         Assertions.assertEquals("user5 desc", user5AsRoom.getDescription());
         Assertions.assertEquals("user5", user5AsRoom.getOtherParticipants().get(0).getName().value());
         Assertions.assertEquals("user5 desc", user5AsRoom.getOtherParticipants().get(0).getDescription());
+    }
+
+    @Test
+    void whenFetchingAllRoomsAndUsers_forPublicDescriptionIsFromTheDb_forPrivateTheDescriptionIsTheOtherUserOfTheRoom() {
+        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        Assertions.assertEquals(6, roomEntities.size());
+
+        String descriptionGeneral = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                (rs, rowNum) -> rs.getString("description"),
+                general.getName().value());
+
+        Assertions.assertEquals(generalDesc, roomEntities.get(0).getDescription());
+        Assertions.assertEquals(descriptionGeneral, roomEntities.get(0).getDescription());
+
+        String descriptionUser0User1 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                (rs, rowNum) -> rs.getString("description"),
+                "user0-user1");
+
+        Assertions.assertNotEquals(descriptionUser0User1, roomEntities.get(1).getDescription());
+        Assertions.assertEquals("user1 desc", roomEntities.get(1).getDescription());
+
+        String descriptionUser0User2 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                (rs, rowNum) -> rs.getString("description"),
+                "user0-user2");
+
+        Assertions.assertNotEquals(descriptionUser0User2, roomEntities.get(2).getDescription());
+        Assertions.assertEquals("user2 desc", roomEntities.get(2).getDescription());
+
+        String descriptionUser0User3 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                (rs, rowNum) -> rs.getString("description"),
+                "user0-user3");
+
+        Assertions.assertNotEquals(descriptionUser0User3, roomEntities.get(3).getDescription());
+        Assertions.assertEquals("user3 desc", roomEntities.get(3).getDescription());
+
+        Assertions.assertThrows(EmptyResultDataAccessException.class,
+                () -> {
+                    String descriptionUser4 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                            (rs, rowNum) -> rs.getString("description"),
+                            "user4");
+                });
+
+        Assertions.assertEquals("user4 desc", roomEntities.get(4).getDescription());
+
+        Assertions.assertThrows(EmptyResultDataAccessException.class,
+                () -> {
+                    String descriptionUser5 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                            (rs, rowNum) -> rs.getString("description"),
+                            "user5");
+                });
+
+        Assertions.assertEquals("user5 desc", roomEntities.get(5).getDescription());
     }
 }
