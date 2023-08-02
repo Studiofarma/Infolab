@@ -24,7 +24,7 @@ public class ChatMessageRepository {
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
     private final String JOIN_MESSAGES =
-            "JOIN infolab.chatmessages m ON r.id = m.recipient_room_id";
+            "JOIN infolab.chatmessages m ON r.roomname = m.recipient_room_name";
 
     public ChatMessageRepository(DataSource dataSource, QueryHelper queryHelper) {
         this.dataSource = dataSource;
@@ -39,7 +39,6 @@ public class ChatMessageRepository {
 
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("sender_name", message.getSender().getName().value());
-        parameters.put("recipient_room_id", message.getRoom().getId());
         parameters.put("recipient_room_name", message.getRoom().getName().value());
         parameters.put("sent_at", message.getTimestamp());
         parameters.put("content", message.getContent());

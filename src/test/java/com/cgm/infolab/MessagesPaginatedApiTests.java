@@ -64,12 +64,8 @@ public class MessagesPaginatedApiTests {
 
         testDbHelper.addPrivateRoomsAndSubscribeUsers(pairs);
 
-        Long generalId = testDbHelper.getRoomId("general");
-
-        Long user0Id = testDbHelper.getUserId("user0");
-
         for (int i = 0; i < messageDtos.length; i++) {
-            testDbHelper.insertCustomMessage(i, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME.plusSeconds(i), "%d. Hello general from user0".formatted(i));
+            testDbHelper.insertCustomMessage(i, users[0].getName().value(), general.getName().value(), STARTING_TIME.plusSeconds(i), "%d. Hello general from user0".formatted(i));
         }
     }
 

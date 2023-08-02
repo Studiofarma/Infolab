@@ -72,9 +72,9 @@ public class TestDbHelper {
         }
     }
 
-    public void insertCustomMessage(long messageId, String senderName, long recipientRoomId, String recipientRoomName, LocalDateTime sentAt, String content) {
-        jdbcTemplate.update("INSERT INTO infolab.chatmessages (id, sender_name, recipient_room_id, recipient_room_name, sent_at, content) values" +
-                "(?, ?, ?, ?, ?, ?)", messageId, senderName, recipientRoomId, recipientRoomName, sentAt, content);
+    public void insertCustomMessage(long messageId, String senderName, String recipientRoomName, LocalDateTime sentAt, String content) {
+        jdbcTemplate.update("INSERT INTO infolab.chatmessages (id, sender_name, recipient_room_name, sent_at, content) values" +
+                "(?, ?, ?, ?, ?)", messageId, senderName, recipientRoomName, sentAt, content);
     }
 
     public void insertCustomReadDate(LocalDateTime timestamp, long message_id, String username) {
@@ -85,14 +85,14 @@ public class TestDbHelper {
     public List<ChatMessageEntity> getAllMessages() {
         return jdbcTemplate
                 .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status " +
-                        "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
+                        "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.roomname = m.recipient_room_name " +
                         "JOIN infolab.users u_mex ON u_mex.username = m.sender_name", RowMappers::mapToChatMessageEntity);
     }
 
     public <T> List<T> getAllMessages(RowMapper<T> rowMapper) {
         return jdbcTemplate
                 .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status " +
-                        "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
+                        "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.roomname = m.recipient_room_name " +
                         "JOIN infolab.users u_mex ON u_mex.username = m.sender_name", rowMapper);
     }
 

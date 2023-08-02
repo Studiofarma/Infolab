@@ -19,7 +19,7 @@ public class DownloadDateRepository {
 
     protected static final String DOWNLOAD_DATES_JOIN =
             "JOIN infolab.chatmessages m " +
-                    "ON m.recipient_room_id = r.id " +
+                    "ON m.recipient_room_name = r.roomname " +
                     "JOIN infolab.users u_logged " +
                     "ON u_logged.username = :username " +
                     "LEFT JOIN infolab.download_dates d " +
@@ -73,7 +73,7 @@ public class DownloadDateRepository {
         return queryHelper
                 .forUser(username)
                 .query("INSERT INTO infolab.download_dates (download_timestamp, username, message_id) SELECT :timestamp, :username, m.id")
-                .join("join infolab.chatmessages m on m.recipient_room_id = r.id join infolab.users u_logged on u_logged.username = :username")
+                .join("join infolab.chatmessages m on m.recipient_room_name = r.roomname join infolab.users u_logged on u_logged.username = :username")
                 .where("m.id IN (:messageIds)")
                 .update(arguments);
     }

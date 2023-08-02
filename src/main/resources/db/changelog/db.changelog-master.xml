@@ -47,9 +47,6 @@
             <column name="sender_name" type="varchar(50)" >
                 <constraints foreignKeyName="fk_sender_name" references="infolab.users(username)"/>
             </column>
-            <column name="recipient_room_id" type="bigint">
-                <constraints foreignKeyName="fk_recipient_room_id" references="infolab.rooms(id)"/>
-            </column>
             <column name="recipient_room_name" type="varchar(255)">
                 <constraints foreignKeyName="fk_recipient_room_name" references="infolab.rooms(roomname)"/>
             </column>
