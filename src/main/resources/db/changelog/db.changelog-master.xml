@@ -74,14 +74,8 @@
 
         <!-- Table RoomsSubscriptions -->
         <createTable schemaName="infolab" tableName="rooms_subscriptions">
-            <column name="room_id" type="bigint">
-                <constraints foreignKeyName="fk_rooms_subscriptions_room_id" references="infolab.rooms(id)" nullable="false"/>
-            </column>
             <column name="roomname" type="varchar(255)">
                 <constraints foreignKeyName="fk_rooms_subscriptions_roomname" references="infolab.rooms(roomname)" nullable="false"/>
-            </column>
-            <column name="user_id" type="bigint">
-                <constraints foreignKeyName="fk_rooms_subscriptions_user_id" references="infolab.users(id)" nullable="false"/>
             </column>
             <column name="username" type="varchar(50)">
                 <constraints foreignKeyName="fk_rooms_subscriptions_username" references="infolab.users(username)" nullable="false"/>

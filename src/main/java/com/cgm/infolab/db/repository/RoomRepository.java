@@ -28,8 +28,8 @@ public class RoomRepository {
                 "WHEN r.visibility = 'PUBLIC' THEN r.description " +
                 "ELSE u_other.description " +
             "END AS description";
-    private final String JOIN = "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
-            "left join infolab.users u_other on u_other.id = s_other.user_id";
+    private final String JOIN = "left join infolab.rooms_subscriptions s_other on r.roomname = s_other.roomname and s_other.username <> s.username " +
+            "left join infolab.users u_other on u_other.username = s_other.username";
 
     private final String ROOMS_AND_LAST_MESSAGES_OTHER = "ORDER BY r.roomname, m.sent_at DESC";
 
@@ -131,7 +131,7 @@ public class RoomRepository {
         return queryHelper
                 .query("SELECT r.id room_id, r.roomname, r.visibility, %s".formatted(CASE_QUERY))
                 .from("infolab.rooms r")
-                .join("left join infolab.rooms_subscriptions s on r.id = s.room_id %s".formatted(JOIN));
+                .join("left join infolab.rooms_subscriptions s on r.roomname = s.roomname %s".formatted(JOIN));
     }
 
     public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
@@ -218,8 +218,8 @@ public class RoomRepository {
                         "r.visibility, m.sender_id user_id, m.sender_name username, m.id message_id, m.sent_at, m.content, m.sender_id, m.status, " +
                         "u_other.id other_user_id, u_other.username other_username, u_other.description other_description, %s".formatted(CASE_QUERY))
                 .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id " +
-                        "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
-                        "left join infolab.users u_other on u_other.id = s_other.user_id");
+                        "left join infolab.rooms_subscriptions s_other on r.roomname = s_other.roomname and s_other.username <> s.username " +
+                        "left join infolab.users u_other on u_other.username = s_other.username");
     }
 
     public Map<Long, Integer> getNotDownloadedYetNumberGroupedByRoom(List<Long> roomIds, Username username) {
