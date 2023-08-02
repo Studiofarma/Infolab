@@ -129,7 +129,7 @@ public class ChatMessageRepository {
     private UserQueryResult getMessages(Username username) {
         return queryHelper
                 .forUser(username)
-                .query("SELECT m.id message_id, m.sender_id user_id, m.sender_name username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status")
+                .query("SELECT m.id message_id, m.sender_id user_id, m.sender_name username, m.sender_id, r.id room_id, r.roomname roomname2, r.visibility, m.sent_at, m.content, m.status")
                 .join(JOIN_MESSAGES);
     }
 

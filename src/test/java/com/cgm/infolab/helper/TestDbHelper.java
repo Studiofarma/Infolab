@@ -84,14 +84,14 @@ public class TestDbHelper {
 
     public List<ChatMessageEntity> getAllMessages() {
         return jdbcTemplate
-                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status " +
+                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname roomname2, r.visibility, m.sent_at, m.content, m.status " +
                         "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
                         "JOIN infolab.users u_mex ON u_mex.id = m.sender_id", RowMappers::mapToChatMessageEntity);
     }
 
     public <T> List<T> getAllMessages(RowMapper<T> rowMapper) {
         return jdbcTemplate
-                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname, r.visibility, m.sent_at, m.content, m.status " +
+                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, m.sender_id, r.id room_id, r.roomname roomname2, r.visibility, m.sent_at, m.content, m.status " +
                         "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.id = m.recipient_room_id " +
                         "JOIN infolab.users u_mex ON u_mex.id = m.sender_id", rowMapper);
     }

@@ -5,7 +5,6 @@ import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import com.cgm.infolab.db.repository.queryhelper.QueryResult;
 import com.cgm.infolab.db.repository.queryhelper.UserQueryResult;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,8 +22,7 @@ import static com.cgm.infolab.db.repository.DownloadDateRepository.*;
 public class RoomRepository {
     private final QueryHelper queryHelper;
     private final DataSource dataSource;
-    @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     private final String ROOMS_WHERE_ROOMNAME = "r.roomname = :roomName";
     private final String CASE_QUERY =
@@ -42,9 +40,73 @@ public class RoomRepository {
     private final String GET_DOWNLOAD_DATES_INNER_JOIN = "join infolab.download_dates d on d.message_id = m.id and d.username = :username";
     private final String GET_DOWNLOAD_DATES_WHERE_IN_LIST = "m.recipient_room_id IN (:roomIds)";
 
-    public RoomRepository(QueryHelper queryHelper, DataSource dataSource) {
+    private final String GET_ALL_ROOMS_NEW_QUERY =
+            "WITH private_rooms_and_users AS ( " +
+            "SELECT DISTINCT ON(roomname2) " +
+                    "r.id room_id, " +
+                    "r.visibility, " +
+                    "u_other.description description, " +
+                    "m.sender_id user_id, " +
+                    "m.sender_name username, " +
+                    "m.id message_id, " +
+                    "m.sent_at, " +
+                    "m.content, " +
+                    "m.sender_id, " +
+                    "m.status,  " +
+                    "u_other.id other_user_id, " +
+                    "u_other.username other_username, " +
+                    "u_other.description other_description, " +
+                    "u.id new_user_id, " +
+                    "u.username new_user_username, " +
+                    "u.description new_user_description, " +
+                "CASE " +
+                    "WHEN r.roomname IS NULL THEN u.username " +
+                    "ELSE r.roomname " +
+                "END AS roomname2 " +
+            "FROM infolab.users u " +
+            "LEFT JOIN infolab.rooms_subscriptions s ON s.user_id = u.id " +
+            "LEFT JOIN infolab.rooms r ON r.id = s.room_id " +
+            "LEFT JOIN infolab.chatmessages m ON m.recipient_room_id = r.id " +
+            "LEFT JOIN infolab.rooms_subscriptions s_other ON r.id = s_other.room_id and s_other.user_id <> s.user_id " +
+            "LEFT JOIN infolab.users u_other ON u_other.id = s_other.user_id " +
+            "WHERE (s.username = :username OR s.username IS NULL) " +
+            "ORDER BY roomname2, sent_at DESC " +
+            "), " +
+
+            "public_rooms AS (   " +
+            "SELECT DISTINCT ON(roomname2) " +
+                    "r.id room_id, " +
+                    "r.visibility, " +
+                    "r.description description, " +
+                    "m.sender_id user_id, " +
+                    "m.sender_name username, " +
+                    "m.id message_id, " +
+                    "m.sent_at, " +
+                    "m.content, " +
+                    "m.sender_id, " +
+                    "m.status,  " +
+                    "CAST(NULL AS bigint) other_user_id, " +
+                    "NULL other_username, " +
+                    "NULL other_description, " +
+                    "CAST(NULL AS bigint) new_user_id, " +
+                    "NULL new_user_username, " +
+                    "NULL new_user_description, " +
+                    "r.roomname roomname2 " +
+            "FROM infolab.rooms r " +
+            "LEFT JOIN infolab.chatmessages m on m.recipient_room_id = r.id " +
+            "WHERE r.visibility = 'PUBLIC' " +
+            "ORDER BY roomname2, sent_at DESC " +
+            ") " +
+
+            "SELECT * FROM private_rooms_and_users " +
+            "UNION " +
+            "SELECT * FROM public_rooms " +
+            "ORDER BY sent_at DESC NULLS LAST, roomname2";
+
+    public RoomRepository(QueryHelper queryHelper, DataSource dataSource, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.queryHelper = queryHelper;
         this.dataSource = dataSource;
+        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     public RoomEntity add(RoomEntity room) throws DuplicateKeyException {
@@ -143,35 +205,8 @@ public class RoomRepository {
         Map<String, Object> params = new HashMap<>();
         params.put("username", username.value());
 
-        // temp
-        params.put("accessControlUsername", username.value());
-
-        // temp
         List<RoomEntity> rooms = namedParameterJdbcTemplate
-                .query("WITH users_with_room as ( " +
-                        "select s2.username, s2.user_id " +
-                        "from infolab.rooms_subscriptions s1 " +
-                        "join infolab.rooms_subscriptions s2 on s2.room_id = s1.room_id and s2.user_id <> s1.user_id " +
-                        "where s1.username = :username " +
-                        ") " +
-                            "SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, r.visibility, m.sender_id user_id, m.sender_name username, m.id message_id, m.sent_at, m.content, m.sender_id, m.status, " +
-                            "u_other.id other_user_id, u_other.username other_username, u_other.description other_description, " +
-                            "CASE " +
-                            "WHEN r.visibility = 'PUBLIC' THEN r.description " +
-                            "ELSE u_other.description " +
-                            "END AS description " +
-                            "FROM infolab.rooms r " +
-                            "left join infolab.rooms_subscriptions s on r.id = s.room_id " +
-                            "left JOIN infolab.chatmessages m ON r.id = m.recipient_room_id " +
-                            "left join infolab.rooms_subscriptions s_other on r.id = s_other.room_id and s_other.user_id <> s.user_id " +
-                            "left join infolab.users u_other on u_other.id = s_other.user_id " +
-                            "WHERE (s.username = :accessControlUsername or r.visibility='PUBLIC') " +
-                        "UNION " +
-                            "select 0 as room_id, u.username as roomname, null as visibility, null as user_id, null username, null as message_id, null as sent_at, null as content, null sender_id, null as status, " +
-                            "u.id other_user_id, u.username other_username, u.description other_description, u.description " +
-                            "from infolab.users u " +
-                            "where u.id NOT IN (select user_id from users_with_room) and u.username <> :username " +
-                            "ORDER BY sent_at DESC NULLS LAST, roomname asc", params, RowMappers::mapToRoomEntityWithMessages);
+                .query(GET_ALL_ROOMS_NEW_QUERY, params, RowMappers::mapToRoomEntityWithMessages2);
 
         List<Long> roomIds = extractRoomIdsFromRoomList(rooms);
 
@@ -264,7 +299,7 @@ public class RoomRepository {
     private UserQueryResult getRooms(Username username) {
         return queryHelper
                 .forUser(username)
-                .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname, " +
+                .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname roomname2, " +
                         "r.visibility, m.sender_id user_id, m.sender_name username, m.id message_id, m.sent_at, m.content, m.sender_id, m.status, " +
                         "u_other.id other_user_id, u_other.username other_username, u_other.description other_description, %s".formatted(CASE_QUERY))
                 .join("LEFT JOIN infolab.chatmessages m ON r.id = m.recipient_room_id " +

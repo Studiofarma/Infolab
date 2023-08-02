@@ -1,5 +1,6 @@
 package com.cgm.infolab.db.repository;
 
+import com.cgm.infolab.db.ID;
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
 import com.cgm.infolab.db.model.enumeration.StatusEnum;
@@ -19,7 +20,7 @@ public abstract class RowMappers {
         UserEntity user = UserEntity.of(rs.getLong("user_id"),
                 Username.of(rs.getString("username")));
 
-        String roomName = rs.getString("roomname");
+        String roomName = rs.getString("roomname2");
         RoomTypeEnum roomType = getRoomType(roomName);
 
         RoomEntity room = RoomEntity.of(
@@ -58,7 +59,7 @@ public abstract class RowMappers {
     }
 
     public static RoomEntity mapToRoomEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
-        String roomName = rs.getString("roomname");
+        String roomName = rs.getString("roomname2");
         RoomTypeEnum roomType = getRoomType(roomName);
 
         ChatMessageEntity messageEntity = rs.getString("content") != null ?  mapToChatMessageEntity(rs, rowNum) : ChatMessageEntity.empty();
@@ -81,6 +82,37 @@ public abstract class RowMappers {
         return room;
     }
 
+    public static RoomEntity mapToRoomEntityWithMessages2(ResultSet rs, int rowNum) throws SQLException {
+        String roomName = rs.getString("roomname2");
+        RoomTypeEnum roomType = getRoomType(roomName);
+
+        ChatMessageEntity messageEntity = rs.getString("content") != null ?  mapToChatMessageEntity(rs, rowNum) : ChatMessageEntity.empty();
+
+        VisibilityEnum visibility = rs.getString("visibility") != null ? VisibilityEnum.valueOf(rs.getString("visibility").trim()) : VisibilityEnum.PRIVATE;
+
+        Long roomId = rs.getObject("room_id", Long.class);
+        roomId = roomId != null ? roomId : ID.None;
+
+        RoomEntity room = RoomEntity.of(
+                roomId,
+                RoomName.of(roomName),
+                visibility,
+                roomType,
+                rs.getString("description"),
+                List.of(messageEntity)
+        );
+
+        if (!room.getVisibility().equals(VisibilityEnum.PUBLIC)) {
+            if (rs.getString("other_user_id") != null) {
+                room.setOtherParticipants(List.of(mapToOtherUserEntity(rs, rowNum)));
+            } else { // In this case the room doesn't exist yet, but the user has been returned
+                room.setOtherParticipants(List.of(mapToNewUserEntity(rs, rowNum)));
+            }
+        }
+
+        return room;
+    }
+
     public static UserEntity mapToUserEntity(ResultSet rs, int rowNum) throws SQLException {
         String usernameString = rs.getString("username");
 
@@ -98,6 +130,14 @@ public abstract class RowMappers {
                 rs.getLong("other_user_id"),
                 Username.of(rs.getString("other_username")),
                 rs.getString("other_description")
+        );
+    }
+
+    public static UserEntity mapToNewUserEntity(ResultSet rs, int rowNum) throws SQLException {
+        return UserEntity.of(
+                rs.getLong("new_user_id"),
+                Username.of(rs.getString("new_user_username")),
+                rs.getString("new_user_description")
         );
     }
 
