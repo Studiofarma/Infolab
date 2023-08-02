@@ -23,7 +23,7 @@ public class DownloadDateRepository {
                     "JOIN infolab.users u_logged " +
                     "ON u_logged.username = :username " +
                     "LEFT JOIN infolab.download_dates d " +
-                    "ON d.user_id = u_logged.id AND d.message_id = m.id";
+                    "ON d.username = u_logged.username AND d.message_id = m.id";
     protected static final String DOWNLOAD_DATES_WHERE_NULL = "d.download_timestamp IS NULL";
     protected static final String DOWNLOAD_DATES_WHERE_NOT_DOWNLOADED_AND_ROOMNAME =
             DOWNLOAD_DATES_WHERE_NULL + " AND r.roomname = :roomName";
@@ -56,7 +56,7 @@ public class DownloadDateRepository {
 
         return queryHelper
                 .forUser(username)
-                .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, username, message_id) SELECT :timestamp, u_logged.id, :username, m.id")
+                .query("INSERT INTO infolab.download_dates (download_timestamp, username, message_id) SELECT :timestamp, :username, m.id")
                 .join(DOWNLOAD_DATES_JOIN)
                 .where(DOWNLOAD_DATES_WHERE_NOT_DOWNLOADED_AND_ROOMNAME)
                 .update(arguments);
@@ -72,7 +72,7 @@ public class DownloadDateRepository {
 
         return queryHelper
                 .forUser(username)
-                .query("INSERT INTO infolab.download_dates (download_timestamp, user_id, username, message_id) SELECT :timestamp, u_logged.id, :username, m.id")
+                .query("INSERT INTO infolab.download_dates (download_timestamp, username, message_id) SELECT :timestamp, :username, m.id")
                 .join("join infolab.chatmessages m on m.recipient_room_id = r.id join infolab.users u_logged on u_logged.username = :username")
                 .where("m.id IN (:messageIds)")
                 .update(arguments);

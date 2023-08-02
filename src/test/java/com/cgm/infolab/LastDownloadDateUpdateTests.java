@@ -48,7 +48,7 @@ public class LastDownloadDateUpdateTests {
             ChatMessageDto.of("Visible only to user1 and user2", users[2].getName().value()),
     };
 
-    public String query = "select * from infolab.download_dates d left join infolab.chatmessages m on m.id = d.message_id where d.user_id = ? and m.content = ?";
+    public String query = "select * from infolab.download_dates d left join infolab.chatmessages m on m.id = d.message_id where d.username = ? and m.content = ?";
 
     @BeforeAll
     void setUp() {
@@ -77,7 +77,7 @@ public class LastDownloadDateUpdateTests {
         List<String> fromDb = jdbcTemplate.query(
                 query,
                 (rs, rowNum) -> rs.getString("content"),
-                users[0].getId(),
+                users[0].getName().value(),
                 generalMessage
         );
 
@@ -88,7 +88,7 @@ public class LastDownloadDateUpdateTests {
         List<String> fromDb2 = jdbcTemplate.query(
                 query,
                 (rs, rowNum) -> rs.getString("content"),
-                users[0].getId(),
+                users[0].getName().value(),
                 "Visible only to user1 and user2"
         );
 
@@ -105,7 +105,7 @@ public class LastDownloadDateUpdateTests {
         Timestamp timestampFirstMessage = jdbcTemplate.query(
                 query,
                 (rs, rowNum) -> rs.getTimestamp("download_timestamp"),
-                users[0].getId(),
+                users[0].getName().value(),
                 generalMessage
         )
         .get(0);
@@ -117,7 +117,7 @@ public class LastDownloadDateUpdateTests {
         List<String> fromDb = jdbcTemplate.query(
                 query,
                 (rs, rowNum) -> rs.getString("content"),
-                users[0].getId(),
+                users[0].getName().value(),
                 generalMessage2
         );
 
@@ -126,7 +126,7 @@ public class LastDownloadDateUpdateTests {
         Timestamp timestampSecondMessage = jdbcTemplate.query(
                         query,
                         (rs, rowNum) -> rs.getTimestamp("download_timestamp"),
-                        users[0].getId(),
+                        users[0].getName().value(),
                         generalMessage2
                 )
                 .get(0);

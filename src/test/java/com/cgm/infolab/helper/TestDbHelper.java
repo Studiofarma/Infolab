@@ -77,9 +77,9 @@ public class TestDbHelper {
                 "(?, ?, ?, ?, ?, ?, ?)", messageId, senderId, senderName, recipientRoomId, recipientRoomName, sentAt, content);
     }
 
-    public void insertCustomReadDate(LocalDateTime timestamp, long message_id, long user_id, String username) {
-        jdbcTemplate.update("INSERT INTO infolab.download_dates (download_timestamp, message_id, user_id, username) values" +
-                "(?, ?, ?, ?)", timestamp, message_id, user_id, username);
+    public void insertCustomReadDate(LocalDateTime timestamp, long message_id, String username) {
+        jdbcTemplate.update("INSERT INTO infolab.download_dates (download_timestamp, message_id, username) values" +
+                "(?, ?, ?)", timestamp, message_id, username);
     }
 
     public List<ChatMessageEntity> getAllMessages() {

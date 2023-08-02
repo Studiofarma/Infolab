@@ -94,9 +94,6 @@
             <column name="download_timestamp" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="bigint">
-                <constraints foreignKeyName="fk_download_dates_user_id" references="infolab.users(id)" nullable="false"/>
-            </column>
             <column name="username" type="varchar(50)">
                 <constraints foreignKeyName="fk_download_dates_username" references="infolab.users(username)" nullable="false"/>
             </column>

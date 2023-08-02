@@ -84,11 +84,11 @@ public class LastDownloadedDatesForRoomsTests {
         testDbHelper.insertCustomMessage(2, loggedInUserId, users[0].getName().value(), user0user1Id, user0Uuser1RoomName.value(), STARTING_TIME.plusSeconds(2), messageDtos[4].getContent());
         testDbHelper.insertCustomMessage(3, loggedInUserId, users[0].getName().value(), user0user1Id, user0Uuser1RoomName.value(), STARTING_TIME.plusSeconds(3), messageDtos[5].getContent());
 
-        testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(10), 0, loggedInUserId, users[0].getName().value());
-        testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(11), 1, loggedInUserId, users[0].getName().value());
+        testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(10), 0, users[0].getName().value());
+        testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(11), 1, users[0].getName().value());
 
-        testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(20), 2, loggedInUserId, users[0].getName().value());
-        testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(21), 3, loggedInUserId, users[0].getName().value());
+        testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(20), 2, users[0].getName().value());
+        testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(21), 3, users[0].getName().value());
 
         // Adding the remaining messages
         testDbHelper.insertCustomMessage(4, loggedInUserId, users[0].getName().value(), generalId, general.getName().value(), STARTING_TIME.plusSeconds(4), messageDtos[2].getContent());
