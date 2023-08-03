@@ -1,5 +1,3 @@
-import { MessageDto } from "./message-dto";
-
 export class WebSocketMessageDto {
   type = "";
   chat = {
