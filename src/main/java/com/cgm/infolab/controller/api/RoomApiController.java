@@ -30,14 +30,14 @@ public class RoomApiController {
     }
 
     @GetMapping("/api/rooms")
-    public List<RoomDto> getAllRooms(@RequestParam(required = false) String date, Principal principal) {
+    public BasicJsonDto<RoomDto> getAllRooms(@RequestParam(required = false) String date, Principal principal) {
 
-        List<RoomDto> roomDtos = new ArrayList<>();
+        BasicJsonDto<RoomDto> roomDtos = BasicJsonDto.empty();
         List<RoomEntity> roomEntities = roomService.getRooms(date, Username.of(principal.getName()));
 
 
         if (!roomEntities.isEmpty()) {
-            roomDtos = roomEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
+            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto("", "", roomEntities);
         } else {
             log.info("Non sono state trovate room");
         }
