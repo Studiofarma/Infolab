@@ -199,12 +199,10 @@ public class RoomRepositoryTests {
 
     @Test
     void whenFetchingAllRoomsAndUsers_usersAreOfTheExpectedFormat() {
-        List<RoomEntity> roomsFromDb = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(loggedInUser.getName())
+        List<RoomEntity> roomsFromDb = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, loggedInUser.getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
-
-        roomsFromDb.forEach(roomEntity -> System.out.println(roomEntity.getName().value()));
 
         Assertions.assertEquals(6, roomsFromDb.size());
 
@@ -223,7 +221,7 @@ public class RoomRepositoryTests {
 
     @Test
     void whenFetchingAllRoomsAndUsers_forPublicDescriptionIsFromTheDb_forPrivateTheDescriptionIsTheOtherUserOfTheRoom() {
-        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(loggedInUser.getName())
+        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, loggedInUser.getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
@@ -275,5 +273,19 @@ public class RoomRepositoryTests {
                 });
 
         Assertions.assertEquals("user5 desc", roomEntities.get(5).getDescription());
+    }
+
+    @Test
+    void whenFetchingAllRoomsAndUsers_resultIsSortedCorrectly() {
+        List<RoomEntity> roomsFromDb = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, loggedInUser.getName());
+
+        Assertions.assertEquals(6, roomsFromDb.size());
+
+        Assertions.assertEquals("user0-user2", roomsFromDb.get(0).getName().value());
+        Assertions.assertEquals("user0-user1", roomsFromDb.get(1).getName().value());
+        Assertions.assertEquals(general.getName().value(), roomsFromDb.get(2).getName().value());
+        Assertions.assertEquals("user0-user3", roomsFromDb.get(3).getName().value());
+        Assertions.assertEquals("user4", roomsFromDb.get(4).getName().value());
+        Assertions.assertEquals("user5", roomsFromDb.get(5).getName().value());
     }
 }

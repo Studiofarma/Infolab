@@ -21,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -84,10 +85,18 @@ public class RoomPaginatedApiTests {
 
     @Test
     void whenFetching_withoutPageSize_responseIsOfAllUsers() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/rooms2");
-
-        responseBody.forEach(System.out::println);
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/rooms2")
+                .stream()
+                .sorted(Comparator.comparing(linkedHashMap -> linkedHashMap.get("roomName").toString()))
+                .toList();
 
         Assertions.assertEquals(7, responseBody.size());
+    }
+
+    @Test
+    void whenFetching_withPageSize2_responseIsOf2FirstUsers() {
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/rooms2?page[size]=2");
+
+        Assertions.assertEquals(2, responseBody.size());
     }
 }

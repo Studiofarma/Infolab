@@ -14,6 +14,9 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.cgm.infolab.controller.api.ApiConstants.PAGE_AFTER_API_NAME;
+import static com.cgm.infolab.controller.api.ApiConstants.PAGE_SIZE_API_NAME;
+
 @RestController
 public class RoomApiController {
     private final RoomService roomService;
@@ -41,10 +44,13 @@ public class RoomApiController {
     }
 
     @GetMapping("/api/rooms2")
-    public List<RoomDto> getAllRooms2(Principal principal) {
+    public List<RoomDto> getAllRooms2(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) Integer pageSize,
+                                      Principal principal) {
+
+        if (pageSize == null) pageSize = -1;
 
         List<RoomDto> roomDtos = new ArrayList<>();
-        List<RoomEntity> roomEntities = roomService.getRoomsAndUsers(Username.of(principal.getName()));
+        List<RoomEntity> roomEntities = roomService.getRoomsAndUsers(pageSize, Username.of(principal.getName()));
 
 
         if (!roomEntities.isEmpty()) {

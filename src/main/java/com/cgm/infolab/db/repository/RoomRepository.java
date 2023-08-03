@@ -198,12 +198,18 @@ public class RoomRepository {
                 .join("left join infolab.rooms_subscriptions s on r.roomname = s.roomname %s".formatted(JOIN));
     }
 
-    public List<RoomEntity> getExistingRoomsAndUsersWithoutRoomAsRooms(Username username) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("username", username.value());
+    public List<RoomEntity> getExistingRoomsAndUsersWithoutRoomAsRooms(Integer pageSize, Username username) {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("username", username.value());
+
+        String limit = "";
+        if (pageSize != null && pageSize >= 0) {
+            limit = "LIMIT :pageSize";
+            arguments.put("pageSize", pageSize);
+        }
 
         List<RoomEntity> rooms = namedParameterJdbcTemplate
-                .query(GET_ALL_ROOMS_NEW_QUERY, params, RowMappers::mapToRoomEntityWithMessages2);
+                .query("%s %s".formatted(GET_ALL_ROOMS_NEW_QUERY, limit), arguments, RowMappers::mapToRoomEntityWithMessages2);
 
         List<RoomName> roomNames = extractRoomNamesFromRoomList(rooms);
 

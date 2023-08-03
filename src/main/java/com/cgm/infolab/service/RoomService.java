@@ -36,8 +36,8 @@ public class RoomService {
         return roomRepository.getAfterDate(fromStringToDate(date), username);
     }
 
-    public List<RoomEntity> getRoomsAndUsers(Username username) {
-        return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(username);
+    public List<RoomEntity> getRoomsAndUsers(Integer pageSize, Username username) {
+        return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, username);
     }
 
     private LocalDate fromStringToDate(String date) {

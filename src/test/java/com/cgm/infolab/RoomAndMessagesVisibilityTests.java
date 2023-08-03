@@ -129,11 +129,13 @@ public class RoomAndMessagesVisibilityTests {
     }
 
     @Test
-    void whenUser0QueriesForRoomsAndUsers_canSee_rightRoomsAndRightUsers() {
-        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(loggedInUser.getName())
+    void whenUser0QueriesForRoomsAndUsers_canSee_rightRoomsAndRightUsers() throws InterruptedException {
+        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, loggedInUser.getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
+
+        roomEntities.forEach(roomEntity -> System.out.println(roomEntity.getName().value()));
 
         Assertions.assertEquals(7, roomEntities.size());
 
