@@ -1,6 +1,7 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.ChatMessageEntity;
+import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.helper.TestDbHelper;
@@ -60,6 +61,8 @@ public class WebSocketDeleteEditPublicTests {
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
     UserEntity user1 = UserEntity.of(Username.of("user1"));
 
+    RoomEntity general = RoomEntity.general();
+
     @BeforeAll
     public void setupAll(){
         testDbHelper.clearDbExceptForGeneral();
@@ -71,47 +74,45 @@ public class WebSocketDeleteEditPublicTests {
         testDbHelper.addPrivateRoomsAndSubscribeUsers(List.of(Pair.of(user1, userBanana)));
 
         long generalId = testDbHelper.getRoomId("general");
-
-        long user1Id = testDbHelper.getUserId("user1");
-        long userBananaId = testDbHelper.getUserId("banana");
+        general.setId(generalId);
 
         testDbHelper.insertCustomMessage(
                 1,
-                user1Id,
-                generalId,
+                user1.getName().value(),
+                general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "1 Message in general");
 
         testDbHelper.insertCustomMessage(
                 2,
-                user1Id,
-                generalId,
+                user1.getName().value(),
+                general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "2 Message in general");
 
         testDbHelper.insertCustomMessage(
                 3,
-                userBananaId,
-                generalId,
+                userBanana.getName().value(),
+                general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "3 Message in general");
 
         testDbHelper.insertCustomMessage(
                 4,
-                userBananaId,
-                generalId,
+                userBanana.getName().value(),
+                general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "4 Message in general");
         testDbHelper.insertCustomMessage(
                 5,
-                user1Id,
-                generalId,
+                user1.getName().value(),
+                general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "5 Message in general");
         testDbHelper.insertCustomMessage(
                 6,
-                user1Id,
-                generalId,
+                user1.getName().value(),
+                general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "6 Message in general");
 

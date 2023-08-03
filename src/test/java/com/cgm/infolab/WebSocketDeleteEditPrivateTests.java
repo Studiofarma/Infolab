@@ -1,8 +1,8 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
+import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.helper.TestStompHelper;
 import com.cgm.infolab.model.ChatMessageDto;
@@ -59,6 +59,7 @@ public class WebSocketDeleteEditPrivateTests {
 
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
     UserEntity user1 = UserEntity.of(Username.of("user1"));
+    RoomEntity bananaUser1 = RoomEntity.of(RoomName.of("banana-user1"), VisibilityEnum.PRIVATE, RoomTypeEnum.USER2USER);
 
     @BeforeAll
     public void setupAll(){
@@ -71,47 +72,45 @@ public class WebSocketDeleteEditPrivateTests {
         testDbHelper.addPrivateRoomsAndSubscribeUsers(List.of(Pair.of(user1, userBanana)));
 
         long bananaUser1Id = testDbHelper.getRoomId("banana-user1");
-
-        long user1Id = testDbHelper.getUserId("user1");
-        long userBananaId = testDbHelper.getUserId("banana");
+        bananaUser1.setId(bananaUser1Id);
 
         testDbHelper.insertCustomMessage(
                 1,
-                user1Id,
-                bananaUser1Id,
+                user1.getName().value(),
+                bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "1 Message in banana-user1");
 
         testDbHelper.insertCustomMessage(
                 2,
-                user1Id,
-                bananaUser1Id,
+                user1.getName().value(),
+                bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "2 Message in banana-user1");
 
         testDbHelper.insertCustomMessage(
                 3,
-                userBananaId,
-                bananaUser1Id,
+                userBanana.getName().value(),
+                bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "3 Message in banana-user1");
 
         testDbHelper.insertCustomMessage(
                 4,
-                userBananaId,
-                bananaUser1Id,
+                userBanana.getName().value(),
+                bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "4 Message in banana-user1");
         testDbHelper.insertCustomMessage(
                 5,
-                user1Id,
-                bananaUser1Id,
+                user1.getName().value(),
+                bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "5 Message in banana-user1");
         testDbHelper.insertCustomMessage(
                 6,
-                user1Id,
-                bananaUser1Id,
+                user1.getName().value(),
+                bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "6 Message in banana-user1");
     }

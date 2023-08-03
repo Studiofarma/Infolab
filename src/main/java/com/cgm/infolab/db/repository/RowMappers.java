@@ -16,8 +16,7 @@ public abstract class RowMappers {
 
     public static ChatMessageEntity mapToChatMessageEntity(ResultSet rs, int rowNum) throws SQLException {
 
-        UserEntity user = UserEntity.of(rs.getLong("user_id"),
-                Username.of(rs.getString("username")));
+        UserEntity user = UserEntity.of(Username.of(rs.getString("username")));
 
         String roomName = rs.getString("roomname");
         RoomTypeEnum roomType = getRoomType(roomName);
@@ -99,15 +98,15 @@ public abstract class RowMappers {
         );
     }
 
-    public static Pair<Long, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
-        return Pair.of(rs.getLong("id"), rs.getInt("not_downloaded_count"));
+    public static Pair<RoomName, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
+        return Pair.of(RoomName.of(rs.getString("roomname")), rs.getInt("not_downloaded_count"));
     }
 
-    public static Pair<Long, LocalDateTime> mapLastDownloadedDate(ResultSet rs, int rowNum) throws SQLException {
+    public static Pair<RoomName, LocalDateTime> mapLastDownloadedDate(ResultSet rs, int rowNum) throws SQLException {
         if (rs.getTimestamp("download_timestamp") == null) {
-            return Pair.of(rs.getLong("id"), null);
+            return Pair.of(RoomName.of(rs.getString("roomname")), null);
         } else {
-            return Pair.of(rs.getLong("id"), rs.getObject("download_timestamp", LocalDateTime.class));
+            return Pair.of(RoomName.of(rs.getString("roomname")), rs.getObject("download_timestamp", LocalDateTime.class));
         }
     }
 

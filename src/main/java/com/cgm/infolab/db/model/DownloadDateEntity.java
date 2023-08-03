@@ -6,16 +6,18 @@ import java.util.Objects;
 public class DownloadDateEntity {
     private LocalDateTime timestamp;
     private long userId;
+    private Username username;
     private long messageId;
 
-    private DownloadDateEntity(LocalDateTime timestamp, long userId, long messageId) {
+    private DownloadDateEntity(LocalDateTime timestamp, long userId, Username username, long messageId) {
         this.timestamp = timestamp;
         this.userId = userId;
+        this.username = username;
         this.messageId = messageId;
     }
 
-    public static DownloadDateEntity of(LocalDateTime timestamp, long userId, long roomId) {
-        return new DownloadDateEntity(timestamp, userId, roomId);
+    public static DownloadDateEntity of(LocalDateTime timestamp, long userId, Username username, long roomId) {
+        return new DownloadDateEntity(timestamp, userId, username, roomId);
     }
 
     public LocalDateTime getTimestamp() {
@@ -32,6 +34,14 @@ public class DownloadDateEntity {
 
     public void setUserId(long userId) {
         this.userId = userId;
+    }
+
+    public Username getUsername() {
+        return username;
+    }
+
+    public void setUsername(Username username) {
+        this.username = username;
     }
 
     public long getMessageId() {

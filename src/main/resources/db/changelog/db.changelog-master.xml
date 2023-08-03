@@ -5,11 +5,12 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
-    <changeSet id="setup" author="Luca Piccinelli">
+    <changeSet id="rebuilding all" author="Lorenzo Rinaldi">
         <sql>
             create schema infolab
         </sql>
 
+        <!-- Table Users -->
         <createTable schemaName="infolab" tableName="users">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="users_pk" />
@@ -17,11 +18,13 @@
             <column name="username" type="varchar(50)" >
                 <constraints unique="true"/>
             </column>
+            <column name="description" type="varchar(500)" />
         </createTable>
         <createIndex schemaName="infolab" tableName="users" indexName="users_index">
             <column name="username" />
         </createIndex>
 
+        <!-- Table Rooms -->
         <createTable schemaName="infolab" tableName="rooms">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="rooms_pk" />
@@ -29,71 +32,75 @@
             <column name="roomname" type="varchar(255)">
                 <constraints unique="true"/>
             </column>
+            <column name="visibility" type="char(20)"/>
+            <column name="description" type="varchar(500)"/>
         </createTable>
+        <createIndex schemaName="infolab" tableName="rooms" indexName="rooms_index">
+            <column name="roomname"/>
+        </createIndex>
 
+        <!-- Table ChatMessages -->
         <createTable schemaName="infolab" tableName="chatmessages">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="chatmessages_pk" />
             </column>
-            <column name="sender_id" type="bigint" >
-                <constraints foreignKeyName="fk_sender_id" references="infolab.users(id)"/>
+            <column name="sender_name" type="varchar(50)" >
+                <constraints foreignKeyName="fk_sender_name" references="infolab.users(username)"/>
             </column>
-            <column name="recipient_room_id" type="bigint">
-                <constraints foreignKeyName="fk_recipient_room_id" references="infolab.rooms(id)"/>
+            <column name="recipient_room_name" type="varchar(255)">
+                <constraints foreignKeyName="fk_recipient_room_name" references="infolab.rooms(roomname)"/>
             </column>
             <column name="sent_at" type="timestamp" >
                 <constraints nullable="false" />
             </column>
             <column name="content" type="varchar(5000)" />
+            <column name="status" type="char(20)"/>
         </createTable>
-    </changeSet>
-    
-    <changeSet id="rooms_users_relation" author="Matei Ciofu">
-        <createTable schemaName="infolab" tableName="rooms_subscriptions">
-            <column name="room_id" type="bigint">
-                <constraints foreignKeyName="fk_room_id" references="infolab.rooms(id)" nullable="false"/>
-            </column>
-            <column name="user_id" type="bigint">
-                <constraints foreignKeyName="fk_rooms_subscriptions_user_id" references="infolab.users(id)" nullable="false"/>
-            </column>
-        </createTable>
+        <createIndex schemaName="infolab" tableName="chatmessages" indexName="messages_sent_at_index">
+            <column name="sent_at"/>
+        </createIndex>
+        <createIndex schemaName="infolab" tableName="chatmessages" indexName="messages_sender_name_index">
+            <column name="sender_name"/>
+        </createIndex>
+        <createIndex schemaName="infolab" tableName="chatmessages" indexName="messages_recipient_room_name_index">
+            <column name="recipient_room_name"/>
+        </createIndex>
 
-        <addColumn schemaName="infolab" tableName="rooms">
-            <column name="visibility" type="char(20)"/>
-        </addColumn>
-    </changeSet>
-    
-    <changeSet id="last_download_dates_table" author="Lorenzo Rinaldi">
+        <!-- Table RoomsSubscriptions -->
+        <createTable schemaName="infolab" tableName="rooms_subscriptions">
+            <column name="roomname" type="varchar(255)">
+                <constraints foreignKeyName="fk_rooms_subscriptions_roomname" references="infolab.rooms(roomname)" nullable="false"/>
+            </column>
+            <column name="username" type="varchar(50)">
+                <constraints foreignKeyName="fk_rooms_subscriptions_username" references="infolab.users(username)" nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex schemaName="infolab" tableName="rooms_subscriptions" indexName="rooms_subscriptions_roomname_index">
+            <column name="roomname"/>
+        </createIndex>
+        <createIndex schemaName="infolab" tableName="rooms_subscriptions" indexName="rooms_subscriptions_username_index">
+            <column name="username"/>
+        </createIndex>
+        <addPrimaryKey constraintName="rooms_subscriptions_composite_primary_key" schemaName="infolab" tableName="rooms_subscriptions" columnNames="roomname, username"/>
+
+        <!-- Table DownloadDates -->
         <createTable schemaName="infolab" tableName="download_dates">
             <column name="download_timestamp" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="user_id" type="bigint">
-                <constraints foreignKeyName="fk_download_dates_user_id" references="infolab.users(id)" nullable="false"/>
+            <column name="username" type="varchar(50)">
+                <constraints foreignKeyName="fk_download_dates_username" references="infolab.users(username)" nullable="false"/>
             </column>
             <column name="message_id" type="bigint">
                 <constraints foreignKeyName="fk_message_id" references="infolab.chatmessages(id)" nullable="false"/>
             </column>
         </createTable>
-        
-        <addPrimaryKey schemaName="infolab" tableName="rooms_subscriptions" columnNames="room_id, user_id"/>
-        <addPrimaryKey schemaName="infolab" tableName="download_dates" columnNames="download_timestamp, user_id, message_id"/>
-    </changeSet>
-    <changeSet id="users_description_field" author="Luca Minini">
-        <addColumn schemaName="infolab" tableName="users">
-            <column name="description" type="varchar(500)" />
-        </addColumn>
-    </changeSet>
-
-    <changeSet id="room_description" author="Lorenzo Rinaldi">
-        <addColumn schemaName="infolab" tableName="rooms">
-            <column name="description" type="varchar(500)"/>
-        </addColumn>
-    </changeSet>
-
-    <changeSet id="message_status" author="Lorenzo Rinaldi">
-        <addColumn schemaName="infolab" tableName="chatmessages">
-            <column name="status" type="char(20)"/>
-        </addColumn>
+        <createIndex schemaName="infolab" tableName="download_dates" indexName="download_dates_username_index">
+            <column name="username"/>
+        </createIndex>
+        <createIndex schemaName="infolab" tableName="download_dates" indexName="download_dates_message_id_index">
+            <column name="message_id"/>
+        </createIndex>
+        <addPrimaryKey schemaName="infolab" tableName="download_dates" columnNames="download_timestamp, username, message_id"/>
     </changeSet>
 </databaseChangeLog>
