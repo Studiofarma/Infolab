@@ -19,7 +19,7 @@ public abstract class RowMappers {
 
         UserEntity user = UserEntity.of(Username.of(rs.getString("username")), rs.getString("sender_description"));
 
-        String roomName = rs.getString("roomname2");
+        String roomName = rs.getString("roomname");
         RoomTypeEnum roomType = getRoomType(roomName);
 
         RoomEntity room = RoomEntity.of(
@@ -58,7 +58,7 @@ public abstract class RowMappers {
     }
 
     public static RoomEntity mapToRoomEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
-        String roomName = rs.getString("roomname2");
+        String roomName = rs.getString("roomname");
         RoomTypeEnum roomType = getRoomType(roomName);
 
         ChatMessageEntity messageEntity = rs.getString("content") != null ?  mapToChatMessageEntity(rs, rowNum) : ChatMessageEntity.empty();
@@ -82,7 +82,7 @@ public abstract class RowMappers {
     }
 
     public static RoomEntity mapToRoomEntityWithMessages2(ResultSet rs, int rowNum) throws SQLException {
-        String roomName = rs.getString("roomname2");
+        String roomName = rs.getString("roomname");
         RoomTypeEnum roomType = getRoomType(roomName);
 
         ChatMessageEntity messageEntity = rs.getString("content") != null ?  mapToChatMessageEntity(rs, rowNum) : ChatMessageEntity.empty();

@@ -52,8 +52,7 @@ public class RoomPaginatedApiTests {
                     ChatMessageDto.of("3 Visible only to user1 and user2", users[1].getName().value()),
                     ChatMessageDto.of("4 Visible only to user0 and user2", users[2].getName().value()),
                     ChatMessageDto.of("5 Visible only to user0 and user1", users[0].getName().value()),
-                    ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value()),
-                    ChatMessageDto.of("7 Visible only to user0 and user3", users[0].getName().value()),
+                    ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())
             };
 
     public RoomEntity general = RoomEntity.general();
@@ -81,7 +80,6 @@ public class RoomPaginatedApiTests {
         chatService.saveMessageInDb(messageDtos[2], users[2].getName(), RoomName.of("user1-user2"), users[2].getName());
         chatService.saveMessageInDb(messageDtos[3], users[0].getName(), RoomName.of("user0-user2"), users[0].getName());
         chatService.saveMessageInDb(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"), users[1].getName());
-        chatService.saveMessageInDb(messageDtos[5], users[1].getName(), RoomName.of("user0-user3"), users[1].getName());
     }
 
     @Test

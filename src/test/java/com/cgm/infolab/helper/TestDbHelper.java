@@ -84,14 +84,14 @@ public class TestDbHelper {
 
     public List<ChatMessageEntity> getAllMessages() {
         return jdbcTemplate
-                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, u_mex.description sender_description, r.id room_id, r.roomname roomname2, r.visibility, m.sent_at, m.content, m.status " +
+                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, u_mex.description sender_description, r.id room_id, r.roomname roomname, r.visibility, m.sent_at, m.content, m.status " +
                         "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.roomname = m.recipient_room_name " +
                         "JOIN infolab.users u_mex ON u_mex.username = m.sender_name", RowMappers::mapToChatMessageEntity);
     }
 
     public <T> List<T> getAllMessages(RowMapper<T> rowMapper) {
         return jdbcTemplate
-                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, u_mex.description sender_description, r.id room_id, r.roomname roomname2, r.visibility, m.sent_at, m.content, m.status " +
+                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, u_mex.description sender_description, r.id room_id, r.roomname roomname, r.visibility, m.sent_at, m.content, m.status " +
                         "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.roomname = m.recipient_room_name " +
                         "JOIN infolab.users u_mex ON u_mex.username = m.sender_name", rowMapper);
     }

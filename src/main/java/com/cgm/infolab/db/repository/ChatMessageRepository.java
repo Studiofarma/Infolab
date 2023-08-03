@@ -127,7 +127,7 @@ public class ChatMessageRepository {
     private UserQueryResult getMessages(Username username) {
         return queryHelper
                 .forUser(username)
-                .query("SELECT m.id message_id, m.sender_name username, r.id room_id, r.roomname roomname2, r.visibility, m.sent_at, m.content, m.status, u.description sender_description")
+                .query("SELECT m.id message_id, m.sender_name username, r.id room_id, r.roomname roomname, r.visibility, m.sent_at, m.content, m.status, u.description sender_description")
                 .join("%s JOIN infolab.users u ON u.username = m.sender_name".formatted(JOIN_MESSAGES));
     }
 

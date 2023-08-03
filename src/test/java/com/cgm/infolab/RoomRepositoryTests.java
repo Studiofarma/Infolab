@@ -56,6 +56,7 @@ public class RoomRepositoryTests {
                     ChatMessageDto.of("5 Visible only to user0 and user1", users[0].getName().value()),
                     ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value()),
                     ChatMessageDto.of("7 Hello general from user1", users[1].getName().value())
+
             };
 
     @BeforeAll
@@ -202,6 +203,8 @@ public class RoomRepositoryTests {
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
+
+        roomsFromDb.forEach(roomEntity -> System.out.println(roomEntity.getName().value()));
 
         Assertions.assertEquals(6, roomsFromDb.size());
 
