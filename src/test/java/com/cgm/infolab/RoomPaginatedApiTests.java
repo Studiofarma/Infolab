@@ -8,6 +8,7 @@ import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
 import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
 import com.cgm.infolab.helper.TestApiHelper;
 import com.cgm.infolab.helper.TestDbHelper;
+import com.cgm.infolab.model.BasicJsonDto;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.RoomDto;
 import com.cgm.infolab.service.ChatService;
@@ -85,18 +86,20 @@ public class RoomPaginatedApiTests {
 
     @Test
     void whenFetching_withoutPageSize_responseIsOfAllUsers() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/rooms2")
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2");
+        responseBody
+                .getData()
                 .stream()
                 .sorted(Comparator.comparing(linkedHashMap -> linkedHashMap.get("roomName").toString()))
                 .toList();
 
-        Assertions.assertEquals(7, responseBody.size());
+        Assertions.assertEquals(7, responseBody.getData().size());
     }
 
     @Test
     void whenFetching_withPageSize2_responseIsOf2FirstUsers() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/rooms2?page[size]=2");
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=2");
 
-        Assertions.assertEquals(2, responseBody.size());
+        Assertions.assertEquals(2, responseBody.getData().size());
     }
 }

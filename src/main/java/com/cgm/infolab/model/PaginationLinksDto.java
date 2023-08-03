@@ -6,12 +6,20 @@ public class PaginationLinksDto {
     String prev;
     String next;
 
-    public PaginationLinksDto() {
+    private PaginationLinksDto() {
     }
 
-    public PaginationLinksDto(String prev, String next) {
+    private PaginationLinksDto(String prev, String next) {
         this.prev = prev;
         this.next = next;
+    }
+
+    public static PaginationLinksDto of(String prev, String next) {
+        return new PaginationLinksDto(prev, next);
+    }
+
+    public static PaginationLinksDto empty() {
+        return new PaginationLinksDto("", "");
     }
 
     public String getPrev() {

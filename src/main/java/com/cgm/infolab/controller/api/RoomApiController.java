@@ -3,6 +3,7 @@ package com.cgm.infolab.controller.api;
 import com.cgm.infolab.controller.FromEntitiesToDtosMapper;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.model.BasicJsonDto;
 import com.cgm.infolab.model.RoomDto;
 import com.cgm.infolab.service.RoomService;
 import org.slf4j.Logger;
@@ -44,17 +45,17 @@ public class RoomApiController {
     }
 
     @GetMapping("/api/rooms2")
-    public List<RoomDto> getAllRooms2(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) Integer pageSize,
+    public BasicJsonDto<RoomDto> getAllRooms2(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) Integer pageSize,
                                       Principal principal) {
 
         if (pageSize == null) pageSize = -1;
 
-        List<RoomDto> roomDtos = new ArrayList<>();
+        BasicJsonDto<RoomDto> roomDtos = BasicJsonDto.empty();
         List<RoomEntity> roomEntities = roomService.getRoomsAndUsers(pageSize, Username.of(principal.getName()));
 
 
         if (!roomEntities.isEmpty()) {
-            roomDtos = roomEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
+            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto("", "", roomEntities);
         } else {
             log.info("Non sono state trovate room");
         }

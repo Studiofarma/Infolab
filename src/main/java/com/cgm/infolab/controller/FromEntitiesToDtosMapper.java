@@ -3,11 +3,9 @@ package com.cgm.infolab.controller;
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.model.ChatMessageDto;
-import com.cgm.infolab.model.LastMessageDto;
-import com.cgm.infolab.model.RoomDto;
-import com.cgm.infolab.model.UserDto;
+import com.cgm.infolab.model.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FromEntitiesToDtosMapper {
@@ -57,5 +55,15 @@ public abstract class FromEntitiesToDtosMapper {
 
     public static UserDto fromEntityToDto(UserEntity userEntity) {
         return UserDto.of(userEntity.getName().value(), userEntity.getId(), userEntity.getDescription());
+    }
+
+    public static BasicJsonDto<RoomDto> fromEntityToDto(String prev, String next, List<RoomEntity> roomEntities) {
+        PaginationLinksDto linksDto = PaginationLinksDto.of(prev, next);
+
+        List<RoomDto> roomDtos = new ArrayList<>();
+
+        roomEntities.forEach(roomEntity -> roomDtos.add(fromEntityToDto(roomEntity)));
+
+        return BasicJsonDto.of(linksDto, roomDtos);
     }
 }

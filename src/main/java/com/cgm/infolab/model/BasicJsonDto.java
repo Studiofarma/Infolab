@@ -1,5 +1,6 @@
 package com.cgm.infolab.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -7,7 +8,20 @@ public class BasicJsonDto<T> {
     PaginationLinksDto links;
     List<T> data;
 
-    public BasicJsonDto() {
+    private BasicJsonDto() {
+    }
+
+    private BasicJsonDto(PaginationLinksDto links, List<T> data) {
+        this.links = links;
+        this.data = data;
+    }
+
+    public static <T> BasicJsonDto<T> of(PaginationLinksDto links, List<T> data) {
+        return new BasicJsonDto<>(links, data);
+    }
+
+    public static <T> BasicJsonDto<T> empty() {
+        return new BasicJsonDto<>(PaginationLinksDto.empty(), new ArrayList<>());
     }
 
     public PaginationLinksDto getLinks() {
