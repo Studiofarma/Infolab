@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,14 +20,15 @@ public class RoomSubscriptionRepository {
         this.dataSource = dataSource;
     }
 
-    public void add(RoomSubscriptionEntity entity) throws DuplicateKeyException {
+    public void add(RoomSubscriptionEntity entity) throws DuplicateKeyException, SQLIntegrityConstraintViolationException {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("rooms_subscriptions");
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("room_id", entity.getRoomId());
-        parameters.put("user_id", entity.getUserId());
+        parameters.put("roomname", entity.getRoomName().value());
+        parameters.put("username", entity.getUsername().value());
+
         simpleJdbcInsert.execute(parameters);
     }
 }

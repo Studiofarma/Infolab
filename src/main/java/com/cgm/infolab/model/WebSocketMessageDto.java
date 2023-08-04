@@ -37,7 +37,7 @@ public class WebSocketMessageDto {
     }
 
     public static WebSocketMessageDto ofJoin(ChatMessageDto join) {
-        return new WebSocketMessageDto(WebSocketMessageTypeEnum.DELETE, null, null, null, join);
+        return new WebSocketMessageDto(WebSocketMessageTypeEnum.JOIN, null, null, null, join);
     }
 
     @NonNull
@@ -92,6 +92,7 @@ public class WebSocketMessageDto {
                 ", chat=" + chat +
                 ", edit=" + edit +
                 ", delete=" + delete +
+                ", join=" + join +
                 '}';
     }
 
@@ -100,11 +101,11 @@ public class WebSocketMessageDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WebSocketMessageDto that = (WebSocketMessageDto) o;
-        return type == that.type && Objects.equals(chat, that.chat) && Objects.equals(edit, that.edit) && Objects.equals(delete, that.delete);
+        return type == that.type && Objects.equals(chat, that.chat) && Objects.equals(edit, that.edit) && Objects.equals(delete, that.delete) && Objects.equals(join, that.join);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, chat, edit, delete);
+        return Objects.hash(type, chat, edit, delete, join);
     }
 }

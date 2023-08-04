@@ -94,6 +94,11 @@ public class RoomAndMessagesVisibilityTests {
             .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
             .toList();
 
+        for (RoomEntity r :
+                roomsFromDb) {
+            System.out.println(r.getName().value());
+        }
+
         Assertions.assertEquals(4, roomsFromDb.size());
 
         Assertions.assertEquals(general.getName(), roomsFromDb.get(0).getName());
