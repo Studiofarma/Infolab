@@ -20,6 +20,8 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -59,6 +61,8 @@ public class RoomPaginatedApiTests {
 
     public RoomEntity general = RoomEntity.general();
     public RoomEntity public2 = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC, RoomTypeEnum.GROUP, "Public room 2 desc");
+    public RoomEntity public3 = RoomEntity.of(RoomName.of("public3"), VisibilityEnum.PUBLIC, RoomTypeEnum.GROUP, "Public room 3 desc");
+    public RoomEntity public4 = RoomEntity.of(RoomName.of("public4"), VisibilityEnum.PUBLIC, RoomTypeEnum.GROUP, "Public room 4 desc");
     public static final LocalDateTime STARTING_TIME = LocalDateTime.of(2023, 6, 1, 1, 1, 1);
 
 
@@ -77,13 +81,13 @@ public class RoomPaginatedApiTests {
 
         testDbHelper.addPrivateRoomsAndSubscribeUsers(pairs);
 
-        testDbHelper.addRooms(general, public2);
+        testDbHelper.addRooms(general, public2, public3, public4);
 
         testDbHelper.insertCustomMessage(1, users[0].getName().value(), general.getName().value(), STARTING_TIME, "1 Hello general from user0");
-        testDbHelper.insertCustomMessage(2, users[1].getName().value(), "user0-user1", STARTING_TIME.plusSeconds(1), "2 Visible only to user0 and user1");
-        testDbHelper.insertCustomMessage(3, users[1].getName().value(), "user1-user2", STARTING_TIME.plusSeconds(2), "3 Visible only to user1 and user2");
-        testDbHelper.insertCustomMessage(4, users[2].getName().value(), "user0-user2", STARTING_TIME.plusSeconds(3), "4 Visible only to user0 and user2");
-        testDbHelper.insertCustomMessage(5, users[0].getName().value(), "user0-user1", STARTING_TIME.plusSeconds(4), "5 Visible only to user0 and user1");
+        testDbHelper.insertCustomMessage(2, users[1].getName().value(), "user0-user1", STARTING_TIME.plusSeconds(2), "2 Visible only to user0 and user1");
+        testDbHelper.insertCustomMessage(3, users[1].getName().value(), "user1-user2", STARTING_TIME.plusSeconds(4), "3 Visible only to user1 and user2");
+        testDbHelper.insertCustomMessage(4, users[2].getName().value(), "user0-user2", STARTING_TIME.plusSeconds(6), "4 Visible only to user0 and user2");
+        testDbHelper.insertCustomMessage(5, users[0].getName().value(), "user0-user1", STARTING_TIME.plusSeconds(8), "5 Visible only to user0 and user1");
     }
 
     @Test
@@ -95,7 +99,9 @@ public class RoomPaginatedApiTests {
                 .sorted(Comparator.comparing(linkedHashMap -> linkedHashMap.get("roomName").toString()))
                 .toList();
 
-        Assertions.assertEquals(7, responseBody.getData().size());
+        responseBody.getData().forEach(System.out::println);
+
+        Assertions.assertEquals(9, responseBody.getData().size());
     }
 
     @Test
@@ -103,19 +109,33 @@ public class RoomPaginatedApiTests {
         BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=2");
 
         Assertions.assertEquals(2, responseBody.getData().size());
+
+        // TODO: put other assertions to check if the rooms are actually the first ones.
     }
 
     @Test
-    void whenFetching_withPageSize6_responseIsOf6FirstRooms() {
-        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=6");
+    void whenFetching_withPageSize7_responseIsOf7FirstRooms() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=7");
 
-        Assertions.assertEquals(6, responseBody.getData().size());
+        Assertions.assertEquals(7, responseBody.getData().size());
     }
 
     @Test
-    void whenFetching_withoutPageSize_afterSecondRoom_byUsingDate_last4RoomsAreReturned() {
-        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[after]=%s".formatted(STARTING_TIME.plusSeconds(3)));
+    void whenFetching_withoutPageSize_afterSecondRoom_byUsingDate_last8RoomsAreReturned() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[after]=[t]%s".formatted(STARTING_TIME.plusSeconds(3)));
 
-        Assertions.assertEquals(4, responseBody.getData().size());
+        responseBody.getData().forEach(System.out::println);
+
+        Assertions.assertEquals(8, responseBody.getData().size());
+    }
+
+    @Test
+    void whenFetching_ifTypeIdentifierProvidedIsInvalid_badRequestIsThrown() {
+        ResponseEntity<BasicJsonDto> response = testRestTemplate
+                .withBasicAuth("user1", "password1")
+                .getForEntity("/api/rooms2?page[after]=%s".formatted(STARTING_TIME), BasicJsonDto.class);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
     }
 }

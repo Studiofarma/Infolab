@@ -2,6 +2,7 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.helper.TestDbHelper;
@@ -199,7 +200,7 @@ public class RoomRepositoryTests {
 
     @Test
     void whenFetchingAllRoomsAndUsers_usersAreOfTheExpectedFormat() {
-        List<RoomEntity> roomsFromDb = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, loggedInUser.getName())
+        List<RoomEntity> roomsFromDb = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, CursorEnum.NONE, null, loggedInUser.getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
@@ -221,7 +222,7 @@ public class RoomRepositoryTests {
 
     @Test
     void whenFetchingAllRoomsAndUsers_forPublicDescriptionIsFromTheDb_forPrivateTheDescriptionIsTheOtherUserOfTheRoom() {
-        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, loggedInUser.getName())
+        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, CursorEnum.NONE, null, loggedInUser.getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
@@ -277,7 +278,7 @@ public class RoomRepositoryTests {
 
     @Test
     void whenFetchingAllRoomsAndUsers_resultIsSortedCorrectly() {
-        List<RoomEntity> roomsFromDb = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, loggedInUser.getName());
+        List<RoomEntity> roomsFromDb = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, CursorEnum.NONE, null, loggedInUser.getName());
 
         Assertions.assertEquals(6, roomsFromDb.size());
 

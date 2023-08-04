@@ -4,12 +4,15 @@ import com.cgm.infolab.controller.FromEntitiesToDtosMapper;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.BasicJsonDto;
+import com.cgm.infolab.model.RoomCursor;
 import com.cgm.infolab.model.RoomDto;
 import com.cgm.infolab.service.RoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -53,9 +56,16 @@ public class RoomApiController {
 
         if (pageSize == null) pageSize = -1;
 
-        BasicJsonDto<RoomDto> roomDtos = BasicJsonDto.empty();
-        List<RoomEntity> roomEntities = roomService.getRoomsAndUsers(pageSize, Username.of(principal.getName()));
+        RoomCursor cursorAfter;
+        try {
+            cursorAfter = pageAfter != null ? parseCursor(pageAfter) : null;
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
 
+        BasicJsonDto<RoomDto> roomDtos = BasicJsonDto.empty();
+        List<RoomEntity> roomEntities = roomService.getRoomsAndUsers(pageSize, cursorAfter, Username.of(principal.getName()));
 
         if (!roomEntities.isEmpty()) {
             roomDtos = FromEntitiesToDtosMapper.fromEntityToDto("", "", roomEntities);
@@ -75,21 +85,20 @@ public class RoomApiController {
 
     /**
      * The format with which you can point out the type of the cursor is this:
-     * {t} for timestamp
-     * {r} for room's description
-     * {u} for user's description
+     * [t] for timestamp
+     * [r] for room's description
+     * [u] for user's description
      * It must be at the beginning of the string without any character (or whitespace) before or after.
      * Example: page[after]={dr}Mario Rossi
      */
-    private Object parseCursor(String cursor) throws IllegalArgumentException {
-        
+    private RoomCursor parseCursor(String cursor) throws IllegalArgumentException {
         char typeIdentifier = cursor.charAt(1);
-        String query = cursor.substring(4);
+        String query = cursor.substring(3);
 
         return switch (typeIdentifier) {
-            case 't' -> fromStringToDateTime(query);
-            case 'r' -> query;
-            case 'u' -> query;
+            case 't' -> RoomCursor.ofTimestamp(fromStringToDateTime(query));
+            case 'r' -> RoomCursor.ofDescriptionRoom(query);
+            case 'u' -> RoomCursor.ofDescriptionUser(query);
             default -> throw new IllegalArgumentException("The type identifier in the provided string is not valid.");
         };
     }
@@ -99,7 +108,7 @@ public class RoomApiController {
         if (date == null) {
             return null;
         } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
             return LocalDateTime.parse(date, formatter);
         }
     }

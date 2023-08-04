@@ -2,9 +2,11 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import com.cgm.infolab.db.repository.queryhelper.QueryResult;
 import com.cgm.infolab.db.repository.queryhelper.UserQueryResult;
+import com.cgm.infolab.model.RoomCursor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -71,8 +73,7 @@ public class RoomRepository {
                     "WHERE (s.username = :username OR r.visibility='PUBLIC') " +
                     "ORDER BY r.roomname, m.sent_at DESC " +
                     ") " +
-                    "SELECT * FROM not_ordered_result " +
-                    "ORDER BY sent_at DESC NULLS LAST, description ASC";
+                    "SELECT * FROM not_ordered_result ";
 
     private final String GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY =
             "WITH users_with_room as  " +
@@ -199,10 +200,10 @@ public class RoomRepository {
                 .join("left join infolab.rooms_subscriptions s on r.roomname = s.roomname %s".formatted(JOIN));
     }
 
-    public List<RoomEntity> getExistingRoomsAndUsersWithoutRoomAsRooms(Integer pageSize, Username username) {
-        if (pageSize == null) {
-            pageSize = -1;
-        }
+    public List<RoomEntity> getExistingRoomsAndUsersWithoutRoomAsRooms(Integer pageSize,
+                                                                       CursorEnum beforeOrAfter,
+                                                                       RoomCursor beforeOrAfterCursor,
+                                                                       Username username) {
 
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("username", username.value());
@@ -212,6 +213,29 @@ public class RoomRepository {
 
         List<RoomEntity> roomsFirst = new ArrayList<>();
         List<RoomEntity> roomsSecond = new ArrayList<>();
+
+        if (pageSize == null) {
+            pageSize = -1;
+        }
+
+
+        String beforeOrAfterCondition = ">"; // TODO: remove assignment
+        String ascOrDesc = "asc"; // TODO: remove assignment
+        String ascOrDescInverted = "desc"; // TODO: remove assignment
+        if (beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
+            beforeOrAfterCondition = ">";
+            ascOrDesc = "ASC";
+            ascOrDescInverted = "DESC";
+        }
+
+        String whereConditionFirst = "";
+        if (beforeOrAfterCursor != null) {
+            if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.TIMESTAMP)) {
+                whereConditionFirst = "WHERE sent_at %s :timestamp or sent_at IS NULL".formatted(beforeOrAfterCondition);
+                arguments.put("timestamp", (LocalDateTime) beforeOrAfterCursor.getCursor());
+            }
+        }
+
 
         String limit = "";
         if (pageSize > 0) {
@@ -223,7 +247,14 @@ public class RoomRepository {
 
         if (shouldFirstQueryRun) {
             roomsFirst = namedParameterJdbcTemplate
-                    .query("%s %s".formatted(GET_EXISTING_ROOMS_QUERY, limit), arguments, RowMappers::mapToRoomEntityWithMessages2);
+                    .query("%s %s ORDER BY sent_at %s NULLS LAST, description %s %s"
+                                    .formatted(
+                                            GET_EXISTING_ROOMS_QUERY,
+                                            whereConditionFirst,
+                                            ascOrDescInverted,
+                                            ascOrDesc,
+                                            limit),
+                            arguments, RowMappers::mapToRoomEntityWithMessages2);
 
             if (pageSize > 0 && roomsFirst.size() < pageSize) {
                 shouldSecondQueryRun = true;

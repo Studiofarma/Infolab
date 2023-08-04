@@ -2,6 +2,7 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
 import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
@@ -130,7 +131,7 @@ public class RoomAndMessagesVisibilityTests {
 
     @Test
     void whenUser0QueriesForRoomsAndUsers_canSee_rightRoomsAndRightUsers() throws InterruptedException {
-        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, loggedInUser.getName())
+        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, CursorEnum.NONE, null, loggedInUser.getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();

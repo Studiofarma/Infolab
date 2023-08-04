@@ -2,11 +2,13 @@ package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
 import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
 import com.cgm.infolab.db.repository.UserRepository;
+import com.cgm.infolab.model.RoomCursor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +38,13 @@ public class RoomService {
         return roomRepository.getAfterDate(fromStringToDate(date), username);
     }
 
-    public List<RoomEntity> getRoomsAndUsers(Integer pageSize, Username username) {
-        return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, username);
+    public List<RoomEntity> getRoomsAndUsers(Integer pageSize, RoomCursor pageAfter, Username username) {
+        if (pageAfter == null) {
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.NONE, null, username);
+        } else if (pageAfter != null) {
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.PAGE_AFTER, pageAfter, username);
+        }
+        return null;
     }
 
     private LocalDate fromStringToDate(String date) {
