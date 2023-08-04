@@ -99,8 +99,7 @@ public class RoomRepository {
                         "NULL description,  " +
                         "u.description new_user_description  " +
                     "FROM infolab.users u  " +
-                    "WHERE u.username NOT IN (SELECT username FROM users_with_room) AND u.username <> :username " +
-                    "ORDER BY new_user_description ASC";
+                    "WHERE u.username NOT IN (SELECT username FROM users_with_room) AND u.username <> :username ";
 
     public RoomRepository(QueryHelper queryHelper, DataSource dataSource, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.queryHelper = queryHelper;
@@ -220,19 +219,28 @@ public class RoomRepository {
 
 
         String beforeOrAfterCondition = ">"; // TODO: remove assignment
-        String descAscOrDesc = "asc"; // TODO: remove assignment
-        String timestampAscOrDesc = "desc";
+        String ascOrDesc = "asc"; // TODO: remove assignment
+        String invertedAscOrDesc = "desc";
         if (beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
             beforeOrAfterCondition = ">";
-            descAscOrDesc = "ASC";
-            timestampAscOrDesc = "ASC";
+            ascOrDesc = "ASC";
+            invertedAscOrDesc = "ASC";
         }
 
         String whereConditionFirst = "";
+        String whereConditionSecond = "";
         if (beforeOrAfterCursor != null) {
             if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.TIMESTAMP)) {
                 whereConditionFirst = "WHERE sent_at %s :timestamp or sent_at IS NULL".formatted(beforeOrAfterCondition);
                 arguments.put("timestamp", (LocalDateTime) beforeOrAfterCursor.getCursor());
+            } else if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.DESCRIPTION_ROOM)) {
+                whereConditionFirst = "WHERE sent_at IS NULL and description %s :descriptionRoom".formatted(beforeOrAfterCondition);
+                arguments.put("descriptionRoom", (String) beforeOrAfterCursor.getCursor());
+            } else if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.DESCRIPTION_USER)) {
+                shouldFirstQueryRun = false;
+                shouldSecondQueryRun = true;
+                whereConditionSecond = "AND u.description %s :descriptionUser".formatted(beforeOrAfterCondition);
+                arguments.put("descriptionUser", (String) beforeOrAfterCursor.getCursor());
             }
         }
 
@@ -250,8 +258,8 @@ public class RoomRepository {
                     .formatted(
                             GET_EXISTING_ROOMS_QUERY,
                             whereConditionFirst,
-                            timestampAscOrDesc,
-                            descAscOrDesc,
+                            invertedAscOrDesc,
+                            ascOrDesc,
                             limit);
 
             System.out.println(query);
@@ -286,7 +294,14 @@ public class RoomRepository {
 
         if (shouldSecondQueryRun) {
             roomsSecond = namedParameterJdbcTemplate
-                    .query("%s %s".formatted(GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY, limit), arguments, RowMappers::mapToRoomEntityWithMessages2);
+                    .query("%s %s ORDER BY new_user_description %s %s"
+                            .formatted(
+                                    GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY,
+                                    whereConditionSecond,
+                                    ascOrDesc,
+                                    limit),
+                            arguments,
+                            RowMappers::mapToRoomEntityWithMessages2);
         }
 
         List<RoomEntity> rooms = Stream.concat(roomsFirst.stream(), roomsSecond.stream()).collect(Collectors.toList());
