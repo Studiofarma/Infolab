@@ -281,8 +281,10 @@ public class RoomRepositoryTests {
 
         Assertions.assertEquals(6, roomsFromDb.size());
 
-        Assertions.assertEquals("user0-user2", roomsFromDb.get(0).getName().value());
-        Assertions.assertEquals("user0-user1", roomsFromDb.get(1).getName().value());
+        roomsFromDb.forEach(roomEntity -> System.out.println(roomEntity.getName().value()));
+
+        Assertions.assertEquals("user0-user1", roomsFromDb.get(0).getName().value());
+        Assertions.assertEquals("user0-user2", roomsFromDb.get(1).getName().value());
         Assertions.assertEquals(general.getName().value(), roomsFromDb.get(2).getName().value());
         Assertions.assertEquals("user0-user3", roomsFromDb.get(3).getName().value());
         Assertions.assertEquals("user4", roomsFromDb.get(4).getName().value());

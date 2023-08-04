@@ -15,6 +15,8 @@ import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.cgm.infolab.db.repository.DownloadDateRepository.*;
 
@@ -40,18 +42,10 @@ public class RoomRepository {
     private final String GET_DOWNLOAD_DATES_INNER_JOIN = "join infolab.download_dates d on d.message_id = m.id and d.username = :username";
     private final String GET_DOWNLOAD_DATES_WHERE_IN_LIST = "m.recipient_room_name IN (:roomNames)";
 
-    private final String GET_ALL_ROOMS_NEW_QUERY =
-            // Temporary table that contains all the usernames of the users that the principal has a room with.
-            // If groups will be added it is enough to join the table rooms and check that the room type is not GROUP.
-                "WITH users_with_room as " +
-                    "( " +
-                    "SELECT s2.username " +
-                    "FROM infolab.rooms_subscriptions s1 " +
-                    "JOIN infolab.rooms_subscriptions s2 ON s2.roomname = s1.roomname and s2.username <> s1.username " +
-                    "WHERE s1.username = :username " +
-                    ") " +
-            // Query that gets all the existing rooms
-                "SELECT DISTINCT ON (r.roomname) " +
+    private final String GET_EXISTING_ROOMS_QUERY =
+            "WITH not_ordered_result as" +
+                    " ( " +
+                    "SELECT DISTINCT ON (r.roomname) " +
                         "r.id room_id, " +
                         "r.roomname, " +
                         "r.visibility, " +
@@ -75,30 +69,37 @@ public class RoomRepository {
                     "LEFT JOIN infolab.rooms_subscriptions s_other ON r.roomname = s_other.roomname and s_other.username <> s.username " +
                     "LEFT JOIN infolab.users u_other ON u_other.username = s_other.username " +
                     "WHERE (s.username = :username OR r.visibility='PUBLIC') " +
-                "UNION " +
-                // Query that gets al the users that are not between the results returned by the temporary table users_with_rooms.
-                "SELECT " +
-                        "NULL as room_id, " +
-                        "u.username as roomname, " +
-                        "NULL as visibility, " +
-                        "NULL username, " +
-                        "NULL sender_description, " +
-                        "NULL as message_id, " +
-                        "NULL as sent_at, " +
-                        "NULL as content, " +
-                        "NULL as status, " +
-                        "u.id other_user_id, " +
-                        "u.username other_username, " +
-                        "u.description other_description, " +
-                        "NULL description, " +
-                        "u.description new_user_description " +
-                    "FROM infolab.users u " +
+                    "ORDER BY r.roomname, m.sent_at DESC " +
+                    ") " +
+                    "SELECT * FROM not_ordered_result " +
+                    "ORDER BY sent_at DESC NULLS LAST, description ASC";
+
+    private final String GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY =
+            "WITH users_with_room as  " +
+                    "(  " +
+                    "SELECT s2.username  " +
+                    "FROM infolab.rooms_subscriptions s1  " +
+                    "JOIN infolab.rooms_subscriptions s2 ON s2.roomname = s1.roomname and s2.username <> s1.username  " +
+                    "WHERE s1.username = :username" +
+                    ")  " +
+                    "SELECT  " +
+                        "NULL as room_id,  " +
+                        "u.username as roomname,  " +
+                        "NULL as visibility,  " +
+                        "NULL username,  " +
+                        "NULL sender_description,  " +
+                        "NULL as message_id,  " +
+                        "NULL as sent_at,  " +
+                        "NULL as content,  " +
+                        "NULL as status,  " +
+                        "u.id other_user_id,  " +
+                        "u.username other_username,  " +
+                        "u.description other_description,  " +
+                        "NULL description,  " +
+                        "u.description new_user_description  " +
+                    "FROM infolab.users u  " +
                     "WHERE u.username NOT IN (SELECT username FROM users_with_room) AND u.username <> :username " +
-                // There are two different descriptions in order to distinguish between existing rooms without a message in it and
-                // users of not yet existing rooms.
-                // This way all the rooms with a message in it (and hence a timestamp) will be before,
-                // then all the rooms without message in it, ordered by description and then all the users ordered by description as well.
-                "ORDER BY sent_at DESC NULLS LAST, description ASC NULLS LAST, new_user_description ASC ";
+                    "ORDER BY new_user_description ASC";
 
     public RoomRepository(QueryHelper queryHelper, DataSource dataSource, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.queryHelper = queryHelper;
@@ -202,14 +203,31 @@ public class RoomRepository {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("username", username.value());
 
+        boolean runFirstQuery = true;
+        boolean runSecondQuery = false;
+
+        List<RoomEntity> roomsFirst = new ArrayList<>();
+        List<RoomEntity> roomsSecond = new ArrayList<>();
+
         String limit = "";
         if (pageSize != null && pageSize >= 0) {
             limit = "LIMIT :pageSize";
             arguments.put("pageSize", pageSize);
+        } else {
+            runSecondQuery = true;
         }
 
-        List<RoomEntity> rooms = namedParameterJdbcTemplate
-                .query("%s %s".formatted(GET_ALL_ROOMS_NEW_QUERY, limit), arguments, RowMappers::mapToRoomEntityWithMessages2);
+        if (runFirstQuery) {
+            roomsFirst = namedParameterJdbcTemplate
+                    .query("%s %s".formatted(GET_EXISTING_ROOMS_QUERY, limit), arguments, RowMappers::mapToRoomEntityWithMessages2);
+        }
+
+        if (runSecondQuery) {
+            roomsSecond = namedParameterJdbcTemplate
+                    .query("%s %s".formatted(GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY, limit), arguments, RowMappers::mapToRoomEntityWithMessages2);
+        }
+
+        List<RoomEntity> rooms = Stream.concat(roomsFirst.stream(), roomsSecond.stream()).collect(Collectors.toList());
 
         List<RoomName> roomNames = extractRoomNamesFromRoomList(rooms);
 
