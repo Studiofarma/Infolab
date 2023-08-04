@@ -200,29 +200,39 @@ public class RoomRepository {
     }
 
     public List<RoomEntity> getExistingRoomsAndUsersWithoutRoomAsRooms(Integer pageSize, Username username) {
+        if (pageSize == null) {
+            pageSize = -1;
+        }
+
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("username", username.value());
 
-        boolean runFirstQuery = true;
-        boolean runSecondQuery = false;
+        boolean shouldFirstQueryRun = true;
+        boolean shouldSecondQueryRun = false;
 
         List<RoomEntity> roomsFirst = new ArrayList<>();
         List<RoomEntity> roomsSecond = new ArrayList<>();
 
         String limit = "";
-        if (pageSize != null && pageSize >= 0) {
+        if (pageSize > 0) {
             limit = "LIMIT :pageSize";
             arguments.put("pageSize", pageSize);
         } else {
-            runSecondQuery = true;
+            shouldSecondQueryRun = true;
         }
 
-        if (runFirstQuery) {
+        if (shouldFirstQueryRun) {
             roomsFirst = namedParameterJdbcTemplate
                     .query("%s %s".formatted(GET_EXISTING_ROOMS_QUERY, limit), arguments, RowMappers::mapToRoomEntityWithMessages2);
+
+            if (pageSize > 0 && roomsFirst.size() < pageSize) {
+                shouldSecondQueryRun = true;
+                pageSize -= roomsFirst.size();
+                arguments.replace("pageSize", pageSize);
+            }
         }
 
-        if (runSecondQuery) {
+        if (shouldSecondQueryRun) {
             roomsSecond = namedParameterJdbcTemplate
                     .query("%s %s".formatted(GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY, limit), arguments, RowMappers::mapToRoomEntityWithMessages2);
         }

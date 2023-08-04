@@ -85,7 +85,7 @@ public class RoomPaginatedApiTests {
     }
 
     @Test
-    void whenFetching_withoutPageSize_responseIsOfAllUsers() {
+    void whenFetching_withoutPageSize_responseIsOfAllRooms() {
         BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2");
         responseBody
                 .getData()
@@ -97,9 +97,16 @@ public class RoomPaginatedApiTests {
     }
 
     @Test
-    void whenFetching_withPageSize2_responseIsOf2FirstUsers() {
+    void whenFetching_withPageSize2_responseIsOf2FirstRooms() {
         BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=2");
 
         Assertions.assertEquals(2, responseBody.getData().size());
+    }
+
+    @Test
+    void whenFetching_withPageSize6_responseIsOf6FirstRooms() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=6");
+
+        Assertions.assertEquals(6, responseBody.getData().size());
     }
 }
