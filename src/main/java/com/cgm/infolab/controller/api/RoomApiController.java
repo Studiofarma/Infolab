@@ -20,8 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.cgm.infolab.controller.api.ApiConstants.PAGE_AFTER_API_NAME;
-import static com.cgm.infolab.controller.api.ApiConstants.PAGE_SIZE_API_NAME;
+import static com.cgm.infolab.controller.api.ApiConstants.*;
 
 @RestController
 public class RoomApiController {
@@ -51,21 +50,24 @@ public class RoomApiController {
 
     @GetMapping("/api/rooms2")
     public BasicJsonDto<RoomDto> getAllRooms2(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) Integer pageSize,
+                                              @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
                                               @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
                                               Principal principal) {
 
         if (pageSize == null) pageSize = -1;
 
         RoomCursor cursorAfter;
+        RoomCursor cursorBefore;
         try {
             cursorAfter = pageAfter != null ? parseCursor(pageAfter) : null;
+            cursorBefore = pageBefore != null ? parseCursor(pageBefore) : null;
         } catch (IllegalArgumentException e) {
             log.error(e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
         BasicJsonDto<RoomDto> roomDtos = BasicJsonDto.empty();
-        List<RoomEntity> roomEntities = roomService.getRoomsAndUsers(pageSize, cursorAfter, Username.of(principal.getName()));
+        List<RoomEntity> roomEntities = roomService.getRoomsAndUsers(pageSize, cursorBefore, cursorAfter, Username.of(principal.getName()));
 
         if (!roomEntities.isEmpty()) {
             roomDtos = FromEntitiesToDtosMapper.fromEntityToDto("", "", roomEntities);

@@ -38,13 +38,14 @@ public class RoomService {
         return roomRepository.getAfterDate(fromStringToDate(date), username);
     }
 
-    public List<RoomEntity> getRoomsAndUsers(Integer pageSize, RoomCursor pageAfter, Username username) {
-        if (pageAfter == null) {
+    public List<RoomEntity> getRoomsAndUsers(Integer pageSize, RoomCursor pageBefore, RoomCursor pageAfter, Username username) {
+        if (pageAfter == null && pageBefore == null) {
             return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.NONE, null, username);
         } else if (pageAfter != null) {
             return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.PAGE_AFTER, pageAfter, username);
+        } else { // pageBefore != null
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.PAGE_BEFORE, pageBefore, username);
         }
-        return null;
     }
 
     private LocalDate fromStringToDate(String date) {
