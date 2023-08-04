@@ -22,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -53,12 +54,13 @@ public class RoomPaginatedApiTests {
                     ChatMessageDto.of("2 Visible only to user0 and user1", users[1].getName().value()),
                     ChatMessageDto.of("3 Visible only to user1 and user2", users[1].getName().value()),
                     ChatMessageDto.of("4 Visible only to user0 and user2", users[2].getName().value()),
-                    ChatMessageDto.of("5 Visible only to user0 and user1", users[0].getName().value()),
-                    ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())
+                    ChatMessageDto.of("5 Visible only to user0 and user1", users[0].getName().value())
             };
 
     public RoomEntity general = RoomEntity.general();
     public RoomEntity public2 = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC, RoomTypeEnum.GROUP, "Public room 2 desc");
+    public static final LocalDateTime STARTING_TIME = LocalDateTime.of(2023, 6, 1, 1, 1, 1);
+
 
     @BeforeAll
     void setUp() {
@@ -77,11 +79,11 @@ public class RoomPaginatedApiTests {
 
         testDbHelper.addRooms(general, public2);
 
-        chatService.saveMessageInDb(messageDtos[0], users[0].getName(), general.getName(), null);
-        chatService.saveMessageInDb(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"), users[0].getName());
-        chatService.saveMessageInDb(messageDtos[2], users[2].getName(), RoomName.of("user1-user2"), users[2].getName());
-        chatService.saveMessageInDb(messageDtos[3], users[0].getName(), RoomName.of("user0-user2"), users[0].getName());
-        chatService.saveMessageInDb(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"), users[1].getName());
+        testDbHelper.insertCustomMessage(1, users[0].getName().value(), general.getName().value(), STARTING_TIME, "1 Hello general from user0");
+        testDbHelper.insertCustomMessage(2, users[1].getName().value(), "user0-user1", STARTING_TIME.plusSeconds(1), "2 Visible only to user0 and user1");
+        testDbHelper.insertCustomMessage(3, users[1].getName().value(), "user1-user2", STARTING_TIME.plusSeconds(2), "3 Visible only to user1 and user2");
+        testDbHelper.insertCustomMessage(4, users[2].getName().value(), "user0-user2", STARTING_TIME.plusSeconds(3), "4 Visible only to user0 and user2");
+        testDbHelper.insertCustomMessage(5, users[0].getName().value(), "user0-user1", STARTING_TIME.plusSeconds(4), "5 Visible only to user0 and user1");
     }
 
     @Test
@@ -108,5 +110,12 @@ public class RoomPaginatedApiTests {
         BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=6");
 
         Assertions.assertEquals(6, responseBody.getData().size());
+    }
+
+    @Test
+    void whenFetching_withoutPageSize_afterSecondRoom_byUsingDate_last4RoomsAreReturned() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[after]=%s".formatted(STARTING_TIME.plusSeconds(3)));
+
+        Assertions.assertEquals(4, responseBody.getData().size());
     }
 }

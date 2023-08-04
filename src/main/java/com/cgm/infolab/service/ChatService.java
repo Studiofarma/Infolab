@@ -89,9 +89,9 @@ public class ChatService {
             if (pageAfter == null && pageBefore == null) {
                 chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.NONE, null, username);
             } else if (pageBefore != null) {
-                chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.PAGE_BEFORE, fromStringToDate(pageBefore), username);
+                chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.PAGE_BEFORE, fromStringToDateTime(pageBefore), username);
             } else { // pageAfter != null
-                chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.PAGE_AFTER, fromStringToDate(pageAfter), username);
+                chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.PAGE_AFTER, fromStringToDateTime(pageAfter), username);
             }
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());
@@ -118,7 +118,7 @@ public class ChatService {
         return chatMessageRepository.editMessage(user, messageId, newContent);
     }
 
-    private LocalDateTime fromStringToDate(String date) {
+    private LocalDateTime fromStringToDateTime(String date) {
         if (date == null) {
             return null;
         } else {
