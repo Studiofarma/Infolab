@@ -102,6 +102,16 @@ public class RoomPaginatedApiTests {
         responseBody.getData().forEach(System.out::println);
 
         Assertions.assertEquals(9, responseBody.getData().size());
+
+        Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("user1-user2", responseBody.getData().get(1).get("roomName"));
+        Assertions.assertEquals("general", responseBody.getData().get(2).get("roomName"));
+        Assertions.assertEquals("public2", responseBody.getData().get(3).get("roomName"));
+        Assertions.assertEquals("public3", responseBody.getData().get(4).get("roomName"));
+        Assertions.assertEquals("public4", responseBody.getData().get(5).get("roomName"));
+        Assertions.assertEquals("user3", responseBody.getData().get(6).get("roomName"));
+        Assertions.assertEquals("user4", responseBody.getData().get(7).get("roomName"));
+        Assertions.assertEquals("user5", responseBody.getData().get(8).get("roomName"));
     }
 
     @Test
@@ -110,7 +120,8 @@ public class RoomPaginatedApiTests {
 
         Assertions.assertEquals(2, responseBody.getData().size());
 
-        // TODO: put other assertions to check if the rooms are actually the first ones.
+        Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("user1-user2", responseBody.getData().get(1).get("roomName"));
     }
 
     @Test
@@ -118,15 +129,49 @@ public class RoomPaginatedApiTests {
         BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=7");
 
         Assertions.assertEquals(7, responseBody.getData().size());
+
+        Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("user1-user2", responseBody.getData().get(1).get("roomName"));
+        Assertions.assertEquals("general", responseBody.getData().get(2).get("roomName"));
+        Assertions.assertEquals("public2", responseBody.getData().get(3).get("roomName"));
+        Assertions.assertEquals("public3", responseBody.getData().get(4).get("roomName"));
+        Assertions.assertEquals("public4", responseBody.getData().get(5).get("roomName"));
+        Assertions.assertEquals("user3", responseBody.getData().get(6).get("roomName"));
     }
 
     @Test
-    void whenFetching_withoutPageSize_afterSecondRoom_byUsingDate_last8RoomsAreReturned() {
+    void whenFetching_withoutPageSize_afterSecondRoom_byUsingDate_last7RoomsAreReturned() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[after]=[t]%s".formatted(STARTING_TIME.plusSeconds(7)));
+
+        responseBody.getData().forEach(System.out::println);
+
+        Assertions.assertEquals(7, responseBody.getData().size());
+
+        Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("public2", responseBody.getData().get(1).get("roomName"));
+        Assertions.assertEquals("public3", responseBody.getData().get(2).get("roomName"));
+        Assertions.assertEquals("public4", responseBody.getData().get(3).get("roomName"));
+        Assertions.assertEquals("user3", responseBody.getData().get(4).get("roomName"));
+        Assertions.assertEquals("user4", responseBody.getData().get(5).get("roomName"));
+        Assertions.assertEquals("user5", responseBody.getData().get(6).get("roomName"));
+    }
+
+    @Test
+    void whenFetching_withoutPageSize_afterFirstRoom_byUsingDate_last8RoomsAreReturned_inCorrectOrder() {
         BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[after]=[t]%s".formatted(STARTING_TIME.plusSeconds(3)));
 
         responseBody.getData().forEach(System.out::println);
 
         Assertions.assertEquals(8, responseBody.getData().size());
+
+        Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("user1-user2", responseBody.getData().get(1).get("roomName"));
+        Assertions.assertEquals("public2", responseBody.getData().get(2).get("roomName"));
+        Assertions.assertEquals("public3", responseBody.getData().get(3).get("roomName"));
+        Assertions.assertEquals("public4", responseBody.getData().get(4).get("roomName"));
+        Assertions.assertEquals("user3", responseBody.getData().get(5).get("roomName"));
+        Assertions.assertEquals("user4", responseBody.getData().get(6).get("roomName"));
+        Assertions.assertEquals("user5", responseBody.getData().get(7).get("roomName"));
     }
 
     @Test

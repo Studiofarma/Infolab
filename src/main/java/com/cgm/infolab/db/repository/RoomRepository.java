@@ -220,12 +220,12 @@ public class RoomRepository {
 
 
         String beforeOrAfterCondition = ">"; // TODO: remove assignment
-        String ascOrDesc = "asc"; // TODO: remove assignment
-        String ascOrDescInverted = "desc"; // TODO: remove assignment
+        String descAscOrDesc = "asc"; // TODO: remove assignment
+        String timestampAscOrDesc = "desc";
         if (beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
             beforeOrAfterCondition = ">";
-            ascOrDesc = "ASC";
-            ascOrDescInverted = "DESC";
+            descAscOrDesc = "ASC";
+            timestampAscOrDesc = "ASC";
         }
 
         String whereConditionFirst = "";
@@ -246,20 +246,41 @@ public class RoomRepository {
         }
 
         if (shouldFirstQueryRun) {
+            String query = "%s %s ORDER BY sent_at %s NULLS LAST, description %s %s"
+                    .formatted(
+                            GET_EXISTING_ROOMS_QUERY,
+                            whereConditionFirst,
+                            timestampAscOrDesc,
+                            descAscOrDesc,
+                            limit);
+
+            System.out.println(query);
             roomsFirst = namedParameterJdbcTemplate
-                    .query("%s %s ORDER BY sent_at %s NULLS LAST, description %s %s"
-                                    .formatted(
-                                            GET_EXISTING_ROOMS_QUERY,
-                                            whereConditionFirst,
-                                            ascOrDescInverted,
-                                            ascOrDesc,
-                                            limit),
+                    .query(query,
                             arguments, RowMappers::mapToRoomEntityWithMessages2);
 
             if (pageSize > 0 && roomsFirst.size() < pageSize) {
                 shouldSecondQueryRun = true;
                 pageSize -= roomsFirst.size();
                 arguments.replace("pageSize", pageSize);
+            }
+
+            if (!beforeOrAfter.equals(CursorEnum.NONE)) {
+
+                List<RoomEntity> roomsWithMessages = roomsFirst.stream().filter(roomEntity -> roomEntity.getMessages().get(0).getTimestamp() != null).toList();
+                List<RoomEntity> roomsWithoutMessages = roomsFirst.stream().filter(roomEntity -> roomEntity.getMessages().get(0).getTimestamp() == null).toList();
+
+                roomsWithMessages = roomsWithMessages
+                        .stream()
+                        .sorted((room1, room2) -> -(room1.getMessages().get(0).getTimestamp()).compareTo(room2.getMessages().get(0).getTimestamp()))
+                        .toList();
+
+                roomsWithoutMessages = roomsWithoutMessages
+                        .stream()
+                        .sorted(Comparator.comparing(RoomEntity::getDescription))
+                        .toList();
+
+                roomsFirst = Stream.concat(roomsWithMessages.stream(), roomsWithoutMessages.stream()).collect(Collectors.toList());
             }
         }
 
