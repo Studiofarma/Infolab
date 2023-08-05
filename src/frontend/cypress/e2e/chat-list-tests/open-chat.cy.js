@@ -1,94 +1,34 @@
-const conversationListPath = "il-app,il-chat,il-conversation-list";
-
-const inputRicercaSidebarPath = `${conversationListPath},il-input-search, il-input-with-icon`;
-
-const conversation = "il-conversation";
-
 describe("open chat spec", () => {
   it("open first chat", () => {
-    cy.getLitElement(conversationListPath)
-      .find(conversation)
-      .first()
-      .shadow()
-      .find(".chat-name")
-      .invoke("text")
-      .then((text) => {
-        cy.getLitElement(conversationListPath)
-          .find(conversation)
-          .first()
-          .shadow()
-          .find(".chat-name")
-          .click({ force: true })
-          .should("have.text", text);
-      });
+    cy.getConversationName(0).then((text) => {
+      cy.openChatByClick(0);
+
+      cy.checkOpenedConversationName(text);
+    });
   });
 
   it("open last chat", () => {
-    cy.getLitElement(conversationListPath)
-      .find(conversation)
-      .last()
-      .shadow()
-      .find(".chat-name")
-      .invoke("text")
-      .then((text) => {
-        cy.getLitElement(conversationListPath)
-          .find(conversation)
-          .last()
-          .shadow()
-          .find(".chat-name")
-          .click({ force: true })
-          .should("have.text", text);
-      });
+    cy.getConversationName(-1).then((text) => {
+      cy.openChatByClick(-1);
+
+      cy.checkOpenedConversationName(text);
+    });
   });
 
   it("open second chat with arrows", () => {
-    cy.getLitElement(conversationListPath)
-      .find(conversation)
-      .eq(1)
-      .shadow()
-      .find(".chat-name")
-      .invoke("text")
-      .then((text) => {
-        cy.getLitElement(inputRicercaSidebarPath)
-          .find("input")
-          .type("{downArrow}{downArrow}{enter}", {
-            force: true,
-            parseSpecialCharSequences: true,
-          });
+    cy.getConversationName(1).then((text) => {
+      cy.openChatWithArrows(2);
 
-        cy.getLitElement(conversationListPath)
-          .find(conversation)
-          .eq(1)
-          .shadow()
-          .find(".chat-name")
-          .should("have.text", text);
-      });
+      cy.checkOpenedConversationName(text);
+    });
   });
 
   it("open third chat with arrows", () => {
-    cy.getLitElement(conversationListPath)
-      .find(conversation)
-      .eq(2)
-      .shadow()
-      .find(".chat-name")
-      .invoke("text")
-      .then((text) => {
-        cy.getLitElement(inputRicercaSidebarPath)
-          .find("input")
-          .type(
-            "{downArrow}{downArrow}{downArrow}{downArrow}{upArrow}{enter}",
-            {
-              force: true,
-              parseSpecialCharSequences: true,
-            }
-          );
-        cy.getLitElement(conversationListPath)
-          .find(conversation)
-          .eq(2)
-          .shadow()
-          .find(".chat-name")
-          .should("have.text", text);
-      });
+    cy.getConversationName(2).then((text) => {
+      cy.openChatWithArrows(3);
+
+      cy.checkOpenedConversationName(text);
+    });
   });
 });
 

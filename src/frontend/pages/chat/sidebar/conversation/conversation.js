@@ -123,7 +123,9 @@ class Conversation extends BaseComponent {
           .isSelected=${this.isSelected && this.isSelectable}
         ></il-avatar>
         <div class="name-box">
-          <p class="chat-name">${this.conversation?.description}</p>
+          <p class="chat-name" data-cy="chat-name">
+            ${this.conversation?.description}
+          </p>
           <p class="last-message">${this.formatLastMessageText()}</p>
         </div>
         <div class="date-box">
