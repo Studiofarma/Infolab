@@ -251,8 +251,8 @@ public class RoomPaginatedApiTests {
 
         Assertions.assertEquals(6, responseBody.getData().size());
 
-        Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
-        Assertions.assertEquals("user1-user2", responseBody.getData().get(1).get("roomName"));
+        Assertions.assertEquals("user1-user2", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("general", responseBody.getData().get(1).get("roomName"));
         Assertions.assertEquals("public2", responseBody.getData().get(2).get("roomName"));
         Assertions.assertEquals("public3", responseBody.getData().get(3).get("roomName"));
         Assertions.assertEquals("public4", responseBody.getData().get(4).get("roomName"));
@@ -262,8 +262,6 @@ public class RoomPaginatedApiTests {
     @Test
     void whenFetching_withoutPageSize_beforeFourthToLastRoom_byUsingDescriptionRoom_first5RoomsAreReturned() {
         BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[before]=[r]Public room 4 desc");
-
-        responseBody.getData().forEach(System.out::println);
 
         Assertions.assertEquals(5, responseBody.getData().size());
 
@@ -275,6 +273,35 @@ public class RoomPaginatedApiTests {
     }
 
     @Test
+    void whenFetching_withPageSize2_beforeFourthToLastRoom_byUsingDescriptionRoom_expectedRoomsAreReturned() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=2&page[before]=[r]Public room 4 desc");
+
+        Assertions.assertEquals(2, responseBody.getData().size());
+
+        Assertions.assertEquals("public2", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("public3", responseBody.getData().get(1).get("roomName"));
+    }
+
+    @Test
+    void whenFetching_withoutPageSize_beforeThirdRoom_byUsingTimestamp_first2RoomsAreReturned() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[before]=[t]%s".formatted(STARTING_TIME.plusSeconds(1)));
+
+        Assertions.assertEquals(2, responseBody.getData().size());
+
+        Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("user1-user2", responseBody.getData().get(1).get("roomName"));
+    }
+
+    @Test
+    void whenFetching_withPageSize1_beforeThirdRoom_byUsingTimestamp_expectedRoomIsReturned() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=1&page[before]=[t]%s".formatted(STARTING_TIME.plusSeconds(1)));
+
+        Assertions.assertEquals(1, responseBody.getData().size());
+
+        Assertions.assertEquals("user1-user2", responseBody.getData().get(0).get("roomName"));
+    }
+
+    @Test
     void whenFetching_ifTypeIdentifierProvidedIsInvalid_badRequestIsThrown() {
         ResponseEntity<BasicJsonDto> response = testRestTemplate
                 .withBasicAuth("user1", "password1")
@@ -282,4 +309,14 @@ public class RoomPaginatedApiTests {
 
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
+
+    @Test
+    void whenTryingToUseRangePagination_badRequestStatusCodeIsReturned() {
+        ResponseEntity<Object> response = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/rooms2?page[before]=[r]Hello&page[after]=[r]Hello2",
+                Object.class);
+
+        Assertions.assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+    }
+
 }

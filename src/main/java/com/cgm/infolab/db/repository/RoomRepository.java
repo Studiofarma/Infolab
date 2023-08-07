@@ -249,8 +249,10 @@ public class RoomRepository {
                 if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
                     shouldFirstQueryRun = true;
                     shouldSecondQueryRun = false;
+                    whereConditionFirst = "WHERE sent_at %s :timestamp".formatted(beforeOrAfterConditionTimestamp);
+                } else {
+                    whereConditionFirst = "WHERE sent_at %s :timestamp or sent_at IS NULL".formatted(beforeOrAfterConditionTimestamp);
                 }
-                whereConditionFirst = "WHERE sent_at %s :timestamp or sent_at IS NULL".formatted(beforeOrAfterConditionTimestamp);
                 arguments.put("timestamp", (LocalDateTime) beforeOrAfterCursor.getCursor());
             } else if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.DESCRIPTION_ROOM)) {
                 if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
@@ -314,7 +316,7 @@ public class RoomRepository {
             }
 
             if (shouldFirstQueryRun) {
-                roomsFirst = queryExistingRooms(beforeOrAfter, whereConditionFirst, ascOrDesc, ascOrDesc, nullsLastOrFirst, limit, arguments);
+                roomsFirst = queryExistingRooms(beforeOrAfter, whereConditionFirst, invertedAscOrDesc, ascOrDesc, nullsLastOrFirst, limit, arguments);
             }
         }
 

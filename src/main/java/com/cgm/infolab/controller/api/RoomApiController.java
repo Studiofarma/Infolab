@@ -17,7 +17,6 @@ import org.springframework.web.server.ResponseStatusException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.cgm.infolab.controller.api.ApiConstants.*;
@@ -25,12 +24,14 @@ import static com.cgm.infolab.controller.api.ApiConstants.*;
 @RestController
 public class RoomApiController {
     private final RoomService roomService;
+    private final ApiHelper apiHelper;
     private final Logger log = LoggerFactory.getLogger(RoomApiController.class);
 
 
     @Autowired
-    public RoomApiController(RoomService roomService) {
+    public RoomApiController(RoomService roomService, ApiHelper apiHelper) {
         this.roomService = roomService;
+        this.apiHelper = apiHelper;
     }
 
     @GetMapping("/api/rooms")
@@ -53,6 +54,10 @@ public class RoomApiController {
                                               @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
                                               @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
                                               Principal principal) {
+
+        if (pageBefore != null && pageAfter != null) {
+            apiHelper.throwOnRangePagination();
+        }
 
         if (pageSize == null) pageSize = -1;
 
