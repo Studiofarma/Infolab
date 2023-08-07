@@ -204,9 +204,23 @@ public class RoomRepository {
                                                                        CursorEnum beforeOrAfter,
                                                                        RoomCursor beforeOrAfterCursor,
                                                                        Username username) {
+        return getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, beforeOrAfter, beforeOrAfterCursor, null, username);
+    }
+
+    public List<RoomEntity> getExistingRoomsAndUsersWithoutRoomAsRooms(Integer pageSize,
+                                                                       CursorEnum beforeOrAfter,
+                                                                       RoomCursor beforeOrAfterCursor,
+                                                                       String nameToSearch,
+                                                                       Username username) {
 
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("username", username.value());
+
+        if (nameToSearch != null && !nameToSearch.isEmpty()) {
+            arguments.put("nameToSearch", nameToSearch);
+        } else {
+            nameToSearch = "";
+        }
 
         boolean shouldRoomsQueryRun = true;
         boolean shouldUsersQueryRun = false;
@@ -238,16 +252,36 @@ public class RoomRepository {
 
         String whereConditionRooms = "";
         String whereConditionUsers = "";
+
+
+        String likeRooms;
+        String whereLikeRooms;
+        String whereLikeUsers;
+
+        if (nameToSearch.isEmpty()) {
+            likeRooms = "";
+
+            whereLikeRooms = "";
+            whereLikeUsers = "";
+        } else {
+            likeRooms = "description ILIKE '%%' || :nameToSearch || '%%'";
+
+            whereLikeRooms = "AND " + likeRooms;
+            whereLikeUsers = "AND u.description ILIKE '%%' || :nameToSearch || '%%'";
+        }
+
         if (beforeOrAfterCursor != null) {
             if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.TIMESTAMP)) {
-                whereConditionRooms = "WHERE sent_at %s :timestamp".formatted(beforeOrAfterConditionTimestamp);
+                whereConditionRooms = "sent_at %s :timestamp".formatted(beforeOrAfterConditionTimestamp);
 
                 if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
                     shouldRoomsQueryRun = true;
                     shouldUsersQueryRun = false;
                 } else {
-                    whereConditionRooms = "%s %s".formatted(whereConditionRooms, "OR sent_at IS NULL");
+                    whereConditionRooms = "(%s %s)".formatted(whereConditionRooms, "OR sent_at IS NULL");
                 }
+
+                whereConditionRooms = "WHERE %s %s".formatted(whereConditionRooms, whereLikeRooms);
 
                 arguments.put("timestamp", (LocalDateTime) beforeOrAfterCursor.getCursor());
             } else if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.DESCRIPTION_ROOM)) {
@@ -257,8 +291,10 @@ public class RoomRepository {
                     shouldUsersQueryRun = false;
                     whereConditionRooms = "WHERE (description %s :descriptionRoom OR sent_at IS NOT NULL)".formatted(beforeOrAfterConditionDescriptions);
                 } else {
-                    whereConditionRooms = "WHERE sent_at IS NULL and description %s :descriptionRoom".formatted(beforeOrAfterConditionDescriptions);
+                    whereConditionRooms = "WHERE sent_at IS NULL AND description %s :descriptionRoom".formatted(beforeOrAfterConditionDescriptions);
                 }
+
+                whereConditionRooms = "%s %s".formatted(whereConditionRooms, whereLikeRooms);
 
                 arguments.put("descriptionRoom", (String) beforeOrAfterCursor.getCursor());
             } else if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.DESCRIPTION_USER)) {
@@ -267,9 +303,14 @@ public class RoomRepository {
                     shouldRoomsQueryRun = false;
                     shouldUsersQueryRun = true;
                 }
-                whereConditionUsers = "AND u.description %s :descriptionUser".formatted(beforeOrAfterConditionDescriptions);
+                whereConditionUsers = "AND u.description %s :descriptionUser %s".formatted(beforeOrAfterConditionDescriptions, whereLikeUsers);
                 arguments.put("descriptionUser", (String) beforeOrAfterCursor.getCursor());
             }
+        }
+
+        if (!nameToSearch.isEmpty()) {
+            if (whereConditionRooms.isEmpty()) whereConditionRooms = "WHERE %s".formatted(likeRooms);
+            if (whereConditionUsers.isEmpty()) whereConditionUsers = whereLikeUsers;
         }
 
         String limit = "";
@@ -332,13 +373,15 @@ public class RoomRepository {
     }
 
     private List<RoomEntity> queryUsersAsRooms(String whereCondition, String ascOrDesc, String limit, Map<String, Object> arguments) {
+        String query = "%s %s ORDER BY new_user_description %s %s"
+                .formatted(
+                        GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY,
+                        whereCondition,
+                        ascOrDesc,
+                        limit);
+        System.out.println(query);
         return namedParameterJdbcTemplate
-                .query("%s %s ORDER BY new_user_description %s %s"
-                                .formatted(
-                                        GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY,
-                                        whereCondition,
-                                        ascOrDesc,
-                                        limit),
+                .query(query,
                         arguments,
                         RowMappers::mapToRoomEntityWithMessages2);
     }
@@ -351,15 +394,19 @@ public class RoomRepository {
                                                 String limit,
                                                 Map<String, Object> arguments) {
 
+        String query = "%s %s ORDER BY sent_at %s NULLS %s, description %s %s"
+                .formatted(
+                        GET_EXISTING_ROOMS_QUERY,
+                        whereCondition,
+                        ascOrDescTimestamp,
+                        nullsLastOrFirst,
+                        ascOrDescDescription,
+                        limit);
+
+        System.out.println(query);
+
         List<RoomEntity> roomsFromDb = namedParameterJdbcTemplate
-                .query("%s %s ORDER BY sent_at %s NULLS %s, description %s %s"
-                                .formatted(
-                                        GET_EXISTING_ROOMS_QUERY,
-                                        whereCondition,
-                                        ascOrDescTimestamp,
-                                        nullsLastOrFirst,
-                                        ascOrDescDescription,
-                                        limit),
+                .query(query,
                         arguments, RowMappers::mapToRoomEntityWithMessages2);
 
         if (!beforeOrAfter.equals(CursorEnum.NONE)) {
