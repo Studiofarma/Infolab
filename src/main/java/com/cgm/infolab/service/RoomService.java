@@ -46,6 +46,16 @@ public class RoomService {
         }
     }
 
+    public List<RoomEntity> searchRoomsAndUsers(Integer pageSize, RoomCursor pageBefore, RoomCursor pageAfter, String nameToSearch, Username username) {
+        if (pageAfter == null && pageBefore == null) {
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.NONE, null, nameToSearch, username);
+        } else if (pageAfter != null) {
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.PAGE_AFTER, pageAfter, nameToSearch, username);
+        } else { // pageBefore != null
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.PAGE_BEFORE, pageBefore, nameToSearch, username);
+        }
+    }
+
     private RoomEntity createPrivateRoom(Username user1, Username user2) {
         RoomName roomName = RoomName.of(user1, user2);
 

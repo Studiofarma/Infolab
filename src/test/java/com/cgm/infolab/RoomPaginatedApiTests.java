@@ -100,8 +100,6 @@ public class RoomPaginatedApiTests {
                 .sorted(Comparator.comparing(linkedHashMap -> linkedHashMap.get("roomName").toString()))
                 .toList();
 
-        responseBody.getData().forEach(System.out::println);
-
         Assertions.assertEquals(9, responseBody.getData().size());
 
         Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));

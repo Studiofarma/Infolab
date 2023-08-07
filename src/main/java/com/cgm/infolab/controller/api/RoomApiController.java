@@ -82,8 +82,45 @@ public class RoomApiController {
         List<RoomEntity> roomEntities = roomService.getRoomsAndUsers(pageSize, cursorBefore, cursorAfter, Username.of(principal.getName()));
 
         if (!roomEntities.isEmpty()) {
-            String prev = getLink(roomEntities, pageSize, PAGE_BEFORE_API_NAME);
-            String next = getLink(roomEntities, pageSize, PAGE_AFTER_API_NAME);
+            String prev = getLinkForRooms(ROOMS2_PATH, roomEntities, pageSize, PAGE_BEFORE_API_NAME);
+            String next = getLinkForRooms(ROOMS2_PATH, roomEntities, pageSize, PAGE_AFTER_API_NAME);
+
+            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto(prev, next, roomEntities);
+        } else {
+            log.info("Non sono state trovate room");
+        }
+        return roomDtos;
+    }
+
+    @GetMapping(ROOMS2_PATH + "/search")
+    public BasicJsonDto<RoomDto> searchRooms(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
+                                             @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
+                                             @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
+                                             @RequestParam String nameToSearch,
+                                             Principal principal) {
+
+        if (pageBefore != null && pageAfter != null) {
+            apiHelper.throwOnRangePagination();
+        }
+
+        if (pageSize == null) pageSize = -1;
+
+        RoomCursor cursorAfter;
+        RoomCursor cursorBefore;
+        try {
+            cursorAfter = pageAfter != null ? parseCursor(pageAfter) : null;
+            cursorBefore = pageBefore != null ? parseCursor(pageBefore) : null;
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+
+        BasicJsonDto<RoomDto> roomDtos = BasicJsonDto.empty();
+        List<RoomEntity> roomEntities = roomService.searchRoomsAndUsers(pageSize, cursorBefore, cursorAfter, nameToSearch, Username.of(principal.getName()));
+
+        if (!roomEntities.isEmpty()) {
+            String prev = getLinkForRoomsWithName(ROOMS2_PATH + "/search", roomEntities, pageSize, PAGE_BEFORE_API_NAME, nameToSearch);
+            String next = getLinkForRoomsWithName(ROOMS2_PATH + "/search", roomEntities, pageSize, PAGE_AFTER_API_NAME, nameToSearch);
 
             roomDtos = FromEntitiesToDtosMapper.fromEntityToDto(prev, next, roomEntities);
         } else {
@@ -120,7 +157,7 @@ public class RoomApiController {
         };
     }
 
-    private String getLink(List<RoomEntity> result, int pageSize, String beforeOrAfterName) throws IllegalArgumentException {
+    private String getLinkForRooms(String path, List<RoomEntity> result, int pageSize, String beforeOrAfterName) throws IllegalArgumentException {
 
         if (pageSize <= 0) return "";
 
@@ -135,11 +172,17 @@ public class RoomApiController {
         else
             throw new IllegalArgumentException("Invalid api name.");
 
-        return calculateQuery(beforeOrAfterName, pageSizeQuery, roomEntity);
+        return calculateQuery(path, beforeOrAfterName, pageSizeQuery, roomEntity);
     }
 
-    private String calculateQuery(String beforeOrAfterName, String pageSizeQuery, RoomEntity roomEntity) {
-        String query = ROOMS2_PATH + "?" + pageSizeQuery;
+    private String getLinkForRoomsWithName(String path, List<RoomEntity> result, int pageSize, String beforeOrAfterName, String nameToSearch) {
+        if (pageSize <= 0) return "";
+
+        return getLinkForRooms(path, result, pageSize, beforeOrAfterName) + "&nameToSearch=%s".formatted(nameToSearch);
+    }
+
+    private String calculateQuery(String path, String beforeOrAfterName, String pageSizeQuery, RoomEntity roomEntity) {
+        String query = path + "?" + pageSizeQuery;
 
         if (roomEntity.getRoomOrUser().equals(RoomOrUserAsRoomEnum.ROOM)) {
             if (roomEntity.getMessages().get(0).getTimestamp() != null) {
