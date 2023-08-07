@@ -223,19 +223,22 @@ public class RoomRepository {
         }
 
 
-        String beforeOrAfterCondition = ">"; // TODO: remove assignment
+        String beforeOrAfterConditionTimestamp = "<"; // TODO: remove assignment
+        String beforeOrAfterConditionDescriptions = ">"; // TODO: remove assignment
         String ascOrDesc = "ASC"; // TODO: remove assignment
         String invertedAscOrDesc = "DESC";
         String nullsLastOrFirst = "LAST";
         if (beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
-            beforeOrAfterCondition = ">";
+            beforeOrAfterConditionTimestamp = "<";
+            beforeOrAfterConditionDescriptions = ">";
             ascOrDesc = "ASC";
-            invertedAscOrDesc = "ASC";
+            invertedAscOrDesc = "DESC";
             nullsLastOrFirst = "LAST";
         } else if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
-            beforeOrAfterCondition = "<";
+            beforeOrAfterConditionTimestamp = ">";
+            beforeOrAfterConditionDescriptions = "<";
             ascOrDesc = "DESC";
-            invertedAscOrDesc = "DESC";
+            invertedAscOrDesc = "ASC";
             nullsLastOrFirst = "FIRST";
         }
 
@@ -247,15 +250,15 @@ public class RoomRepository {
                     shouldFirstQueryRun = true;
                     shouldSecondQueryRun = false;
                 }
-                whereConditionFirst = "WHERE sent_at %s :timestamp or sent_at IS NULL".formatted(beforeOrAfterCondition);
+                whereConditionFirst = "WHERE sent_at %s :timestamp or sent_at IS NULL".formatted(beforeOrAfterConditionTimestamp);
                 arguments.put("timestamp", (LocalDateTime) beforeOrAfterCursor.getCursor());
             } else if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.DESCRIPTION_ROOM)) {
                 if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
                     shouldFirstQueryRun = true;
                     shouldSecondQueryRun = false;
-                    whereConditionFirst = "WHERE (description %s :descriptionRoom OR sent_at IS NOT NULL)".formatted(beforeOrAfterCondition);
+                    whereConditionFirst = "WHERE (description %s :descriptionRoom OR sent_at IS NOT NULL)".formatted(beforeOrAfterConditionDescriptions);
                 } else {
-                    whereConditionFirst = "WHERE sent_at IS NULL and description %s :descriptionRoom".formatted(beforeOrAfterCondition);
+                    whereConditionFirst = "WHERE sent_at IS NULL and description %s :descriptionRoom".formatted(beforeOrAfterConditionDescriptions);
                 }
                 arguments.put("descriptionRoom", (String) beforeOrAfterCursor.getCursor());
             } else if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.DESCRIPTION_USER)) {
@@ -263,7 +266,7 @@ public class RoomRepository {
                     shouldFirstQueryRun = false;
                     shouldSecondQueryRun = true;
                 }
-                whereConditionSecond = "AND u.description %s :descriptionUser".formatted(beforeOrAfterCondition);
+                whereConditionSecond = "AND u.description %s :descriptionUser".formatted(beforeOrAfterConditionDescriptions);
                 arguments.put("descriptionUser", (String) beforeOrAfterCursor.getCursor());
             }
         }

@@ -141,11 +141,11 @@ public class RoomPaginatedApiTests {
 
     @Test
     void whenFetching_withoutPageSize_afterSecondRoom_byUsingDate_last7RoomsAreReturned() {
-        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[after]=[t]%s".formatted(STARTING_TIME.plusSeconds(7)));
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[after]=[t]%s".formatted(STARTING_TIME.plusSeconds(3)));
 
         Assertions.assertEquals(7, responseBody.getData().size());
 
-        Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("general", responseBody.getData().get(0).get("roomName"));
         Assertions.assertEquals("public2", responseBody.getData().get(1).get("roomName"));
         Assertions.assertEquals("public3", responseBody.getData().get(2).get("roomName"));
         Assertions.assertEquals("public4", responseBody.getData().get(3).get("roomName"));
@@ -156,12 +156,12 @@ public class RoomPaginatedApiTests {
 
     @Test
     void whenFetching_withoutPageSize_afterFirstRoom_byUsingDate_last8RoomsAreReturned_inCorrectOrder() {
-        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[after]=[t]%s".formatted(STARTING_TIME.plusSeconds(3)));
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[after]=[t]%s".formatted(STARTING_TIME.plusSeconds(7)));
 
         Assertions.assertEquals(8, responseBody.getData().size());
 
-        Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
-        Assertions.assertEquals("user1-user2", responseBody.getData().get(1).get("roomName"));
+        Assertions.assertEquals("user1-user2", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("general", responseBody.getData().get(1).get("roomName"));
         Assertions.assertEquals("public2", responseBody.getData().get(2).get("roomName"));
         Assertions.assertEquals("public3", responseBody.getData().get(3).get("roomName"));
         Assertions.assertEquals("public4", responseBody.getData().get(4).get("roomName"));
@@ -172,12 +172,12 @@ public class RoomPaginatedApiTests {
 
     @Test
     void whenFetching_withPageSize3_afterFirstRoom_byUsingDate_expectedRoomsAreReturned() {
-        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=3&page[after]=[t]%s".formatted(STARTING_TIME.plusSeconds(3)));
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=3&page[after]=[t]%s".formatted(STARTING_TIME.plusSeconds(7)));
 
         Assertions.assertEquals(3, responseBody.getData().size());
 
-        Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
-        Assertions.assertEquals("user1-user2", responseBody.getData().get(1).get("roomName"));
+        Assertions.assertEquals("user1-user2", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("general", responseBody.getData().get(1).get("roomName"));
         Assertions.assertEquals("public2", responseBody.getData().get(2).get("roomName"));
     }
 
