@@ -2,6 +2,7 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.ID;
 import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.enumeration.RoomOrUserAsRoomEnum;
 import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
 import com.cgm.infolab.db.model.enumeration.StatusEnum;
 import com.cgm.infolab.db.model.Username;
@@ -71,6 +72,7 @@ public abstract class RowMappers {
                 visibility,
                 roomType,
                 rs.getString("description"),
+                RoomOrUserAsRoomEnum.ROOM,
                 List.of(messageEntity)
         );
 
@@ -90,7 +92,16 @@ public abstract class RowMappers {
         VisibilityEnum visibility = rs.getString("visibility") != null ? VisibilityEnum.valueOf(rs.getString("visibility").trim()) : VisibilityEnum.PRIVATE;
 
         Long roomId = rs.getObject("room_id", Long.class);
-        roomId = roomId != null ? roomId : ID.None;
+
+        RoomOrUserAsRoomEnum roomOrUser;
+
+        if (roomId == null) {
+            roomId = (long) ID.None;
+            roomOrUser = RoomOrUserAsRoomEnum.USER_AS_ROOM;
+        } else {
+            roomOrUser = RoomOrUserAsRoomEnum.ROOM;
+        }
+
 
         String description = rs.getString("description") != null ? rs.getString("description") : rs.getString("new_user_description");
 
@@ -100,6 +111,7 @@ public abstract class RowMappers {
                 visibility,
                 roomType,
                 description,
+                roomOrUser,
                 List.of(messageEntity)
         );
 

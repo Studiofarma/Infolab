@@ -123,6 +123,7 @@ public class RoomRepository {
                 room.getVisibility(),
                 room.getRoomType(),
                 room.getDescription(),
+                room.getRoomOrUser(),
                 room.getMessages(),
                 room.getOtherParticipants()
         );
