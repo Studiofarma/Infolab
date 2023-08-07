@@ -276,11 +276,11 @@ public class RoomRepository {
         } else {
             if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE))
                 shouldFirstQueryRun = true;
-            else if (beforeOrAfter.equals(CursorEnum.PAGE_AFTER))
+            else
                 shouldSecondQueryRun = true;
         }
 
-        if (beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
+        if (!beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
             if (shouldFirstQueryRun) {
                 roomsFirst = queryExistingRooms(beforeOrAfter, whereConditionFirst, invertedAscOrDesc, ascOrDesc, nullsLastOrFirst, limit, arguments);
 

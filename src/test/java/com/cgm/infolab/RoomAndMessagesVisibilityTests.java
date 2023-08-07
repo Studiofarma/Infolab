@@ -131,7 +131,8 @@ public class RoomAndMessagesVisibilityTests {
 
     @Test
     void whenUser0QueriesForRoomsAndUsers_canSee_rightRoomsAndRightUsers() throws InterruptedException {
-        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, CursorEnum.NONE, null, loggedInUser.getName())
+        List<RoomEntity> roomEntities =
+                roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, CursorEnum.NONE, null, loggedInUser.getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
