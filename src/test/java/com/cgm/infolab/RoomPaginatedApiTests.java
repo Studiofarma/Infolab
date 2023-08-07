@@ -10,6 +10,7 @@ import com.cgm.infolab.helper.TestApiHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.BasicJsonDto;
 import com.cgm.infolab.model.ChatMessageDto;
+import com.cgm.infolab.model.PaginationLinksDto;
 import com.cgm.infolab.model.RoomDto;
 import com.cgm.infolab.service.ChatService;
 import org.apache.commons.lang3.tuple.Pair;
@@ -332,5 +333,82 @@ public class RoomPaginatedApiTests {
                 Object.class);
 
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response2.getStatusCode());
+    }
+
+    @Test
+    void whenFetching_withoutPageSize_prevAndNextLinkAreEmpty() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2");
+
+        PaginationLinksDto links1 = responseBody.getLinks();
+
+        Assertions.assertTrue(links1.getPrev().isEmpty());
+        Assertions.assertTrue(links1.getNext().isEmpty());
+
+        BasicJsonDto<LinkedHashMap> responseBody2 = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[before]=[t]%s".formatted(STARTING_TIME.plusSeconds(1)));
+
+        PaginationLinksDto links2 = responseBody2.getLinks();
+
+        Assertions.assertTrue(links2.getPrev().isEmpty());
+        Assertions.assertTrue(links2.getNext().isEmpty());
+    }
+
+    @Test
+    void whenFetching_withPageSize2_linksAreAsExpected() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=2");
+
+        PaginationLinksDto links = responseBody.getLinks();
+
+        Assertions.assertEquals("/api/rooms2?page[size]=2&page[before]=[t]%s".formatted(STARTING_TIME.plusSeconds(8)), links.getPrev());
+        Assertions.assertEquals("/api/rooms2?page[size]=2&page[after]=[t]%s".formatted(STARTING_TIME.plusSeconds(4)), links.getNext());
+    }
+
+    @Test
+    void whenFetching_withPageSize4_linksAreAsExpected() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=4");
+
+        PaginationLinksDto links = responseBody.getLinks();
+
+        Assertions.assertEquals("/api/rooms2?page[size]=4&page[before]=[t]%s".formatted(STARTING_TIME.plusSeconds(8)), links.getPrev());
+        Assertions.assertEquals("/api/rooms2?page[size]=4&page[after]=[r]%s".formatted(public2.getDescription()), links.getNext());
+    }
+
+    @Test
+    void whenFetching_withPageSize7_linksAreAsExpected() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=7");
+
+        PaginationLinksDto links = responseBody.getLinks();
+
+        Assertions.assertEquals("/api/rooms2?page[size]=7&page[before]=[t]%s".formatted(STARTING_TIME.plusSeconds(8)), links.getPrev());
+        Assertions.assertEquals("/api/rooms2?page[size]=7&page[after]=[u]%s".formatted(users[3].getDescription()), links.getNext());
+    }
+
+    @Test
+    void whenFetching_withPageSize2_afterSecondRoom_linksAreAsExpected() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=2&page[after]=[t]%s".formatted(STARTING_TIME.plusSeconds(3)));
+
+        PaginationLinksDto links = responseBody.getLinks();
+
+        Assertions.assertEquals("/api/rooms2?page[size]=2&page[before]=[t]%s".formatted(STARTING_TIME), links.getPrev());
+        Assertions.assertEquals("/api/rooms2?page[size]=2&page[after]=[r]%s".formatted(public2.getDescription()), links.getNext());
+    }
+
+    @Test
+    void whenFetching_withPageSize2_afterFifthRoom_linksAreAsExpected() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=2&page[after]=[r]%s".formatted(public3.getDescription()));
+
+        PaginationLinksDto links = responseBody.getLinks();
+
+        Assertions.assertEquals("/api/rooms2?page[size]=2&page[before]=[r]%s".formatted(public4.getDescription()), links.getPrev());
+        Assertions.assertEquals("/api/rooms2?page[size]=2&page[after]=[u]%s".formatted(users[3].getDescription()), links.getNext());
+    }
+
+    @Test
+    void whenFetching_withPageSize2_afterSixthRoom_linksAreAsExpected() {
+        BasicJsonDto<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1WithJsonDto("/api/rooms2?page[size]=2&page[after]=[r]%s".formatted(public4.getDescription()));
+
+        PaginationLinksDto links = responseBody.getLinks();
+
+        Assertions.assertEquals("/api/rooms2?page[size]=2&page[before]=[u]%s".formatted(users[3].getDescription()), links.getPrev());
+        Assertions.assertEquals("/api/rooms2?page[size]=2&page[after]=[u]%s".formatted(users[4].getDescription()), links.getNext());
     }
 }

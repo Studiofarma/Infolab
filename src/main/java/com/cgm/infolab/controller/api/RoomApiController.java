@@ -131,16 +131,6 @@ public class RoomApiController {
         }
     }
 
-    // TODO: put this in a helper class
-    private String fromDateToString(LocalDateTime date) {
-        if (date == null) {
-            return null;
-        } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            return date.format(formatter);
-        }
-    }
-
     private String getLink(List<RoomEntity> result, int pageSize, String beforeOrAfterName) throws IllegalArgumentException {
 
         if (pageSize <= 0) return "";
@@ -156,11 +146,15 @@ public class RoomApiController {
         else
             throw new IllegalArgumentException("Invalid api name.");
 
+        return calculateQuery(beforeOrAfterName, pageSizeQuery, roomEntity);
+    }
+
+    private String calculateQuery(String beforeOrAfterName, String pageSizeQuery, RoomEntity roomEntity) {
         String query = ROOMS2_PATH + "?" + pageSizeQuery;
 
         if (roomEntity.getRoomOrUser().equals(RoomOrUserAsRoomEnum.ROOM)) {
             if (roomEntity.getMessages().get(0).getTimestamp() != null) {
-                query += beforeOrAfterName + "=[t]" + fromDateToString(roomEntity.getMessages().get(0).getTimestamp());
+                query += beforeOrAfterName + "=[t]" + roomEntity.getMessages().get(0).getTimestamp();
             } else {
                 query += beforeOrAfterName + "=[r]" + roomEntity.getDescription();
             }
