@@ -207,34 +207,27 @@ public class RoomRepository {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("username", username.value());
 
-        boolean shouldFirstQueryRun = true;
-        boolean shouldSecondQueryRun = false;
+        boolean shouldRoomsQueryRun = true;
+        boolean shouldUsersQueryRun = false;
 
         if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
-            shouldFirstQueryRun = false;
-            shouldSecondQueryRun = true;
+            shouldRoomsQueryRun = false;
+            shouldUsersQueryRun = true;
         }
 
-        List<RoomEntity> roomsFirst = new ArrayList<>();
-        List<RoomEntity> roomsSecond = new ArrayList<>();
+        List<RoomEntity> existingRooms = new ArrayList<>();
+        List<RoomEntity> usersAsRooms = new ArrayList<>();
 
         if (pageSize == null) {
             pageSize = -1;
         }
 
-
-        String beforeOrAfterConditionTimestamp = "<"; // TODO: remove assignment
-        String beforeOrAfterConditionDescriptions = ">"; // TODO: remove assignment
-        String ascOrDesc = "ASC"; // TODO: remove assignment
+        String beforeOrAfterConditionTimestamp = "<";
+        String beforeOrAfterConditionDescriptions = ">";
+        String ascOrDesc = "ASC";
         String invertedAscOrDesc = "DESC";
         String nullsLastOrFirst = "LAST";
-        if (beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
-            beforeOrAfterConditionTimestamp = "<";
-            beforeOrAfterConditionDescriptions = ">";
-            ascOrDesc = "ASC";
-            invertedAscOrDesc = "DESC";
-            nullsLastOrFirst = "LAST";
-        } else if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
+        if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
             beforeOrAfterConditionTimestamp = ">";
             beforeOrAfterConditionDescriptions = "<";
             ascOrDesc = "DESC";
@@ -242,37 +235,41 @@ public class RoomRepository {
             nullsLastOrFirst = "FIRST";
         }
 
-        String whereConditionFirst = "";
-        String whereConditionSecond = "";
+        String whereConditionRooms = "";
+        String whereConditionUsers = "";
         if (beforeOrAfterCursor != null) {
             if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.TIMESTAMP)) {
+                whereConditionRooms = "WHERE sent_at %s :timestamp".formatted(beforeOrAfterConditionTimestamp);
+
                 if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
-                    shouldFirstQueryRun = true;
-                    shouldSecondQueryRun = false;
-                    whereConditionFirst = "WHERE sent_at %s :timestamp".formatted(beforeOrAfterConditionTimestamp);
+                    shouldRoomsQueryRun = true;
+                    shouldUsersQueryRun = false;
                 } else {
-                    whereConditionFirst = "WHERE sent_at %s :timestamp or sent_at IS NULL".formatted(beforeOrAfterConditionTimestamp);
+                    whereConditionRooms = "%s %s".formatted(whereConditionRooms, "OR sent_at IS NULL");
                 }
+
                 arguments.put("timestamp", (LocalDateTime) beforeOrAfterCursor.getCursor());
             } else if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.DESCRIPTION_ROOM)) {
+
                 if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
-                    shouldFirstQueryRun = true;
-                    shouldSecondQueryRun = false;
-                    whereConditionFirst = "WHERE (description %s :descriptionRoom OR sent_at IS NOT NULL)".formatted(beforeOrAfterConditionDescriptions);
+                    shouldRoomsQueryRun = true;
+                    shouldUsersQueryRun = false;
+                    whereConditionRooms = "WHERE (description %s :descriptionRoom OR sent_at IS NOT NULL)".formatted(beforeOrAfterConditionDescriptions);
                 } else {
-                    whereConditionFirst = "WHERE sent_at IS NULL and description %s :descriptionRoom".formatted(beforeOrAfterConditionDescriptions);
+                    whereConditionRooms = "WHERE sent_at IS NULL and description %s :descriptionRoom".formatted(beforeOrAfterConditionDescriptions);
                 }
+
                 arguments.put("descriptionRoom", (String) beforeOrAfterCursor.getCursor());
             } else if (beforeOrAfterCursor.getCursorType().equals(RoomCursor.RoomCursorType.DESCRIPTION_USER)) {
+
                 if (beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
-                    shouldFirstQueryRun = false;
-                    shouldSecondQueryRun = true;
+                    shouldRoomsQueryRun = false;
+                    shouldUsersQueryRun = true;
                 }
-                whereConditionSecond = "AND u.description %s :descriptionUser".formatted(beforeOrAfterConditionDescriptions);
+                whereConditionUsers = "AND u.description %s :descriptionUser".formatted(beforeOrAfterConditionDescriptions);
                 arguments.put("descriptionUser", (String) beforeOrAfterCursor.getCursor());
             }
         }
-
 
         String limit = "";
         if (pageSize > 0) {
@@ -280,47 +277,47 @@ public class RoomRepository {
             arguments.put("pageSize", pageSize);
         } else {
             if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE))
-                shouldFirstQueryRun = true;
+                shouldRoomsQueryRun = true;
             else
-                shouldSecondQueryRun = true;
+                shouldUsersQueryRun = true;
         }
 
         if (!beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
-            if (shouldFirstQueryRun) {
-                roomsFirst = queryExistingRooms(beforeOrAfter, whereConditionFirst, invertedAscOrDesc, ascOrDesc, nullsLastOrFirst, limit, arguments);
+            if (shouldRoomsQueryRun) {
+                existingRooms = queryExistingRooms(beforeOrAfter, whereConditionRooms, invertedAscOrDesc, ascOrDesc, nullsLastOrFirst, limit, arguments);
 
-                if (pageSize > 0 && roomsFirst.size() < pageSize) {
-                    shouldSecondQueryRun = true;
-                    pageSize -= roomsFirst.size();
+                if (pageSize > 0 && existingRooms.size() < pageSize) {
+                    shouldUsersQueryRun = true;
+                    pageSize -= existingRooms.size();
                     arguments.replace("pageSize", pageSize);
                 }
             }
 
-            if (shouldSecondQueryRun) {
-                roomsSecond = queryUsersAsRooms(whereConditionSecond, ascOrDesc, limit, arguments);
+            if (shouldUsersQueryRun) {
+                usersAsRooms = queryUsersAsRooms(whereConditionUsers, ascOrDesc, limit, arguments);
             }
         } else {
-            if (shouldSecondQueryRun) {
-                roomsSecond = queryUsersAsRooms(whereConditionSecond, ascOrDesc, limit, arguments);
+            if (shouldUsersQueryRun) {
+                usersAsRooms = queryUsersAsRooms(whereConditionUsers, ascOrDesc, limit, arguments);
 
-                roomsSecond = roomsSecond
+                usersAsRooms = usersAsRooms
                         .stream()
                         .sorted(Comparator.comparing(RoomEntity::getDescription))
                         .toList();
 
-                if (pageSize > 0 && roomsSecond.size() < pageSize) {
-                    shouldFirstQueryRun = true;
-                    pageSize -= roomsSecond.size();
+                if (pageSize > 0 && usersAsRooms.size() < pageSize) {
+                    shouldRoomsQueryRun = true;
+                    pageSize -= usersAsRooms.size();
                     arguments.replace("pageSize", pageSize);
                 }
             }
 
-            if (shouldFirstQueryRun) {
-                roomsFirst = queryExistingRooms(beforeOrAfter, whereConditionFirst, invertedAscOrDesc, ascOrDesc, nullsLastOrFirst, limit, arguments);
+            if (shouldRoomsQueryRun) {
+                existingRooms = queryExistingRooms(beforeOrAfter, whereConditionRooms, invertedAscOrDesc, ascOrDesc, nullsLastOrFirst, limit, arguments);
             }
         }
 
-        List<RoomEntity> rooms = Stream.concat(roomsFirst.stream(), roomsSecond.stream()).collect(Collectors.toList());
+        List<RoomEntity> rooms = Stream.concat(existingRooms.stream(), usersAsRooms.stream()).collect(Collectors.toList());
 
         List<RoomName> roomNames = extractRoomNamesFromRoomList(rooms);
 
@@ -333,47 +330,41 @@ public class RoomRepository {
         return rooms;
     }
 
-    private List<RoomEntity> queryUsersAsRooms(String whereConditionSecond, String ascOrDesc, String limit, Map<String, Object> arguments) {
-        List<RoomEntity> roomsSecond;
-
-        String query = "%s %s ORDER BY new_user_description %s %s"
-                .formatted(
-                        GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY,
-                        whereConditionSecond,
-                        ascOrDesc,
-                        limit);
-
-        System.out.println(query);
-
-        roomsSecond = namedParameterJdbcTemplate
-                .query(query,
+    private List<RoomEntity> queryUsersAsRooms(String whereCondition, String ascOrDesc, String limit, Map<String, Object> arguments) {
+        return namedParameterJdbcTemplate
+                .query("%s %s ORDER BY new_user_description %s %s"
+                                .formatted(
+                                        GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY,
+                                        whereCondition,
+                                        ascOrDesc,
+                                        limit),
                         arguments,
                         RowMappers::mapToRoomEntityWithMessages2);
-        return roomsSecond;
     }
 
-    private List<RoomEntity> queryExistingRooms(CursorEnum beforeOrAfter, String whereConditionFirst, String invertedAscOrDesc, String ascOrDesc, String nullsLastOrFirst, String limit, Map<String, Object> arguments) {
-        List<RoomEntity> roomsFirst;
+    private List<RoomEntity> queryExistingRooms(CursorEnum beforeOrAfter,
+                                                String whereCondition,
+                                                String ascOrDescTimestamp,
+                                                String ascOrDescDescription,
+                                                String nullsLastOrFirst,
+                                                String limit,
+                                                Map<String, Object> arguments) {
 
-        String query = "%s %s ORDER BY sent_at %s NULLS %s, description %s %s"
-                .formatted(
-                        GET_EXISTING_ROOMS_QUERY,
-                        whereConditionFirst,
-                        invertedAscOrDesc,
-                        nullsLastOrFirst,
-                        ascOrDesc,
-                        limit);
-
-        System.out.println(query);
-
-        roomsFirst = namedParameterJdbcTemplate
-                .query(query,
+        List<RoomEntity> roomsFromDb = namedParameterJdbcTemplate
+                .query("%s %s ORDER BY sent_at %s NULLS %s, description %s %s"
+                                .formatted(
+                                        GET_EXISTING_ROOMS_QUERY,
+                                        whereCondition,
+                                        ascOrDescTimestamp,
+                                        nullsLastOrFirst,
+                                        ascOrDescDescription,
+                                        limit),
                         arguments, RowMappers::mapToRoomEntityWithMessages2);
 
         if (!beforeOrAfter.equals(CursorEnum.NONE)) {
 
-            List<RoomEntity> roomsWithMessages = roomsFirst.stream().filter(roomEntity -> roomEntity.getMessages().get(0).getTimestamp() != null).toList();
-            List<RoomEntity> roomsWithoutMessages = roomsFirst.stream().filter(roomEntity -> roomEntity.getMessages().get(0).getTimestamp() == null).toList();
+            List<RoomEntity> roomsWithMessages = roomsFromDb.stream().filter(roomEntity -> roomEntity.getMessages().get(0).getTimestamp() != null).toList();
+            List<RoomEntity> roomsWithoutMessages = roomsFromDb.stream().filter(roomEntity -> roomEntity.getMessages().get(0).getTimestamp() == null).toList();
 
             roomsWithMessages = roomsWithMessages
                     .stream()
@@ -385,9 +376,9 @@ public class RoomRepository {
                     .sorted(Comparator.comparing(RoomEntity::getDescription))
                     .toList();
 
-            roomsFirst = Stream.concat(roomsWithMessages.stream(), roomsWithoutMessages.stream()).collect(Collectors.toList());
+            roomsFromDb = Stream.concat(roomsWithMessages.stream(), roomsWithoutMessages.stream()).collect(Collectors.toList());
         }
-        return roomsFirst;
+        return roomsFromDb;
     }
 
     public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
