@@ -2,6 +2,7 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.helper.TestDbHelper;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -37,7 +39,10 @@ public class RoomRepositoryTests {
             {UserEntity.of(Username.of("user0"), "user0 desc"),
                     UserEntity.of(Username.of("user1"), "user1 desc"),
                     UserEntity.of(Username.of("user2"), "user2 desc"),
-                    UserEntity.of(Username.of("user3"), "user3 desc")};
+                    UserEntity.of(Username.of("user3"), "user3 desc"),
+                    UserEntity.of(Username.of("user4"), "user4 desc"),
+                    UserEntity.of(Username.of("user5"), "user5 desc"),
+            };
 
     public UserEntity loggedInUser = users[0]; // user0
 
@@ -52,6 +57,7 @@ public class RoomRepositoryTests {
                     ChatMessageDto.of("5 Visible only to user0 and user1", users[0].getName().value()),
                     ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value()),
                     ChatMessageDto.of("7 Hello general from user1", users[1].getName().value())
+
             };
 
     @BeforeAll
@@ -190,5 +196,99 @@ public class RoomRepositoryTests {
 
         Assertions.assertEquals("user1", roomsFromDb.get(1).getOtherParticipants().get(0).getName().value());
         Assertions.assertEquals("user2", roomsFromDb.get(2).getOtherParticipants().get(0).getName().value());
+    }
+
+    @Test
+    void whenFetchingAllRoomsAndUsers_usersAreOfTheExpectedFormat() {
+        List<RoomEntity> roomsFromDb = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, CursorEnum.NONE, null, loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        Assertions.assertEquals(6, roomsFromDb.size());
+
+        RoomEntity user4AsRoom = roomsFromDb.get(4);
+        Assertions.assertEquals("user4", user4AsRoom.getName().value());
+        Assertions.assertEquals("user4 desc", user4AsRoom.getDescription());
+        Assertions.assertEquals("user4", user4AsRoom.getOtherParticipants().get(0).getName().value());
+        Assertions.assertEquals("user4 desc", user4AsRoom.getOtherParticipants().get(0).getDescription());
+
+        RoomEntity user5AsRoom = roomsFromDb.get(5);
+        Assertions.assertEquals("user5", user5AsRoom.getName().value());
+        Assertions.assertEquals("user5 desc", user5AsRoom.getDescription());
+        Assertions.assertEquals("user5", user5AsRoom.getOtherParticipants().get(0).getName().value());
+        Assertions.assertEquals("user5 desc", user5AsRoom.getOtherParticipants().get(0).getDescription());
+    }
+
+    @Test
+    void whenFetchingAllRoomsAndUsers_forPublicDescriptionIsFromTheDb_forPrivateTheDescriptionIsTheOtherUserOfTheRoom() {
+        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, CursorEnum.NONE, null, loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        Assertions.assertEquals(6, roomEntities.size());
+
+        String descriptionGeneral = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                (rs, rowNum) -> rs.getString("description"),
+                general.getName().value());
+
+        Assertions.assertEquals(generalDesc, roomEntities.get(0).getDescription());
+        Assertions.assertEquals(descriptionGeneral, roomEntities.get(0).getDescription());
+
+        String descriptionUser0User1 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                (rs, rowNum) -> rs.getString("description"),
+                "user0-user1");
+
+        Assertions.assertNotEquals(descriptionUser0User1, roomEntities.get(1).getDescription());
+        Assertions.assertEquals("user1 desc", roomEntities.get(1).getDescription());
+
+        String descriptionUser0User2 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                (rs, rowNum) -> rs.getString("description"),
+                "user0-user2");
+
+        Assertions.assertNotEquals(descriptionUser0User2, roomEntities.get(2).getDescription());
+        Assertions.assertEquals("user2 desc", roomEntities.get(2).getDescription());
+
+        String descriptionUser0User3 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                (rs, rowNum) -> rs.getString("description"),
+                "user0-user3");
+
+        Assertions.assertNotEquals(descriptionUser0User3, roomEntities.get(3).getDescription());
+        Assertions.assertEquals("user3 desc", roomEntities.get(3).getDescription());
+
+        Assertions.assertThrows(EmptyResultDataAccessException.class,
+                () -> {
+                    String descriptionUser4 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                            (rs, rowNum) -> rs.getString("description"),
+                            "user4");
+                });
+
+        Assertions.assertEquals("user4 desc", roomEntities.get(4).getDescription());
+
+        Assertions.assertThrows(EmptyResultDataAccessException.class,
+                () -> {
+                    String descriptionUser5 = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
+                            (rs, rowNum) -> rs.getString("description"),
+                            "user5");
+                });
+
+        Assertions.assertEquals("user5 desc", roomEntities.get(5).getDescription());
+    }
+
+    @Test
+    void whenFetchingAllRoomsAndUsers_resultIsSortedCorrectly() {
+        List<RoomEntity> roomsFromDb = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, CursorEnum.NONE, null, loggedInUser.getName());
+
+        Assertions.assertEquals(6, roomsFromDb.size());
+
+        roomsFromDb.forEach(roomEntity -> System.out.println(roomEntity.getName().value()));
+
+        Assertions.assertEquals("user0-user1", roomsFromDb.get(0).getName().value());
+        Assertions.assertEquals("user0-user2", roomsFromDb.get(1).getName().value());
+        Assertions.assertEquals(general.getName().value(), roomsFromDb.get(2).getName().value());
+        Assertions.assertEquals("user0-user3", roomsFromDb.get(3).getName().value());
+        Assertions.assertEquals("user4", roomsFromDb.get(4).getName().value());
+        Assertions.assertEquals("user5", roomsFromDb.get(5).getName().value());
     }
 }

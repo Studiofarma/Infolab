@@ -214,9 +214,7 @@ class ConversationList extends BaseComponent {
           conversation
         );
 
-        let lastMessageUser = this.getUserByUsername(
-          conversation.lastMessage.sender
-        );
+        let lastMessageUser = conversation.lastMessage.sender;
 
         return html`<il-conversation
           .conversationUser=${conversationUser}
@@ -266,9 +264,7 @@ class ConversationList extends BaseComponent {
           conversation
         );
 
-        let lastMessageUser = this.getUserByUsername(
-          conversation.lastMessage.sender
-        );
+        let lastMessageUser = conversation.lastMessage.sender;
 
         return html`<il-conversation
           .conversationUser=${conversationUser}
@@ -493,10 +489,16 @@ class ConversationList extends BaseComponent {
   updateLastMessage(message) {
     let conversation = this.findConversationByRoomName(message.roomName);
 
+    let lastMessageUser = this.getUserByUsername(message.sender);
+
     conversation.lastMessage = {
       content: message.content,
       timestamp: message.timestamp,
-      sender: message.sender,
+      sender: {
+        name: lastMessageUser.name,
+        id: lastMessageUser.id,
+        description: lastMessageUser.description,
+      },
     };
 
     if (this.isInConversationList(message.roomName)) {

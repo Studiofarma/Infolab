@@ -1,5 +1,6 @@
 package com.cgm.infolab.helper;
 
+import com.cgm.infolab.model.BasicJsonDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.junit.jupiter.api.Assertions;
@@ -34,5 +35,15 @@ public class TestApiHelper {
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
         return (List<LinkedHashMap>) response.getBody();
+    }
+
+    public BasicJsonDto<LinkedHashMap> getFromApiForUser1WithJsonDto(String url) {
+        ResponseEntity<BasicJsonDto> response = testRestTemplate
+                .withBasicAuth("user1", "password1")
+                .getForEntity(url, BasicJsonDto.class);
+
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        return (BasicJsonDto<LinkedHashMap>) response.getBody();
     }
 }
