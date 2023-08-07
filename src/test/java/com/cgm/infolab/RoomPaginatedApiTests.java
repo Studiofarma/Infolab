@@ -319,4 +319,18 @@ public class RoomPaginatedApiTests {
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
     }
 
+    @Test
+    void whenTryingToSetPageSizeOutsideOfPermittedRange_badRequestCodeIsReturned() {
+        ResponseEntity<Object> response1 = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/rooms2?page[size]=0",
+                Object.class);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response1.getStatusCode());
+
+        ResponseEntity<Object> response2 = testRestTemplate.withBasicAuth(
+                "user1", "password1").getForEntity("/api/rooms2?page[size]=20",
+                Object.class);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response2.getStatusCode());
+    }
 }

@@ -7,10 +7,13 @@ import com.cgm.infolab.model.BasicJsonDto;
 import com.cgm.infolab.model.RoomCursor;
 import com.cgm.infolab.model.RoomDto;
 import com.cgm.infolab.service.RoomService;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,6 +25,7 @@ import java.util.List;
 import static com.cgm.infolab.controller.api.ApiConstants.*;
 
 @RestController
+@Validated
 public class RoomApiController {
     private final RoomService roomService;
     private final ApiHelper apiHelper;
@@ -50,7 +54,7 @@ public class RoomApiController {
     }
 
     @GetMapping("/api/rooms2")
-    public BasicJsonDto<RoomDto> getAllRooms2(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) Integer pageSize,
+    public BasicJsonDto<RoomDto> getAllRooms2(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
                                               @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
                                               @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
                                               Principal principal) {
