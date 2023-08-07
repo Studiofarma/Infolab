@@ -7,6 +7,7 @@ import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
+import com.cgm.infolab.helper.DateTimeHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.IdDto;
 import org.slf4j.Logger;
@@ -15,9 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,8 +45,6 @@ public class ChatService {
 
     public ChatMessageEntity saveMessageInDb(ChatMessageDto message, Username username, RoomName roomName, Username destinationUser){
 
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis()); // TODO: rimuovere quando arriverà dal FE
-
         UserEntity sender = userRepository.getByUsername(Username.of(message.getSender())).orElseGet(() -> {
             log.info(String.format("Utente username=\"%s\" non trovato.", message.getSender()));
             return null;
@@ -56,7 +52,7 @@ public class ChatService {
 
         RoomEntity room = getOrCreateRoom(username, roomName, destinationUser);
         ChatMessageEntity messageEntity =
-                ChatMessageEntity.of(sender, room, timestamp.toLocalDateTime(), message.getContent());
+                ChatMessageEntity.of(sender, room, DateTimeHelper.nowLocalDateTime(), message.getContent());
 
         try {
             messageEntity = chatMessageRepository.add(messageEntity);
@@ -89,9 +85,9 @@ public class ChatService {
             if (pageAfter == null && pageBefore == null) {
                 chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.NONE, null, username);
             } else if (pageBefore != null) {
-                chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.PAGE_BEFORE, fromStringToDateTime(pageBefore), username);
+                chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.PAGE_BEFORE, DateTimeHelper.fromStringToDateTimeWithSpace(pageBefore), username);
             } else { // pageAfter != null
-                chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.PAGE_AFTER, fromStringToDateTime(pageAfter), username);
+                chatMessageEntities = chatMessageRepository.getByRoomNameNumberOfMessages(roomName, pageSize, CursorEnum.PAGE_AFTER, DateTimeHelper.fromStringToDateTimeWithSpace(pageAfter), username);
             }
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());
@@ -118,13 +114,6 @@ public class ChatService {
         return chatMessageRepository.editMessage(user, messageId, newContent);
     }
 
-    private LocalDateTime fromStringToDateTime(String date) {
-        if (date == null) {
-            return null;
-        } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            return LocalDateTime.parse(date, formatter);
-        }
-    }
+
 }
 

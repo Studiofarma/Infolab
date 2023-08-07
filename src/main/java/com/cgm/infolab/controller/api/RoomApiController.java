@@ -4,6 +4,7 @@ import com.cgm.infolab.controller.FromEntitiesToDtosMapper;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.RoomOrUserAsRoomEnum;
+import com.cgm.infolab.helper.DateTimeHelper;
 import com.cgm.infolab.model.BasicJsonDto;
 import com.cgm.infolab.model.RoomCursor;
 import com.cgm.infolab.model.RoomDto;
@@ -19,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.cgm.infolab.controller.api.ApiConstants.*;
@@ -114,21 +113,11 @@ public class RoomApiController {
         String query = cursor.substring(3);
 
         return switch (typeIdentifier) {
-            case 't' -> RoomCursor.ofTimestamp(fromStringToDateTime(query));
+            case 't' -> RoomCursor.ofTimestamp(DateTimeHelper.fromStringToDateTimeWithT(query));
             case 'r' -> RoomCursor.ofDescriptionRoom(query);
             case 'u' -> RoomCursor.ofDescriptionUser(query);
             default -> throw new IllegalArgumentException("The type identifier in the provided string is not valid.");
         };
-    }
-
-    // TODO: put this in a helper class
-    private LocalDateTime fromStringToDateTime(String date) {
-        if (date == null) {
-            return null;
-        } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-            return LocalDateTime.parse(date, formatter);
-        }
     }
 
     private String getLink(List<RoomEntity> result, int pageSize, String beforeOrAfterName) throws IllegalArgumentException {
