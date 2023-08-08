@@ -17,8 +17,8 @@ export class InfiniteScroll extends LitElement {
     this.observerPrev = null;
 
     // Refs
-    this.progressBarNextRef = createRef();
-    this.progressBarPrevRef = createRef();
+    this.triggerNextRef = createRef();
+    this.triggerPrevRef = createRef();
   }
 
   firstUpdated() {
@@ -31,7 +31,7 @@ export class InfiniteScroll extends LitElement {
       }
     });
 
-    this.observerNext.observe(this.progressBarNextRef.value);
+    this.observerNext.observe(this.triggerNextRef.value);
 
     this.observerPrev = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
@@ -41,14 +41,14 @@ export class InfiniteScroll extends LitElement {
       }
     });
 
-    this.observerPrev.observe(this.progressBarPrevRef.value);
+    this.observerPrev.observe(this.triggerPrevRef.value);
   }
 
   static styles = css``;
 
   unobserve() {
-    this.observerNext.unobserve(this.progressBarNextRef.value);
-    this.observerPrev.unobserve(this.progressBarPrevRef.value);
+    this.observerNext.unobserve(this.triggerNextRef.value);
+    this.observerPrev.unobserve(this.triggerPrevRef.value);
   }
 
   checkSlotItmesNumber(event) {
@@ -71,17 +71,17 @@ export class InfiniteScroll extends LitElement {
           [
             "top",
             () => html`
-              <div ${ref(this.progressBarNextRef)}>Progress bar next page</div>
+              <div ${ref(this.triggerNextRef)}></div>
               <slot @slotchange=${this.checkSlotItmesNumber}></slot>
-              <div ${ref(this.progressBarPrevRef)}>Progress bar prev</div>
+              <div ${ref(this.triggerPrevRef)}></div>
             `,
           ],
           [
             "bottom",
             () => html`
-              <div ${ref(this.progressBarPrevRef)}>Progress bar prev</div>
+              <div ${ref(this.triggerPrevRef)}></div>
               <slot @slotchange=${this.checkSlotItmesNumber}></slot>
-              <div ${ref(this.progressBarNextRef)}>Progress bar</div>
+              <div ${ref(this.triggerNextRef)}></div>
             `,
           ],
         ],
