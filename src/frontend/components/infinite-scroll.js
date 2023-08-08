@@ -9,8 +9,14 @@ export class InfiniteScroll extends LitElement {
 
   constructor() {
     super();
+
+    this.lastUpdatePrevOrNextEvent = null;
+
+    // Observers
     this.observerNext = null;
     this.observerPrev = null;
+
+    // Refs
     this.progressBarNextRef = createRef();
     this.progressBarPrevRef = createRef();
   }
@@ -19,7 +25,10 @@ export class InfiniteScroll extends LitElement {
     super.firstUpdated();
     this.observerNext = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        this.dispatchEvent(new CustomEvent("il:update-next"));
+        console.log("We1");
+        const customEvent = new CustomEvent("il:update-next");
+        this.lastUpdatePrevOrNextEvent = customEvent;
+        this.dispatchEvent(customEvent);
       }
     });
 
@@ -27,7 +36,10 @@ export class InfiniteScroll extends LitElement {
 
     this.observerPrev = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        this.dispatchEvent(new CustomEvent("il:update-prev"));
+        console.log("We2");
+        const customEvent = new CustomEvent("il:update-prev");
+        this.lastUpdatePrevOrNextEvent = customEvent;
+        this.dispatchEvent(customEvent);
       }
     });
 
@@ -38,14 +50,22 @@ export class InfiniteScroll extends LitElement {
 
   unobserve() {
     this.observerNext.unobserve(this.progressBarNextRef.value);
+    this.observerPrev.unobserve(this.progressBarPrevRef.value);
   }
 
   checkSlotItmesNumber(event) {
     const slot = event.target;
 
     if (slot.assignedElements().length > 21) {
-      // TODO: change this value (maybe make it customizable from outside).
-      this.dispatchEvent(new CustomEvent("il:update-remove"));
+      console.log("Ahia");
+      console.log(this.lastUpdatePrevOrNextEvent);
+      if (this.lastUpdatePrevOrNextEvent.type === "il:update-next") {
+        console.log("Remove prev");
+        this.dispatchEvent(new CustomEvent("il:update-remove-prev"));
+      } else {
+        console.log("Remove next");
+        this.dispatchEvent(new CustomEvent("il:update-remove-next"));
+      }
     }
   }
 
