@@ -157,7 +157,7 @@ export class Chat extends BaseComponent {
 
     .forward-list {
       width: 400px;
-      height: 100%;
+      height: calc(100vh - 80px);
     }
 
     .side-bar {
