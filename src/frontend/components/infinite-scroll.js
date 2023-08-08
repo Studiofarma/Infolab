@@ -4,7 +4,7 @@ import { choose } from "lit/directives/choose.js";
 
 export class InfiniteScroll extends LitElement {
   static properties = {
-    progressBarPos: { type: String },
+    nextPagePos: { type: String },
   };
 
   constructor() {
@@ -44,7 +44,27 @@ export class InfiniteScroll extends LitElement {
     this.observerPrev.observe(this.triggerPrevRef.value);
   }
 
-  static styles = css``;
+  static styles = css`
+    // NOTE: to see the triggers assign them a width and color them.
+    .trigger-top {
+      height: 500px;
+      position: relative;
+      margin-top: -500px;
+      top: 500px;
+    }
+
+    .trigger-bottom {
+      height: 500px;
+      position: relative;
+      margin-bottom: -500px;
+      bottom: 500px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+    }
+  `;
 
   unobserve() {
     this.observerNext.unobserve(this.triggerNextRef.value);
@@ -65,28 +85,30 @@ export class InfiniteScroll extends LitElement {
 
   render() {
     return html`
-      ${choose(
-        this.progressBarPos,
-        [
+      <div class="container">
+        ${choose(
+          this.nextPagePos,
           [
-            "top",
-            () => html`
-              <div ${ref(this.triggerNextRef)}></div>
-              <slot @slotchange=${this.checkSlotItmesNumber}></slot>
-              <div ${ref(this.triggerPrevRef)}></div>
-            `,
+            [
+              "top",
+              () => html`
+                <div class="trigger-top" ${ref(this.triggerNextRef)}></div>
+                <slot @slotchange=${this.checkSlotItmesNumber}></slot>
+                <div class="trigger-bottom" ${ref(this.triggerPrevRef)}></div>
+              `,
+            ],
+            [
+              "bottom",
+              () => html`
+                <div class="trigger-top" ${ref(this.triggerPrevRef)}></div>
+                <slot @slotchange=${this.checkSlotItmesNumber}></slot>
+                <div class="trigger-bottom" ${ref(this.triggerNextRef)}></div>
+              `,
+            ],
           ],
-          [
-            "bottom",
-            () => html`
-              <div ${ref(this.triggerPrevRef)}></div>
-              <slot @slotchange=${this.checkSlotItmesNumber}></slot>
-              <div ${ref(this.triggerNextRef)}></div>
-            `,
-          ],
-        ],
-        () => html` <h1>INVALID PARAM</h1>`
-      )}
+          () => html` <h1>INVALID PARAM</h1>`
+        )}
+      </div>
     `;
   }
 }
