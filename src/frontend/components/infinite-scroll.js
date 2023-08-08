@@ -25,7 +25,6 @@ export class InfiniteScroll extends LitElement {
     super.firstUpdated();
     this.observerNext = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        console.log("We1");
         const customEvent = new CustomEvent("il:update-next");
         this.lastUpdatePrevOrNextEvent = customEvent;
         this.dispatchEvent(customEvent);
@@ -36,7 +35,6 @@ export class InfiniteScroll extends LitElement {
 
     this.observerPrev = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        console.log("We2");
         const customEvent = new CustomEvent("il:update-prev");
         this.lastUpdatePrevOrNextEvent = customEvent;
         this.dispatchEvent(customEvent);
@@ -57,13 +55,9 @@ export class InfiniteScroll extends LitElement {
     const slot = event.target;
 
     if (slot.assignedElements().length > 21) {
-      console.log("Ahia");
-      console.log(this.lastUpdatePrevOrNextEvent);
       if (this.lastUpdatePrevOrNextEvent.type === "il:update-next") {
-        console.log("Remove prev");
         this.dispatchEvent(new CustomEvent("il:update-remove-prev"));
       } else {
-        console.log("Remove next");
         this.dispatchEvent(new CustomEvent("il:update-remove-next"));
       }
     }
