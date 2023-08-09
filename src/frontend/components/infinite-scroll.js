@@ -41,11 +41,15 @@ export class InfiniteScroll extends LitElement {
 
       element.addEventListener("scroll", this.onScroll);
       element.addEventListener("resize", this.onScroll);
+    } else if (changedProperties.has("hasMore")) {
+      if (!this.hasMore) {
+        this.isLoadMore = false;
+      }
     }
   }
 
   onScroll(e) {
-    if (!this.hasMore) return;
+    // if (!this.hasMore) return;
 
     let offset = 0;
 
@@ -61,9 +65,9 @@ export class InfiniteScroll extends LitElement {
         this.dispatchEvent(new CustomEvent("il:update-next"));
         this.beforeScrollHeight = e.target.scrollHeight;
         this.beforeScrollTop = e.target.scrollTop;
-      }
 
-      this.isLoadMore = true;
+        this.isLoadMore = true;
+      }
     }
   }
 

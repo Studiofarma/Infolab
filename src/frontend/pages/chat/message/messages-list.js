@@ -142,6 +142,7 @@ export class MessagesList extends LitElement {
   }
 
   async fetchNextMessages(e) {
+    console.log(this.hasMore);
     if (this.hasMore) {
       let roomName = e?.detail?.conversation?.roomName;
 
