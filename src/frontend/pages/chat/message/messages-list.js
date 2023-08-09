@@ -10,6 +10,8 @@ import { ThemeColorService } from "../../../services/theme-color-service";
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "./empty-messages";
+import "../../../components/infinite-scroll";
+import { MessagesService } from "../../../services/messages-service";
 
 const fullScreenHeight = "100vh";
 
@@ -19,11 +21,14 @@ export class MessagesList extends LitElement {
     activeChatName: { type: String },
     activeDescription: { type: String },
     usersList: { type: Array },
+    hasMore: { type: Boolean },
   };
 
   constructor() {
     super();
     this.cookie = CookieService.getCookie();
+
+    this.hasMore = true;
 
     this.getAllUsers();
 
@@ -67,6 +72,7 @@ export class MessagesList extends LitElement {
       display: grid;
       flex-direction: column;
       max-width: 100%;
+      padding: 16px 0;
     }
 
     il-empty-messages {
@@ -78,56 +84,92 @@ export class MessagesList extends LitElement {
     return html`
       ${when(
         this.messages.length > 0,
-        () => html`<ul
-          ${ref(this.messageBoxRef)}
-          @scroll=${(event) => {
-            this.dispatchEvent(
-              new CustomEvent(event.type, { detail: event.detail })
-            );
-          }}
-          class="message-box"
-          style="height: calc(${fullScreenHeight} - 179px);"
-        >
-          ${repeat(
-            this.messages,
-            (message) => message.id,
-            (message, index) =>
-              html` <il-message
-                .user=${this.getUserByUsername(message.sender)}
-                .messages=${this.messages}
-                .message=${message}
-                .messageIndex=${index}
-                .activeChatName=${this.activeChatName}
-                .activeDescription=${this.activeDescription}
-                @il:message-copied=${(event) => {
-                  this.dispatchEvent(new CustomEvent(event.type));
-                }}
-                @il:message-forwarded=${(event) => {
-                  this.dispatchEvent(
-                    new CustomEvent(event.type, { detail: event.detail })
-                  );
-                }}
-                @il:went-to-chat=${(event) => {
-                  this.dispatchEvent(
-                    new CustomEvent(event.type, { detail: event.detail })
-                  );
-                }}
-                @il:message-edited=${(event) => {
-                  this.dispatchEvent(
-                    new CustomEvent(event.type, { detail: event.detail })
-                  );
-                }}
-                @il:message-deleted=${(event) => {
-                  this.dispatchEvent(
-                    new CustomEvent(event.type, { detail: event.detail })
-                  );
-                }}
-              ></il-message>`
-          )}
-        </ul>`,
+        () =>
+          html`<il-infinite-scroll
+            ${ref(this.messageBoxRef)}
+            @il:update-next=${this.fetchNextMessages}
+            @scroll=${(event) => {
+              this.dispatchEvent(
+                new CustomEvent(event.type, { detail: event.detail })
+              );
+            }}
+            class="message-box"
+            style="height: calc(${fullScreenHeight} - 179px);"
+            nextPagePos="top"
+            .scrollableElem=${this.messageBoxRef?.value}
+            .hasMore=${this.hasMore}
+          >
+            ${repeat(
+              this.messages,
+              (message) => message.id,
+              (message, index) =>
+                html` <il-message
+                  .user=${this.getUserByUsername(message.sender)}
+                  .messages=${this.messages}
+                  .message=${message}
+                  .messageIndex=${index}
+                  .activeChatName=${this.activeChatName}
+                  .activeDescription=${this.activeDescription}
+                  @il:message-copied=${(event) => {
+                    this.dispatchEvent(new CustomEvent(event.type));
+                  }}
+                  @il:message-forwarded=${(event) => {
+                    this.dispatchEvent(
+                      new CustomEvent(event.type, { detail: event.detail })
+                    );
+                  }}
+                  @il:went-to-chat=${(event) => {
+                    this.dispatchEvent(
+                      new CustomEvent(event.type, { detail: event.detail })
+                    );
+                  }}
+                  @il:message-edited=${(event) => {
+                    this.dispatchEvent(
+                      new CustomEvent(event.type, { detail: event.detail })
+                    );
+                  }}
+                  @il:message-deleted=${(event) => {
+                    this.dispatchEvent(
+                      new CustomEvent(event.type, { detail: event.detail })
+                    );
+                  }}
+                ></il-message>`
+            )}
+          </il-infinite-scroll>`,
         () => html`<il-empty-messages></il-empty-messages>`
       )}
     `;
+  }
+
+  async fetchNextMessages(e) {
+    if (this.hasMore) {
+      let roomName = e?.detail?.conversation?.roomName;
+
+      if (!roomName) {
+        const cookie = CookieService.getCookie();
+        roomName = cookie.lastChat;
+      }
+
+      let before = null;
+      if (this.messages) {
+        before = this.messages[0].timestamp.replace(" ", "T");
+      }
+
+      let nextMessages = (
+        await MessagesService.getNextByRoomName(roomName, before)
+      ).reverse();
+
+      if (nextMessages.length === 0) {
+        this.hasMore = false;
+      } else {
+        this.messages = [...nextMessages, ...this.messages];
+        this.messageBoxRef.value?.updateScrollPosition();
+      }
+    }
+  }
+
+  resetHasMore() {
+    this.hasMore = true;
   }
 
   getUserByUsername(username) {

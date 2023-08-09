@@ -5,109 +5,79 @@ import { choose } from "lit/directives/choose.js";
 export class InfiniteScroll extends LitElement {
   static properties = {
     nextPagePos: { type: String },
+    scrollableElem: { type: Object },
+    hasMore: { type: Boolean },
+    threshold: { type: Number },
+    isLoadMore: { type: Boolean },
+    beforeScrollHeight: { type: Number },
+    beforeScrollTop: { type: Number },
   };
 
   constructor() {
     super();
 
-    this.lastUpdatePrevOrNextEvent = null;
-
-    // Observers
-    this.observerNext = null;
-    this.observerPrev = null;
-
-    // Refs
-    this.triggerNextRef = createRef();
-    this.triggerPrevRef = createRef();
+    this.hasMore = true;
+    this.threshold = 300;
+    this.isLoadMore = false;
   }
 
-  firstUpdated() {
-    super.firstUpdated();
-    this.observerNext = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        const customEvent = new CustomEvent("il:update-next");
-        this.lastUpdatePrevOrNextEvent = customEvent;
-        this.dispatchEvent(customEvent);
+  updated(changedProperties) {
+    if (changedProperties.has("scrollableElem")) {
+      const element = this.scrollableElem;
+
+      if (this.nextPagePos === "top") {
+        element.scrollTop = element.scrollHeight;
       }
-    });
 
-    this.observerNext.observe(this.triggerNextRef.value);
+      element.addEventListener("scroll", this.onScroll);
+      element.addEventListener("resize", this.onScroll);
+    }
+  }
 
-    this.observerPrev = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        const customEvent = new CustomEvent("il:update-prev");
-        this.lastUpdatePrevOrNextEvent = customEvent;
-        this.dispatchEvent(customEvent);
+  onScroll(e) {
+    if (!this.hasMore) return;
+
+    let offset = 0;
+
+    if (this.nextPagePos === "top") {
+      offset = e.target.scrollTop;
+    } else {
+      offset =
+        e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop;
+    }
+
+    console.log(offset);
+
+    if (offset <= this.threshold) {
+      if (!this.isLoadMore && this.hasMore) {
+        this.dispatchEvent(new CustomEvent("il:update-next"));
+        this.beforeScrollHeight = e.target.scrollHeight;
+        this.beforeScrollTop = e.target.scrollTop;
       }
-    });
 
-    this.observerPrev.observe(this.triggerPrevRef.value);
-  }
-
-  static styles = css`
-    // NOTE: to see the triggers assign them a width and color them.
-    .trigger-top {
-      height: 500px;
-      position: relative;
-      margin-top: -500px;
-      top: 500px;
-    }
-
-    .trigger-bottom {
-      height: 500px;
-      position: relative;
-      margin-bottom: -500px;
-      bottom: 500px;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-    }
-  `;
-
-  unobserve() {
-    this.observerNext.unobserve(this.triggerNextRef.value);
-    this.observerPrev.unobserve(this.triggerPrevRef.value);
-  }
-
-  checkSlotItmesNumber(event) {
-    const slot = event.target;
-
-    if (slot.assignedElements().length > 21) {
-      if (this.lastUpdatePrevOrNextEvent.type === "il:update-next") {
-        this.dispatchEvent(new CustomEvent("il:update-remove-prev"));
-      } else {
-        this.dispatchEvent(new CustomEvent("il:update-remove-next"));
-      }
+      this.isLoadMore = true;
     }
   }
+
+  updateScrollPosition() {
+    if (this.isLoadMore && this.nextPagePos === "top") {
+      const element = this.scrollableElem;
+
+      console.log("hello");
+
+      element.scrollTop =
+        element.scrollHeight - this.beforeScrollHeight + this.beforeScrollTop;
+
+      this.isLoadMore = false;
+    }
+  }
+
+  static styles = css``;
 
   render() {
     return html`
       <div class="container">
-        ${choose(
-          this.nextPagePos,
-          [
-            [
-              "top",
-              () => html`
-                <div class="trigger-top" ${ref(this.triggerNextRef)}></div>
-                <slot @slotchange=${this.checkSlotItmesNumber}></slot>
-                <div class="trigger-bottom" ${ref(this.triggerPrevRef)}></div>
-              `,
-            ],
-            [
-              "bottom",
-              () => html`
-                <div class="trigger-top" ${ref(this.triggerPrevRef)}></div>
-                <slot @slotchange=${this.checkSlotItmesNumber}></slot>
-                <div class="trigger-bottom" ${ref(this.triggerNextRef)}></div>
-              `,
-            ],
-          ],
-          () => html` <h1>INVALID PARAM</h1>`
-        )}
+        <slot></slot>
       </div>
     `;
   }

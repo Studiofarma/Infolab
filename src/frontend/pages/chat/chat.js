@@ -439,10 +439,10 @@ export class Chat extends BaseComponent {
   }
 
   async fetchMessages(e) {
+    this.messagesListRef.value?.resetHasMore();
+
     this.messages = (
-      await MessagesService.getMessagesByRoomName(
-        e.detail.conversation.roomName
-      )
+      await MessagesService.getNextByRoomName(e.detail.conversation.roomName)
     ).reverse();
 
     this.activeChatName = e.detail.conversation.roomName;
