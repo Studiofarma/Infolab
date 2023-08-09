@@ -49,7 +49,7 @@ export class InfiniteScroll extends LitElement {
   }
 
   onScroll(e) {
-    // if (!this.hasMore) return;
+    if (!this.hasMore) return;
 
     let offset = 0;
 
