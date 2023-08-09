@@ -501,11 +501,16 @@ class ConversationList extends BaseComponent {
       },
     };
 
-    if (this.isInConversationList(message.roomName)) {
-      this.conversationList.sort(this.compareTimestamp);
-    } else {
-      this.newConversationList.sort(this.compareTimestamp);
+    if (!this.isInConversationList(message.roomName)) {
+      let index = this.newConversationList.findIndex(
+        (element) => element.roomName === message.roomName
+      );
+      this.newConversationList.splice(index, 1);
+
+      this.conversationList = [...this.conversationList, conversation];
     }
+
+    this.conversationList.sort(this.compareTimestamp);
 
     this.requestUpdate();
   }
