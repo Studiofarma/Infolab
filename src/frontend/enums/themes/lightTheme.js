@@ -84,4 +84,7 @@ export const lightTheme = {
 
   inputControlsBg: "#f2f4f7",
   editorInputBg: "#fff",
+
+  circularProgressBarProgress: "#206cf7",
+  circularProgressBarBackground: "#eaecef",
 };

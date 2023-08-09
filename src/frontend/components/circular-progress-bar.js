@@ -1,13 +1,19 @@
 import { html, css, LitElement } from "lit";
+import { ThemeColorService } from "../services/theme-color-service";
+import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
 class CircularProgressBar extends LitElement {
   static styles = css`
     .circular-progress {
+      ${ThemeColorService.getThemeVariables()};
       position: relative;
-      height: 80px;
-      width: 80px;
+      height: 60px;
+      width: 60px;
       border-radius: 50%;
-      background: conic-gradient(blue 120deg, #ededed 0deg);
+      background: conic-gradient(
+        ${ThemeCSSVariables.circularProgressBarProgress} 120deg,
+        ${ThemeCSSVariables.circularProgressBarBackground} 0deg
+      );
       display: flex;
       align-items: center;
       justify-content: center;
@@ -19,10 +25,10 @@ class CircularProgressBar extends LitElement {
     .circular-progress::before {
       content: "";
       position: absolute;
-      height: 60px;
-      width: 60px;
+      height: 50px;
+      width: 50px;
       border-radius: 50%;
-      background-color: #ffffff;
+      background-color: ${ThemeCSSVariables.circularProgressBarBackground};
     }
 
     @keyframes rotate {
@@ -37,10 +43,8 @@ class CircularProgressBar extends LitElement {
 
   render() {
     return html`
-      <div>
-        <div class="circular-progress">
-          <span class="center"></span>
-        </div>
+      <div class="circular-progress">
+        <span class="center"></span>
       </div>
     `;
   }

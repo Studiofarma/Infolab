@@ -1,10 +1,12 @@
 import { LitElement, css, html } from "lit";
 import { createRef, ref } from "lit/directives/ref.js";
-import { choose } from "lit/directives/choose.js";
+import { when } from "lit/directives/when.js";
+
+import "./circular-progress-bar";
 
 export class InfiniteScroll extends LitElement {
   static properties = {
-    nextPagePos: { type: String },
+    isReverse: { type: Boolean },
     scrollableElem: { type: Object },
     hasMore: { type: Boolean },
     threshold: { type: Number },
@@ -21,11 +23,19 @@ export class InfiniteScroll extends LitElement {
     this.isLoadMore = false;
   }
 
+  static styles = css`
+    .progress-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+  `;
+
   updated(changedProperties) {
     if (changedProperties.has("scrollableElem")) {
       const element = this.scrollableElem;
 
-      if (this.nextPagePos === "top") {
+      if (this.isReverse) {
         element.scrollTop = element.scrollHeight;
       }
 
@@ -39,14 +49,12 @@ export class InfiniteScroll extends LitElement {
 
     let offset = 0;
 
-    if (this.nextPagePos === "top") {
+    if (this.isReverse) {
       offset = e.target.scrollTop;
     } else {
       offset =
         e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop;
     }
-
-    console.log(offset);
 
     if (offset <= this.threshold) {
       if (!this.isLoadMore && this.hasMore) {
@@ -60,10 +68,8 @@ export class InfiniteScroll extends LitElement {
   }
 
   updateScrollPosition() {
-    if (this.isLoadMore && this.nextPagePos === "top") {
+    if (this.isLoadMore && this.isReverse) {
       const element = this.scrollableElem;
-
-      console.log("hello");
 
       element.scrollTop =
         element.scrollHeight - this.beforeScrollHeight + this.beforeScrollTop;
@@ -72,12 +78,34 @@ export class InfiniteScroll extends LitElement {
     }
   }
 
-  static styles = css``;
-
   render() {
     return html`
       <div class="container">
-        <slot></slot>
+        ${when(
+          this.isReverse,
+          () => html`
+            ${when(
+              this.hasMore,
+              () =>
+                html`<div class="progress-container">
+                  <il-circular-progress-bar></il-circular-progress-bar>
+                </div>`,
+              () => html``
+            )}
+            <slot></slot>
+          `,
+          () => html`
+            <slot></slot>
+            ${when(
+              this.hasMore,
+              () =>
+                html`<div class="progress-container">
+                  <il-circular-progress-bar></il-circular-progress-bar>
+                </div>`,
+              () => html``
+            )}
+          `
+        )}
       </div>
     `;
   }
