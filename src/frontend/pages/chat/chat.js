@@ -235,7 +235,7 @@ export class Chat extends BaseComponent {
                       )}
                     @il:message-edited=${this.editMessage}
                     @il:message-deleted=${this.askDeletionConfirmation}
-                    @il:update-next=${this.fetchNextMessages}
+                    @il:updated-next=${this.fetchNextMessages}
                   ></il-messages-list>
 
                   <il-modal

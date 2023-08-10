@@ -61,7 +61,7 @@ export class InfiniteScroll extends LitElement {
 
     if (offset <= this.threshold) {
       if (!this.isLoadMore && this.hasMore) {
-        this.dispatchEvent(new CustomEvent("il:update-next"));
+        this.dispatchEvent(new CustomEvent("il:updated-next"));
         this.beforeScrollHeight = e.target.scrollHeight;
         this.beforeScrollTop = e.target.scrollTop;
 
