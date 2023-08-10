@@ -454,7 +454,13 @@ class ConversationList extends BaseComponent {
   async getNextRooms() {
     if (this.hasMore) {
       try {
-        let rooms = await ConversationService.getNextConversations();
+        let componentName = this.isForwardList
+          ? ConversationService.forwardList
+          : ConversationService.conversationList;
+
+        let rooms = await ConversationService.getNextConversations(
+          componentName
+        );
 
         if (rooms.length < ConversationService.pageSize) {
           this.hasMore = false;
