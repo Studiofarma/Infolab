@@ -41,21 +41,6 @@ public class RoomApiController {
         this.apiHelper = apiHelper;
     }
 
-    @GetMapping("/api/rooms")
-    public BasicJsonDto<RoomDto> getAllRooms(@RequestParam(required = false) String date, Principal principal) {
-
-        BasicJsonDto<RoomDto> roomDtos = BasicJsonDto.empty();
-        List<RoomEntity> roomEntities = roomService.getRooms(date, Username.of(principal.getName()));
-
-
-        if (!roomEntities.isEmpty()) {
-            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto("", "", roomEntities);
-        } else {
-            log.info("Non sono state trovate room");
-        }
-        return roomDtos;
-    }
-
     @GetMapping(ROOMS2_PATH)
     public BasicJsonDto<RoomDto> getAllRooms2(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
                                               @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
