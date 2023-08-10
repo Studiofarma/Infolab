@@ -80,7 +80,6 @@ class ConversationList extends BaseComponent {
     } else {
       await this.getNextRooms();
     }
-    // this.setNewConversationList();
     this.requestUpdate();
   }
 
@@ -389,8 +388,8 @@ class ConversationList extends BaseComponent {
   }
 
   changeIndexOfSelectedChat(key) {
-    let convListLength = this.conversationListFiltered.length;
-    let newConvListLength = this.newConversationListFiltered.length;
+    let convListLength = this.conversationList.length;
+    let newConvListLength = this.newConversationList.length;
     let maxIndex = convListLength + newConvListLength - 1;
 
     if (key == arrowDown && this.indexOfSelectedChat < maxIndex)
@@ -401,13 +400,11 @@ class ConversationList extends BaseComponent {
   }
 
   getSelectedRoom() {
-    let convListLength = this.conversationListFiltered.length;
+    let convListLength = this.conversationList.length;
     let selected =
       this.indexOfSelectedChat < convListLength
-        ? this.conversationListFiltered[this.indexOfSelectedChat]
-        : this.newConversationListFiltered[
-            this.indexOfSelectedChat - convListLength
-          ];
+        ? this.conversationList[this.indexOfSelectedChat]
+        : this.newConversationList[this.indexOfSelectedChat - convListLength];
     this.selectedRoom = { ...selected };
   }
 
@@ -438,7 +435,7 @@ class ConversationList extends BaseComponent {
     this.unsetUnreadMessages(conversation.roomName);
 
     this.fetchMessages(conversation);
-    this.cleanSearchInput();
+    this.clearSearchInput();
     this.requestUpdate();
   }
 
@@ -455,7 +452,6 @@ class ConversationList extends BaseComponent {
     this.query = event.detail.query;
     this.selectedRoom = "";
     this.indexOfSelectedChat = -1;
-    console.log("EEEEEEEEEEEEEEEEEEEEE");
     this.debouncedFetch();
   }
 
@@ -689,10 +685,12 @@ class ConversationList extends BaseComponent {
     );
   }
 
-  cleanSearchInput() {
-    this.inputRef.value?.clear();
-    this.query = "";
-    this.requestUpdate();
+  clearSearchInput() {
+    if (this.query !== "") {
+      this.inputRef.value?.clear();
+      this.query = "";
+      this.debouncedFetch();
+    }
   }
 
   chatNameRecomposer(user1, user2) {
