@@ -1,5 +1,4 @@
 import { LitElement, css, html } from "lit";
-import { createRef, ref } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 
 import "./circular-progress-bar";

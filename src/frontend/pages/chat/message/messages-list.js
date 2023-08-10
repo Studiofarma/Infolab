@@ -87,7 +87,9 @@ export class MessagesList extends LitElement {
         () =>
           html`<il-infinite-scroll
             ${ref(this.messageBoxRef)}
-            @il:update-next=${this.fetchNextMessages}
+            @il:update-next=${(e) => {
+              this.dispatchEvent(new CustomEvent(e.type));
+            }}
             @scroll=${(event) => {
               this.dispatchEvent(
                 new CustomEvent(event.type, { detail: event.detail })
@@ -141,36 +143,8 @@ export class MessagesList extends LitElement {
     `;
   }
 
-  async fetchNextMessages(e) {
-    console.log(this.hasMore);
-    if (this.hasMore) {
-      let roomName = e?.detail?.conversation?.roomName;
-
-      if (!roomName) {
-        const cookie = CookieService.getCookie();
-        roomName = cookie.lastChat;
-      }
-
-      let before = null;
-      if (this.messages) {
-        before = this.messages[0].timestamp.replace(" ", "T");
-      }
-
-      let nextMessages = (
-        await MessagesService.getNextByRoomName(roomName, before)
-      ).reverse();
-
-      if (nextMessages.length === 0) {
-        this.hasMore = false;
-      } else {
-        this.messages = [...nextMessages, ...this.messages];
-        this.messageBoxRef.value?.updateScrollPosition();
-      }
-    }
-  }
-
-  resetHasMore() {
-    this.hasMore = true;
+  updateScrollPosition() {
+    this.messageBoxRef.value?.updateScrollPosition();
   }
 
   getUserByUsername(username) {
