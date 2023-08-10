@@ -552,9 +552,28 @@ class ConversationList extends BaseComponent {
     });
   }
 
+  /**
+   * It is a reverse comparator.
+   */
   compareTimestamp(a, b) {
-    var timestampA = Date.parse(a.lastMessage?.timestamp);
-    var timestampB = Date.parse(b.lastMessage?.timestamp);
+    var timestampA;
+    var timestampB;
+
+    if (a.lastMessage.timestamp !== null) {
+      if (b.lastMessage.timestamp !== null) {
+        timestampA = Date.parse(a.lastMessage?.timestamp);
+        timestampB = Date.parse(b.lastMessage?.timestamp);
+      } else {
+        return -1;
+      }
+    } else {
+      if (b.lastMessage.timestamp !== null) {
+        return +1;
+      } else {
+        return -a.description.localeCompare(b.description);
+      }
+    }
+
     return timestampB - timestampA;
   }
 
