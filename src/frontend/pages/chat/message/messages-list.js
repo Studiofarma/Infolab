@@ -87,7 +87,7 @@ export class MessagesList extends LitElement {
         () =>
           html`<il-infinite-scroll
             ${ref(this.messageBoxRef)}
-            @il:update-next=${(e) => {
+            @il:updated-next=${(e) => {
               this.dispatchEvent(new CustomEvent(e.type));
             }}
             @scroll=${(event) => {
