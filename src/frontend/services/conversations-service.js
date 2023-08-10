@@ -77,7 +77,7 @@ export class ConversationService {
   }
 
   static resetAfterLink(clientComponentName) {
-    let link = clientComponentName.contains("-search")
+    let link = clientComponentName.includes("-search")
       ? ConversationService.startingLinkSearch
       : ConversationService.startingLink;
 
