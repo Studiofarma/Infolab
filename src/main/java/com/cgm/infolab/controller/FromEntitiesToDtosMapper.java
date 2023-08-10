@@ -41,7 +41,8 @@ public abstract class FromEntitiesToDtosMapper {
                 roomEntity.getLastDownloadedDate(),
                 roomEntity.getDescription(),
                 roomEntity.getVisibility().toString(),
-                roomEntity.getRoomType().toString()
+                roomEntity.getRoomType().toString(),
+                roomEntity.getRoomOrUser()
         );
 
         LastMessageDto lastMessage = fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
