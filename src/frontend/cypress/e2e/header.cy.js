@@ -54,7 +54,13 @@ describe("header component spec", () => {
           .then((text) => {
             cy.getLitElement(headerPath)
               .find(".profileContainer")
-              .should("include.text", text);
+              .first()
+              .invoke("text")
+              .then((txt) => {
+                cy.wrap({ value: txt.trim() })
+                  .its("value")
+                  .should("equal", text.trim());
+              });
           });
       });
   });
@@ -72,6 +78,7 @@ describe("header component spec", () => {
           .invoke("text")
           .then((text) => {
             const initials = text
+              .trim()
               .split(" ")
               .map((t) => t.charAt(0))
               .join("")
@@ -80,7 +87,12 @@ describe("header component spec", () => {
             cy.getLitElement(avatarPath)
               .first()
               .find("#avatar-default")
-              .should("include.text", initials);
+              .invoke("text")
+              .then((txt) => {
+                cy.wrap({ value: txt.trim() })
+                  .its("value")
+                  .should("equal", initials);
+              });
           });
       });
   });

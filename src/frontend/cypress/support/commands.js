@@ -87,7 +87,7 @@ Cypress.Commands.add("openChat", (name) => {
       cy.wrap(element)
         .invoke("text")
         .then((txt) => {
-          if (txt === name) {
+          if (txt.trim() === name) {
             cy.getLitElement(
               "il-app, il-chat, il-conversation-list, il-conversation"
             )
