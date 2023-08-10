@@ -58,7 +58,7 @@ export class Chat extends BaseComponent {
     super();
     this.messages = [];
     this.scrolledToBottom = false;
-    this.hasMore = true;
+    this.hasMore = false;
     this.hasFetchedNewMessages = false;
 
     this.activeChatName =
@@ -452,11 +452,15 @@ export class Chat extends BaseComponent {
   }
 
   async fetchMessages(e) {
-    this.hasMore = true;
+    this.hasMore = false;
 
     this.messages = (
       await MessagesService.getNextByRoomName(e.detail.conversation.roomName)
     ).reverse();
+
+    if (this.messages.length === MessagesService.pageSize) {
+      this.hasMore = true;
+    }
 
     this.activeChatName = e.detail.conversation.roomName;
     this.activeDescription = e.detail.conversation.description;
