@@ -100,6 +100,7 @@ export class MessagesList extends LitElement {
             .isReverse=${true}
             .scrollableElem=${this.messageBoxRef?.value}
             .hasMore=${this.hasMore}
+            .threshold=${300}
           >
             ${repeat(
               this.messages,

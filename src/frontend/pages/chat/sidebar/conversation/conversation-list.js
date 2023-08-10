@@ -193,6 +193,7 @@ class ConversationList extends BaseComponent {
           }}
           .scrollableElem=${this.infiniteScrollRef?.value}
           .hasMore=${this.hasMore}
+          .threshold=${100}
         >
           <div>
             <p class="separator">Conversazioni</p>

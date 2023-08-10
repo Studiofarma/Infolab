@@ -18,7 +18,6 @@ export class InfiniteScroll extends LitElement {
     super();
 
     this.hasMore = true;
-    this.threshold = 300;
     this.isLoadMore = false;
   }
 
@@ -40,10 +39,6 @@ export class InfiniteScroll extends LitElement {
 
       element?.addEventListener("scroll", this.onScroll);
       element?.addEventListener("resize", this.onScroll);
-    } else if (changedProperties.has("hasMore")) {
-      if (!this.hasMore) {
-        this.isLoadMore = false;
-      }
     }
   }
 
@@ -67,6 +62,8 @@ export class InfiniteScroll extends LitElement {
 
         this.isLoadMore = true;
       }
+    } else {
+      this.isLoadMore = false;
     }
   }
 
