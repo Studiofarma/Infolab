@@ -3,8 +3,8 @@ import { HttpService } from "./http-service";
 
 export class ConversationService {
   static pageSize = 11;
-  static startingLink = `/api/rooms2?page[size]=${ConversationService.pageSize}`;
-  static startingLinkSearch = `/api/rooms2/search?page[size]=${ConversationService.pageSize}`;
+  static startingLink = `/api/rooms?page[size]=${ConversationService.pageSize}`;
+  static startingLinkSearch = `/api/rooms/search?page[size]=${ConversationService.pageSize}`;
 
   static conversationList = "conversationList";
   static conversationListSearch = `${ConversationService.conversationList}-search`;
@@ -28,14 +28,6 @@ export class ConversationService {
     [ConversationService.conversationListSearch, ""],
     [ConversationService.forwardListSearch, ""],
   ]);
-
-  static async getOpenConversations() {
-    let conversations = (await HttpService.httpGet("/api/rooms")).data;
-
-    return conversations.data.map((conversation) => {
-      return new ConversationDto(conversation);
-    });
-  }
 
   static async getNextConversations(clientComponentName) {
     let conversations = (
