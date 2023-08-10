@@ -66,31 +66,6 @@ public abstract class RowMappers {
 
         VisibilityEnum visibility = rs.getString("visibility") != null ? VisibilityEnum.valueOf(rs.getString("visibility").trim()) : VisibilityEnum.PRIVATE;
 
-        RoomEntity room = RoomEntity.of(
-                rs.getLong("room_id"),
-                RoomName.of(roomName),
-                visibility,
-                roomType,
-                rs.getString("description"),
-                RoomOrUserAsRoomEnum.ROOM,
-                List.of(messageEntity)
-        );
-
-        if (rs.getString("other_user_id") != null) {
-            room.setOtherParticipants(List.of(mapToOtherUserEntity(rs, rowNum)));
-        }
-
-        return room;
-    }
-
-    public static RoomEntity mapToRoomEntityWithMessages2(ResultSet rs, int rowNum) throws SQLException {
-        String roomName = rs.getString("roomname");
-        RoomTypeEnum roomType = getRoomType(roomName);
-
-        ChatMessageEntity messageEntity = rs.getString("content") != null ?  mapToChatMessageEntity(rs, rowNum) : ChatMessageEntity.empty();
-
-        VisibilityEnum visibility = rs.getString("visibility") != null ? VisibilityEnum.valueOf(rs.getString("visibility").trim()) : VisibilityEnum.PRIVATE;
-
         Long roomId = rs.getObject("room_id", Long.class);
 
         RoomOrUserAsRoomEnum roomOrUser;
