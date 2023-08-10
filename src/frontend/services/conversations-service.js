@@ -2,7 +2,7 @@ import { ConversationDto } from "../models/conversation-dto";
 import { HttpService } from "./http-service";
 
 export class ConversationService {
-  static pageSize = 8;
+  static pageSize = 11;
   static afterLink = `/api/rooms2?page[size]=${ConversationService.pageSize}`;
 
   static async getOpenConversations() {

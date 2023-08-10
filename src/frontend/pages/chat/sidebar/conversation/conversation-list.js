@@ -14,6 +14,8 @@ import "../../../../components/avatar";
 import "./conversation";
 import "../../../../components/input-search";
 import "../../../../components/button-text";
+import "../../../../components/infinite-scroll";
+
 import { ConversationDto } from "../../../../models/conversation-dto";
 import { BaseComponent } from "../../../../components/base-component";
 
@@ -37,6 +39,7 @@ class ConversationList extends BaseComponent {
     selectedChats: {},
     isOpen: false,
     lastSlectedConversation: {},
+    hasMore: { type: Boolean },
   };
 
   constructor() {
@@ -50,17 +53,19 @@ class ConversationList extends BaseComponent {
     this.selectedChats = [];
     this.isOpen = false;
     this.isStartup = true;
+    this.hasMore = true;
 
     this.cookie = CookieService.getCookie();
     this.onLoad();
 
     // Refs
     this.inputRef = createRef();
+    this.infiniteScrollRef = createRef();
   }
 
   async onLoad() {
     await this.getAllUsers();
-    await this.getAllRooms();
+    await this.getNextRooms();
     // this.setNewConversationList();
     this.requestUpdate();
   }
@@ -162,7 +167,13 @@ class ConversationList extends BaseComponent {
             @blur=${this.clearSelection}
           ></il-input-search>
         </div>
-        <div class="conversation-list-scrollable">
+        <il-infinite-scroll
+          ${ref(this.infiniteScrollRef)}
+          class="conversation-list-scrollable"
+          @il:updated-next=${this.getNextRooms}
+          .scrollableElem=${this.infiniteScrollRef?.value}
+          .hasMore=${this.hasMore}
+        >
           <div>
             <p class="separator">Conversazioni</p>
             <div class="conversation-list">
@@ -175,7 +186,7 @@ class ConversationList extends BaseComponent {
               ${this.renderNewConversationList()}
             </div>
           </div>
-        </div>
+        </il-infinite-scroll>
         ${when(
           this.isForwardList && this.selectedChats.length != 0,
           () =>
@@ -440,19 +451,27 @@ class ConversationList extends BaseComponent {
     );
   }
 
-  async getAllRooms() {
-    try {
-      let rooms = await ConversationService.getNextConversations();
-      rooms.forEach((room) => {
-        if (room.roomOrUser === "ROOM") {
-          this.conversationList = [...this.conversationList, room];
-        } else if (room.roomOrUser === "USER_AS_ROOM") {
-          this.newConversationList = [...this.newConversationList, room];
+  async getNextRooms() {
+    if (this.hasMore) {
+      try {
+        let rooms = await ConversationService.getNextConversations();
+
+        if (rooms.length < ConversationService.pageSize) {
+          this.hasMore = false;
         }
-      });
-      this.conversationList.sort(this.compareTimestamp);
-    } catch (error) {
-      console.error(error);
+
+        rooms.forEach((room) => {
+          if (room.roomOrUser === "ROOM") {
+            this.conversationList = [...this.conversationList, room];
+          } else if (room.roomOrUser === "USER_AS_ROOM") {
+            this.newConversationList = [...this.newConversationList, room];
+          }
+        });
+
+        this.conversationList.sort(this.compareTimestamp);
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 
