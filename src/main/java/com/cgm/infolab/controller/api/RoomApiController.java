@@ -85,7 +85,7 @@ public class RoomApiController {
             String prev = getLinkForRooms(ROOMS2_PATH, roomEntities, pageSize, PAGE_BEFORE_API_NAME);
             String next = getLinkForRooms(ROOMS2_PATH, roomEntities, pageSize, PAGE_AFTER_API_NAME);
 
-            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto(prev, next, roomEntities);
+            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto2(prev, next, roomEntities, principal.getName());
         } else {
             log.info("Non sono state trovate room");
         }
@@ -122,7 +122,7 @@ public class RoomApiController {
             String prev = getLinkForRoomsWithName(ROOMS2_PATH + "/search", roomEntities, pageSize, PAGE_BEFORE_API_NAME, nameToSearch);
             String next = getLinkForRoomsWithName(ROOMS2_PATH + "/search", roomEntities, pageSize, PAGE_AFTER_API_NAME, nameToSearch);
 
-            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto(prev, next, roomEntities);
+            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto2(prev, next, roomEntities, principal.getName());
         } else {
             log.info("Non sono state trovate room");
         }

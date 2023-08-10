@@ -95,9 +95,9 @@ public class RoomSearchPaginatedApiTests {
 
         Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
         Assertions.assertEquals("user1-user2", responseBody.getData().get(1).get("roomName"));
-        Assertions.assertEquals("user3", responseBody.getData().get(2).get("roomName"));
-        Assertions.assertEquals("user4", responseBody.getData().get(3).get("roomName"));
-        Assertions.assertEquals("user5", responseBody.getData().get(4).get("roomName"));
+        Assertions.assertEquals("user1-user3", responseBody.getData().get(2).get("roomName"));
+        Assertions.assertEquals("user1-user4", responseBody.getData().get(3).get("roomName"));
+        Assertions.assertEquals("user1-user5", responseBody.getData().get(4).get("roomName"));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class RoomSearchPaginatedApiTests {
 
         Assertions.assertEquals("user0-user1", responseBody.getData().get(0).get("roomName"));
         Assertions.assertEquals("user1-user2", responseBody.getData().get(1).get("roomName"));
-        Assertions.assertEquals("user3", responseBody.getData().get(2).get("roomName"));
+        Assertions.assertEquals("user1-user3", responseBody.getData().get(2).get("roomName"));
     }
 
     @Test
@@ -117,9 +117,9 @@ public class RoomSearchPaginatedApiTests {
 
         Assertions.assertEquals(3, responseBody.getData().size());
 
-        Assertions.assertEquals("user3", responseBody.getData().get(0).get("roomName"));
-        Assertions.assertEquals("user4", responseBody.getData().get(1).get("roomName"));
-        Assertions.assertEquals("user5", responseBody.getData().get(2).get("roomName"));
+        Assertions.assertEquals("user1-user3", responseBody.getData().get(0).get("roomName"));
+        Assertions.assertEquals("user1-user4", responseBody.getData().get(1).get("roomName"));
+        Assertions.assertEquals("user1-user5", responseBody.getData().get(2).get("roomName"));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class RoomSearchPaginatedApiTests {
         Assertions.assertEquals("public2", responseBody.getData().get(2).get("roomName"));
         Assertions.assertEquals("public3", responseBody.getData().get(3).get("roomName"));
         Assertions.assertEquals("public4", responseBody.getData().get(4).get("roomName"));
-        Assertions.assertEquals("user3", responseBody.getData().get(5).get("roomName"));
+        Assertions.assertEquals("user1-user3", responseBody.getData().get(5).get("roomName"));
     }
 
     @Test

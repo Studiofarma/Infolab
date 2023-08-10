@@ -61,7 +61,7 @@ class ConversationList extends BaseComponent {
   async onLoad() {
     await this.getAllUsers();
     await this.getAllRooms();
-    this.setNewConversationList();
+    // this.setNewConversationList();
     this.requestUpdate();
   }
 
@@ -441,28 +441,15 @@ class ConversationList extends BaseComponent {
   }
 
   async getAllRooms() {
-    let cookie = CookieService.getCookie();
-
     try {
-      let rooms = await ConversationService.getOpenConversations();
+      let rooms = await ConversationService.getNextConversations();
       rooms.forEach((room) => {
-        let userIndex = this.usersList.findIndex(
-          (user) => user.description == room.description
-        );
-        if (userIndex == -1) {
+        if (room.roomOrUser === "ROOM") {
           this.conversationList = [...this.conversationList, room];
-        } else {
-          let conversation = new ConversationDto({
-            roomName: room.roomName,
-            avatarLink: room.avatarlink,
-            unreadMessages: room.unreadMessages,
-            description: room.description,
-            lastMessage: room.lastMessage || "",
-          });
-          this.conversationList = [...this.conversationList, conversation];
+        } else if (room.roomOrUser === "USER_AS_ROOM") {
+          this.newConversationList = [...this.newConversationList, room];
         }
       });
-
       this.conversationList.sort(this.compareTimestamp);
     } catch (error) {
       console.error(error);
