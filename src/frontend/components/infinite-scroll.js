@@ -38,8 +38,8 @@ export class InfiniteScroll extends LitElement {
         element.scrollTop = element.scrollHeight;
       }
 
-      element.addEventListener("scroll", this.onScroll);
-      element.addEventListener("resize", this.onScroll);
+      element?.addEventListener("scroll", this.onScroll);
+      element?.addEventListener("resize", this.onScroll);
     } else if (changedProperties.has("hasMore")) {
       if (!this.hasMore) {
         this.isLoadMore = false;

@@ -29,6 +29,7 @@ import "../../components/snackbar";
 import "../../components/button-icon";
 import { WebSocketMessageDto } from "../../models/websocket-message-dto";
 import { MessageDto } from "../../models/message-dto";
+import { ConversationService } from "../../services/conversations-service";
 
 export class Chat extends BaseComponent {
   static properties = {
@@ -239,7 +240,7 @@ export class Chat extends BaseComponent {
                   ></il-messages-list>
 
                   <il-modal
-                    @modal-closed=${() => this.requestUpdate()}
+                    @modal-closed=${this.handleModalClosed}
                     ${ref(this.forwardListRef)}
                   >
                     <div class="forward-list">
@@ -315,6 +316,9 @@ export class Chat extends BaseComponent {
 
   setForwardListRefIsOpened(value) {
     this.forwardListRef.value?.setDialogRefIsOpened(value);
+    if (value === false) {
+      ConversationService.resetMapEntry(ConversationService.forwardList);
+    }
   }
 
   getconversationListRefActiveChatName() {
@@ -346,6 +350,11 @@ export class Chat extends BaseComponent {
   }
 
   //#endregion
+
+  handleModalClosed() {
+    console.log("hello");
+    this.setForwardListRefIsOpened(false);
+  }
 
   updateLastMessageInConversationList(message) {
     this.conversationListRef.value?.updateLastMessage(message);

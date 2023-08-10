@@ -3,20 +3,14 @@ import { HttpService } from "./http-service";
 
 export class ConversationService {
   static pageSize = 11;
-  static afterLink = `/api/rooms2?page[size]=${ConversationService.pageSize}`;
+  static startingLink = `/api/rooms2?page[size]=${ConversationService.pageSize}`;
 
   static conversationList = "conversationList";
   static forwardList = "forwardList";
 
   static afterLinks = new Map([
-    [
-      ConversationService.conversationList,
-      `/api/rooms2?page[size]=${ConversationService.pageSize}`,
-    ],
-    [
-      ConversationService.forwardList,
-      `/api/rooms2?page[size]=${ConversationService.pageSize}`,
-    ],
+    [ConversationService.conversationList, ConversationService.startingLink],
+    [ConversationService.forwardList, ConversationService.startingLink],
   ]);
 
   static async getOpenConversations() {
@@ -42,5 +36,12 @@ export class ConversationService {
     return conversations.data.map((conversation) => {
       return new ConversationDto(conversation);
     });
+  }
+
+  static resetMapEntry(clientComponentName) {
+    ConversationService.afterLinks.set(
+      clientComponentName,
+      ConversationService.startingLink
+    );
   }
 }
