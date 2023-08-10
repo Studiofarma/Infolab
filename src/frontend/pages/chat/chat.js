@@ -317,7 +317,7 @@ export class Chat extends BaseComponent {
   setForwardListRefIsOpened(value) {
     this.forwardListRef.value?.setDialogRefIsOpened(value);
     if (value === false) {
-      ConversationService.resetMapEntry(ConversationService.forwardList);
+      ConversationService.resetAfterLink(ConversationService.forwardList);
     }
   }
 

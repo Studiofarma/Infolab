@@ -19,6 +19,8 @@ import "../../../../components/infinite-scroll";
 import { ConversationDto } from "../../../../models/conversation-dto";
 import { BaseComponent } from "../../../../components/base-component";
 
+const debounce = require("lodash.debounce");
+
 const arrowUp = "ArrowUp";
 const arrowDown = "ArrowDown";
 const enter = "Enter";
@@ -55,6 +57,14 @@ class ConversationList extends BaseComponent {
     this.isStartup = true;
     this.hasMore = true;
 
+    this.debouncedFetch = debounce(async () => {
+      this.conversationList = [];
+      this.newConversationList = [];
+      this.hasMore = true;
+      await this.getNextRoomsFiltered();
+      this.requestUpdate();
+    }, 750);
+
     this.cookie = CookieService.getCookie();
     this.onLoad();
 
@@ -65,7 +75,11 @@ class ConversationList extends BaseComponent {
 
   async onLoad() {
     await this.getAllUsers();
-    await this.getNextRooms();
+    if (this.isForwardList) {
+      await this.getNextRoomsFiltered();
+    } else {
+      await this.getNextRooms();
+    }
     // this.setNewConversationList();
     this.requestUpdate();
   }
@@ -170,7 +184,13 @@ class ConversationList extends BaseComponent {
         <il-infinite-scroll
           ${ref(this.infiniteScrollRef)}
           class="conversation-list-scrollable"
-          @il:updated-next=${this.getNextRooms}
+          @il:updated-next=${() => {
+            if (this.isForwardList) {
+              this.getNextRoomsFiltered();
+            } else {
+              this.getNextRooms();
+            }
+          }}
           .scrollableElem=${this.infiniteScrollRef?.value}
           .hasMore=${this.hasMore}
         >
@@ -200,14 +220,10 @@ class ConversationList extends BaseComponent {
   }
 
   renderConversationList() {
-    this.conversationListFiltered = this.filterConversations(
-      this.conversationList
-    );
-
-    if (this.conversationListFiltered.length === 0) return noResult;
+    if (this.conversationList.length === 0) return noResult;
 
     return repeat(
-      this.conversationListFiltered,
+      this.conversationList,
       (pharmacy) => pharmacy.roomName,
       (pharmacy) => {
         let conversation = new ConversationDto(pharmacy);
@@ -221,7 +237,7 @@ class ConversationList extends BaseComponent {
         }
 
         let conversationUser = this.findUser(
-          this.conversationListFiltered,
+          this.conversationList,
           conversation
         );
 
@@ -249,14 +265,10 @@ class ConversationList extends BaseComponent {
   }
 
   renderNewConversationList() {
-    this.newConversationListFiltered = this.filterConversations(
-      this.newConversationList
-    );
-
-    if (this.newConversationListFiltered.length === 0) return noResult;
+    if (this.newConversationList.length === 0) return noResult;
 
     return repeat(
-      this.newConversationListFiltered,
+      this.newConversationList,
       (pharmacy) => pharmacy.roomName,
       (pharmacy) => {
         let conversation = new ConversationDto(pharmacy);
@@ -271,7 +283,7 @@ class ConversationList extends BaseComponent {
         }
 
         let conversationUser = this.findUser(
-          this.newConversationListFiltered,
+          this.newConversationList,
           conversation
         );
 
@@ -442,13 +454,39 @@ class ConversationList extends BaseComponent {
     this.query = event.detail.query;
     this.selectedRoom = "";
     this.indexOfSelectedChat = -1;
-    this.requestUpdate();
+    console.log("EEEEEEEEEEEEEEEEEEEEE");
+    this.debouncedFetch();
   }
 
-  filterConversations(list) {
-    return list.filter((conversation) =>
-      conversation.description?.toLowerCase().includes(this.query.toLowerCase())
-    );
+  async getNextRoomsFiltered() {
+    if (this.hasMore) {
+      try {
+        let componentName = this.isForwardList
+          ? ConversationService.forwardList
+          : ConversationService.conversationList;
+
+        let rooms = await ConversationService.getNextConversationsFiltered(
+          componentName,
+          this.query
+        );
+
+        if (rooms.length < ConversationService.pageSize) {
+          this.hasMore = false;
+        }
+
+        rooms.forEach((room) => {
+          if (room.roomOrUser === "ROOM") {
+            this.conversationList = [...this.conversationList, room];
+          } else if (room.roomOrUser === "USER_AS_ROOM") {
+            this.newConversationList = [...this.newConversationList, room];
+          }
+        });
+
+        this.conversationList.sort(this.compareTimestamp);
+      } catch (error) {
+        console.error(error);
+      }
+    }
   }
 
   async getNextRooms() {
