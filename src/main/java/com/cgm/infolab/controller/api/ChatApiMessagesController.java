@@ -24,10 +24,12 @@ import static com.cgm.infolab.controller.api.ApiConstants.*;
 @Validated
 public class ChatApiMessagesController {
     private final ChatService chatService;
+    private final ApiHelper apiHelper;
     private final Logger log = LoggerFactory.getLogger(ChatApiMessagesController.class);
 
-    public ChatApiMessagesController(ChatService chatService) {
+    public ChatApiMessagesController(ChatService chatService, ApiHelper apiHelper) {
         this.chatService = chatService;
+        this.apiHelper = apiHelper;
     }
 
     // Tutorial: https://www.baeldung.com/spring-controller-vs-restcontroller
@@ -43,7 +45,7 @@ public class ChatApiMessagesController {
                                                @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
                                                Principal principal) {
         if (pageBefore != null && pageAfter != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Range Pagination Not Supported");
+            apiHelper.throwOnRangePagination();
         }
 
         if (pageSize == null) {

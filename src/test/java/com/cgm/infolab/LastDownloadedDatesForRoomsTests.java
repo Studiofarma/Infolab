@@ -2,6 +2,7 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
@@ -111,9 +112,9 @@ public class LastDownloadedDatesForRoomsTests {
 
     @Test
     void whenFetchingRooms_lastReadDates_areTheExpectedOnes() {
-        List<RoomEntity> roomEntities = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(users[0].getName());
+        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(-1, CursorEnum.NONE, null, users[0].getName());
 
-        Assertions.assertEquals(2, roomEntities.size());
+        Assertions.assertEquals(4, roomEntities.size());
 
         RoomEntity roomGeneral = roomEntities
                 .stream()

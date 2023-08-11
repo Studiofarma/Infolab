@@ -85,4 +85,7 @@ export const darkTheme = {
 
   inputControlsBg: "red",
   editorInputBg: "#1D1E20",
+
+  circularProgressBarProgress: "#fff",
+  circularProgressBarBackground: "#3D3F41",
 };

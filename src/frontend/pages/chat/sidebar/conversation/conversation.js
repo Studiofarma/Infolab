@@ -211,17 +211,17 @@ class Conversation extends BaseComponent {
     const sender = lastMessage.sender;
     const description = this.conversation.description;
     const loggedUsername = this.cookie.username;
+    const userDescription = this.lastMessageUser?.description;
 
     if (content) {
       if (description !== "Generale") {
         text =
-          sender === loggedUsername
+          sender.name === loggedUsername
             ? `Tu: ${content}`
-            : `${description}: ${content}`;
+            : `${userDescription}: ${content}`;
       } else {
-        const userDescription = this.lastMessageUser?.description;
         text =
-          sender === loggedUsername
+          sender.name === loggedUsername
             ? `Tu: ${content}`
             : `${userDescription}: ${content}`;
       }

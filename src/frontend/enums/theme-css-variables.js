@@ -87,4 +87,7 @@ export const ThemeCSSVariables = {
   inputControlsBg: css`--inputControlsBg`,
   editorBg: css`var(--editorBg)`,
   editorInputBg: css`var(--editorInputBg)`,
+
+  circularProgressBarProgress: css`var(--circularProgressBarProgress)`,
+  circularProgressBarBackground: css`var(--circularProgressBarBackground)`,
 };

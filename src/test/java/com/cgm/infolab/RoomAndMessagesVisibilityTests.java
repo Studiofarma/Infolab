@@ -2,6 +2,7 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
 import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
@@ -39,7 +40,10 @@ public class RoomAndMessagesVisibilityTests {
         {UserEntity.of(Username.of("user0")),
         UserEntity.of(Username.of("user1")),
         UserEntity.of(Username.of("user2")),
-        UserEntity.of(Username.of("user3"))};
+        UserEntity.of(Username.of("user3")),
+        UserEntity.of(Username.of("user4")),
+        UserEntity.of(Username.of("user5")),
+        };
 
     public UserEntity loggedInUser = users[0]; // user0
 
@@ -52,7 +56,9 @@ public class RoomAndMessagesVisibilityTests {
                 ChatMessageDto.of("3 Visible only to user1 and user2", users[1].getName().value()),
                 ChatMessageDto.of("4 Visible only to user0 and user2", users[2].getName().value()),
                 ChatMessageDto.of("5 Visible only to user0 and user1", users[0].getName().value()),
-                ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())};
+                ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value()),
+                ChatMessageDto.of("7 Visible only to user0 and user3", users[0].getName().value())
+            };
 
     @BeforeAll
     void setUpAll() {
@@ -88,38 +94,31 @@ public class RoomAndMessagesVisibilityTests {
     }
 
     @Test
-    void whenUser0QueriesForRoomsAndLastMessages_canSee4Rooms_1MessageEachIfPrivate_0MessagesIfPublic() {
-        List<RoomEntity> roomsFromDb = new ArrayList<>(roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName()))
-            .stream()
-            .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
-            .toList();
-
-        for (RoomEntity r :
-                roomsFromDb) {
-            System.out.println(r.getName().value());
-        }
-
-        Assertions.assertEquals(4, roomsFromDb.size());
-
-        Assertions.assertEquals(general.getName(), roomsFromDb.get(0).getName());
-        Assertions.assertEquals(anotherPublic.getName(), roomsFromDb.get(1).getName());
-        Assertions.assertEquals("user0-user1", roomsFromDb.get(2).getName().value());
-        Assertions.assertEquals("user0-user2", roomsFromDb.get(3).getName().value());
-
-        // NOTE: these assertions are needed to check whether the last messages returned is correct or not.
-        //  For these to work the three previous assertions must be fulfilled.
-        //  Actually the order of the rooms is not relevant.
-        Assertions.assertEquals(messageDtos[0].getContent(), roomsFromDb.get(0).getMessages().get(0).getContent());
-        Assertions.assertEquals(ChatMessageEntity.empty(), roomsFromDb.get(1).getMessages().get(0));
-        Assertions.assertEquals(messageDtos[4].getContent(), roomsFromDb.get(2).getMessages().get(0).getContent());
-        Assertions.assertEquals(messageDtos[3].getContent(), roomsFromDb.get(3).getMessages().get(0).getContent());
-    }
-
-    @Test
     void whenUser0QueriesForMessages_canSeeMessages_count4() {
         Assertions.assertEquals(1, chatMessageRepository.getByRoomName(RoomName.of("general"), loggedInUser.getName()).size());
         Assertions.assertEquals(2, chatMessageRepository.getByRoomName(RoomName.of("user0-user1"), loggedInUser.getName()).size());
         Assertions.assertEquals(1, chatMessageRepository.getByRoomName(RoomName.of("user0-user2"), loggedInUser.getName()).size());
         Assertions.assertEquals(0, chatMessageRepository.getByRoomName(RoomName.of("user1-user2"), loggedInUser.getName()).size());
+    }
+
+    @Test
+    void whenUser0QueriesForRoomsAndUsers_canSee_rightRoomsAndRightUsers() throws InterruptedException {
+        List<RoomEntity> roomEntities =
+                roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(null, CursorEnum.NONE, null, loggedInUser.getName())
+                .stream()
+                .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
+                .toList();
+
+        roomEntities.forEach(roomEntity -> System.out.println(roomEntity.getName().value()));
+
+        Assertions.assertEquals(7, roomEntities.size());
+
+        Assertions.assertEquals("general", roomEntities.get(0).getName().value());
+        Assertions.assertEquals("public2", roomEntities.get(1).getName().value());
+        Assertions.assertEquals("user0-user1", roomEntities.get(2).getName().value());
+        Assertions.assertEquals("user0-user2", roomEntities.get(3).getName().value());
+        Assertions.assertEquals("user0-user3", roomEntities.get(4).getName().value());
+        Assertions.assertEquals("user4", roomEntities.get(5).getName().value());
+        Assertions.assertEquals("user5", roomEntities.get(6).getName().value());
     }
 }

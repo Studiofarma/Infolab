@@ -46,6 +46,7 @@ export class InputSearch extends LitElement {
 
   clear() {
     this.inputWithIconRef.value?.clear();
+    this.requestUpdate();
   }
 
   focusInput() {

@@ -3,10 +3,21 @@ export class ConversationDto {
   roomName = "";
   avatarLink = "";
   unreadMessages = 0;
-  lastMessage = { content: "", sender: "", timestamp: "" };
+  lastReadTimestamp = "";
   description = "";
   visibility = "";
   roomType = "";
+  roomOrUser = "";
+  lastMessage = {
+    content: "",
+    sender: {
+      name: "",
+      id: 0,
+      description: "",
+    },
+    timestamp: "",
+  };
+  otherParticipants = [];
 
   static roomVisibilityEnum = {
     private: "PRIVATE",
@@ -24,7 +35,8 @@ export class ConversationDto {
     this.avatarLink = obj.avatarLink !== undefined ? obj.avatarLink : "";
     this.unreadMessages =
       obj.unreadMessages !== undefined ? obj.unreadMessages : 0;
-    this.lastMessage = obj.lastMessage !== undefined ? obj.lastMessage : "";
+    this.lastReadTimestamp =
+      obj.lastReadTimestamp !== undefined ? obj.lastReadTimestamp : "";
     this.description = obj.description !== undefined ? obj.description : "";
     this.visibility =
       obj.visibility !== undefined
@@ -32,5 +44,9 @@ export class ConversationDto {
         : this.roomVisibilityEnum?.private;
     this.roomType =
       obj.roomType !== undefined ? obj.roomType : this.roomTypeEnum?.user;
+    this.roomOrUser = obj.roomOrUser !== undefined ? obj.roomOrUser : "";
+    this.lastMessage = obj.lastMessage !== undefined ? obj.lastMessage : "";
+    this.otherParticipants =
+      obj.otherParticipants !== undefined ? obj.otherParticipants : [];
   }
 }

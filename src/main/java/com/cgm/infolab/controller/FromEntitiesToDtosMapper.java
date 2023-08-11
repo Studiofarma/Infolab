@@ -1,13 +1,11 @@
 package com.cgm.infolab.controller;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.model.ChatMessageDto;
-import com.cgm.infolab.model.LastMessageDto;
-import com.cgm.infolab.model.RoomDto;
-import com.cgm.infolab.model.UserDto;
+import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.enumeration.RoomOrUserAsRoomEnum;
+import com.cgm.infolab.model.*;
 
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FromEntitiesToDtosMapper {
@@ -27,17 +25,29 @@ public abstract class FromEntitiesToDtosMapper {
 
     public static LastMessageDto fromEntityToLastMessageDto(ChatMessageEntity messageEntity) {
         String status = messageEntity.getStatus() != null ? messageEntity.getStatus().toString() : null;
-        return LastMessageDto.of(messageEntity.getContent(), messageEntity.getTimestamp(), messageEntity.getSender(), status);
+
+        return LastMessageDto.of(
+                messageEntity.getContent(),
+                messageEntity.getTimestamp(),
+                fromEntityToDto(messageEntity.getSender()),
+                status
+        );
     }
 
-    public static RoomDto fromEntityToDto(RoomEntity roomEntity) {
+    public static RoomDto fromEntityToDto2(RoomEntity roomEntity, String principalName) {
+        String roomName =
+                roomEntity.getRoomOrUser().equals(RoomOrUserAsRoomEnum.USER_AS_ROOM)
+                        ? RoomName.of(Username.of(roomEntity.getName().value()), Username.of(principalName)).value()
+                        : roomEntity.getName().value();
+
         RoomDto roomDto = RoomDto.of(
-                roomEntity.getName().value(),
+                roomName,
                 roomEntity.getNotDownloadedMessagesCount(),
                 roomEntity.getLastDownloadedDate(),
                 roomEntity.getDescription(),
                 roomEntity.getVisibility().toString(),
-                roomEntity.getRoomType().toString()
+                roomEntity.getRoomType().toString(),
+                roomEntity.getRoomOrUser()
         );
 
         LastMessageDto lastMessage = fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
@@ -49,7 +59,18 @@ public abstract class FromEntitiesToDtosMapper {
         return roomDto;
     }
 
+
     public static UserDto fromEntityToDto(UserEntity userEntity) {
         return UserDto.of(userEntity.getName().value(), userEntity.getId(), userEntity.getDescription());
+    }
+
+    public static BasicJsonDto<RoomDto> fromEntityToDto(String prev, String next, List<RoomEntity> roomEntities, String principalName) {
+        PaginationLinksDto linksDto = PaginationLinksDto.of(prev, next);
+
+        List<RoomDto> roomDtos = new ArrayList<>();
+
+        roomEntities.forEach(roomEntity -> roomDtos.add(fromEntityToDto2(roomEntity, principalName)));
+
+        return BasicJsonDto.of(linksDto, roomDtos);
     }
 }

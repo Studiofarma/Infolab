@@ -2,11 +2,13 @@ package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
 import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.RoomSubscriptionRepository;
-import com.cgm.infolab.db.repository.UserRepository;
+import com.cgm.infolab.helper.DateTimeHelper;
+import com.cgm.infolab.model.RoomCursor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,37 +16,39 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
 public class RoomService {
-    private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final RoomSubscriptionRepository roomSubscriptionRepository;
 
     private final Logger log = LoggerFactory.getLogger(RoomService.class);
 
     @Autowired
-    public RoomService(UserRepository userRepository,
-                       RoomRepository roomRepository,
+    public RoomService(RoomRepository roomRepository,
                        RoomSubscriptionRepository roomSubscriptionRepository) {
-        this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.roomSubscriptionRepository = roomSubscriptionRepository;
     }
 
-    public List<RoomEntity> getRooms(String date, Username username) {
-        return roomRepository.getAfterDate(fromStringToDate(date), username);
+    public List<RoomEntity> getRoomsAndUsers(Integer pageSize, RoomCursor pageBefore, RoomCursor pageAfter, Username username) {
+        if (pageAfter == null && pageBefore == null) {
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.NONE, null, username);
+        } else if (pageAfter != null) {
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.PAGE_AFTER, pageAfter, username);
+        } else { // pageBefore != null
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.PAGE_BEFORE, pageBefore, username);
+        }
     }
 
-    private LocalDate fromStringToDate(String date) {
-        if (date == null) {
-            return null;
-        } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            return LocalDate.parse(date, formatter);
+    public List<RoomEntity> searchRoomsAndUsers(Integer pageSize, RoomCursor pageBefore, RoomCursor pageAfter, String nameToSearch, Username username) {
+        if (pageAfter == null && pageBefore == null) {
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.NONE, null, nameToSearch, username);
+        } else if (pageAfter != null) {
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.PAGE_AFTER, pageAfter, nameToSearch, username);
+        } else { // pageBefore != null
+            return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.PAGE_BEFORE, pageBefore, nameToSearch, username);
         }
     }
 

@@ -89,7 +89,7 @@ public class MessagesPaginatedApiTests {
 
     @Test
     void whenFetching_withoutPageSize_afterMessage30_messagesFrom79To31AreReturned() {
-        String stringDate = getMessageTimestampString(30);
+        LocalDateTime stringDate = getMessageTimestamp(30);
 
         List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/messages/general?page[after]=%s".formatted(stringDate));
 
@@ -102,7 +102,7 @@ public class MessagesPaginatedApiTests {
 
     @Test
     void whenFetching_withoutPageSize_beforeMessage30_messagesFrom29To0AreReturned() {
-        String stringDate = getMessageTimestampString(30);
+        LocalDateTime stringDate = getMessageTimestamp(30);
 
         List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/messages/general?page[before]=%s".formatted(stringDate));
 
@@ -113,7 +113,7 @@ public class MessagesPaginatedApiTests {
 
     @Test
     void whenFetching_pageSize3_afterMessage50_messagesFrom53To51AreReturned() {
-        String stringDate = getMessageTimestampString(50);
+        LocalDateTime stringDate = getMessageTimestamp(50);
 
         List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/messages/general?page[size]=3&page[after]=%s".formatted(stringDate));
 
@@ -125,7 +125,7 @@ public class MessagesPaginatedApiTests {
 
     @Test
     void whenFetching_pageSize3_beforeMessage50_messagesFrom49To47AreReturned() {
-        String stringDate = getMessageTimestampString(50);
+        LocalDateTime stringDate = getMessageTimestamp(50);
 
         List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/messages/general?page[size]=3&page[before]=%s".formatted(stringDate));
 
@@ -137,8 +137,8 @@ public class MessagesPaginatedApiTests {
 
     @Test
     void whenTryingToUseRangePagination_badRequestStatusCodeIsReturned() {
-        String stringDateBefore = getMessageTimestampString(30);
-        String stringDateAfter = getMessageTimestampString(50);
+        LocalDateTime stringDateBefore = getMessageTimestamp(30);
+        LocalDateTime stringDateAfter = getMessageTimestamp(50);
 
         ResponseEntity<Object> response = testRestTemplate.withBasicAuth(
                 "user1", "password1").getForEntity("/api/messages/general?page[before]=%s&page[after]=%s".formatted(stringDateBefore, stringDateAfter),
@@ -153,17 +153,16 @@ public class MessagesPaginatedApiTests {
                 "user1", "password1").getForEntity("/api/messages/general?page[size]=0",
                 Object.class);
 
-        Assertions.assertEquals(response1.getStatusCode(), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response1.getStatusCode());
 
         ResponseEntity<Object> response2 = testRestTemplate.withBasicAuth(
-                "user1", "password1").getForEntity("/api/messages/general?page[size]=20",
+                "user1", "password1").getForEntity("/api/messages/general?page[size]=40",
                 Object.class);
 
-        Assertions.assertEquals(response1.getStatusCode(), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response2.getStatusCode());
     }
 
-    private String getMessageTimestampString(int messageNumber) {
-        LocalDateTime dateTime = STARTING_TIME.plusSeconds(messageNumber);
-        return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    private LocalDateTime getMessageTimestamp(int messageNumber) {
+        return STARTING_TIME.plusSeconds(messageNumber);
     }
 }

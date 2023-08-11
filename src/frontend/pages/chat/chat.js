@@ -30,6 +30,7 @@ import "../../components/snackbar";
 import "../../components/button-icon";
 import { WebSocketMessageDto } from "../../models/websocket-message-dto";
 import { MessageDto } from "../../models/message-dto";
+import { ConversationService } from "../../services/conversations-service";
 
 export class Chat extends BaseComponent {
   static properties = {
@@ -37,6 +38,8 @@ export class Chat extends BaseComponent {
     messages: [],
     messageToForward: "",
     scrolledToBottom: false,
+    hasMore: { type: Boolean },
+    hasFetchedNewMessages: { type: Boolean },
   };
 
   static properties = {
@@ -55,13 +58,13 @@ export class Chat extends BaseComponent {
       headerName: "",
       token: "",
     };
+    this.messages = [];
+    this.scrolledToBottom = false;
+    this.hasMore = false;
+    this.hasFetchedNewMessages = false;
 
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
-
-    this.messages = [];
-
-    this.scrolledToBottom = false;
 
     window.addEventListener("resize", () => {
       this.scrollToBottom();
@@ -91,10 +94,17 @@ export class Chat extends BaseComponent {
     ).reverse();
   }
 
-  async updated() {
-    await setTimeout(() => {
-      this.scrollToBottom();
-    }, 20);
+  async updated(changedProperties) {
+    if (changedProperties.has("messages")) {
+      if (changedProperties.has("hasFetchedNewMessages")) {
+        this.messagesListRef.value?.updateScrollPosition();
+        this.hasFetchedNewMessages = false;
+      } else {
+        await setTimeout(() => {
+          this.scrollToBottom();
+        }, 20);
+      }
+    }
   }
 
   static styles = css`
@@ -157,7 +167,7 @@ export class Chat extends BaseComponent {
 
     .forward-list {
       width: 400px;
-      height: 100%;
+      height: calc(100vh - 80px);
     }
 
     .side-bar {
@@ -213,6 +223,7 @@ export class Chat extends BaseComponent {
                     .activeChatName=${this.activeChatName}
                     .activeConversation=${this.activeConversation}
                     .roomType=${this.roomType}
+                    .hasMore=${this.hasMore}
                     @il:message-forwarded=${this.openForwardMenu}
                     @il:went-to-chat=${this.wentToChatHandler}
                     @il:message-copied=${() =>
@@ -223,10 +234,11 @@ export class Chat extends BaseComponent {
                       )}
                     @il:message-edited=${this.editMessage}
                     @il:message-deleted=${this.askDeletionConfirmation}
+                    @il:updated-next=${this.fetchNextMessages}
                   ></il-messages-list>
 
                   <il-modal
-                    @modal-closed=${() => this.requestUpdate()}
+                    @modal-closed=${this.handleModalClosed}
                     ${ref(this.forwardListRef)}
                   >
                     <div class="forward-list">
@@ -302,6 +314,9 @@ export class Chat extends BaseComponent {
 
   setForwardListRefIsOpened(value) {
     this.forwardListRef.value?.setDialogRefIsOpened(value);
+    if (value === false) {
+      ConversationService.resetAfterLink(ConversationService.forwardList);
+    }
   }
 
   getconversationListRefActiveChatName() {
@@ -325,6 +340,10 @@ export class Chat extends BaseComponent {
   }
 
   //#endregion
+
+  handleModalClosed() {
+    this.setForwardListRefIsOpened(false);
+  }
 
   updateLastMessageInConversationList(message) {
     this.conversationListRef.value?.updateLastMessage(message);
@@ -428,17 +447,49 @@ export class Chat extends BaseComponent {
   }
 
   async fetchMessages(e) {
+    this.hasMore = false;
+
     this.messages = (
-      await MessagesService.getMessagesByRoomName(
-        e.detail.conversation.roomName
-      )
+      await MessagesService.getNextByRoomName(e.detail.conversation.roomName)
     ).reverse();
+
+    if (this.messages.length === MessagesService.pageSize) {
+      this.hasMore = true;
+    }
 
     this.activeChatName = e.detail.conversation.roomName;
     this.activeConversation = new ConversationDto({
       ...e.detail.conversation,
     });
     this.inputControlsRef?.value?.focusEditor();
+  }
+
+  async fetchNextMessages(e) {
+    console.log(this.hasMore);
+    if (this.hasMore) {
+      let roomName = e?.detail?.conversation?.roomName;
+
+      if (!roomName) {
+        const cookie = CookieService.getCookie();
+        roomName = cookie.lastChat;
+      }
+
+      let before = null;
+      if (this.messages) {
+        before = this.messages[0].timestamp.replace(" ", "T");
+      }
+
+      let nextMessages = (
+        await MessagesService.getNextByRoomName(roomName, before)
+      ).reverse();
+
+      if (nextMessages.length === 0) {
+        this.hasMore = false;
+      } else {
+        this.messages = [...nextMessages, ...this.messages];
+        this.hasFetchedNewMessages = true;
+      }
+    }
   }
 
   createSocket() {
@@ -551,9 +602,7 @@ export class Chat extends BaseComponent {
 
       if (chatMessage.content !== null) {
         if (this.activeChatName == chatMessage.roomName) {
-          this.messages.push(chatMessage);
-          this.messagesListRef.value.requestUpdate();
-          this.requestUpdate();
+          this.messages = [...this.messages, chatMessage];
         }
 
         this.updateLastMessageInConversationList(chatMessage);
@@ -568,6 +617,7 @@ export class Chat extends BaseComponent {
         }
       }
 
+      this.conversationListRef.value?.clearSearchInput();
       this.messageNotification(chatMessage);
     }
   }
