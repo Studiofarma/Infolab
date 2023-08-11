@@ -89,12 +89,19 @@ describe("search spec", () => {
   });
 
   it("input clears after chat is selected with arrows", () => {
+    cy.getLitElement(inputRicercaSidebarPath).find("input").type("d", {
+      force: true,
+    });
+
     cy.getLitElement(inputRicercaSidebarPath)
       .find("input")
-      .type("d{downArrow}{enter}", {
+      .type("{downArrow}", {
         force: true,
-        delay: 1000,
       });
+
+    cy.getLitElement(inputRicercaSidebarPath).find("input").type("{enter}", {
+      force: true,
+    });
 
     cy.getLitElement(inputRicercaSidebarPath)
       .find("input")
