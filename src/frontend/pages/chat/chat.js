@@ -352,7 +352,6 @@ export class Chat extends BaseComponent {
   //#endregion
 
   handleModalClosed() {
-    console.log("hello");
     this.setForwardListRefIsOpened(false);
   }
 
