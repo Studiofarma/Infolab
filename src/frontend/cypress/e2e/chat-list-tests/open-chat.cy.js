@@ -1,79 +1,33 @@
-const conversationListPath = "il-app,il-chat,il-conversation-list";
-
-const inputRicercaSidebarPath = `${conversationListPath},il-input-search, il-input-with-icon`;
-
-const conversation = "il-conversation";
-
 describe("open chat spec", () => {
   it("open first chat", () => {
-    cy.getLitElement(conversationListPath)
-      .find(conversation)
-      .first()
-      .shadow()
-      .find(".chat-box")
-      .click({ force: true });
+    cy.getConversationName(0).then((text) => {
+      cy.openChatByClick(0);
 
-    cy.getCookie("last-description", { domain: "localhost" }).then((cookie) => {
-      cy.getLitElement(conversationListPath)
-        .find(conversation)
-        .first()
-        .shadow()
-        .find(".chat-name")
-        .should("have.text", cookie.value);
+      cy.checkOpenedConversationName(text);
     });
   });
 
   it("open last chat", () => {
-    cy.getLitElement(conversationListPath)
-      .find(conversation)
-      .last()
-      .shadow()
-      .find(".chat-box")
-      .click({ force: true });
+    cy.getConversationName(-1).then((text) => {
+      cy.openChatByClick(-1);
 
-    cy.getCookie("last-description", { domain: "localhost" }).then((cookie) => {
-      cy.getLitElement(conversationListPath)
-        .find(conversation)
-        .last()
-        .shadow()
-        .find(".chat-name")
-        .should("have.text", cookie.value);
+      cy.checkOpenedConversationName(text);
     });
   });
 
   it("open second chat with arrows", () => {
-    cy.getLitElement(inputRicercaSidebarPath)
-      .find("input")
-      .type("{downArrow}{downArrow}{enter}", {
-        force: true,
-        parseSpecialCharSequences: true,
-      });
+    cy.getConversationName(1).then((text) => {
+      cy.openChatWithArrows(2);
 
-    cy.getCookie("last-description", { domain: "localhost" }).then((cookie) => {
-      cy.getLitElement(conversationListPath)
-        .find(conversation)
-        .eq(1)
-        .shadow()
-        .find(".chat-name")
-        .should("have.text", cookie.value);
+      cy.checkOpenedConversationName(text);
     });
   });
 
   it("open third chat with arrows", () => {
-    cy.getLitElement(inputRicercaSidebarPath)
-      .find("input")
-      .type("{downArrow}{downArrow}{downArrow}{downArrow}{upArrow}{enter}", {
-        force: true,
-        parseSpecialCharSequences: true,
-      });
+    cy.getConversationName(2).then((text) => {
+      cy.openChatWithArrows(3);
 
-    cy.getCookie("last-description", { domain: "localhost" }).then((cookie) => {
-      cy.getLitElement(conversationListPath)
-        .find(conversation)
-        .eq(2)
-        .shadow()
-        .find(".chat-name")
-        .should("have.text", cookie.value);
+      cy.checkOpenedConversationName(text);
     });
   });
 });

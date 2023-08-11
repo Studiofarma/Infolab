@@ -12,6 +12,7 @@ const conversationInForwardListPath =
 
 const buttonTextPath = "il-app,il-chat, il-conversation-list, il-button-text";
 const sidebarConversationList = "il-app,il-chat, il-conversation-list";
+const chatName = '[data-cy="chat-name"]';
 
 beforeEach(() => {
   // login
@@ -108,13 +109,13 @@ describe("messages spec", () => {
       .invoke("text")
       .then((txt) => {
         cy.getLitElement(conversationInForwardListPath)
-          .find(".chat-name")
           .first()
+          .find(chatName)
           .click({ force: true });
         //check if  the check icon is visible
         cy.getLitElement(conversationInForwardListPath)
-          .find(".chat-box")
           .first()
+          .find(".chat-box")
           .find("il-avatar")
           .shadow()
           .find(".icon-button")
@@ -160,7 +161,12 @@ describe("messages spec", () => {
               cy.getLitElement(messageContentPath)
                 .last()
                 .find(".message")
-                .should("have.text", txt);
+                .invoke("text")
+                .then((text) => {
+                  cy.wrap({ value: text.trim() })
+                    .its("value")
+                    .should("equal", txt.trim());
+                });
             });
         }
       });
@@ -185,7 +191,12 @@ describe("messages spec", () => {
       .find("il-conversation.active")
       .shadow()
       .find(".chat-name")
-      .should("have.text", "Mario Rossi");
+      .invoke("text")
+      .then((text) => {
+        cy.wrap({ value: text.trim() })
+          .its("value")
+          .should("equal", "Mario Rossi");
+      });
   });
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------

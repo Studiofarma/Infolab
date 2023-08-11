@@ -15,6 +15,7 @@ import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 import { MessageStatuses } from "../../enums/message-statuses";
 import { WebSocketMessageTypes } from "../../enums/websocket-message-types";
 
+import { ConversationDto } from "../../models/conversation-dto";
 import { BaseComponent } from "../../components/base-component";
 
 import "./message/message";
@@ -36,27 +37,27 @@ export class Chat extends BaseComponent {
     stompClient: {},
     messages: [],
     messageToForward: "",
-    activeDescription: "",
     scrolledToBottom: false,
     hasMore: { type: Boolean },
     hasFetchedNewMessages: { type: Boolean },
   };
 
-  static get properties() {
-    return {
-      login: {
-        username: "",
-        password: "",
-        headerName: "",
-        token: "",
-      },
-      activeChatName: "",
-      messages: [],
-    };
-  }
+  static properties = {
+    login: { type: Object },
+    activeChatName: { type: String },
+    activeConversation: { type: ConversationDto },
+    messages: { type: Array },
+  };
 
   constructor() {
     super();
+
+    this.login = {
+      username: "",
+      password: "",
+      headerName: "",
+      token: "",
+    };
     this.messages = [];
     this.scrolledToBottom = false;
     this.hasMore = false;
@@ -64,9 +65,6 @@ export class Chat extends BaseComponent {
 
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
-    this.activeDescription = CookieService.getCookieByKey(
-      CookieService.Keys.lastDescription
-    );
 
     window.addEventListener("resize", () => {
       this.scrollToBottom();
@@ -213,7 +211,6 @@ export class Chat extends BaseComponent {
             <il-chat-header
               ${ref(this.headerRef)}
               userName=${this.login.username}
-              activeDescription="${this.activeDescription ?? ""}"
             ></il-chat-header>
             ${when(
               this.activeChatName === "",
@@ -224,7 +221,8 @@ export class Chat extends BaseComponent {
                     @scroll=${this.manageScrollButtonVisility}
                     .messages=${this.messages}
                     .activeChatName=${this.activeChatName}
-                    .activeDescription=${this.activeDescription}
+                    .activeConversation=${this.activeConversation}
+                    .roomType=${this.roomType}
                     .hasMore=${this.hasMore}
                     @il:message-forwarded=${this.openForwardMenu}
                     @il:went-to-chat=${this.wentToChatHandler}
@@ -329,14 +327,6 @@ export class Chat extends BaseComponent {
     this.conversationListRef.value?.setActiveChatName(value);
   }
 
-  getconversationListRefActiveDescription() {
-    return this.conversationListRef.value?.getActiveDescription();
-  }
-
-  setconversationListRefActiveDescription(value) {
-    this.conversationListRef.value?.setActiveDescription(value);
-  }
-
   getconversationListRefConversationList() {
     return [...this.conversationListRef.value?.getConversationList()];
   }
@@ -404,9 +394,6 @@ export class Chat extends BaseComponent {
     this.setconversationListRefActiveChatName(
       event.detail.conversation.roomName
     );
-    this.setconversationListRefActiveDescription(
-      event.detail.conversation.description
-    );
 
     this.conversationListRef.value?.requestUpdate();
     this.requestUpdate();
@@ -471,8 +458,9 @@ export class Chat extends BaseComponent {
     }
 
     this.activeChatName = e.detail.conversation.roomName;
-    this.activeDescription = e.detail.conversation.description;
-
+    this.activeConversation = new ConversationDto({
+      ...e.detail.conversation,
+    });
     this.inputControlsRef?.value?.focusEditor();
   }
 
@@ -574,7 +562,7 @@ export class Chat extends BaseComponent {
       return;
     }
 
-    let roomName = this.activeDescription;
+    let roomName = this.activeConversation?.description;
 
     if (Notification.permission === "granted") {
       let notification = new Notification(roomName, {
@@ -597,7 +585,7 @@ export class Chat extends BaseComponent {
           notification.onclick = function () {
             this.conversationListRef.value.sidebarListRef.value.selectChat(
               message,
-              this.activeDescription
+              this.activeConversation?.description
             );
             window.focus("/");
           };
