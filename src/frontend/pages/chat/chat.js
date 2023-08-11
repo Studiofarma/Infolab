@@ -255,7 +255,6 @@ export class Chat extends BaseComponent {
                               this.forwardMessage(event);
                               this.focusOnEditor(event);
                             }}
-                            query=""
                           ></il-conversation-list>`
                       )}
                     </div>

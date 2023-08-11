@@ -45,7 +45,6 @@ class ConversationList extends BaseComponent {
     isOpen: false,
     lastSlectedConversation: {},
     hasMore: { type: Boolean },
-    query: { type: String },
   };
 
   constructor() {
@@ -60,6 +59,7 @@ class ConversationList extends BaseComponent {
     this.isOpen = false;
     this.isStartup = true;
     this.hasMore = true;
+    this.shouldRefetch = true;
 
     this.debouncedFetch = debounce(async () => {
       this.conversationList = [];
@@ -350,6 +350,8 @@ class ConversationList extends BaseComponent {
       );
     }
 
+    this.shouldRefetch = true;
+
     this.clearSelection();
   }
 
@@ -461,8 +463,13 @@ class ConversationList extends BaseComponent {
 
         let rooms = await ConversationService.getNextConversationsFiltered(
           componentName,
-          this.query
+          this.query,
+          this.shouldRefetch
         );
+
+        if (this.shouldRefetch) {
+          this.shouldRefetch = false;
+        }
 
         if (rooms.length < ConversationService.pageSize) {
           this.hasMore = false;

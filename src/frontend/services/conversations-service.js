@@ -46,10 +46,17 @@ export class ConversationService {
     });
   }
 
-  static async getNextConversationsFiltered(clientComponentName, query) {
+  static async getNextConversationsFiltered(
+    clientComponentName,
+    query,
+    shouldRefetch
+  ) {
     let link;
 
-    if (ConversationService.lastQuery.get(clientComponentName) === query) {
+    if (
+      ConversationService.lastQuery.get(clientComponentName) === query &&
+      !shouldRefetch
+    ) {
       link = ConversationService.afterLinks.get(clientComponentName);
     } else {
       link = `${ConversationService.startingLinkSearch}&nameToSearch=${query}`;
