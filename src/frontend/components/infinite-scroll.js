@@ -7,9 +7,9 @@ export class InfiniteScroll extends LitElement {
   static properties = {
     isReverse: { type: Boolean },
     scrollableElem: { type: Object },
-    hasMore: { type: Boolean },
+    hasMoreNext: { type: Boolean },
     threshold: { type: Number },
-    isLoadMore: { type: Boolean },
+    isLoadMoreNext: { type: Boolean },
     beforeScrollHeight: { type: Number },
     beforeScrollTop: { type: Number },
   };
@@ -17,8 +17,8 @@ export class InfiniteScroll extends LitElement {
   constructor() {
     super();
 
-    this.hasMore = true;
-    this.isLoadMore = false;
+    this.hasMoreNext = true;
+    this.isLoadMoreNext = false;
   }
 
   static styles = css`
@@ -43,7 +43,7 @@ export class InfiniteScroll extends LitElement {
   }
 
   onScroll(e) {
-    if (!this.hasMore) return;
+    if (!this.hasMoreNext) return;
 
     let offset = 0;
 
@@ -55,26 +55,26 @@ export class InfiniteScroll extends LitElement {
     }
 
     if (offset <= this.threshold) {
-      if (!this.isLoadMore && this.hasMore) {
+      if (!this.isLoadMoreNext && this.hasMoreNext) {
         this.dispatchEvent(new CustomEvent("il:updated-next"));
         this.beforeScrollHeight = e.target.scrollHeight;
         this.beforeScrollTop = e.target.scrollTop;
 
-        this.isLoadMore = true;
+        this.isLoadMoreNext = true;
       }
     } else {
-      this.isLoadMore = false;
+      this.isLoadMoreNext = false;
     }
   }
 
   updateScrollPosition() {
-    if (this.isLoadMore && this.isReverse) {
+    if (this.isLoadMoreNext && this.isReverse) {
       const element = this.scrollableElem;
 
       element.scrollTop =
         element.scrollHeight - this.beforeScrollHeight + this.beforeScrollTop;
 
-      this.isLoadMore = false;
+      this.isLoadMoreNext = false;
     }
   }
 
@@ -85,7 +85,7 @@ export class InfiniteScroll extends LitElement {
           this.isReverse,
           () => html`
             ${when(
-              this.hasMore,
+              this.hasMoreNext,
               () =>
                 html`<div class="progress-container">
                   <il-circular-progress-bar></il-circular-progress-bar>
@@ -97,7 +97,7 @@ export class InfiniteScroll extends LitElement {
           () => html`
             <slot></slot>
             ${when(
-              this.hasMore,
+              this.hasMoreNext,
               () =>
                 html`<div class="progress-container">
                   <il-circular-progress-bar></il-circular-progress-bar>

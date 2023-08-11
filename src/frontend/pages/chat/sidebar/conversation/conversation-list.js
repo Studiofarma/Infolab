@@ -187,7 +187,7 @@ class ConversationList extends BaseComponent {
             this.getNextRoomsFiltered();
           }}
           .scrollableElem=${this.infiniteScrollRef?.value}
-          .hasMore=${this.hasMore}
+          .hasMoreNext=${this.hasMore}
           .threshold=${100}
         >
           <div>

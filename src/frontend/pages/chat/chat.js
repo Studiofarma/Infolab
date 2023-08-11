@@ -38,7 +38,7 @@ export class Chat extends BaseComponent {
     messageToForward: "",
     activeDescription: "",
     scrolledToBottom: false,
-    hasMore: { type: Boolean },
+    hasMoreNext: { type: Boolean },
     hasFetchedNewMessages: { type: Boolean },
   };
 
@@ -59,7 +59,7 @@ export class Chat extends BaseComponent {
     super();
     this.messages = [];
     this.scrolledToBottom = false;
-    this.hasMore = false;
+    this.hasMoreNext = false;
     this.hasFetchedNewMessages = false;
 
     this.activeChatName =
@@ -225,7 +225,7 @@ export class Chat extends BaseComponent {
                     .messages=${this.messages}
                     .activeChatName=${this.activeChatName}
                     .activeDescription=${this.activeDescription}
-                    .hasMore=${this.hasMore}
+                    .hasMoreNext=${this.hasMoreNext}
                     @il:message-forwarded=${this.openForwardMenu}
                     @il:went-to-chat=${this.wentToChatHandler}
                     @il:message-copied=${() =>
@@ -460,14 +460,14 @@ export class Chat extends BaseComponent {
   }
 
   async fetchMessages(e) {
-    this.hasMore = false;
+    this.hasMoreNext = false;
 
     this.messages = (
       await MessagesService.getNextByRoomName(e.detail.conversation.roomName)
     ).reverse();
 
     if (this.messages.length === MessagesService.pageSize) {
-      this.hasMore = true;
+      this.hasMoreNext = true;
     }
 
     this.activeChatName = e.detail.conversation.roomName;
@@ -477,8 +477,8 @@ export class Chat extends BaseComponent {
   }
 
   async fetchNextMessages(e) {
-    console.log(this.hasMore);
-    if (this.hasMore) {
+    console.log(this.hasMoreNext);
+    if (this.hasMoreNext) {
       let roomName = e?.detail?.conversation?.roomName;
 
       if (!roomName) {
@@ -496,7 +496,7 @@ export class Chat extends BaseComponent {
       ).reverse();
 
       if (nextMessages.length === 0) {
-        this.hasMore = false;
+        this.hasMoreNext = false;
       } else {
         this.messages = [...nextMessages, ...this.messages];
         this.hasFetchedNewMessages = true;

@@ -21,14 +21,14 @@ export class MessagesList extends LitElement {
     activeChatName: { type: String },
     activeDescription: { type: String },
     usersList: { type: Array },
-    hasMore: { type: Boolean },
+    hasMoreNext: { type: Boolean },
   };
 
   constructor() {
     super();
     this.cookie = CookieService.getCookie();
 
-    this.hasMore = true;
+    this.hasMoreNext = true;
 
     this.getAllUsers();
 
@@ -99,7 +99,7 @@ export class MessagesList extends LitElement {
             style="height: calc(${fullScreenHeight} - 179px);"
             .isReverse=${true}
             .scrollableElem=${this.messageBoxRef?.value}
-            .hasMore=${this.hasMore}
+            .hasMoreNext=${this.hasMoreNext}
             .threshold=${300}
           >
             ${repeat(
