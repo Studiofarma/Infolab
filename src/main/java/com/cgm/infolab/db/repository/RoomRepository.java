@@ -83,7 +83,7 @@ public class RoomRepository {
                     "WHERE s1.username = :username" +
                     ")  " +
                     "SELECT  " +
-                        "NULL as room_id,  " +
+                        "CAST(NULL AS bigint) as room_id,  " +
                         "u.username as roomname,  " +
                         "NULL as visibility,  " +
                         "NULL username,  " +
