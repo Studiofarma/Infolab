@@ -352,7 +352,7 @@ class ConversationList extends BaseComponent {
 
     this.shouldRefetch = true;
 
-    this.clearSelection();
+    this.selectedChats = [];
   }
 
   navigateSearchResultsWithArrows(e) {

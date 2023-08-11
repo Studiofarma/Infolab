@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.cgm.infolab.controller.api.ApiConstants.*;
@@ -171,7 +172,8 @@ public class RoomApiController {
 
         if (roomEntity.getRoomOrUser().equals(RoomOrUserAsRoomEnum.ROOM)) {
             if (roomEntity.getMessages().get(0).getTimestamp() != null) {
-                query += beforeOrAfterName + "=[t]" + roomEntity.getMessages().get(0).getTimestamp();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+                query += beforeOrAfterName + "=[t]" + roomEntity.getMessages().get(0).getTimestamp().format(formatter);
             } else {
                 query += beforeOrAfterName + "=[r]" + roomEntity.getDescription();
             }
