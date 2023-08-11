@@ -46,17 +46,10 @@ export class ConversationService {
     });
   }
 
-  static async getNextConversationsFiltered(
-    clientComponentName,
-    query,
-    shouldRefetchEvenIfQueryIsTheSame
-  ) {
+  static async getNextConversationsFiltered(clientComponentName, query) {
     let link;
 
-    if (
-      ConversationService.lastQuery.get(clientComponentName) === query &&
-      !shouldRefetchEvenIfQueryIsTheSame
-    ) {
+    if (ConversationService.lastQuery.get(clientComponentName) === query) {
       link = ConversationService.afterLinks.get(clientComponentName);
     } else {
       link = `${ConversationService.startingLinkSearch}&nameToSearch=${query}`;
@@ -84,7 +77,7 @@ export class ConversationService {
   }
 
   static resetLastQuery(clientComponentName) {
-    ConversationService.lastQuery.set(clientComponentName, "");
+    ConversationService.lastQuery.set(clientComponentName, null);
     ConversationService.resetAfterLink(clientComponentName);
   }
 }

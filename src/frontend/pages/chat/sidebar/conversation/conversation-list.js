@@ -45,6 +45,7 @@ class ConversationList extends BaseComponent {
     isOpen: false,
     lastSlectedConversation: {},
     hasMore: { type: Boolean },
+    query: { type: String },
   };
 
   constructor() {
@@ -78,11 +79,7 @@ class ConversationList extends BaseComponent {
 
   async onLoad() {
     await this.getAllUsers();
-    if (this.isForwardList) {
-      await this.getNextRoomsFiltered();
-    } else {
-      await this.getNextRooms();
-    }
+    await this.getNextRoomsFiltered();
     this.requestUpdate();
   }
 
@@ -187,11 +184,7 @@ class ConversationList extends BaseComponent {
           ${ref(this.infiniteScrollRef)}
           class="conversation-list-scrollable"
           @il:updated-next=${() => {
-            if (this.isForwardList) {
-              this.getNextRoomsFiltered();
-            } else {
-              this.getNextRooms();
-            }
+            this.getNextRoomsFiltered();
           }}
           .scrollableElem=${this.infiniteScrollRef?.value}
           .hasMore=${this.hasMore}
@@ -356,6 +349,8 @@ class ConversationList extends BaseComponent {
         })
       );
     }
+
+    this.clearSelection();
   }
 
   navigateSearchResultsWithArrows(e) {
