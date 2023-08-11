@@ -27,7 +27,8 @@ const enter = "Enter";
 
 const noResult = html`<p class="no-result">Nessun risultato</p>`;
 
-const selectedConversationKey = "selected-conversation";
+const selectedRoomKey = "selected-room"; // This is for the room the user is inside
+const selectedChatsKey = "selected-chats"; // This for the rooms the user has selected in the forward list
 
 class ConversationList extends BaseComponent {
   static properties = {
@@ -37,10 +38,10 @@ class ConversationList extends BaseComponent {
     conversationListFiltered: { type: Array },
     newConversationListFiltered: { type: Array },
     indexOfSelectedChat: { type: Number },
-    selectedRoom: { type: Object },
+    selectedRoom: { type: Object }, // This is the room the user is inside
     activeChatName: { type: String },
     isForwardList: false,
-    selectedChats: {},
+    selectedChats: {}, // This is an array of rooms the user has selected in the forward list
     isOpen: false,
     lastSlectedConversation: {},
     hasMore: { type: Boolean },
@@ -224,9 +225,7 @@ class ConversationList extends BaseComponent {
   renderConversationList() {
     if (this.conversationList.length === 0) return noResult;
 
-    let conversation = JSON.parse(
-      localStorage.getItem(selectedConversationKey)
-    );
+    let conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
 
     if (this.isStartup && !this.isForwardList && conversation) {
       this.changeRoom(new CustomEvent("il:first-updated"), conversation);
@@ -270,9 +269,7 @@ class ConversationList extends BaseComponent {
   renderNewConversationList() {
     if (this.newConversationList.length === 0) return noResult;
 
-    let conversation = JSON.parse(
-      localStorage.getItem(selectedConversationKey)
-    );
+    let conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
 
     if (this.isStartup && !this.isForwardList && conversation) {
       this.changeRoom(new CustomEvent("il:first-updated"), conversation);
@@ -424,7 +421,7 @@ class ConversationList extends BaseComponent {
     this.cookie.lastChat = conversation.roomName;
     this.cookie.lastDescription = conversation.description;
 
-    localStorage.setItem(selectedConversationKey, JSON.stringify(conversation));
+    localStorage.setItem(selectedRoomKey, JSON.stringify(conversation));
 
     this.dispatchEvent(
       new CustomEvent("il:conversation-changed", {
@@ -464,8 +461,8 @@ class ConversationList extends BaseComponent {
     if (this.hasMore) {
       try {
         let componentName = this.isForwardList
-          ? ConversationService.forwardList
-          : ConversationService.conversationList;
+          ? ConversationService.forwardListSearch
+          : ConversationService.conversationListSearch;
 
         let rooms = await ConversationService.getNextConversationsFiltered(
           componentName,
@@ -729,7 +726,7 @@ class ConversationList extends BaseComponent {
     }
 
     if (!conversation) {
-      conversation = JSON.parse(localStorage.getItem(selectedConversationKey));
+      conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
     }
 
     return conversation;

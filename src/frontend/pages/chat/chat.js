@@ -630,6 +630,7 @@ export class Chat extends BaseComponent {
         }
       }
 
+      this.conversationListRef.value?.clearSearchInput();
       this.messageNotification(chatMessage);
     }
   }
