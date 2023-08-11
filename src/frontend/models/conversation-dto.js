@@ -3,6 +3,11 @@ export class ConversationDto {
   roomName = "";
   avatarLink = "";
   unreadMessages = 0;
+  lastReadTimestamp = "";
+  description = "";
+  visibility = "";
+  roomType = "";
+  roomOrUser = "";
   lastMessage = {
     content: "",
     sender: {
@@ -12,7 +17,7 @@ export class ConversationDto {
     },
     timestamp: "",
   };
-  description = "";
+  otherParticipants = [];
 
   constructor(obj) {
     this.id = obj.id !== undefined ? obj.id : 0;
@@ -20,7 +25,14 @@ export class ConversationDto {
     this.avatarLink = obj.avatarLink !== undefined ? obj.avatarLink : "";
     this.unreadMessages =
       obj.unreadMessages !== undefined ? obj.unreadMessages : 0;
-    this.lastMessage = obj.lastMessage !== undefined ? obj.lastMessage : "";
+    this.lastReadTimestamp =
+      obj.lastReadTimestamp !== undefined ? obj.lastReadTimestamp : "";
     this.description = obj.description !== undefined ? obj.description : "";
+    this.visibility = obj.visibility !== undefined ? obj.visibility : "";
+    this.roomType = obj.roomType !== undefined ? obj.roomType : "";
+    this.roomOrUser = obj.roomOrUser !== undefined ? obj.roomOrUser : "";
+    this.lastMessage = obj.lastMessage !== undefined ? obj.lastMessage : "";
+    this.otherParticipants =
+      obj.otherParticipants !== undefined ? obj.otherParticipants : [];
   }
 }

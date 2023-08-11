@@ -111,12 +111,12 @@ public class RoomRepositoryTests {
 
     @Test
     void whenFetchingAllRooms_forPublicDescriptionIsFromTheDb_forPrivateTheDescriptionIsTheOtherUserOfTheRoom() {
-        List<RoomEntity> roomEntities = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName())
+        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(-1, CursorEnum.NONE, null, users[0].getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
 
-        Assertions.assertEquals(3, roomEntities.size());
+        Assertions.assertEquals(6, roomEntities.size());
 
         String descriptionGeneral = jdbcTemplate.queryForObject("select * from infolab.rooms where roomname = ?",
                 (rs, rowNum) -> rs.getString("description"),
@@ -138,16 +138,20 @@ public class RoomRepositoryTests {
 
         Assertions.assertNotEquals(descriptionUser0User2, roomEntities.get(2).getDescription());
         Assertions.assertEquals("user2 desc", roomEntities.get(2).getDescription());
+
+        Assertions.assertEquals("user3 desc", roomEntities.get(3).getDescription());
+        Assertions.assertEquals("user4 desc", roomEntities.get(4).getDescription());
+        Assertions.assertEquals("user5 desc", roomEntities.get(5).getDescription());
     }
 
     @Test
     void whenFetchingAllRooms_unreadMessagesCount_isCorrect() {
-        List<RoomEntity> roomEntities = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName())
+        List<RoomEntity> roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(-1, CursorEnum.NONE, null, users[0].getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
 
-        Assertions.assertEquals(3, roomEntities.size());
+        Assertions.assertEquals(6, roomEntities.size());
 
         Assertions.assertEquals(1, roomEntities.get(0).getNotDownloadedMessagesCount()); // General
 
@@ -158,12 +162,12 @@ public class RoomRepositoryTests {
         downloadDateRepository.addWhereNotDownloadedYetForUser(loggedInUser.getName(), general.getName());
         downloadDateRepository.addWhereNotDownloadedYetForUser(loggedInUser.getName(), RoomName.of("user0-user1"));
 
-        roomEntities = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName())
+        roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(-1, CursorEnum.NONE, null, users[0].getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
 
-        Assertions.assertEquals(3, roomEntities.size());
+        Assertions.assertEquals(6, roomEntities.size());
 
         Assertions.assertEquals(0, roomEntities.get(0).getNotDownloadedMessagesCount()); // General
 
@@ -173,12 +177,12 @@ public class RoomRepositoryTests {
 
         chatService.saveMessageInDb(messageDtos[6], users[0].getName(), general.getName(), null);
 
-        roomEntities = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName())
+        roomEntities = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(-1, CursorEnum.NONE, null, users[0].getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();
 
-        Assertions.assertEquals(3, roomEntities.size());
+        Assertions.assertEquals(6, roomEntities.size());
 
         Assertions.assertEquals(1, roomEntities.get(0).getNotDownloadedMessagesCount()); // General
 
@@ -189,7 +193,7 @@ public class RoomRepositoryTests {
 
     @Test
     void whenFetchingPrivateRoom_otherUserIsTheExpectedOne() {
-        List<RoomEntity> roomsFromDb = roomRepository.getAllRoomsAndLastMessageEvenIfNullInPublicRooms(loggedInUser.getName())
+        List<RoomEntity> roomsFromDb = roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(-1, CursorEnum.NONE, null, users[0].getName())
                 .stream()
                 .sorted(Comparator.comparing(roomEntity -> roomEntity.getName().value()))
                 .toList();

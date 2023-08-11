@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.cgm.infolab.controller.api.ApiConstants.*;
@@ -32,7 +33,7 @@ public class RoomApiController {
     private final Logger log = LoggerFactory.getLogger(RoomApiController.class);
 
 
-    private static final String ROOMS2_PATH = "/api/rooms2";
+    private static final String ROOMS_PATH = "/api/rooms";
 
 
     @Autowired
@@ -41,26 +42,11 @@ public class RoomApiController {
         this.apiHelper = apiHelper;
     }
 
-    @GetMapping("/api/rooms")
-    public BasicJsonDto<RoomDto> getAllRooms(@RequestParam(required = false) String date, Principal principal) {
-
-        BasicJsonDto<RoomDto> roomDtos = BasicJsonDto.empty();
-        List<RoomEntity> roomEntities = roomService.getRooms(date, Username.of(principal.getName()));
-
-
-        if (!roomEntities.isEmpty()) {
-            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto("", "", roomEntities);
-        } else {
-            log.info("Non sono state trovate room");
-        }
-        return roomDtos;
-    }
-
-    @GetMapping(ROOMS2_PATH)
-    public BasicJsonDto<RoomDto> getAllRooms2(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
-                                              @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
-                                              @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
-                                              Principal principal) {
+    @GetMapping(ROOMS_PATH)
+    public BasicJsonDto<RoomDto> getAllRooms(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
+                                             @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
+                                             @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
+                                             Principal principal) {
 
         if (pageBefore != null && pageAfter != null) {
             apiHelper.throwOnRangePagination();
@@ -82,17 +68,17 @@ public class RoomApiController {
         List<RoomEntity> roomEntities = roomService.getRoomsAndUsers(pageSize, cursorBefore, cursorAfter, Username.of(principal.getName()));
 
         if (!roomEntities.isEmpty()) {
-            String prev = getLinkForRooms(ROOMS2_PATH, roomEntities, pageSize, PAGE_BEFORE_API_NAME);
-            String next = getLinkForRooms(ROOMS2_PATH, roomEntities, pageSize, PAGE_AFTER_API_NAME);
+            String prev = getLinkForRooms(ROOMS_PATH, roomEntities, pageSize, PAGE_BEFORE_API_NAME);
+            String next = getLinkForRooms(ROOMS_PATH, roomEntities, pageSize, PAGE_AFTER_API_NAME);
 
-            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto(prev, next, roomEntities);
+            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto(prev, next, roomEntities, principal.getName());
         } else {
             log.info("Non sono state trovate room");
         }
         return roomDtos;
     }
 
-    @GetMapping(ROOMS2_PATH + "/search")
+    @GetMapping(ROOMS_PATH + "/search")
     public BasicJsonDto<RoomDto> searchRooms(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
                                              @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
                                              @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
@@ -119,10 +105,10 @@ public class RoomApiController {
         List<RoomEntity> roomEntities = roomService.searchRoomsAndUsers(pageSize, cursorBefore, cursorAfter, nameToSearch, Username.of(principal.getName()));
 
         if (!roomEntities.isEmpty()) {
-            String prev = getLinkForRoomsWithName(ROOMS2_PATH + "/search", roomEntities, pageSize, PAGE_BEFORE_API_NAME, nameToSearch);
-            String next = getLinkForRoomsWithName(ROOMS2_PATH + "/search", roomEntities, pageSize, PAGE_AFTER_API_NAME, nameToSearch);
+            String prev = getLinkForRoomsWithName(ROOMS_PATH + "/search", roomEntities, pageSize, PAGE_BEFORE_API_NAME, nameToSearch);
+            String next = getLinkForRoomsWithName(ROOMS_PATH + "/search", roomEntities, pageSize, PAGE_AFTER_API_NAME, nameToSearch);
 
-            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto(prev, next, roomEntities);
+            roomDtos = FromEntitiesToDtosMapper.fromEntityToDto(prev, next, roomEntities, principal.getName());
         } else {
             log.info("Non sono state trovate room");
         }
@@ -186,7 +172,8 @@ public class RoomApiController {
 
         if (roomEntity.getRoomOrUser().equals(RoomOrUserAsRoomEnum.ROOM)) {
             if (roomEntity.getMessages().get(0).getTimestamp() != null) {
-                query += beforeOrAfterName + "=[t]" + roomEntity.getMessages().get(0).getTimestamp();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+                query += beforeOrAfterName + "=[t]" + roomEntity.getMessages().get(0).getTimestamp().format(formatter);
             } else {
                 query += beforeOrAfterName + "=[r]" + roomEntity.getDescription();
             }

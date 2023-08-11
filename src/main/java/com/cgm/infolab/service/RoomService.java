@@ -32,10 +32,6 @@ public class RoomService {
         this.roomSubscriptionRepository = roomSubscriptionRepository;
     }
 
-    public List<RoomEntity> getRooms(String date, Username username) {
-        return roomRepository.getAfterDate(DateTimeHelper.fromStringToDate(date), username);
-    }
-
     public List<RoomEntity> getRoomsAndUsers(Integer pageSize, RoomCursor pageBefore, RoomCursor pageAfter, Username username) {
         if (pageAfter == null && pageBefore == null) {
             return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.NONE, null, username);

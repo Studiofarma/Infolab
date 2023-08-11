@@ -14,7 +14,6 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -84,7 +83,7 @@ public class RoomRepository {
                     "WHERE s1.username = :username" +
                     ")  " +
                     "SELECT  " +
-                        "NULL as room_id,  " +
+                        "CAST(NULL AS bigint) as room_id,  " +
                         "u.username as roomname,  " +
                         "NULL as visibility,  " +
                         "NULL username,  " +
@@ -373,17 +372,15 @@ public class RoomRepository {
     }
 
     private List<RoomEntity> queryUsersAsRooms(String whereCondition, String ascOrDesc, String limit, Map<String, Object> arguments) {
-        String query = "%s %s ORDER BY new_user_description %s %s"
-                .formatted(
-                        GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY,
-                        whereCondition,
-                        ascOrDesc,
-                        limit);
-        System.out.println(query);
         return namedParameterJdbcTemplate
-                .query(query,
+                .query("%s %s ORDER BY new_user_description %s %s"
+                                .formatted(
+                                        GET_USERS_PRINCIPAL_HAS_NOT_ROOM_WITH_QUERY,
+                                        whereCondition,
+                                        ascOrDesc,
+                                        limit),
                         arguments,
-                        RowMappers::mapToRoomEntityWithMessages2);
+                        RowMappers::mapToRoomEntityWithMessages);
     }
 
     private List<RoomEntity> queryExistingRooms(CursorEnum beforeOrAfter,
@@ -394,20 +391,16 @@ public class RoomRepository {
                                                 String limit,
                                                 Map<String, Object> arguments) {
 
-        String query = "%s %s ORDER BY sent_at %s NULLS %s, description %s %s"
-                .formatted(
-                        GET_EXISTING_ROOMS_QUERY,
-                        whereCondition,
-                        ascOrDescTimestamp,
-                        nullsLastOrFirst,
-                        ascOrDescDescription,
-                        limit);
-
-        System.out.println(query);
-
         List<RoomEntity> roomsFromDb = namedParameterJdbcTemplate
-                .query(query,
-                        arguments, RowMappers::mapToRoomEntityWithMessages2);
+                .query("%s %s ORDER BY sent_at %s NULLS %s, description %s %s"
+                                .formatted(
+                                        GET_EXISTING_ROOMS_QUERY,
+                                        whereCondition,
+                                        ascOrDescTimestamp,
+                                        nullsLastOrFirst,
+                                        ascOrDescDescription,
+                                        limit),
+                        arguments, RowMappers::mapToRoomEntityWithMessages);
 
         if (!beforeOrAfter.equals(CursorEnum.NONE)) {
 
@@ -427,46 +420,6 @@ public class RoomRepository {
             roomsFromDb = Stream.concat(roomsWithMessages.stream(), roomsWithoutMessages.stream()).collect(Collectors.toList());
         }
         return roomsFromDb;
-    }
-
-    public List<RoomEntity> getAllRoomsAndLastMessageEvenIfNullInPublicRooms(Username username) {
-        List<RoomEntity> rooms = queryRooms(null, ROOMS_AND_LAST_MESSAGES_OTHER, username, new HashMap<>());
-
-        List<RoomName> roomNames = extractRoomNamesFromRoomList(rooms);
-
-        Map<RoomName, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(roomNames, username);
-        rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
-
-        Map<RoomName, LocalDateTime> lastDownloadedDatesList = getLastDownloadedDatesGroupedByRoom(roomNames, username);
-        rooms = mergeRoomsAndLastDownloadedDate(rooms, lastDownloadedDatesList);
-
-        return rooms;
-    }
-
-    public List<RoomEntity> getAfterDate(LocalDate dateLimit, Username username) {
-        if (dateLimit == null) {
-            return getAllRoomsAndLastMessageEvenIfNullInPublicRooms(username);
-        }
-
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put("date", dateLimit);
-
-        List<RoomEntity> rooms = queryRooms(
-                "AND m.sent_at > :date",
-                ROOMS_AND_LAST_MESSAGES_OTHER,
-                username,
-                arguments
-        );
-
-        List<RoomName> roomNames = extractRoomNamesFromRoomList(rooms);
-
-        Map<RoomName, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(roomNames, username);
-        rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
-
-        Map<RoomName, LocalDateTime> lastDownloadedDatesList = getLastDownloadedDatesGroupedByRoom(roomNames, username);
-        rooms = mergeRoomsAndLastDownloadedDate(rooms, lastDownloadedDatesList);
-
-        return rooms;
     }
 
     private List<RoomEntity> mergeRoomsAndNotDownloadedCount(List<RoomEntity> rooms, Map<RoomName, Integer> notDownloadedCountsList) {
@@ -492,30 +445,6 @@ public class RoomRepository {
         });
 
         return rooms;
-    }
-
-    private List<RoomEntity> queryRooms(String where, String other, Username username, Map<String, ?> queryParams) {
-        where = (where == null || where.isEmpty()) ? ROOMS_WHERE_NOT_NULL_OR_PUBLIC : "%s AND %s".formatted(ROOMS_WHERE_NOT_NULL_OR_PUBLIC, where);
-        try {
-            return getRooms(username)
-                    .where(where)
-                    .other(other)
-                    .executeForList(RowMappers::mapToRoomEntityWithMessages, queryParams);
-        } catch (EmptyResultDataAccessException e) {
-            return new ArrayList<>();
-        }
-    }
-
-    private UserQueryResult getRooms(Username username) {
-        return queryHelper
-                .forUser(username)
-                .query("SELECT DISTINCT ON (r.roomname) r.id room_id, r.roomname roomname, " +
-                        "r.visibility, m.sender_name username, u.description sender_description, m.id message_id, m.sent_at, m.content, m.status, " +
-                        "u_other.id other_user_id, u_other.username other_username, u_other.description other_description, %s".formatted(CASE_QUERY))
-                .join("LEFT JOIN infolab.chatmessages m ON r.roomname = m.recipient_room_name " +
-                        "left join infolab.users u ON u.username = m.sender_name " +
-                        "left join infolab.rooms_subscriptions s_other on r.roomname = s_other.roomname and s_other.username <> s.username " +
-                        "left join infolab.users u_other on u_other.username = s_other.username");
     }
 
     public Map<RoomName, Integer> getNotDownloadedYetNumberGroupedByRoom(List<RoomName> roomNames, Username username) {

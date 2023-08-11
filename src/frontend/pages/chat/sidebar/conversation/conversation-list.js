@@ -14,14 +14,21 @@ import "../../../../components/avatar";
 import "./conversation";
 import "../../../../components/input-search";
 import "../../../../components/button-text";
+import "../../../../components/infinite-scroll";
+
 import { ConversationDto } from "../../../../models/conversation-dto";
 import { BaseComponent } from "../../../../components/base-component";
+
+const debounce = require("lodash.debounce");
 
 const arrowUp = "ArrowUp";
 const arrowDown = "ArrowDown";
 const enter = "Enter";
 
 const noResult = html`<p class="no-result">Nessun risultato</p>`;
+
+const selectedRoomKey = "selected-room"; // This is for the room the user is inside
+const selectedChatsKey = "selected-chats"; // This for the rooms the user has selected in the forward list
 
 class ConversationList extends BaseComponent {
   static properties = {
@@ -31,12 +38,13 @@ class ConversationList extends BaseComponent {
     conversationListFiltered: { type: Array },
     newConversationListFiltered: { type: Array },
     indexOfSelectedChat: { type: Number },
-    selectedRoom: { type: Object },
+    selectedRoom: { type: Object }, // This is the room the user is inside
     activeChatName: { type: String },
     isForwardList: false,
-    selectedChats: {},
+    selectedChats: {}, // This is an array of rooms the user has selected in the forward list
     isOpen: false,
     lastSlectedConversation: {},
+    hasMore: { type: Boolean },
   };
 
   constructor() {
@@ -50,18 +58,28 @@ class ConversationList extends BaseComponent {
     this.selectedChats = [];
     this.isOpen = false;
     this.isStartup = true;
+    this.hasMore = true;
+    this.shouldRefetch = true;
+
+    this.debouncedFetch = debounce(async () => {
+      this.conversationList = [];
+      this.newConversationList = [];
+      this.hasMore = true;
+      await this.getNextRoomsFiltered();
+      this.requestUpdate();
+    }, 750);
 
     this.cookie = CookieService.getCookie();
     this.onLoad();
 
     // Refs
     this.inputRef = createRef();
+    this.infiniteScrollRef = createRef();
   }
 
   async onLoad() {
     await this.getAllUsers();
-    await this.getAllRooms();
-    this.setNewConversationList();
+    await this.getNextRoomsFiltered();
     this.requestUpdate();
   }
 
@@ -162,7 +180,16 @@ class ConversationList extends BaseComponent {
             @blur=${this.clearSelection}
           ></il-input-search>
         </div>
-        <div class="conversation-list-scrollable">
+        <il-infinite-scroll
+          ${ref(this.infiniteScrollRef)}
+          class="conversation-list-scrollable"
+          @il:updated-next=${() => {
+            this.getNextRoomsFiltered();
+          }}
+          .scrollableElem=${this.infiniteScrollRef?.value}
+          .hasMore=${this.hasMore}
+          .threshold=${100}
+        >
           <div>
             <p class="separator">Conversazioni</p>
             <div class="conversation-list">
@@ -175,7 +202,7 @@ class ConversationList extends BaseComponent {
               ${this.renderNewConversationList()}
             </div>
           </div>
-        </div>
+        </il-infinite-scroll>
         ${when(
           this.isForwardList && this.selectedChats.length != 0,
           () =>
@@ -189,28 +216,23 @@ class ConversationList extends BaseComponent {
   }
 
   renderConversationList() {
-    this.conversationListFiltered = this.filterConversations(
-      this.conversationList
-    );
+    if (this.conversationList.length === 0) return noResult;
 
-    if (this.conversationListFiltered.length === 0) return noResult;
+    let conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+
+    if (this.isStartup && !this.isForwardList && conversation) {
+      this.changeRoom(new CustomEvent("il:first-updated"), conversation);
+      this.isStartup = false;
+    }
 
     return repeat(
-      this.conversationListFiltered,
+      this.conversationList,
       (pharmacy) => pharmacy.roomName,
       (pharmacy) => {
         let conversation = new ConversationDto(pharmacy);
-        if (
-          conversation.roomName === this.cookie.lastChat &&
-          this.isStartup &&
-          !this.isForwardList
-        ) {
-          this.changeRoom(new CustomEvent("il:first-updated"), conversation);
-          this.isStartup = false;
-        }
 
         let conversationUser = this.findUser(
-          this.conversationListFiltered,
+          this.conversationList,
           conversation
         );
 
@@ -238,29 +260,23 @@ class ConversationList extends BaseComponent {
   }
 
   renderNewConversationList() {
-    this.newConversationListFiltered = this.filterConversations(
-      this.newConversationList
-    );
+    if (this.newConversationList.length === 0) return noResult;
 
-    if (this.newConversationListFiltered.length === 0) return noResult;
+    let conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+
+    if (this.isStartup && !this.isForwardList && conversation) {
+      this.changeRoom(new CustomEvent("il:first-updated"), conversation);
+      this.isStartup = false;
+    }
 
     return repeat(
-      this.newConversationListFiltered,
+      this.newConversationList,
       (pharmacy) => pharmacy.roomName,
       (pharmacy) => {
         let conversation = new ConversationDto(pharmacy);
 
-        if (
-          conversation.roomName === this.cookie.lastChat &&
-          this.isStartup &&
-          !this.isForwardList
-        ) {
-          this.changeRoom(new CustomEvent("il:first-updated"), conversation);
-          this.isStartup = false;
-        }
-
         let conversationUser = this.findUser(
-          this.newConversationListFiltered,
+          this.newConversationList,
           conversation
         );
 
@@ -333,6 +349,10 @@ class ConversationList extends BaseComponent {
         })
       );
     }
+
+    this.shouldRefetch = true;
+
+    this.selectedChats = [];
   }
 
   navigateSearchResultsWithArrows(e) {
@@ -365,8 +385,8 @@ class ConversationList extends BaseComponent {
   }
 
   changeIndexOfSelectedChat(key) {
-    let convListLength = this.conversationListFiltered.length;
-    let newConvListLength = this.newConversationListFiltered.length;
+    let convListLength = this.conversationList.length;
+    let newConvListLength = this.newConversationList.length;
     let maxIndex = convListLength + newConvListLength - 1;
 
     if (key == arrowDown && this.indexOfSelectedChat < maxIndex)
@@ -377,13 +397,11 @@ class ConversationList extends BaseComponent {
   }
 
   getSelectedRoom() {
-    let convListLength = this.conversationListFiltered.length;
+    let convListLength = this.conversationList.length;
     let selected =
       this.indexOfSelectedChat < convListLength
-        ? this.conversationListFiltered[this.indexOfSelectedChat]
-        : this.newConversationListFiltered[
-            this.indexOfSelectedChat - convListLength
-          ];
+        ? this.conversationList[this.indexOfSelectedChat]
+        : this.newConversationList[this.indexOfSelectedChat - convListLength];
     this.selectedRoom = { ...selected };
   }
 
@@ -400,6 +418,8 @@ class ConversationList extends BaseComponent {
     this.cookie.lastChat = conversation.roomName;
     this.cookie.lastDescription = conversation.description;
 
+    localStorage.setItem(selectedRoomKey, JSON.stringify(conversation));
+
     this.dispatchEvent(
       new CustomEvent("il:conversation-changed", {
         detail: {
@@ -414,7 +434,7 @@ class ConversationList extends BaseComponent {
     this.unsetUnreadMessages(conversation.roomName);
 
     this.fetchMessages(conversation);
-    this.cleanSearchInput();
+    this.clearSearchInput();
     this.requestUpdate();
   }
 
@@ -431,41 +451,73 @@ class ConversationList extends BaseComponent {
     this.query = event.detail.query;
     this.selectedRoom = "";
     this.indexOfSelectedChat = -1;
-    this.requestUpdate();
+    this.shouldRefetch = true;
+    this.debouncedFetch();
   }
 
-  filterConversations(list) {
-    return list.filter((conversation) =>
-      conversation.description?.toLowerCase().includes(this.query.toLowerCase())
-    );
-  }
+  async getNextRoomsFiltered() {
+    if (this.hasMore) {
+      try {
+        let componentName = this.isForwardList
+          ? ConversationService.forwardListSearch
+          : ConversationService.conversationListSearch;
 
-  async getAllRooms() {
-    let cookie = CookieService.getCookie();
-
-    try {
-      let rooms = await ConversationService.getOpenConversations();
-      rooms.forEach((room) => {
-        let userIndex = this.usersList.findIndex(
-          (user) => user.description == room.description
+        let rooms = await ConversationService.getNextConversationsFiltered(
+          componentName,
+          this.query,
+          this.shouldRefetch
         );
-        if (userIndex == -1) {
-          this.conversationList = [...this.conversationList, room];
-        } else {
-          let conversation = new ConversationDto({
-            roomName: room.roomName,
-            avatarLink: room.avatarlink,
-            unreadMessages: room.unreadMessages,
-            description: room.description,
-            lastMessage: room.lastMessage || "",
-          });
-          this.conversationList = [...this.conversationList, conversation];
-        }
-      });
 
-      this.conversationList.sort(this.compareTimestamp);
-    } catch (error) {
-      console.error(error);
+        if (this.shouldRefetch) {
+          this.shouldRefetch = false;
+        }
+
+        if (rooms.length < ConversationService.pageSize) {
+          this.hasMore = false;
+        }
+
+        rooms.forEach((room) => {
+          if (room.roomOrUser === "ROOM") {
+            this.conversationList = [...this.conversationList, room];
+          } else if (room.roomOrUser === "USER_AS_ROOM") {
+            this.newConversationList = [...this.newConversationList, room];
+          }
+        });
+
+        this.conversationList.sort(this.compareTimestamp);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  }
+
+  async getNextRooms() {
+    if (this.hasMore) {
+      try {
+        let componentName = this.isForwardList
+          ? ConversationService.forwardList
+          : ConversationService.conversationList;
+
+        let rooms = await ConversationService.getNextConversations(
+          componentName
+        );
+
+        if (rooms.length < ConversationService.pageSize) {
+          this.hasMore = false;
+        }
+
+        rooms.forEach((room) => {
+          if (room.roomOrUser === "ROOM") {
+            this.conversationList = [...this.conversationList, room];
+          } else if (room.roomOrUser === "USER_AS_ROOM") {
+            this.newConversationList = [...this.newConversationList, room];
+          }
+        });
+
+        this.conversationList.sort(this.compareTimestamp);
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 
@@ -565,9 +617,28 @@ class ConversationList extends BaseComponent {
     });
   }
 
+  /**
+   * It is a reverse comparator.
+   */
   compareTimestamp(a, b) {
-    var timestampA = Date.parse(a.lastMessage?.timestamp);
-    var timestampB = Date.parse(b.lastMessage?.timestamp);
+    var timestampA;
+    var timestampB;
+
+    if (a.lastMessage.timestamp !== null) {
+      if (b.lastMessage.timestamp !== null) {
+        timestampA = Date.parse(a.lastMessage?.timestamp);
+        timestampB = Date.parse(b.lastMessage?.timestamp);
+      } else {
+        return -1;
+      }
+    } else {
+      if (b.lastMessage.timestamp !== null) {
+        return +1;
+      } else {
+        return -a.description.localeCompare(b.description);
+      }
+    }
+
     return timestampB - timestampA;
   }
 
@@ -619,10 +690,12 @@ class ConversationList extends BaseComponent {
     );
   }
 
-  cleanSearchInput() {
-    this.inputRef.value?.clear();
-    this.query = "";
-    this.requestUpdate();
+  clearSearchInput() {
+    if (this.query !== "") {
+      this.inputRef.value?.clear();
+      this.query = "";
+      this.debouncedFetch();
+    }
   }
 
   chatNameRecomposer(user1, user2) {
@@ -653,6 +726,10 @@ class ConversationList extends BaseComponent {
 
     if (!conversation) {
       conversation = this.findInNewConversationList(roomName);
+    }
+
+    if (!conversation) {
+      conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
     }
 
     return conversation;
