@@ -540,13 +540,16 @@ export class Chat extends BaseComponent {
         roomName = cookie.lastChat;
       }
 
-      let before = null;
+      let after = null;
       if (this.messages) {
-        before = this.messages[0].timestamp.replace(" ", "T");
+        let milliseconds =
+          Date.parse(this.messages[this.messages.length - 1].timestamp) + 1000;
+
+        after = this.toISOStringWithTimezone(new Date(milliseconds));
       }
 
       let prevMessages = (
-        await MessagesService.getPrevByRoomName(roomName, before)
+        await MessagesService.getPrevByRoomName(roomName, after)
       ).reverse();
 
       if (prevMessages.length === 0) {
@@ -556,6 +559,24 @@ export class Chat extends BaseComponent {
         this.hasFetchedNewMessages = true;
       }
     }
+  }
+
+  toISOStringWithTimezone(date) {
+    const tzOffset = -date.getTimezoneOffset();
+    const pad = (n) => `${Math.floor(Math.abs(n))}`.padStart(2, "0");
+    return (
+      date.getFullYear() +
+      "-" +
+      pad(date.getMonth() + 1) +
+      "-" +
+      pad(date.getDate()) +
+      "T" +
+      pad(date.getHours()) +
+      ":" +
+      pad(date.getMinutes()) +
+      ":" +
+      pad(date.getSeconds())
+    );
   }
 
   createSocket() {
