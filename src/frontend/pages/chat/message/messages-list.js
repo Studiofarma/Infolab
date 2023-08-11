@@ -152,6 +152,10 @@ export class MessagesList extends LitElement {
     this.messageBoxRef.value?.updateScrollPosition();
   }
 
+  setScrollPosition(n) {
+    this.messageBoxRef.value.scrollTop = n;
+  }
+
   getUserByUsername(username) {
     if (this.usersList == undefined) return "";
 

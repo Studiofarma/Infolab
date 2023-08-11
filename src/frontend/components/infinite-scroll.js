@@ -93,6 +93,8 @@ export class InfiniteScroll extends LitElement {
       element.scrollTop =
         element.scrollHeight - this.beforeScrollHeight + this.beforeScrollTop;
 
+      if (element.scrollTop === 0) element.scrollTop = this.threshold + 1;
+
       this.isLoadMoreNext = false;
     }
   }

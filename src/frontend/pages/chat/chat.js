@@ -62,6 +62,7 @@ export class Chat extends BaseComponent {
     this.hasMoreNext = false;
     this.hasMorePrev = false;
     this.hasFetchedNewMessages = false;
+    this.hasFetchedAfterDate = false;
 
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
@@ -89,21 +90,18 @@ export class Chat extends BaseComponent {
     this.createSocket();
   }
 
-  async firstUpdated() {
-    if (this.activeChatName === "") return;
-
-    this.messages = (
-      await MessagesService.getMessagesByRoomName(this.activeChatName)
-    ).reverse();
-  }
-
   async updated(changedProperties) {
     if (changedProperties.has("messages")) {
       if (changedProperties.has("hasFetchedNewMessages")) {
         this.messagesListRef.value?.updateScrollPosition();
         this.hasFetchedNewMessages = false;
+      } else if (changedProperties.has("hasFetchedAfterDate")) {
+        if (this.hasFetchedAfterDate) {
+          this.hasFetchedAfterDate = false;
+          this.messagesListRef.value?.setScrollPosition(500);
+        }
       } else {
-        await setTimeout(() => {
+        await setTimeout(async () => {
           this.scrollToBottom();
         }, 20);
       }
@@ -292,7 +290,7 @@ export class Chat extends BaseComponent {
                   <il-button-icon
                     ${ref(this.scrollButtonRef)}
                     style="bottom: 120px"
-                    @click="${this.scrollToBottom}"
+                    @click="${this.scrollToBottomAndRefetch}"
                     .content=${IconNames.scrollDownArrow}
                     .tooltipText=${TooltipTexts.scrollToBottom}
                   ></il-button-icon>
@@ -465,8 +463,14 @@ export class Chat extends BaseComponent {
   async fetchMessagesLast(e) {
     this.hasMoreNext = false;
 
+    let roomName = e?.detail?.conversation?.roomName;
+    if (!roomName) {
+      const cookie = CookieService.getCookie();
+      roomName = cookie.lastChat;
+    }
+
     this.messages = (
-      await MessagesService.getNextByRoomName(e.detail.conversation.roomName)
+      await MessagesService.getNextByRoomName(roomName)
     ).reverse();
 
     if (this.messages.length === MessagesService.pageSize) {
@@ -484,12 +488,19 @@ export class Chat extends BaseComponent {
       this.hasMoreNext = true;
       this.hasMorePrev = false;
 
-      let after = e.detail.conversation.lastReadTimestamp.replace(" ", "T");
+      let after;
+      if (!e.detail.conversation.lastReadTimestamp) {
+        after = this.toISOStringWithTimezone(new Date(0));
+      } else {
+        after = e.detail.conversation.lastReadTimestamp.replace(" ", "T");
+      }
 
-      this.messages = await MessagesService.getPrevByRoomName(
-        e.detail.conversation.roomName,
-        after
-      );
+      this.messages = (
+        await MessagesService.getPrevByRoomName(
+          e.detail.conversation.roomName,
+          after
+        )
+      ).reverse();
 
       if (this.messages.length === MessagesService.pageSize) {
         this.hasMorePrev = true;
@@ -497,6 +508,10 @@ export class Chat extends BaseComponent {
 
       this.activeChatName = e.detail.conversation.roomName;
       this.activeDescription = e.detail.conversation.description;
+
+      this.hasFetchedAfterDate = true;
+
+      this.requestUpdate("hasFetchedAfterDate", false);
 
       this.inputControlsRef?.value?.focusEditor();
     } else {
@@ -562,7 +577,6 @@ export class Chat extends BaseComponent {
   }
 
   toISOStringWithTimezone(date) {
-    const tzOffset = -date.getTimezoneOffset();
     const pad = (n) => `${Math.floor(Math.abs(n))}`.padStart(2, "0");
     return (
       date.getFullYear() +
@@ -616,6 +630,13 @@ export class Chat extends BaseComponent {
 
   scrollToBottom() {
     this.messagesListRef.value?.scrollToBottom();
+  }
+
+  async scrollToBottomAndRefetch() {
+    if (this.hasMorePrev) {
+      await this.fetchMessagesLast();
+    }
+    this.scrollToBottom();
   }
 
   onConnect() {
