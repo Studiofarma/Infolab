@@ -3,10 +3,6 @@ const inputControlsPath = `${chatPath},il-input-controls`;
 const editorPath = `${inputControlsPath},il-editor`;
 const buttonIconPath = `${inputControlsPath},il-insertion-bar,il-button-icon`;
 
-function getEditor() {
-  return cy.getLitElement(editorPath).find("#editor");
-}
-
 beforeEach(() => {
   cy.login({ user: "user1", password: "password1" });
 
@@ -22,46 +18,40 @@ describe("Editor spec", () => {
   });
 
   it("Editor types", () => {
-    const editor = getEditor();
+    cy.getEditor().click({ force: true });
 
-    editor.click({ force: true });
+    cy.getEditor().type("ABC");
 
-    editor.type("ABC");
-
-    getEditor().then(($div) => {
+    cy.getEditor().then(($div) => {
       expect($div.text()).equal("ABC");
     });
 
-    editor.type("{backspace}{backspace}DE");
+    cy.getEditor().type("{backspace}{backspace}DE");
 
-    getEditor().then(($div) => {
+    cy.getEditor().then(($div) => {
       expect($div.text()).equal("ADE");
     });
   });
 
   it("Editor empty after enter pressed", () => {
-    const editor = getEditor();
+    cy.getEditor().click({ force: true });
 
-    editor.click({ force: true });
+    cy.getEditor().type("Test12345{enter}");
 
-    editor.type("Test12345{enter}");
-
-    editor.should("have.value", "");
+    cy.getEditor().should("have.value", "");
   });
 
   it("Editor empty after send button pressed", () => {
-    const editor = getEditor();
+    cy.getEditor().click({ force: true });
 
-    editor.click({ force: true });
-
-    editor.type("Test67890");
+    cy.getEditor().type("Test67890");
 
     cy.getLitElement(buttonIconPath)
       .find(".icon-button")
       .last()
       .click({ force: true });
 
-    editor.should("have.value", "");
+    cy.getEditor().should("have.value", "");
   });
 
   it("Emoji works", () => {
@@ -77,7 +67,7 @@ describe("Editor spec", () => {
       .first()
       .click({ force: true });
 
-    getEditor().invoke("text").should("be.equal", "😀");
+    cy.getEditor().invoke("text").should("be.equal", "😀");
   });
 
   it("Editor formatting buttons works", () => {
@@ -93,11 +83,9 @@ describe("Editor spec", () => {
       .eq(0)
       .click({ force: true });
 
-    const editor = getEditor();
+    cy.getEditor().type("bold");
 
-    editor.type("bold");
-
-    editor.find("b").should("exist");
+    cy.getEditor().find("b").should("exist");
   });
 });
 

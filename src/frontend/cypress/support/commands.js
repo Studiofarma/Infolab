@@ -6,7 +6,14 @@ const conversationListPath = "il-app,il-chat,il-conversation-list";
 const conversation = "il-conversation";
 const activeConversation = "il-conversation.active";
 const sidebarInputPath = `${conversationListPath},il-input-search, il-input-with-icon`;
+const chatPath = "il-app,il-chat";
+const inputControlsPath = `${chatPath},il-input-controls`;
+const editorPath = `${inputControlsPath},il-editor`;
+
 const chatName = '[data-cy="chat-name"]';
+const editor = "#editor";
+const conversationList = "il-conversation-list";
+const chat = "il-chat";
 
 Cypress.Commands.add("getLitElement", (elementPath) => {
   let elementNames = elementPath.includes(",")
@@ -20,6 +27,8 @@ Cypress.Commands.add("getLitElement", (elementPath) => {
       index === 0
         ? ref.get(elementNames[index]).shadow()
         : ref.find(elementNames[index]).shadow();
+
+    if (elementNames[index] === conversationList) ref.wait(4000);
   }
 
   return ref;
@@ -46,7 +55,7 @@ Cypress.Commands.add("login", (user) => {
     user,
     () => {
       const baseUrl = "http://localhost:8081";
-      cy.visit(baseUrl);
+      cy.visit(baseUrl, { failOnStatusCode: false });
 
       cy.getLitElement("il-app,il-login,il-input-field#username")
         .find("input")
@@ -62,6 +71,10 @@ Cypress.Commands.add("login", (user) => {
       validate: () => {},
     }
   );
+});
+
+Cypress.Commands.add("getEditor", () => {
+  return cy.getLitElement(editorPath).find(editor);
 });
 
 Cypress.Commands.add(
