@@ -8,8 +8,8 @@ export class InfiniteScroll extends LitElement {
     isReverse: { type: Boolean },
     scrollableElem: { type: Object },
     hasMoreNext: { type: Boolean },
+    hasMorePrev: { type: Boolean },
     threshold: { type: Number },
-    isLoadMoreNext: { type: Boolean },
     beforeScrollHeight: { type: Number },
     beforeScrollTop: { type: Number },
   };
@@ -18,7 +18,10 @@ export class InfiniteScroll extends LitElement {
     super();
 
     this.hasMoreNext = true;
+    this.hasMorePrev = true;
+
     this.isLoadMoreNext = false;
+    this.isLoadMorePrev = false;
   }
 
   static styles = css`
@@ -43,18 +46,22 @@ export class InfiniteScroll extends LitElement {
   }
 
   onScroll(e) {
-    if (!this.hasMoreNext) return;
+    if (!this.hasMoreNext && !this.hasMorePrev) return;
 
-    let offset = 0;
+    let offsetNext = 0;
+    let offsetPrev = 0;
 
     if (this.isReverse) {
-      offset = e.target.scrollTop;
-    } else {
-      offset =
+      offsetNext = e.target.scrollTop;
+      offsetPrev =
         e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop;
+    } else {
+      offsetNext =
+        e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop;
+      offsetPrev = e.target.scrollTop;
     }
 
-    if (offset <= this.threshold) {
+    if (offsetNext <= this.threshold) {
       if (!this.isLoadMoreNext && this.hasMoreNext) {
         this.dispatchEvent(new CustomEvent("il:updated-next"));
         this.beforeScrollHeight = e.target.scrollHeight;
@@ -64,6 +71,18 @@ export class InfiniteScroll extends LitElement {
       }
     } else {
       this.isLoadMoreNext = false;
+    }
+
+    if (offsetPrev <= this.threshold) {
+      if (!this.isLoadMorePrev && this.hasMorePrev) {
+        this.dispatchEvent(new CustomEvent("il:updated-prev"));
+        this.beforeScrollHeight = e.target.scrollHeight;
+        this.beforeScrollTop = e.target.scrollTop;
+
+        this.isLoadMorePrev = true;
+      }
+    } else {
+      this.isLoadMorePrev = false;
     }
   }
 

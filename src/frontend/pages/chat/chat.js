@@ -60,6 +60,7 @@ export class Chat extends BaseComponent {
     this.messages = [];
     this.scrolledToBottom = false;
     this.hasMoreNext = false;
+    this.hasMorePrev = false;
     this.hasFetchedNewMessages = false;
 
     this.activeChatName =
@@ -201,7 +202,7 @@ export class Chat extends BaseComponent {
               id="#sidebar"
               class="conversation-list"
               activeChatName=${this.activeChatName}
-              @il:messages-fetched=${this.fetchMessages}
+              @il:messages-fetched=${this.fetchMessagesAfterLastDownload}
               @il:conversation-changed=${(event) => {
                 this.setActiveChat(event);
                 this.focusOnEditor(event);
@@ -226,6 +227,7 @@ export class Chat extends BaseComponent {
                     .activeChatName=${this.activeChatName}
                     .activeDescription=${this.activeDescription}
                     .hasMoreNext=${this.hasMoreNext}
+                    .hasMorePrev=${this.hasMorePrev}
                     @il:message-forwarded=${this.openForwardMenu}
                     @il:went-to-chat=${this.wentToChatHandler}
                     @il:message-copied=${() =>
@@ -237,6 +239,7 @@ export class Chat extends BaseComponent {
                     @il:message-edited=${this.editMessage}
                     @il:message-deleted=${this.askDeletionConfirmation}
                     @il:updated-next=${this.fetchNextMessages}
+                    @il:updated-prev=${this.fetchPrevMessages}
                   ></il-messages-list>
 
                   <il-modal
@@ -396,7 +399,7 @@ export class Chat extends BaseComponent {
 
     // apro la chat a cui devo inoltrare
     this.setActiveChat(event);
-    this.fetchMessages(event).then(() => {
+    this.fetchMessagesLast(event).then(() => {
       // invio il messaggio
       this.sendMessage({ detail: { message: this.messageToForward } });
     });
@@ -459,7 +462,7 @@ export class Chat extends BaseComponent {
     this.inputControlsRef.value?.focusEditor();
   }
 
-  async fetchMessages(e) {
+  async fetchMessagesLast(e) {
     this.hasMoreNext = false;
 
     this.messages = (
@@ -476,8 +479,32 @@ export class Chat extends BaseComponent {
     this.inputControlsRef?.value?.focusEditor();
   }
 
+  async fetchMessagesAfterLastDownload(e) {
+    if (e.detail.conversation.unreadMessages > 0) {
+      this.hasMoreNext = true;
+      this.hasMorePrev = false;
+
+      let after = e.detail.conversation.lastReadTimestamp.replace(" ", "T");
+
+      this.messages = await MessagesService.getPrevByRoomName(
+        e.detail.conversation.roomName,
+        after
+      );
+
+      if (this.messages.length === MessagesService.pageSize) {
+        this.hasMorePrev = true;
+      }
+
+      this.activeChatName = e.detail.conversation.roomName;
+      this.activeDescription = e.detail.conversation.description;
+
+      this.inputControlsRef?.value?.focusEditor();
+    } else {
+      this.fetchMessagesLast(e);
+    }
+  }
+
   async fetchNextMessages(e) {
-    console.log(this.hasMoreNext);
     if (this.hasMoreNext) {
       let roomName = e?.detail?.conversation?.roomName;
 
@@ -499,6 +526,33 @@ export class Chat extends BaseComponent {
         this.hasMoreNext = false;
       } else {
         this.messages = [...nextMessages, ...this.messages];
+        this.hasFetchedNewMessages = true;
+      }
+    }
+  }
+
+  async fetchPrevMessages(e) {
+    if (this.hasMorePrev) {
+      let roomName = e?.detail?.conversation?.roomName;
+
+      if (!roomName) {
+        const cookie = CookieService.getCookie();
+        roomName = cookie.lastChat;
+      }
+
+      let before = null;
+      if (this.messages) {
+        before = this.messages[0].timestamp.replace(" ", "T");
+      }
+
+      let prevMessages = (
+        await MessagesService.getPrevByRoomName(roomName, before)
+      ).reverse();
+
+      if (prevMessages.length === 0) {
+        this.hasMorePrev = false;
+      } else {
+        this.messages = [...this.messages, ...prevMessages];
         this.hasFetchedNewMessages = true;
       }
     }

@@ -29,4 +29,22 @@ export class MessagesService {
       return new MessageDto(message);
     });
   }
+
+  static async getPrevByRoomName(roomName, after) {
+    let link = `/api/messages/${roomName}?page[size]=${MessagesService.pageSize}`;
+
+    let messages;
+
+    if (after) {
+      messages = await HttpService.httpGet(
+        encodeURI(`${link}&page[after]=${after}`)
+      );
+    } else {
+      messages = await HttpService.httpGet(encodeURI(link));
+    }
+
+    return messages.data.map((message) => {
+      return new MessageDto(message);
+    });
+  }
 }

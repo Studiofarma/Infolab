@@ -418,7 +418,13 @@ class ConversationList extends BaseComponent {
     this.cookie.lastChat = conversation.roomName;
     this.cookie.lastDescription = conversation.description;
 
-    localStorage.setItem(selectedRoomKey, JSON.stringify(conversation));
+    // unset the unread messages counter
+    this.unsetUnreadMessages(conversation.roomName);
+
+    localStorage.setItem(
+      selectedRoomKey,
+      JSON.stringify(this.findConversationByRoomName(conversation.roomName))
+    );
 
     this.dispatchEvent(
       new CustomEvent("il:conversation-changed", {
@@ -429,9 +435,6 @@ class ConversationList extends BaseComponent {
         },
       })
     );
-
-    // unset the unread messages counter
-    this.unsetUnreadMessages(conversation.roomName);
 
     this.fetchMessages(conversation);
     this.clearSearchInput();

@@ -11,7 +11,6 @@ import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "./empty-messages";
 import "../../../components/infinite-scroll";
-import { MessagesService } from "../../../services/messages-service";
 
 const fullScreenHeight = "100vh";
 
@@ -22,6 +21,7 @@ export class MessagesList extends LitElement {
     activeDescription: { type: String },
     usersList: { type: Array },
     hasMoreNext: { type: Boolean },
+    hasMorePrev: { type: Boolean },
   };
 
   constructor() {
@@ -90,6 +90,9 @@ export class MessagesList extends LitElement {
             @il:updated-next=${(e) => {
               this.dispatchEvent(new CustomEvent(e.type));
             }}
+            @il:updated-prev=${(e) => {
+              this.dispatchEvent(new CustomEvent(e.type));
+            }}
             @scroll=${(event) => {
               this.dispatchEvent(
                 new CustomEvent(event.type, { detail: event.detail })
@@ -100,6 +103,7 @@ export class MessagesList extends LitElement {
             .isReverse=${true}
             .scrollableElem=${this.messageBoxRef?.value}
             .hasMoreNext=${this.hasMoreNext}
+            .hasMorePrev=${this.hasMorePrev}
             .threshold=${300}
           >
             ${repeat(
