@@ -451,6 +451,7 @@ class ConversationList extends BaseComponent {
     this.query = event.detail.query;
     this.selectedRoom = "";
     this.indexOfSelectedChat = -1;
+    this.shouldRefetch = true;
     this.debouncedFetch();
   }
 
