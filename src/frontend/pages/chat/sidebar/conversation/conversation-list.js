@@ -406,6 +406,8 @@ class ConversationList extends BaseComponent {
 
     localStorage.setItem(selectedRoomKey, JSON.stringify(conversation));
 
+    localStorage.setItem(selectedRoomKey, JSON.stringify(conversation));
+
     this.dispatchEvent(
       new CustomEvent("il:conversation-changed", {
         detail: {

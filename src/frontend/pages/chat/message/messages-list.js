@@ -11,7 +11,6 @@ import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import "./empty-messages";
 import "../../../components/infinite-scroll";
-import { MessagesService } from "../../../services/messages-service";
 
 import { ConversationDto } from "../../../models/conversation-dto";
 
