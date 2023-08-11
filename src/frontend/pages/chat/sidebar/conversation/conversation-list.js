@@ -27,6 +27,8 @@ const enter = "Enter";
 
 const noResult = html`<p class="no-result">Nessun risultato</p>`;
 
+const selectedConversationKey = "selected-conversation";
+
 class ConversationList extends BaseComponent {
   static properties = {
     conversationList: { type: Array },
@@ -222,19 +224,20 @@ class ConversationList extends BaseComponent {
   renderConversationList() {
     if (this.conversationList.length === 0) return noResult;
 
+    let conversation = JSON.parse(
+      localStorage.getItem(selectedConversationKey)
+    );
+
+    if (this.isStartup && !this.isForwardList && conversation) {
+      this.changeRoom(new CustomEvent("il:first-updated"), conversation);
+      this.isStartup = false;
+    }
+
     return repeat(
       this.conversationList,
       (pharmacy) => pharmacy.roomName,
       (pharmacy) => {
         let conversation = new ConversationDto(pharmacy);
-        if (
-          conversation.roomName === this.cookie.lastChat &&
-          this.isStartup &&
-          !this.isForwardList
-        ) {
-          this.changeRoom(new CustomEvent("il:first-updated"), conversation);
-          this.isStartup = false;
-        }
 
         let conversationUser = this.findUser(
           this.conversationList,
@@ -267,20 +270,20 @@ class ConversationList extends BaseComponent {
   renderNewConversationList() {
     if (this.newConversationList.length === 0) return noResult;
 
+    let conversation = JSON.parse(
+      localStorage.getItem(selectedConversationKey)
+    );
+
+    if (this.isStartup && !this.isForwardList && conversation) {
+      this.changeRoom(new CustomEvent("il:first-updated"), conversation);
+      this.isStartup = false;
+    }
+
     return repeat(
       this.newConversationList,
       (pharmacy) => pharmacy.roomName,
       (pharmacy) => {
         let conversation = new ConversationDto(pharmacy);
-
-        if (
-          conversation.roomName === this.cookie.lastChat &&
-          this.isStartup &&
-          !this.isForwardList
-        ) {
-          this.changeRoom(new CustomEvent("il:first-updated"), conversation);
-          this.isStartup = false;
-        }
 
         let conversationUser = this.findUser(
           this.newConversationList,
@@ -420,6 +423,8 @@ class ConversationList extends BaseComponent {
     );
     this.cookie.lastChat = conversation.roomName;
     this.cookie.lastDescription = conversation.description;
+
+    localStorage.setItem(selectedConversationKey, JSON.stringify(conversation));
 
     this.dispatchEvent(
       new CustomEvent("il:conversation-changed", {
@@ -721,6 +726,10 @@ class ConversationList extends BaseComponent {
 
     if (!conversation) {
       conversation = this.findInNewConversationList(roomName);
+    }
+
+    if (!conversation) {
+      conversation = JSON.parse(localStorage.getItem(selectedConversationKey));
     }
 
     return conversation;
