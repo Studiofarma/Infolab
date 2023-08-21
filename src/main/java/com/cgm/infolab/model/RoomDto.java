@@ -13,7 +13,7 @@ public class RoomDto {
     private String roomName;
     private URL avatarLink;
     private int unreadMessages;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime lastReadTimestamp;
     private String description;
     private String visibility;

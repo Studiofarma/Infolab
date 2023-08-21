@@ -11,7 +11,7 @@ public class ChatMessageDto {
     private long id;
     private String content;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime timestamp;
     private String sender;
     private String roomName;

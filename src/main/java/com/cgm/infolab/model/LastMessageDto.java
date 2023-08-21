@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class LastMessageDto {
     private String content;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime timestamp;
     private UserDto sender;
     private String status;
@@ -38,7 +38,6 @@ public class LastMessageDto {
         this.content = content;
     }
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime getTimestamp() {
         return timestamp;
     }

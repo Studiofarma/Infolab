@@ -34,7 +34,7 @@ public abstract class FromEntitiesToDtosMapper {
         );
     }
 
-    public static RoomDto fromEntityToDto2(RoomEntity roomEntity, String principalName) {
+    public static RoomDto fromEntityToDto(RoomEntity roomEntity, String principalName) {
         String roomName =
                 roomEntity.getRoomOrUser().equals(RoomOrUserAsRoomEnum.USER_AS_ROOM)
                         ? RoomName.of(Username.of(roomEntity.getName().value()), Username.of(principalName)).value()
@@ -69,7 +69,7 @@ public abstract class FromEntitiesToDtosMapper {
 
         List<RoomDto> roomDtos = new ArrayList<>();
 
-        roomEntities.forEach(roomEntity -> roomDtos.add(fromEntityToDto2(roomEntity, principalName)));
+        roomEntities.forEach(roomEntity -> roomDtos.add(fromEntityToDto(roomEntity, principalName)));
 
         return BasicJsonDto.of(linksDto, roomDtos);
     }
