@@ -465,7 +465,6 @@ export class Chat extends BaseComponent {
   }
 
   async fetchNextMessages(e) {
-    console.log(this.hasMore);
     if (this.hasMore) {
       let roomName = e?.detail?.conversation?.roomName;
 
@@ -485,9 +484,12 @@ export class Chat extends BaseComponent {
 
       if (nextMessages.length === 0) {
         this.hasMore = false;
+        this.requestUpdate("hasMore");
       } else {
         this.messages = [...nextMessages, ...this.messages];
         this.hasFetchedNewMessages = true;
+        this.requestUpdate("messages");
+        this.requestUpdate("hasFetchedNewMessages");
       }
     }
   }

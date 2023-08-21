@@ -100,9 +100,9 @@ export class MessagesList extends LitElement {
             class="message-box"
             style="height: calc(${fullScreenHeight} - 179px);"
             .isReverse=${true}
-            .scrollableElem=${this.messageBoxRef?.value}
             .hasMore=${this.hasMore}
             .threshold=${300}
+            .roomName=${this.activeConversation?.roomName}
           >
             ${repeat(
               this.messages,

@@ -186,7 +186,6 @@ class ConversationList extends BaseComponent {
           @il:updated-next=${() => {
             this.getNextRoomsFiltered();
           }}
-          .scrollableElem=${this.infiniteScrollRef?.value}
           .hasMore=${this.hasMore}
           .threshold=${100}
         >
