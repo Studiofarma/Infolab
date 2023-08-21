@@ -2,6 +2,19 @@ const messagePath = "il-app, il-chat, il-messages-list, il-message";
 const iconButtonPath =
   "il-app,il-chat, il-messages-list, il-message, il-message-menu-popover, il-button-icon";
 
+const conversationListPath = "il-app,il-chat,il-conversation-list";
+const conversation = "il-conversation";
+const activeConversation = "il-conversation.active";
+const sidebarInputPath = `${conversationListPath},il-input-search, il-input-with-icon`;
+const chatPath = "il-app,il-chat";
+const inputControlsPath = `${chatPath},il-input-controls`;
+const editorPath = `${inputControlsPath},il-editor`;
+
+const chatName = '[data-cy="chat-name"]';
+const editor = "#editor";
+const conversationList = "il-conversation-list";
+const chat = "il-chat";
+
 Cypress.Commands.add("getLitElement", (elementPath) => {
   let elementNames = elementPath.includes(",")
     ? elementPath.split(",")
@@ -14,6 +27,8 @@ Cypress.Commands.add("getLitElement", (elementPath) => {
       index === 0
         ? ref.get(elementNames[index]).shadow()
         : ref.find(elementNames[index]).shadow();
+
+    if (elementNames[index] === conversationList) ref.wait(4000);
   }
 
   return ref;
@@ -40,7 +55,7 @@ Cypress.Commands.add("login", (user) => {
     user,
     () => {
       const baseUrl = "http://localhost:8081";
-      cy.visit(baseUrl);
+      cy.visit(baseUrl, { failOnStatusCode: false });
 
       cy.getLitElement("il-app,il-login,il-input-field#username")
         .find("input")
@@ -56,6 +71,10 @@ Cypress.Commands.add("login", (user) => {
       validate: () => {},
     }
   );
+});
+
+Cypress.Commands.add("getEditor", () => {
+  return cy.getLitElement(editorPath).find(editor);
 });
 
 Cypress.Commands.add(
@@ -81,7 +100,7 @@ Cypress.Commands.add("openChat", (name) => {
       cy.wrap(element)
         .invoke("text")
         .then((txt) => {
-          if (txt === name) {
+          if (txt.trim() === name) {
             cy.getLitElement(
               "il-app, il-chat, il-conversation-list, il-conversation"
             )
@@ -92,6 +111,44 @@ Cypress.Commands.add("openChat", (name) => {
         });
     });
 });
+
+// Commands for conversation selection
+
+Cypress.Commands.add("getConversationByIndex", (index) => {
+  return cy.getLitElement(conversationListPath).find(conversation).eq(index);
+});
+
+Cypress.Commands.add("getOpenedConversation", () => {
+  return cy.getLitElement(conversationListPath).find(activeConversation);
+});
+
+Cypress.Commands.add("getConversationName", (index) => {
+  cy.getConversationByIndex(index).shadow().find(chatName).invoke("text");
+});
+
+Cypress.Commands.add("openChatByClick", (index) => {
+  cy.getConversationByIndex(index)
+    .shadow()
+    .find(chatName)
+    .click({ force: true });
+});
+
+Cypress.Commands.add("openChatWithArrows", (arrowsNumber) => {
+  const inputText = Cypress._.repeat("{downArrow}", arrowsNumber);
+
+  cy.getLitElement(sidebarInputPath)
+    .find("input")
+    .type(inputText + "{enter}", {
+      force: true,
+      parseSpecialCharSequences: true,
+    });
+});
+
+Cypress.Commands.add("checkOpenedConversationName", (text) => {
+  cy.getOpenedConversation().shadow().find(chatName).should("have.text", text);
+});
+
+// ------------------------------------
 
 Cypress.Commands.add("hoverOnTheLast", () => {
   cy.getLitElement(messagePath)

@@ -5,6 +5,8 @@ import { CookieService } from "../../../services/cookie-service";
 import { HtmlParserService } from "./../../../services/html-parser-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
+import { ConversationDto } from "../../../models/conversation-dto";
+
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import { BaseComponent } from "../../../components/base-component";
@@ -13,6 +15,8 @@ export class MessageContent extends BaseComponent {
   static properties = {
     message: { type: Object },
     activeChatName: { type: String },
+    activeConversation: { type: ConversationDto },
+    roomType: { type: String },
     user: { type: Object },
   };
 
@@ -205,16 +209,15 @@ export class MessageContent extends BaseComponent {
             }
           >
             ${when(
-              this.activeChatName.indexOf(this.cookie.username) === -1,
+              this.activeConversation?.roomType ===
+                ConversationDto.roomTypeEnum.group,
               () =>
                 html` <p class="receiver-name">
                   ${when(
                     this.message.sender != this.cookie.username,
-                    () => this.user?.description,
-                    () => ""
+                    () => this.user?.description
                   )}
-                </p>`,
-              () => html``
+                </p>`
             )}
             ${when(
               !this.message.hasBeenDeleted(),

@@ -12,13 +12,16 @@ import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 import "./empty-messages";
 import "../../../components/infinite-scroll";
 
+import { ConversationDto } from "../../../models/conversation-dto";
+
 const fullScreenHeight = "100vh";
 
 export class MessagesList extends LitElement {
   static properties = {
     messages: { type: Array },
     activeChatName: { type: String },
-    activeDescription: { type: String },
+    activeConversation: { type: ConversationDto },
+    roomType: { type: String },
     usersList: { type: Array },
     hasMoreNext: { type: Boolean },
     hasMorePrev: { type: Boolean },
@@ -116,7 +119,7 @@ export class MessagesList extends LitElement {
                   .message=${message}
                   .messageIndex=${index}
                   .activeChatName=${this.activeChatName}
-                  .activeDescription=${this.activeDescription}
+                  .activeConversation=${this.activeConversation}
                   @il:message-copied=${(event) => {
                     this.dispatchEvent(new CustomEvent(event.type));
                   }}

@@ -4,7 +4,6 @@ export class CookieDto {
   header = "";
   token = "";
   lastChat = "";
-  lastDescription = "";
   isValid = false;
 
   constructor(obj) {
@@ -13,8 +12,6 @@ export class CookieDto {
     this.header = obj.header !== undefined ? obj.header : "";
     this.token = obj.token !== undefined ? obj.token : "";
     this.lastChat = obj.lastChat !== undefined ? obj.lastChat : "";
-    this.lastDescription =
-      obj.lastDescription !== undefined ? obj.lastDescription : "";
     this.isValid = obj.isValid !== undefined ? obj.isValid : false;
   }
 }
