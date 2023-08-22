@@ -40,9 +40,7 @@ export class Chat extends BaseComponent {
     scrolledToBottom: false,
     hasMore: { type: Boolean },
     hasFetchedNewMessages: { type: Boolean },
-  };
 
-  static properties = {
     login: { type: Object },
     activeChatName: { type: String },
     activeConversation: { type: ConversationDto },
@@ -465,7 +463,6 @@ export class Chat extends BaseComponent {
   }
 
   async fetchNextMessages(e) {
-    console.log(this.hasMore);
     if (this.hasMore) {
       let roomName = e?.detail?.conversation?.roomName;
 
