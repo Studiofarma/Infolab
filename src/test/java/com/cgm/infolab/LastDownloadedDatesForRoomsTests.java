@@ -131,4 +131,12 @@ public class LastDownloadedDatesForRoomsTests {
         Assertions.assertEquals(STARTING_TIME.plusSeconds(11), roomGeneral.getLastDownloadedDate());
         Assertions.assertEquals(STARTING_TIME.plusSeconds(21), roomUser0User1.getLastDownloadedDate());
     }
+
+    @Test
+    void whenFetchingDownloadInfo_fromGeneralRoom_theyAreTheExpectedOnes() {
+        RoomEntity room = roomRepository.getDownloadInfoAsEmptyRoom(general.getName(), users[0].getName());
+
+        Assertions.assertEquals(STARTING_TIME.plusSeconds(11), room.getLastDownloadedDate());
+        Assertions.assertEquals(2, room.getNotDownloadedMessagesCount());
+    }
 }

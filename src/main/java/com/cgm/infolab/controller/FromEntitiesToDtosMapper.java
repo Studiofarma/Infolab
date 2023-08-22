@@ -40,18 +40,31 @@ public abstract class FromEntitiesToDtosMapper {
                         ? RoomName.of(Username.of(roomEntity.getName().value()), Username.of(principalName)).value()
                         : roomEntity.getName().value();
 
+        String visibility =
+                roomEntity.getVisibility() != null ? roomEntity.getVisibility().toString() : "";
+
+        String roomType =
+                roomEntity.getRoomType() != null ? roomEntity.getRoomType().toString() : "";
+
         RoomDto roomDto = RoomDto.of(
                 roomName,
                 roomEntity.getNotDownloadedMessagesCount(),
                 roomEntity.getLastDownloadedDate(),
                 roomEntity.getDescription(),
-                roomEntity.getVisibility().toString(),
-                roomEntity.getRoomType().toString(),
+                visibility,
+                roomType,
                 roomEntity.getRoomOrUser()
         );
 
-        LastMessageDto lastMessage = fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
+        LastMessageDto lastMessage;
+
+        if (!roomEntity.getMessages().isEmpty()) {
+            lastMessage = fromEntityToLastMessageDto(roomEntity.getMessages().get(0));
+        } else {
+            lastMessage = LastMessageDto.empty();
+        }
         roomDto.setLastMessage(lastMessage);
+
 
         List<UserDto> userDtos = roomEntity.getOtherParticipants().stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();
         roomDto.setOtherParticipants(userDtos);

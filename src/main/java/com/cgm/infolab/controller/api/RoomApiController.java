@@ -2,6 +2,7 @@ package com.cgm.infolab.controller.api;
 
 import com.cgm.infolab.controller.FromEntitiesToDtosMapper;
 import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.RoomOrUserAsRoomEnum;
 import com.cgm.infolab.helper.DateTimeHelper;
@@ -43,7 +44,7 @@ public class RoomApiController {
     }
 
     @GetMapping(ROOMS_PATH)
-    public BasicJsonDto<RoomDto> getAllRooms(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
+    public BasicJsonDto<RoomDto> getAllRooms(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(30) Integer pageSize,
                                              @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
                                              @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
                                              Principal principal) {
@@ -79,7 +80,7 @@ public class RoomApiController {
     }
 
     @GetMapping(ROOMS_PATH + "/search")
-    public BasicJsonDto<RoomDto> searchRooms(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
+    public BasicJsonDto<RoomDto> searchRooms(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(30) Integer pageSize,
                                              @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
                                              @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
                                              @RequestParam String nameToSearch,
@@ -113,6 +114,13 @@ public class RoomApiController {
             log.info("Non sono state trovate room");
         }
         return roomDtos;
+    }
+
+    @GetMapping(ROOMS_PATH + "/search/{roomName}")
+    public RoomDto getRoomDownloadInfo(@PathVariable("roomName") String roomName, Principal principal) {
+        RoomEntity room = roomService.getDownloadInfoForRoom(RoomName.of(roomName), Username.of(principal.getName()));
+
+        return FromEntitiesToDtosMapper.fromEntityToDto(room, principal.getName());
     }
 
     /**

@@ -2,7 +2,7 @@ import { ConversationDto } from "../models/conversation-dto";
 import { HttpService } from "./http-service";
 
 export class ConversationService {
-  static pageSize = 11;
+  static pageSize = 25;
   static startingLink = `/api/rooms?page[size]=${ConversationService.pageSize}`;
   static startingLinkSearch = `/api/rooms/search?page[size]=${ConversationService.pageSize}`;
 
@@ -28,6 +28,14 @@ export class ConversationService {
     [ConversationService.conversationListSearch, ""],
     [ConversationService.forwardListSearch, ""],
   ]);
+
+  static async getDownloadInfoByRoomName(roomName) {
+    let conversation = (
+      await HttpService.httpGet(encodeURI(`/api/rooms/search/${roomName}`))
+    ).data;
+
+    return new ConversationDto(conversation);
+  }
 
   static async getNextConversations(clientComponentName) {
     let conversations = (

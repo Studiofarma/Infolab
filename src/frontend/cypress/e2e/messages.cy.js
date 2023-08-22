@@ -35,6 +35,7 @@ describe("messages spec", () => {
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
   it("asserting that messages contain the content and the timestamp)", () => {
+    cy.clickScrollToBottomButton();
     cy.litElementExist(messageContentPath);
     cy.getLitElement(messageContentPath)
       .first()
@@ -50,6 +51,7 @@ describe("messages spec", () => {
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
   it("asserting that in the general chat, the received messages contain the sender info", () => {
+    cy.clickScrollToBottomButton();
     cy.getLitElement(messageContentPath)
       .find("main")
       .filter(":has(.receiver-name)")
@@ -61,6 +63,7 @@ describe("messages spec", () => {
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
   it("asserting that the options menu icon will display when you hover on a message", () => {
+    cy.clickScrollToBottomButton();
     cy.getLitElement(messagePath)
       .first()
       .find(".message-body")
@@ -72,6 +75,7 @@ describe("messages spec", () => {
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
   it("asserting that the options menu displays his content after clicking on his icon", () => {
+    cy.clickScrollToBottomButton();
     cy.hoverOnTheLast();
 
     cy.clickOnTheLastOptionsMenu();
@@ -84,6 +88,7 @@ describe("messages spec", () => {
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
   it("asserting that the button 'Copia' works", () => {
+    cy.clickScrollToBottomButton();
     cy.sendTestMessages(1);
     cy.hoverOnTheLast();
     cy.clickOnTheLastOptionsMenu();
@@ -99,6 +104,7 @@ describe("messages spec", () => {
   // //-----------------------------------------------------
   // //-----------------------------------------------------
   it("asserting that the button 'Inoltra' works (SINGLE FORWARD)", () => {
+    cy.clickScrollToBottomButton();
     cy.hoverOnTheLast();
     cy.clickOnTheLastOptionsMenu();
     cy.clickOptionButton("Inoltra");
@@ -133,6 +139,7 @@ describe("messages spec", () => {
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
   it("asserting that the button 'Inoltra' works (MULTIPLE FORWARD)", () => {
+    cy.clickScrollToBottomButton();
     cy.hoverOnTheLast();
     cy.clickOnTheLastOptionsMenu();
     cy.clickOptionButton("Inoltra");
@@ -174,6 +181,7 @@ describe("messages spec", () => {
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
   it("asserting that the button 'Scrivi in privato' works", () => {
+    cy.clickScrollToBottomButton();
     // sending a message to general
     cy.sendTestMessages(1);
     Cypress.session.clearAllSavedSessions();
@@ -201,6 +209,7 @@ describe("messages spec", () => {
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
   it("asserting that the button 'Elimina' works", () => {
+    cy.clickScrollToBottomButton();
     cy.hoverOnTheLast();
     cy.clickOnTheLastOptionsMenu();
     cy.clickOptionButton("Elimina");

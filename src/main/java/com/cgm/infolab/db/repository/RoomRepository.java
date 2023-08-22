@@ -199,6 +199,15 @@ public class RoomRepository {
                 .join("left join infolab.rooms_subscriptions s on r.roomname = s.roomname %s".formatted(JOIN));
     }
 
+    public RoomEntity getDownloadInfoAsEmptyRoom(RoomName roomName, Username username) {
+        List<RoomEntity> rooms = new ArrayList<>(List.of(RoomEntity.empty())); // needed to do so because else it would be an immutable list and it would not work
+        rooms.get(0).setName(roomName);
+
+        rooms = addDownloadInfoToRooms(rooms, username);
+
+        return rooms.get(0);
+    }
+
     public List<RoomEntity> getExistingRoomsAndUsersWithoutRoomAsRooms(Integer pageSize,
                                                                        CursorEnum beforeOrAfter,
                                                                        RoomCursor beforeOrAfterCursor,
@@ -360,13 +369,7 @@ public class RoomRepository {
 
         List<RoomEntity> rooms = Stream.concat(existingRooms.stream(), usersAsRooms.stream()).collect(Collectors.toList());
 
-        List<RoomName> roomNames = extractRoomNamesFromRoomList(rooms);
-
-        Map<RoomName, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(roomNames, username);
-        rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
-
-        Map<RoomName, LocalDateTime> lastDownloadedDatesList = getLastDownloadedDatesGroupedByRoom(roomNames, username);
-        rooms = mergeRoomsAndLastDownloadedDate(rooms, lastDownloadedDatesList);
+        rooms = addDownloadInfoToRooms(rooms, username);
 
         return rooms;
     }
@@ -420,6 +423,19 @@ public class RoomRepository {
             roomsFromDb = Stream.concat(roomsWithMessages.stream(), roomsWithoutMessages.stream()).collect(Collectors.toList());
         }
         return roomsFromDb;
+    }
+
+    private List<RoomEntity> addDownloadInfoToRooms(List<RoomEntity> rooms, Username username) {
+
+        List<RoomName> roomNames = extractRoomNamesFromRoomList(rooms);
+
+        Map<RoomName, Integer> notDownloadedCountsList = getNotDownloadedYetNumberGroupedByRoom(roomNames, username);
+        rooms = mergeRoomsAndNotDownloadedCount(rooms, notDownloadedCountsList);
+
+        Map<RoomName, LocalDateTime> lastDownloadedDatesList = getLastDownloadedDatesGroupedByRoom(roomNames, username);
+        rooms = mergeRoomsAndLastDownloadedDate(rooms, lastDownloadedDatesList);
+
+        return rooms;
     }
 
     private List<RoomEntity> mergeRoomsAndNotDownloadedCount(List<RoomEntity> rooms, Map<RoomName, Integer> notDownloadedCountsList) {
