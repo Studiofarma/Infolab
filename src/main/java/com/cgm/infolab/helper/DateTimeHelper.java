@@ -10,7 +10,7 @@ public class DateTimeHelper {
         if (date == null) {
             return null;
         } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
             return LocalDateTime.parse(date, formatter);
         }
     }
@@ -19,7 +19,7 @@ public class DateTimeHelper {
         if (date == null) {
             return null;
         } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
             return LocalDateTime.parse(date, formatter);
         }
     }

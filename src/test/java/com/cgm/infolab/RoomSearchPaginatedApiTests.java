@@ -60,7 +60,7 @@ public class RoomSearchPaginatedApiTests {
     public RoomEntity public2 = RoomEntity.of(RoomName.of("public2"), VisibilityEnum.PUBLIC, RoomTypeEnum.GROUP, "Public room 2 desc");
     public RoomEntity public3 = RoomEntity.of(RoomName.of("public3"), VisibilityEnum.PUBLIC, RoomTypeEnum.GROUP, "Public room 3 desc");
     public RoomEntity public4 = RoomEntity.of(RoomName.of("public4"), VisibilityEnum.PUBLIC, RoomTypeEnum.GROUP, "Public room 4 desc");
-    public static final LocalDateTime STARTING_TIME = LocalDateTime.of(2023, 6, 1, 1, 1, 1);
+    public static final LocalDateTime STARTING_TIME = LocalDateTime.of(2023, 6, 1, 1, 1, 1, 1000000);
 
 
     @BeforeAll
