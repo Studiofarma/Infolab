@@ -6,9 +6,9 @@ import "./circular-progress-bar";
 export class InfiniteScroll extends LitElement {
   static properties = {
     isReverse: { type: Boolean },
-    scrollableElem: { type: Object },
     hasMoreNext: { type: Boolean },
     hasMorePrev: { type: Boolean },
+    roomName: { type: String },
     threshold: { type: Number },
     beforeScrollHeight: { type: Number },
     beforeScrollTop: { type: Number },
@@ -22,6 +22,7 @@ export class InfiniteScroll extends LitElement {
 
     this.isLoadMoreNext = false;
     this.isLoadMorePrev = false;
+    this.roomName = "";
   }
 
   static styles = css`
@@ -33,8 +34,8 @@ export class InfiniteScroll extends LitElement {
   `;
 
   updated(changedProperties) {
-    if (changedProperties.has("scrollableElem")) {
-      const element = this.scrollableElem;
+    if (changedProperties.has("roomName")) {
+      const element = this;
 
       if (this.isReverse) {
         element.scrollTop = element.scrollHeight;
@@ -88,7 +89,7 @@ export class InfiniteScroll extends LitElement {
 
   updateScrollPosition() {
     if (this.isLoadMoreNext && this.isReverse) {
-      const element = this.scrollableElem;
+      const element = this;
 
       element.scrollTop =
         element.scrollHeight - this.beforeScrollHeight + this.beforeScrollTop;

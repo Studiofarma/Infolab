@@ -40,9 +40,7 @@ export class Chat extends BaseComponent {
     scrolledToBottom: false,
     hasMoreNext: { type: Boolean },
     hasFetchedNewMessages: { type: Boolean },
-  };
 
-  static properties = {
     login: { type: Object },
     activeChatName: { type: String },
     activeConversation: { type: ConversationDto },
