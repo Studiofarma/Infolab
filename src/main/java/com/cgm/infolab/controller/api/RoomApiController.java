@@ -2,6 +2,7 @@ package com.cgm.infolab.controller.api;
 
 import com.cgm.infolab.controller.FromEntitiesToDtosMapper;
 import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.RoomOrUserAsRoomEnum;
 import com.cgm.infolab.helper.DateTimeHelper;
@@ -113,6 +114,13 @@ public class RoomApiController {
             log.info("Non sono state trovate room");
         }
         return roomDtos;
+    }
+
+    @GetMapping(ROOMS_PATH + "/search/{roomName}")
+    public RoomDto getRoomDownloadInfo(@PathVariable("roomName") String roomName, Principal principal) {
+        RoomEntity room = roomService.getDownloadInfoForRoom(RoomName.of(roomName), Username.of(principal.getName()));
+
+        return FromEntitiesToDtosMapper.fromEntityToDto(room, principal.getName());
     }
 
     /**
