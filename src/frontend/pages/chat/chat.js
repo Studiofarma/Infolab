@@ -92,10 +92,7 @@ export class Chat extends BaseComponent {
 
   async updated(changedProperties) {
     if (changedProperties.has("hasFetchedBeforeAndAfter")) {
-      if (
-        this.hasFetchedBeforeAndAfter === true &&
-        this.firstNotReadMessage !== null
-      ) {
+      if (this.hasFetchedBeforeAndAfter === true && this.firstNotReadMessage) {
         this.messagesListRef.value?.scrollMessageIntoView(
           this.firstNotReadMessage
         );
