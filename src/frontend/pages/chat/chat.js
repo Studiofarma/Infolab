@@ -40,9 +40,7 @@ export class Chat extends BaseComponent {
     scrolledToBottom: false,
     hasMore: { type: Boolean },
     hasFetchedNewMessages: { type: Boolean },
-  };
 
-  static properties = {
     login: { type: Object },
     activeChatName: { type: String },
     activeConversation: { type: ConversationDto },
@@ -484,12 +482,9 @@ export class Chat extends BaseComponent {
 
       if (nextMessages.length === 0) {
         this.hasMore = false;
-        this.requestUpdate("hasMore");
       } else {
         this.messages = [...nextMessages, ...this.messages];
         this.hasFetchedNewMessages = true;
-        this.requestUpdate("messages");
-        this.requestUpdate("hasFetchedNewMessages");
       }
     }
   }
