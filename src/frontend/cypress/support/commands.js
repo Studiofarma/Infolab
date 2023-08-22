@@ -185,3 +185,7 @@ Cypress.Commands.add("getOptionButton", (option) => {
     .find("div")
     .filter(`:contains("${option}")`);
 });
+
+Cypress.Commands.add("clickScrollToBottomButton", () => {
+  cy.getLitElement(chatPath).find("il-button-icon").click({ force: true });
+});
