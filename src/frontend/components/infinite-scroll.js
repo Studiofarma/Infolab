@@ -12,6 +12,7 @@ export class InfiniteScroll extends LitElement {
     threshold: { type: Number },
     beforeScrollHeight: { type: Number },
     beforeScrollTop: { type: Number },
+    isLoadBlocked: { type: Boolean },
   };
 
   constructor() {
@@ -23,6 +24,8 @@ export class InfiniteScroll extends LitElement {
     this.isLoadMoreNext = false;
     this.isLoadMorePrev = false;
     this.roomName = "";
+
+    this.isLoadBlocked = false;
   }
 
   static styles = css`
@@ -47,7 +50,7 @@ export class InfiniteScroll extends LitElement {
   }
 
   onScroll(e) {
-    if (!this.hasMoreNext && !this.hasMorePrev) return;
+    if (!this.hasMoreNext && !this.hasMorePrev && this.isLoadBlocked) return;
 
     let offsetNext = 0;
     let offsetPrev = 0;
@@ -98,6 +101,11 @@ export class InfiniteScroll extends LitElement {
 
       this.isLoadMoreNext = false;
     }
+  }
+
+  setIsLoadBlocked(value) {
+    this.isLoadBlocked = value;
+    this.requestUpdate();
   }
 
   render() {

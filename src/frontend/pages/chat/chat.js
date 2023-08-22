@@ -40,6 +40,8 @@ export class Chat extends BaseComponent {
     scrolledToBottom: false,
     hasMoreNext: { type: Boolean },
     hasFetchedNewMessages: { type: Boolean },
+    firstNotReadMessage: { type: MessageDto },
+    hasFetchedBeforeAndAfter: { type: Boolean },
 
     login: { type: Object },
     activeChatName: { type: String },
@@ -62,6 +64,8 @@ export class Chat extends BaseComponent {
     this.hasMorePrev = false;
     this.hasFetchedNewMessages = false;
     this.hasFetchedAfterDate = false;
+    this.hasFetchedBeforeAndAfter = false;
+    this.firstNotReadMessage = null;
 
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
@@ -87,14 +91,25 @@ export class Chat extends BaseComponent {
   }
 
   async updated(changedProperties) {
+    if (changedProperties.has("hasFetchedBeforeAndAfter")) {
+      if (
+        this.hasFetchedBeforeAndAfter === true &&
+        this.firstNotReadMessage !== null
+      ) {
+        this.messagesListRef.value?.scrollMessageIntoView(
+          this.firstNotReadMessage
+        );
+        this.hasFetchedBeforeAndAfter = false;
+      }
+    }
+
     if (changedProperties.has("messages")) {
       if (changedProperties.has("hasFetchedNewMessages")) {
-        this.messagesListRef.value?.updateScrollPosition();
+        // this.messagesListRef.value?.updateScrollPosition();
         this.hasFetchedNewMessages = false;
       } else if (changedProperties.has("hasFetchedAfterDate")) {
         if (this.hasFetchedAfterDate) {
           this.hasFetchedAfterDate = false;
-          this.messagesListRef.value?.setScrollPosition(500);
         }
       } else {
         await setTimeout(async () => {
@@ -196,10 +211,12 @@ export class Chat extends BaseComponent {
               id="#sidebar"
               class="conversation-list"
               activeChatName=${this.activeChatName}
-              @il:messages-fetched=${this.fetchMessagesAfterLastDownload}
+              @il:messages-fetched=${this
+                .fetchMessagesAfterAndBeforeLastDownload}
               @il:conversation-changed=${(event) => {
                 this.setActiveChat(event);
                 this.focusOnEditor(event);
+                this.firstNotReadMessage = null;
               }}
             ></il-conversation-list>
           </div>
@@ -467,6 +484,20 @@ export class Chat extends BaseComponent {
       ...e.detail.conversation,
     });
     this.inputControlsRef?.value?.focusEditor();
+  }
+
+  async fetchMessagesAfterAndBeforeLastDownload(e) {
+    this.messagesListRef.value?.setInfiniteScrollIsLoadBlocked(true);
+
+    await this.fetchMessagesAfterLastDownload(e);
+
+    let firstNotReadMessage = this.messages[0];
+
+    await this.fetchNextMessages(e);
+
+    this.firstNotReadMessage = firstNotReadMessage;
+    this.hasFetchedBeforeAndAfter = true;
+    this.requestUpdate("hasFetchedBeforeAndAfter", false);
   }
 
   async fetchMessagesAfterLastDownload(e) {

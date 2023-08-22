@@ -114,6 +114,7 @@ export class MessagesList extends LitElement {
               (message) => message.id,
               (message, index) =>
                 html` <il-message
+                  data-id=${`message-${message.id}`}
                   .user=${this.getUserByUsername(message.sender)}
                   .messages=${this.messages}
                   .message=${message}
@@ -155,8 +156,16 @@ export class MessagesList extends LitElement {
     this.messageBoxRef.value?.updateScrollPosition();
   }
 
-  setScrollPosition(n) {
-    this.messageBoxRef.value.scrollTop = n;
+  scrollMessageIntoView(message) {
+    let element = this.renderRoot.querySelector(
+      `[data-id="message-${message.id}"]`
+    );
+
+    element.scrollIntoView();
+  }
+
+  setInfiniteScrollIsLoadBlocked(value) {
+    this.messageBoxRef.value?.setIsLoadBlocked(value);
   }
 
   getUserByUsername(username) {
