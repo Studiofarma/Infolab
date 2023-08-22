@@ -507,7 +507,7 @@ export class Chat extends BaseComponent {
 
       let after;
       if (!e.detail.conversation.lastReadTimestamp) {
-        after = this.toISOStringWithTimezone(new Date(0));
+        after = this.toISOStringWithTimezone(new Date(1));
       } else {
         after = e.detail.conversation.lastReadTimestamp.replace(" ", "T");
       }
@@ -574,8 +574,9 @@ export class Chat extends BaseComponent {
 
       let after = null;
       if (this.messages) {
-        let milliseconds =
-          Date.parse(this.messages[this.messages.length - 1].timestamp) + 1000;
+        let milliseconds = Date.parse(
+          this.messages[this.messages.length - 1].timestamp
+        );
 
         after = this.toISOStringWithTimezone(new Date(milliseconds));
       }
@@ -595,6 +596,7 @@ export class Chat extends BaseComponent {
 
   toISOStringWithTimezone(date) {
     const pad = (n) => `${Math.floor(Math.abs(n))}`.padStart(2, "0");
+    const padMillis = (n) => `${Math.floor(Math.abs(n))}`.padStart(3, "00");
     return (
       date.getFullYear() +
       "-" +
@@ -606,7 +608,9 @@ export class Chat extends BaseComponent {
       ":" +
       pad(date.getMinutes()) +
       ":" +
-      pad(date.getSeconds())
+      pad(date.getSeconds()) +
+      "." +
+      padMillis(date.getMilliseconds())
     );
   }
 
