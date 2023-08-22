@@ -657,17 +657,19 @@ export class Chat extends BaseComponent {
   }
 
   onConnect() {
-    this.stompClient.subscribe("/topic/public", (payload) => {
-      this.onMessage(payload);
+    this.stompClient.subscribe("/topic/public", async (payload) => {
+      await this.onMessage(payload);
     });
 
     // fixare questo
-    this.stompClient.subscribe("/user/topic/me", (payload) =>
-      this.onMessage(payload)
+    this.stompClient.subscribe(
+      "/user/topic/me",
+      async (payload) => await this.onMessage(payload)
     );
 
-    this.stompClient.subscribe(`/queue/${this.login.username}`, (payload) =>
-      this.onMessage(payload)
+    this.stompClient.subscribe(
+      `/queue/${this.login.username}`,
+      async (payload) => await this.onMessage(payload)
     );
 
     this.stompClient.send(
@@ -719,7 +721,7 @@ export class Chat extends BaseComponent {
     }
   }
 
-  onMessage(payload) {
+  async onMessage(payload) {
     let message = new WebSocketMessageDto(JSON.parse(payload.body));
 
     if (message.type === WebSocketMessageTypes.chat) {
@@ -727,7 +729,16 @@ export class Chat extends BaseComponent {
 
       if (chatMessage.content !== null) {
         if (this.activeChatName == chatMessage.roomName) {
-          this.messages = [...this.messages, chatMessage];
+          if (this.hasMorePrev === false) {
+            this.messages = [...this.messages, chatMessage];
+          } else {
+            // This means there are some not loaded messages more recent that those displayed.
+            let cookie = CookieService.getCookie();
+
+            if (chatMessage.sender === cookie.username) {
+              await this.scrollToBottomAndRefetch();
+            }
+          }
         }
 
         this.updateLastMessageInConversationList(chatMessage);
