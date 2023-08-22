@@ -29,6 +29,14 @@ export class ConversationService {
     [ConversationService.forwardListSearch, ""],
   ]);
 
+  static async getDownloadInfoByRoomName(roomName) {
+    let conversation = (
+      await HttpService.httpGet(encodeURI(`/api/rooms/search/${roomName}`))
+    ).data;
+
+    return new ConversationDto(conversation);
+  }
+
   static async getNextConversations(clientComponentName) {
     let conversations = (
       await HttpService.httpGet(
