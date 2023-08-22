@@ -44,7 +44,7 @@ public class RoomApiController {
     }
 
     @GetMapping(ROOMS_PATH)
-    public BasicJsonDto<RoomDto> getAllRooms(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
+    public BasicJsonDto<RoomDto> getAllRooms(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(30) Integer pageSize,
                                              @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
                                              @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
                                              Principal principal) {
@@ -80,7 +80,7 @@ public class RoomApiController {
     }
 
     @GetMapping(ROOMS_PATH + "/search")
-    public BasicJsonDto<RoomDto> searchRooms(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
+    public BasicJsonDto<RoomDto> searchRooms(@RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(30) Integer pageSize,
                                              @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
                                              @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
                                              @RequestParam String nameToSearch,

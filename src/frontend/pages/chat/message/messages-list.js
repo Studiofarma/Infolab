@@ -106,7 +106,7 @@ export class MessagesList extends LitElement {
             .isReverse=${true}
             .hasMoreNext=${this.hasMoreNext}
             .hasMorePrev=${this.hasMorePrev}
-            .threshold=${300}
+            .threshold=${1000}
             .roomName=${this.activeConversation?.roomName}
           >
             ${repeat(

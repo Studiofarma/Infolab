@@ -2,7 +2,7 @@ import { MessageDto } from "../models/message-dto";
 import { HttpService } from "./http-service";
 
 export class MessagesService {
-  static pageSize = 20;
+  static pageSize = 50;
 
   static async getMessagesByRoomName(roomName) {
     let messages = await HttpService.httpGet(`/api/messages/${roomName}`);

@@ -190,7 +190,7 @@ class ConversationList extends BaseComponent {
             this.getNextRoomsFiltered();
           }}
           .hasMoreNext=${this.hasMore}
-          .threshold=${100}
+          .threshold=${500}
         >
           <div>
             <p class="separator">Conversazioni</p>

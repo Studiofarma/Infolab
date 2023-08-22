@@ -40,7 +40,7 @@ public class ChatApiMessagesController {
     // Se volete provare uno strumento piu' avanzato per le chiamate all'API usate Postman https://www.postman.com/downloads/
     @GetMapping("/api/messages/{roomName}")
     public List<ChatMessageDto> getAllMessages(@PathVariable("roomName") String roomName,
-                                               @RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(30) Integer pageSize,
+                                               @RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(55) Integer pageSize,
                                                @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
                                                @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter,
                                                Principal principal) {
