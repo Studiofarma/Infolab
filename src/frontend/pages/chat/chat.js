@@ -784,7 +784,7 @@ export class Chat extends BaseComponent {
           });
 
           if (index === this.messages.length - 1)
-            this.updateLastMessageInConversationList(message);
+            this.updateLastMessageInConversationList(this.messages[index]);
 
           this.messagesListRef.value?.requestUpdate();
         }
