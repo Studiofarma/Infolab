@@ -204,7 +204,7 @@ public class RoomRepository {
         RoomEntity room = getByRoomName(roomName, username).orElseThrow(() ->
                 new IllegalArgumentException("The user username=\"%s\" does not have access to room roomName=\"%s\" or the room does not exist".formatted(username.value(), roomName.value())));
 
-        List<RoomEntity> rooms = new ArrayList<>(List.of(room)); // needed to do so because else it would be an immutable list and it would not work
+        List<RoomEntity> rooms = new ArrayList<>(List.of(RoomEntity.empty())); // needed to do so because else it would be an immutable list and it would not work
         rooms.get(0).setName(roomName);
 
         rooms = addDownloadInfoToRooms(rooms, username);
