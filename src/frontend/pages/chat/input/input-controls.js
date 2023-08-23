@@ -15,6 +15,7 @@ const emojiPickerBottomOffset = 90;
 const enterKey = "Enter";
 
 import { BaseComponent } from "../../../components/base-component";
+import { CookieService } from "../../../services/cookie-service";
 
 export class InputControls extends BaseComponent {
   static properties = {
@@ -182,6 +183,10 @@ export class InputControls extends BaseComponent {
 
   updateMessage(event) {
     this.message = event.detail.content;
+
+    let cookie = CookieService.getCookie();
+
+    localStorage.setItem(`message:${cookie.lastChat}`, this.message);
   }
 
   editMessage(detail) {
