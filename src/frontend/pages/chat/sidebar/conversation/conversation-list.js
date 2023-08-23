@@ -45,6 +45,8 @@ class ConversationList extends BaseComponent {
     isOpen: false,
     lastSlectedConversation: {},
     hasMore: { type: Boolean },
+
+    conversationOpenBeforeQuit: { type: Object },
   };
 
   constructor() {
@@ -80,6 +82,7 @@ class ConversationList extends BaseComponent {
   async onLoad() {
     await this.getAllUsers();
     await this.getNextRoomsFiltered();
+    await this.updateLastOpenConversation();
     this.requestUpdate();
   }
 
@@ -186,8 +189,8 @@ class ConversationList extends BaseComponent {
           @il:updated-next=${() => {
             this.getNextRoomsFiltered();
           }}
-          .hasMore=${this.hasMore}
-          .threshold=${100}
+          .hasMoreNext=${this.hasMore}
+          .threshold=${500}
         >
           <div>
             <p class="separator">Conversazioni</p>
@@ -217,7 +220,7 @@ class ConversationList extends BaseComponent {
   renderConversationList() {
     if (this.conversationList.length === 0) return noResult;
 
-    let conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+    let conversation = this.conversationOpenBeforeQuit;
 
     if (this.isStartup && !this.isForwardList && conversation) {
       this.changeRoom(new CustomEvent("il:first-updated"), conversation);
@@ -261,7 +264,7 @@ class ConversationList extends BaseComponent {
   renderNewConversationList() {
     if (this.newConversationList.length === 0) return noResult;
 
-    let conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+    let conversation = this.conversationOpenBeforeQuit;
 
     if (this.isStartup && !this.isForwardList && conversation) {
       this.changeRoom(new CustomEvent("il:first-updated"), conversation);
@@ -322,6 +325,22 @@ class ConversationList extends BaseComponent {
   }
 
   //#endregion -----------------------------
+
+  async updateLastOpenConversation() {
+    let conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+
+    if (this.isStartup && !this.isForwardList && conversation) {
+      let downloadData = await ConversationService.getDownloadInfoByRoomName(
+        conversation.roomName
+      );
+
+      this.conversationOpenBeforeQuit = {
+        ...conversation,
+        lastReadTimestamp: downloadData.lastReadTimestamp,
+        unreadMessages: downloadData.unreadMessages,
+      };
+    }
+  }
 
   handleForward() {
     if (this.selectedChats.length === 1) {
@@ -405,7 +424,13 @@ class ConversationList extends BaseComponent {
 
     localStorage.setItem(selectedRoomKey, JSON.stringify(conversation));
 
-    localStorage.setItem(selectedRoomKey, JSON.stringify(conversation));
+    // unset the unread messages counter
+    this.unsetUnreadMessages(conversation.roomName);
+
+    localStorage.setItem(
+      selectedRoomKey,
+      JSON.stringify(this.findConversationByRoomName(conversation.roomName))
+    );
 
     this.dispatchEvent(
       new CustomEvent("il:conversation-changed", {
@@ -416,9 +441,6 @@ class ConversationList extends BaseComponent {
         },
       })
     );
-
-    // unset the unread messages counter
-    this.unsetUnreadMessages(conversation.roomName);
 
     this.fetchMessages(conversation);
     this.clearSearchInput();

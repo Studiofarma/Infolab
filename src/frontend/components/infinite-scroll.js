@@ -6,20 +6,26 @@ import "./circular-progress-bar";
 export class InfiniteScroll extends LitElement {
   static properties = {
     isReverse: { type: Boolean },
-    hasMore: { type: Boolean },
+    hasMoreNext: { type: Boolean },
+    hasMorePrev: { type: Boolean },
     roomName: { type: String },
     threshold: { type: Number },
-    isLoadMore: { type: Boolean },
     beforeScrollHeight: { type: Number },
     beforeScrollTop: { type: Number },
+    isLoadBlocked: { type: Boolean },
   };
 
   constructor() {
     super();
 
-    this.hasMore = true;
-    this.isLoadMore = false;
+    this.hasMoreNext = true;
+    this.hasMorePrev = true;
+
+    this.isLoadMoreNext = false;
+    this.isLoadMorePrev = false;
     this.roomName = "";
+
+    this.isLoadBlocked = false;
   }
 
   static styles = css`
@@ -44,39 +50,62 @@ export class InfiniteScroll extends LitElement {
   }
 
   onScroll(e) {
-    if (!this.hasMore) return;
+    if (!this.hasMoreNext && !this.hasMorePrev && this.isLoadBlocked) return;
 
-    let offset = 0;
+    let offsetNext = 0;
+    let offsetPrev = 0;
 
-    if (this.isReverse) {
-      offset = e.target.scrollTop;
-    } else {
-      offset =
+    if (this.hasMoreNext && this.isReverse) {
+      offsetNext = e.target.scrollTop;
+      offsetPrev =
         e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop;
+    } else {
+      offsetNext =
+        e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop;
+      offsetPrev = e.target.scrollTop;
     }
 
-    if (offset <= this.threshold) {
-      if (!this.isLoadMore && this.hasMore) {
+    if (offsetNext <= this.threshold) {
+      if (!this.isLoadMoreNext && this.hasMoreNext) {
         this.dispatchEvent(new CustomEvent("il:updated-next"));
         this.beforeScrollHeight = e.target.scrollHeight;
         this.beforeScrollTop = e.target.scrollTop;
 
-        this.isLoadMore = true;
+        this.isLoadMoreNext = true;
       }
     } else {
-      this.isLoadMore = false;
+      this.isLoadMoreNext = false;
+    }
+
+    if (this.hasMorePrev && offsetPrev <= this.threshold) {
+      if (!this.isLoadMorePrev && this.hasMorePrev) {
+        this.dispatchEvent(new CustomEvent("il:updated-prev"));
+        this.beforeScrollHeight = e.target.scrollHeight;
+        this.beforeScrollTop = e.target.scrollTop;
+
+        this.isLoadMorePrev = true;
+      }
+    } else {
+      this.isLoadMorePrev = false;
     }
   }
 
   updateScrollPosition() {
-    if (this.isLoadMore && this.isReverse) {
+    if (this.isLoadMoreNext && this.isReverse) {
       const element = this;
 
       element.scrollTop =
         element.scrollHeight - this.beforeScrollHeight + this.beforeScrollTop;
 
-      this.isLoadMore = false;
+      if (element.scrollTop === 0) element.scrollTop = this.threshold + 1;
+
+      this.isLoadMoreNext = false;
     }
+  }
+
+  setIsLoadBlocked(value) {
+    this.isLoadBlocked = value;
+    this.requestUpdate();
   }
 
   render() {
@@ -86,7 +115,7 @@ export class InfiniteScroll extends LitElement {
           this.isReverse,
           () => html`
             ${when(
-              this.hasMore,
+              this.hasMoreNext,
               () =>
                 html`<div class="progress-container">
                   <il-circular-progress-bar></il-circular-progress-bar>
@@ -98,7 +127,7 @@ export class InfiniteScroll extends LitElement {
           () => html`
             <slot></slot>
             ${when(
-              this.hasMore,
+              this.hasMoreNext,
               () =>
                 html`<div class="progress-container">
                   <il-circular-progress-bar></il-circular-progress-bar>

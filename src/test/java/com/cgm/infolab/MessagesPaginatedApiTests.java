@@ -156,7 +156,7 @@ public class MessagesPaginatedApiTests {
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response1.getStatusCode());
 
         ResponseEntity<Object> response2 = testRestTemplate.withBasicAuth(
-                "user1", "password1").getForEntity("/api/messages/general?page[size]=40",
+                "user1", "password1").getForEntity("/api/messages/general?page[size]=60",
                 Object.class);
 
         Assertions.assertEquals(HttpStatus.BAD_REQUEST, response2.getStatusCode());

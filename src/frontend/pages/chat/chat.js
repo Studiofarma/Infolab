@@ -38,8 +38,10 @@ export class Chat extends BaseComponent {
     messages: [],
     messageToForward: "",
     scrolledToBottom: false,
-    hasMore: { type: Boolean },
+    hasMoreNext: { type: Boolean },
     hasFetchedNewMessages: { type: Boolean },
+    firstNotReadMessage: { type: MessageDto },
+    hasFetchedBeforeAndAfter: { type: Boolean },
 
     login: { type: Object },
     activeChatName: { type: String },
@@ -58,8 +60,12 @@ export class Chat extends BaseComponent {
     };
     this.messages = [];
     this.scrolledToBottom = false;
-    this.hasMore = false;
+    this.hasMoreNext = false;
+    this.hasMorePrev = false;
     this.hasFetchedNewMessages = false;
+    this.hasFetchedAfterDate = false;
+    this.hasFetchedBeforeAndAfter = false;
+    this.firstNotReadMessage = null;
 
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
@@ -84,21 +90,29 @@ export class Chat extends BaseComponent {
     this.createSocket();
   }
 
-  async firstUpdated() {
-    if (this.activeChatName === "") return;
+  updated(changedProperties) {
+    if (changedProperties.has("hasFetchedBeforeAndAfter")) {
+      if (this.hasFetchedBeforeAndAfter === true && this.firstNotReadMessage) {
 
-    this.messages = (
-      await MessagesService.getMessagesByRoomName(this.activeChatName)
-    ).reverse();
-  }
+        setTimeout(() => {
+          this.messagesListRef.value?.scrollMessageIntoView(
+            this.firstNotReadMessage
+          );
+          this.hasFetchedBeforeAndAfter = false;
+        }, 20);
+      }
+    }
 
-  async updated(changedProperties) {
     if (changedProperties.has("messages")) {
       if (changedProperties.has("hasFetchedNewMessages")) {
-        this.messagesListRef.value?.updateScrollPosition();
+        // this.messagesListRef.value?.updateScrollPosition();
         this.hasFetchedNewMessages = false;
+      } else if (changedProperties.has("hasFetchedAfterDate")) {
+        if (this.hasFetchedAfterDate) {
+          this.hasFetchedAfterDate = false;
+        }
       } else {
-        await setTimeout(() => {
+        setTimeout(() => {
           this.scrollToBottom();
         }, 20);
       }
@@ -197,10 +211,12 @@ export class Chat extends BaseComponent {
               id="#sidebar"
               class="conversation-list"
               activeChatName=${this.activeChatName}
-              @il:messages-fetched=${this.fetchMessages}
+              @il:messages-fetched=${this
+                .fetchMessagesAfterAndBeforeLastDownload}
               @il:conversation-changed=${(event) => {
                 this.setActiveChat(event);
                 this.focusOnEditor(event);
+                this.firstNotReadMessage = null;
               }}
             ></il-conversation-list>
           </div>
@@ -221,7 +237,8 @@ export class Chat extends BaseComponent {
                     .activeChatName=${this.activeChatName}
                     .activeConversation=${this.activeConversation}
                     .roomType=${this.roomType}
-                    .hasMore=${this.hasMore}
+                    .hasMoreNext=${this.hasMoreNext}
+                    .hasMorePrev=${this.hasMorePrev}
                     @il:message-forwarded=${this.openForwardMenu}
                     @il:went-to-chat=${this.wentToChatHandler}
                     @il:message-copied=${() =>
@@ -233,6 +250,7 @@ export class Chat extends BaseComponent {
                     @il:message-edited=${this.editMessage}
                     @il:message-deleted=${this.askDeletionConfirmation}
                     @il:updated-next=${this.fetchNextMessages}
+                    @il:updated-prev=${this.fetchPrevMessages}
                   ></il-messages-list>
 
                   <il-modal
@@ -285,7 +303,7 @@ export class Chat extends BaseComponent {
                   <il-button-icon
                     ${ref(this.scrollButtonRef)}
                     style="bottom: 120px"
-                    @click="${this.scrollToBottom}"
+                    @click="${this.scrollToBottomAndRefetch}"
                     .content=${IconNames.scrollDownArrow}
                     .tooltipText=${TooltipTexts.scrollToBottom}
                   ></il-button-icon>
@@ -384,7 +402,7 @@ export class Chat extends BaseComponent {
 
     // apro la chat a cui devo inoltrare
     this.setActiveChat(event);
-    this.fetchMessages(event).then(() => {
+    this.fetchMessagesLast(event).then(() => {
       // invio il messaggio
       this.sendMessage({ detail: { message: this.messageToForward } });
     });
@@ -444,26 +462,85 @@ export class Chat extends BaseComponent {
     this.inputControlsRef.value?.focusEditor();
   }
 
-  async fetchMessages(e) {
-    this.hasMore = false;
+  async fetchMessagesLast(e) {
+    this.hasMoreNext = false;
+
+    let roomName = e?.detail?.conversation?.roomName;
+    if (!roomName) {
+      const cookie = CookieService.getCookie();
+      roomName = cookie.lastChat;
+    }
 
     this.messages = (
-      await MessagesService.getNextByRoomName(e.detail.conversation.roomName)
+      await MessagesService.getNextByRoomName(roomName)
     ).reverse();
 
     if (this.messages.length === MessagesService.pageSize) {
-      this.hasMore = true;
+      this.hasMoreNext = true;
     }
 
-    this.activeChatName = e.detail.conversation.roomName;
-    this.activeConversation = new ConversationDto({
-      ...e.detail.conversation,
-    });
-    this.inputControlsRef?.value?.focusEditor();
+    if (e?.detail?.conversation) {
+      this.activeChatName = e.detail.conversation.roomName;
+      this.activeConversation = new ConversationDto({
+        ...e.detail.conversation,
+      });
+
+      this.inputControlsRef?.value?.focusEditor();
+    }
+  }
+
+  async fetchMessagesAfterAndBeforeLastDownload(e) {
+    this.messagesListRef.value?.setInfiniteScrollIsLoadBlocked(true);
+
+    await this.fetchMessagesAfterLastDownload(e);
+
+    let firstNotReadMessage = this.messages[0];
+
+    await this.fetchNextMessages(e);
+
+    this.firstNotReadMessage = firstNotReadMessage;
+    this.hasFetchedBeforeAndAfter = true;
+    this.requestUpdate("hasFetchedBeforeAndAfter", false);
+  }
+
+  async fetchMessagesAfterLastDownload(e) {
+    if (e.detail.conversation.unreadMessages > 0) {
+      this.hasMoreNext = true;
+      this.hasMorePrev = false;
+
+      let after;
+      if (!e.detail.conversation.lastReadTimestamp) {
+        after = this.toISOStringWithTimezone(new Date(0));
+      } else {
+        after = e.detail.conversation.lastReadTimestamp.replace(" ", "T");
+      }
+
+      this.messages = (
+        await MessagesService.getPrevByRoomName(
+          e.detail.conversation.roomName,
+          after
+        )
+      ).reverse();
+
+      if (this.messages.length === MessagesService.pageSize) {
+        this.hasMorePrev = true;
+      }
+
+      this.activeChatName = e.detail.conversation.roomName;
+      this.activeDescription = e.detail.conversation.description;
+
+      this.hasFetchedAfterDate = true;
+
+      this.requestUpdate("hasFetchedAfterDate", false);
+
+      //this.inputControlsRef?.value?.focusEditor();
+    } else {
+      this.fetchMessagesLast(e);
+    }
   }
 
   async fetchNextMessages(e) {
-    if (this.hasMore) {
+    if (this.hasMoreNext) {
       let roomName = e?.detail?.conversation?.roomName;
 
       if (!roomName) {
@@ -481,12 +558,59 @@ export class Chat extends BaseComponent {
       ).reverse();
 
       if (nextMessages.length === 0) {
-        this.hasMore = false;
+        this.hasMoreNext = false;
       } else {
         this.messages = [...nextMessages, ...this.messages];
         this.hasFetchedNewMessages = true;
       }
     }
+  }
+
+  async fetchPrevMessages(e) {
+    if (this.hasMorePrev) {
+      let roomName = e?.detail?.conversation?.roomName;
+
+      if (!roomName) {
+        const cookie = CookieService.getCookie();
+        roomName = cookie.lastChat;
+      }
+
+      let after = null;
+      if (this.messages) {
+        let milliseconds =
+          Date.parse(this.messages[this.messages.length - 1].timestamp) + 1000;
+
+        after = this.toISOStringWithTimezone(new Date(milliseconds));
+      }
+
+      let prevMessages = (
+        await MessagesService.getPrevByRoomName(roomName, after)
+      ).reverse();
+
+      if (prevMessages.length === 0) {
+        this.hasMorePrev = false;
+      } else {
+        this.messages = [...this.messages, ...prevMessages];
+        this.hasFetchedNewMessages = true;
+      }
+    }
+  }
+
+  toISOStringWithTimezone(date) {
+    const pad = (n) => `${Math.floor(Math.abs(n))}`.padStart(2, "0");
+    return (
+      date.getFullYear() +
+      "-" +
+      pad(date.getMonth() + 1) +
+      "-" +
+      pad(date.getDate()) +
+      "T" +
+      pad(date.getHours()) +
+      ":" +
+      pad(date.getMinutes()) +
+      ":" +
+      pad(date.getSeconds())
+    );
   }
 
   createSocket() {
@@ -528,18 +652,27 @@ export class Chat extends BaseComponent {
     this.messagesListRef.value?.scrollToBottom();
   }
 
+  async scrollToBottomAndRefetch() {
+    if (this.hasMorePrev) {
+      await this.fetchMessagesLast();
+    }
+    this.scrollToBottom();
+  }
+
   onConnect() {
-    this.stompClient.subscribe("/topic/public", (payload) => {
-      this.onMessage(payload);
+    this.stompClient.subscribe("/topic/public", async (payload) => {
+      await this.onMessage(payload);
     });
 
     // fixare questo
-    this.stompClient.subscribe("/user/topic/me", (payload) =>
-      this.onMessage(payload)
+    this.stompClient.subscribe(
+      "/user/topic/me",
+      async (payload) => await this.onMessage(payload)
     );
 
-    this.stompClient.subscribe(`/queue/${this.login.username}`, (payload) =>
-      this.onMessage(payload)
+    this.stompClient.subscribe(
+      `/queue/${this.login.username}`,
+      async (payload) => await this.onMessage(payload)
     );
 
     this.stompClient.send(
@@ -591,7 +724,7 @@ export class Chat extends BaseComponent {
     }
   }
 
-  onMessage(payload) {
+  async onMessage(payload) {
     let message = new WebSocketMessageDto(JSON.parse(payload.body));
 
     if (message.type === WebSocketMessageTypes.chat) {
@@ -599,7 +732,16 @@ export class Chat extends BaseComponent {
 
       if (chatMessage.content !== null) {
         if (this.activeChatName == chatMessage.roomName) {
-          this.messages = [...this.messages, chatMessage];
+          if (this.hasMorePrev === false) {
+            this.messages = [...this.messages, chatMessage];
+          } else {
+            // This means there are some not loaded messages more recent that those displayed.
+            let cookie = CookieService.getCookie();
+
+            if (chatMessage.sender === cookie.username) {
+              await this.scrollToBottomAndRefetch();
+            }
+          }
         }
 
         this.updateLastMessageInConversationList(chatMessage);

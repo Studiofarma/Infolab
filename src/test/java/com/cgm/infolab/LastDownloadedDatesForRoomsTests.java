@@ -94,6 +94,12 @@ public class LastDownloadedDatesForRoomsTests {
         // Adding the remaining messages
         testDbHelper.insertCustomMessage(4, users[0].getName().value(), general.getName().value(), STARTING_TIME.plusSeconds(4), messageDtos[2].getContent());
         testDbHelper.insertCustomMessage(5, users[0].getName().value(), general.getName().value(), STARTING_TIME.plusSeconds(5), messageDtos[3].getContent());
+
+        testDbHelper.insertCustomMessage(6, users[1].getName().value(), "user1-user2", STARTING_TIME.plusSeconds(6), "1 Message not accessible to user0");
+
+        testDbHelper.insertCustomReadDate(STARTING_TIME.plusSeconds(7), 6, users[1].getName().value());
+
+        testDbHelper.insertCustomMessage(7, users[1].getName().value(), "user1-user2", STARTING_TIME.plusSeconds(8), "2 Message not accessible to user0");
     }
 
     @Test
@@ -130,5 +136,27 @@ public class LastDownloadedDatesForRoomsTests {
 
         Assertions.assertEquals(STARTING_TIME.plusSeconds(11), roomGeneral.getLastDownloadedDate());
         Assertions.assertEquals(STARTING_TIME.plusSeconds(21), roomUser0User1.getLastDownloadedDate());
+    }
+
+    @Test
+    void whenFetchingDownloadInfo_fromGeneralRoom_theyAreTheExpectedOnes() {
+        RoomEntity room = roomRepository.getDownloadInfoAsEmptyRoom(general.getName(), users[0].getName());
+
+        Assertions.assertEquals(STARTING_TIME.plusSeconds(11), room.getLastDownloadedDate());
+        Assertions.assertEquals(2, room.getNotDownloadedMessagesCount());
+    }
+
+    @Test
+    void whenFetchingDownloadInfo_forRoomTheUserHasNotAccessTo_illegalArgumentExceptionIsThrown() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            RoomEntity room = roomRepository.getDownloadInfoAsEmptyRoom(RoomName.of("user1-user2"), users[0].getName());
+        });
+    }
+
+    @Test
+    void whenFetchingDownloadInfo_forNotExistingRoom_illegalArgumentExceptionIsThrown() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            RoomEntity room = roomRepository.getDownloadInfoAsEmptyRoom(RoomName.of("user0-user4"), users[0].getName());
+        });
     }
 }

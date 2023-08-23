@@ -52,6 +52,10 @@ public class RoomService {
         }
     }
 
+    public RoomEntity getDownloadInfoForRoom(RoomName roomName, Username username) throws IllegalArgumentException {
+        return roomRepository.getDownloadInfoAsEmptyRoom(roomName, username);
+    }
+
     private RoomEntity createPrivateRoom(Username user1, Username user2) {
         RoomName roomName = RoomName.of(user1, user2);
 

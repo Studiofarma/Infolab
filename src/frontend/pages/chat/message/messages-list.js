@@ -23,14 +23,15 @@ export class MessagesList extends LitElement {
     activeConversation: { type: ConversationDto },
     roomType: { type: String },
     usersList: { type: Array },
-    hasMore: { type: Boolean },
+    hasMoreNext: { type: Boolean },
+    hasMorePrev: { type: Boolean },
   };
 
   constructor() {
     super();
     this.cookie = CookieService.getCookie();
 
-    this.hasMore = true;
+    this.hasMoreNext = true;
 
     this.getAllUsers();
 
@@ -92,6 +93,9 @@ export class MessagesList extends LitElement {
             @il:updated-next=${(e) => {
               this.dispatchEvent(new CustomEvent(e.type));
             }}
+            @il:updated-prev=${(e) => {
+              this.dispatchEvent(new CustomEvent(e.type));
+            }}
             @scroll=${(event) => {
               this.dispatchEvent(
                 new CustomEvent(event.type, { detail: event.detail })
@@ -100,8 +104,9 @@ export class MessagesList extends LitElement {
             class="message-box"
             style="height: calc(${fullScreenHeight} - 179px);"
             .isReverse=${true}
-            .hasMore=${this.hasMore}
-            .threshold=${300}
+            .hasMoreNext=${this.hasMoreNext}
+            .hasMorePrev=${this.hasMorePrev}
+            .threshold=${1000}
             .roomName=${this.activeConversation?.roomName}
           >
             ${repeat(
@@ -109,6 +114,7 @@ export class MessagesList extends LitElement {
               (message) => message.id,
               (message, index) =>
                 html` <il-message
+                  data-id=${`message-${message.id}`}
                   .user=${this.getUserByUsername(message.sender)}
                   .messages=${this.messages}
                   .message=${message}
@@ -148,6 +154,18 @@ export class MessagesList extends LitElement {
 
   updateScrollPosition() {
     this.messageBoxRef.value?.updateScrollPosition();
+  }
+
+  scrollMessageIntoView(message) {
+    let element = this.renderRoot.querySelector(
+      `[data-id="message-${message.id}"]`
+    );
+
+    element.scrollIntoView();
+  }
+
+  setInfiniteScrollIsLoadBlocked(value) {
+    this.messageBoxRef.value?.setIsLoadBlocked(value);
   }
 
   getUserByUsername(username) {
