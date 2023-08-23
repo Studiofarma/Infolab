@@ -93,12 +93,12 @@ export class Chat extends BaseComponent {
   updated(changedProperties) {
     if (changedProperties.has("hasFetchedBeforeAndAfter")) {
       if (this.hasFetchedBeforeAndAfter === true && this.firstNotReadMessage) {
-        setTimeout(() => {
+        window.requestAnimationFrame(() => {
           this.messagesListRef.value?.scrollMessageIntoView(
             this.firstNotReadMessage
           );
           this.hasFetchedBeforeAndAfter = false;
-        }, 20);
+        });
       }
     }
 
@@ -111,9 +111,9 @@ export class Chat extends BaseComponent {
           this.hasFetchedAfterDate = false;
         }
       } else {
-        setTimeout(() => {
+        window.requestAnimationFrame(() => {
           this.scrollToBottom();
-        }, 20);
+        });
       }
     }
   }
