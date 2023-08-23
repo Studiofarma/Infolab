@@ -122,7 +122,8 @@ public class RoomApiController {
         try {
             room = roomService.getDownloadInfoForRoom(RoomName.of(roomName), Username.of(principal.getName()));
         } catch (IllegalArgumentException e) {
-            log.error(e.getMessage());
+            log.error("%s : %s".formatted(e.getClass(), e.getMessage()));
+            apiHelper.throwForbiddenStatus();
         }
 
         return FromEntitiesToDtosMapper.fromEntityToDto(room, principal.getName());
