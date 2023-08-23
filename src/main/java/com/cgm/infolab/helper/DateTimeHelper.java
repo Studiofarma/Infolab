@@ -6,11 +6,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class DateTimeHelper {
+
+    public static final String PATTERN_WITH_SPACE = "yyyy-MM-dd HH:mm:ss.SSS";
+
     public static LocalDateTime fromStringToDateTimeWithT(String date) {
         if (date == null) {
             return null;
         } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
             return LocalDateTime.parse(date, formatter);
         }
     }
@@ -19,7 +22,7 @@ public class DateTimeHelper {
         if (date == null) {
             return null;
         } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_WITH_SPACE);
             return LocalDateTime.parse(date, formatter);
         }
     }

@@ -47,7 +47,7 @@ public class MessagesPaginatedApiTests {
 
     public RoomEntity general = RoomEntity.general();
 
-    public static final LocalDateTime STARTING_TIME = LocalDateTime.of(2023, 6, 1, 1, 1, 1);
+    public static final LocalDateTime STARTING_TIME = LocalDateTime.of(2023, 6, 1, 1, 1, 1, 1000000);
 
     @BeforeAll
     void setUp() {

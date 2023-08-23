@@ -186,7 +186,7 @@ public class RoomApiController {
 
         if (roomEntity.getRoomOrUser().equals(RoomOrUserAsRoomEnum.ROOM)) {
             if (roomEntity.getMessages().get(0).getTimestamp() != null) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
                 query += beforeOrAfterName + "=[t]" + roomEntity.getMessages().get(0).getTimestamp().format(formatter);
             } else {
                 query += beforeOrAfterName + "=[r]" + roomEntity.getDescription();
