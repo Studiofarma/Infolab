@@ -9,11 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.cgm.infolab.helper.DateTimeHelper.PATTERN_WITH_SPACE;
+
 public class RoomDto {
     private String roomName;
     private URL avatarLink;
     private int unreadMessages;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+    @JsonFormat(pattern = PATTERN_WITH_SPACE)
     private LocalDateTime lastReadTimestamp;
     private String description;
     private String visibility;

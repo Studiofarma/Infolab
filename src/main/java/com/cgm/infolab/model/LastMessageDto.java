@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import static com.cgm.infolab.helper.DateTimeHelper.PATTERN_WITH_SPACE;
+
 public class LastMessageDto {
     private String content;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+    @JsonFormat(pattern = PATTERN_WITH_SPACE)
     private LocalDateTime timestamp;
     private UserDto sender;
     private String status;
