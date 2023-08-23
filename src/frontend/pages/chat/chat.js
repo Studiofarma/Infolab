@@ -362,6 +362,14 @@ export class Chat extends BaseComponent {
     this.conversationListRef.value?.updateLastMessage(message);
   }
 
+  updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
+    editedMessage
+  ) {
+    this.conversationListRef.value?.updateLastMessageIfItIsLastMessageOfConversation(
+      editedMessage
+    );
+  }
+
   multipleForward(event) {
     if (event.detail.list[0] == undefined) return;
 
@@ -448,6 +456,8 @@ export class Chat extends BaseComponent {
         id: message.id,
         content: message.content,
         roomName: message.roomName,
+        sender: this.login.username,
+        timestamp: message.timestamp,
       },
     });
 
@@ -785,10 +795,18 @@ export class Chat extends BaseComponent {
 
           if (index === this.messages.length - 1)
             this.updateLastMessageInConversationList(this.messages[index]);
-
-          this.messagesListRef.value?.requestUpdate();
+        } else {
+          this.updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
+            editedMessage
+          );
         }
+      } else {
+        this.updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
+          editedMessage
+        );
       }
+
+      this.messagesListRef.value?.requestUpdate();
     }
   }
 

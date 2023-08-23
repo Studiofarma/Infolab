@@ -1,11 +1,14 @@
 package com.cgm.infolab.model;
 
+import com.cgm.infolab.db.ID;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class LastMessageDto {
+
+    private long id;
     private String content;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime timestamp;
@@ -15,19 +18,28 @@ public class LastMessageDto {
     private LastMessageDto() {
     }
 
-    private LastMessageDto(String content, LocalDateTime timestamp, UserDto sender, String status) {
+    private LastMessageDto(long id, String content, LocalDateTime timestamp, UserDto sender, String status) {
+        this.id = id;
         this.content = content;
         this.timestamp = timestamp;
         this.sender = sender;
         this.status = status;
     }
 
-    public static LastMessageDto of(String lastMessagePreview, LocalDateTime lastMessageTimestamp, UserDto sender, String status) {
-        return new LastMessageDto(lastMessagePreview, lastMessageTimestamp, sender, status);
+    public static LastMessageDto of(long id, String lastMessagePreview, LocalDateTime lastMessageTimestamp, UserDto sender, String status) {
+        return new LastMessageDto(id, lastMessagePreview, lastMessageTimestamp, sender, status);
     }
 
     public static LastMessageDto empty() {
-        return new LastMessageDto(null, null, null, null);
+        return new LastMessageDto(ID.None, null, null, null, null);
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getContent() {

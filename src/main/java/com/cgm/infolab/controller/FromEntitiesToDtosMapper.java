@@ -27,6 +27,7 @@ public abstract class FromEntitiesToDtosMapper {
         String status = messageEntity.getStatus() != null ? messageEntity.getStatus().toString() : null;
 
         return LastMessageDto.of(
+                messageEntity.getId(),
                 messageEntity.getContent(),
                 messageEntity.getTimestamp(),
                 fromEntityToDto(messageEntity.getSender()),
