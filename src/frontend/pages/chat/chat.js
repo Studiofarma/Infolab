@@ -47,6 +47,8 @@ export class Chat extends BaseComponent {
     activeChatName: { type: String },
     activeConversation: { type: ConversationDto },
     messages: { type: Array },
+    indexToBeDeleted: { type: Number },
+    messageToBeDeleted: { type: MessageDto },
   };
 
   constructor() {
@@ -364,7 +366,7 @@ export class Chat extends BaseComponent {
     this.conversationListRef.value?.updateLastMessage(message);
   }
 
-  updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
+  updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
     editedMessage
   ) {
     this.conversationListRef.value?.updateLastMessageIfItIsLastMessageOfConversation(
@@ -433,15 +435,28 @@ export class Chat extends BaseComponent {
 
   askDeletionConfirmation(event) {
     this.indexToBeDeleted = event.detail.messageIndex;
+    this.messageToBeDeleted = event.detail.messageToDelete;
     this.setDeletionConfirmationDialogRefIsOpened(true);
   }
 
   deleteMessage() {
-    this.messages[this.indexToBeDeleted] = new MessageDto({
-      ...this.messages[this.indexToBeDeleted],
-      status: MessageStatuses.deleted,
+    let message = new WebSocketMessageDto({
+      type: WebSocketMessageTypes.delete,
+      delete: this.messageToBeDeleted,
     });
-    this.messagesListRef.value?.requestUpdate();
+
+    let activeChatName = this.formatActiveChatName(this.activeChatName);
+
+    if (this.stompClient) {
+      this.stompClient.send(
+        `/app/chat.delete${
+          activeChatName != "general" ? `.${activeChatName}` : ""
+        }`,
+        undefined,
+        JSON.stringify(message)
+      );
+    }
+
     this.setDeletionConfirmationDialogRefIsOpened(false);
   }
 
@@ -750,6 +765,7 @@ export class Chat extends BaseComponent {
     let message = new WebSocketMessageDto(JSON.parse(payload.body));
 
     if (message.type === WebSocketMessageTypes.chat) {
+      // CHAT
       let chatMessage = new MessageDto(message.chat);
 
       if (chatMessage.content !== null) {
@@ -781,6 +797,7 @@ export class Chat extends BaseComponent {
       this.conversationListRef.value?.clearSearchInput();
       this.messageNotification(chatMessage);
     } else if (message.type === WebSocketMessageTypes.edit) {
+      // EDIT
       let editedMessage = new MessageDto(message.edit);
 
       if (this.activeChatName === editedMessage.roomName) {
@@ -798,17 +815,60 @@ export class Chat extends BaseComponent {
           if (index === this.messages.length - 1)
             this.updateLastMessageInConversationList(this.messages[index]);
         } else {
-          this.updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
+          this.updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
             editedMessage
           );
         }
       } else {
-        this.updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
+        this.updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
           editedMessage
         );
       }
 
       this.messagesListRef.value?.requestUpdate();
+    } else if (message.type === WebSocketMessageTypes.delete) {
+      let deletedMessage = new MessageDto(message.delete);
+
+      let deletedLastMessageContent = "Questo messaggio è stato eliminato";
+
+      if (this.activeChatName === deletedMessage.roomName) {
+        let index = this.messages.findIndex(
+          (item) => item.id === deletedMessage.id
+        );
+
+        if (index > -1) {
+          this.messages[index] = new MessageDto({
+            ...this.messages[index],
+            content: "",
+            status: MessageStatuses.deleted,
+          });
+
+          if (index === this.messages.length - 1) {
+            this.updateLastMessageInConversationList(
+              new MessageDto({
+                ...this.messages[index],
+                content: deletedLastMessageContent,
+              })
+            );
+          }
+
+          this.messagesListRef.value?.requestUpdate();
+        } else {
+          this.updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
+            new MessageDto({
+              ...deletedMessage,
+              content: deletedLastMessageContent,
+            })
+          );
+        }
+      } else {
+        this.updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
+          new MessageDto({
+            ...deletedMessage,
+            content: deletedLastMessageContent,
+          })
+        );
+      }
     }
   }
 

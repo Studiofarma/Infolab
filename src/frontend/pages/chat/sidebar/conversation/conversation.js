@@ -12,6 +12,7 @@ import { BaseComponent } from "../../../../components/base-component";
 
 import "../../../../components/icon";
 import "../../../../components/button-icon";
+import { MessageStatuses } from "../../../../enums/message-statuses";
 
 class Conversation extends BaseComponent {
   static properties = {
@@ -207,11 +208,15 @@ class Conversation extends BaseComponent {
   formatLastMessageText() {
     let text = "";
     const lastMessage = this.conversation.lastMessage;
-    const content = lastMessage.content;
+    let content = lastMessage.content;
     const sender = lastMessage.sender;
     const description = this.conversation.description;
     const loggedUsername = this.cookie.username;
     const userDescription = this.lastMessageUser?.description;
+
+    if (lastMessage.status === MessageStatuses.deleted) {
+      content = "Questo messaggio è stato eliminato";
+    }
 
     if (content) {
       if (description !== "Generale") {
