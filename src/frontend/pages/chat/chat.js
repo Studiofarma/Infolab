@@ -14,6 +14,7 @@ import { TooltipTexts } from "../../enums/tooltip-texts";
 import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 import { MessageStatuses } from "../../enums/message-statuses";
 import { WebSocketMessageTypes } from "../../enums/websocket-message-types";
+import { GenericConstants } from "../../enums/generic-constants";
 
 import { ConversationDto } from "../../models/conversation-dto";
 import { BaseComponent } from "../../components/base-component";
@@ -827,8 +828,6 @@ export class Chat extends BaseComponent {
     } else if (message.type === WebSocketMessageTypes.delete) {
       let deletedMessage = new MessageDto(message.delete);
 
-      let deletedLastMessageContent = "Questo messaggio è stato eliminato";
-
       if (this.activeChatName === deletedMessage.roomName) {
         let index = this.messages.findIndex(
           (item) => item.id === deletedMessage.id
@@ -845,7 +844,7 @@ export class Chat extends BaseComponent {
             this.updateLastMessageInConversationList(
               new MessageDto({
                 ...this.messages[index],
-                content: deletedLastMessageContent,
+                content: GenericConstants.deletedMessageContent,
               })
             );
           }
@@ -855,7 +854,7 @@ export class Chat extends BaseComponent {
           this.updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
             new MessageDto({
               ...deletedMessage,
-              content: deletedLastMessageContent,
+              content: GenericConstants.deletedMessageContent,
             })
           );
         }
@@ -863,7 +862,7 @@ export class Chat extends BaseComponent {
         this.updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
           new MessageDto({
             ...deletedMessage,
-            content: deletedLastMessageContent,
+            content: GenericConstants.deletedMessageContent,
           })
         );
       }

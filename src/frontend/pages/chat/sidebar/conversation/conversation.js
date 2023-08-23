@@ -13,6 +13,7 @@ import { BaseComponent } from "../../../../components/base-component";
 import "../../../../components/icon";
 import "../../../../components/button-icon";
 import { MessageStatuses } from "../../../../enums/message-statuses";
+import { GenericConstants } from "../../../../enums/generic-constants";
 
 class Conversation extends BaseComponent {
   static properties = {
@@ -215,7 +216,7 @@ class Conversation extends BaseComponent {
     const userDescription = this.lastMessageUser?.description;
 
     if (lastMessage.status === MessageStatuses.deleted) {
-      content = "Questo messaggio è stato eliminato";
+      content = GenericConstants.deletedMessageContent;
     }
 
     if (content) {
