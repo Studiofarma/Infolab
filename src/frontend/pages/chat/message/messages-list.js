@@ -161,7 +161,9 @@ export class MessagesList extends LitElement {
       `[data-id="message-${message.id}"]`
     );
 
-    element.scrollIntoView();
+    if (element) {
+      element.scrollIntoView();
+    }
   }
 
   setInfiniteScrollIsLoadBlocked(value) {

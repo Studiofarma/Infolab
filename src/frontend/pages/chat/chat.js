@@ -90,13 +90,15 @@ export class Chat extends BaseComponent {
     this.createSocket();
   }
 
-  async updated(changedProperties) {
+  updated(changedProperties) {
     if (changedProperties.has("hasFetchedBeforeAndAfter")) {
       if (this.hasFetchedBeforeAndAfter === true && this.firstNotReadMessage) {
-        this.messagesListRef.value?.scrollMessageIntoView(
-          this.firstNotReadMessage
-        );
-        this.hasFetchedBeforeAndAfter = false;
+        window.requestAnimationFrame(() => {
+          this.messagesListRef.value?.scrollMessageIntoView(
+            this.firstNotReadMessage
+          );
+          this.hasFetchedBeforeAndAfter = false;
+        });
       }
     }
 
@@ -109,9 +111,9 @@ export class Chat extends BaseComponent {
           this.hasFetchedAfterDate = false;
         }
       } else {
-        await setTimeout(async () => {
+        window.requestAnimationFrame(() => {
           this.scrollToBottom();
-        }, 20);
+        });
       }
     }
   }
