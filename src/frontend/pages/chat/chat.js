@@ -364,6 +364,14 @@ export class Chat extends BaseComponent {
     this.conversationListRef.value?.updateLastMessage(message);
   }
 
+  updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
+    editedMessage
+  ) {
+    this.conversationListRef.value?.updateLastMessageIfItIsLastMessageOfConversation(
+      editedMessage
+    );
+  }
+
   multipleForward(event) {
     if (event.detail.list[0] == undefined) return;
 
@@ -443,18 +451,29 @@ export class Chat extends BaseComponent {
 
   confirmEdit(event) {
     let message = event.detail.message;
-    let index = event.detail.index;
 
-    this.messages[index] = new MessageDto({
-      ...message,
-      content: message.content,
-      status: MessageStatuses.edited,
+    let editedMessage = new WebSocketMessageDto({
+      type: WebSocketMessageTypes.edit,
+      edit: {
+        id: message.id,
+        content: message.content,
+        roomName: message.roomName,
+        sender: this.login.username,
+        timestamp: message.timestamp,
+      },
     });
 
-    if (index === this.messages.length - 1)
-      this.updateLastMessageInConversationList(message);
+    let activeChatName = this.formatActiveChatName(this.activeChatName);
 
-    this.messagesListRef.value?.requestUpdate();
+    if (this.stompClient) {
+      this.stompClient.send(
+        `/app/chat.edit${
+          activeChatName != "general" ? `.${activeChatName}` : ""
+        }`,
+        undefined,
+        JSON.stringify(editedMessage)
+      );
+    }
   }
 
   focusOnEditor() {
@@ -761,6 +780,35 @@ export class Chat extends BaseComponent {
 
       this.conversationListRef.value?.clearSearchInput();
       this.messageNotification(chatMessage);
+    } else if (message.type === WebSocketMessageTypes.edit) {
+      let editedMessage = new MessageDto(message.edit);
+
+      if (this.activeChatName === editedMessage.roomName) {
+        let index = this.messages.findIndex(
+          (item) => item.id === editedMessage.id
+        );
+
+        if (index > -1) {
+          this.messages[index] = new MessageDto({
+            ...this.messages[index],
+            content: editedMessage.content,
+            status: MessageStatuses.edited,
+          });
+
+          if (index === this.messages.length - 1)
+            this.updateLastMessageInConversationList(this.messages[index]);
+        } else {
+          this.updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
+            editedMessage
+          );
+        }
+      } else {
+        this.updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
+          editedMessage
+        );
+      }
+
+      this.messagesListRef.value?.requestUpdate();
     }
   }
 

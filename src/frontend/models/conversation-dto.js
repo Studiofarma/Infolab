@@ -9,6 +9,7 @@ export class ConversationDto {
   roomType = "";
   roomOrUser = "";
   lastMessage = {
+    id: 0,
     content: "",
     sender: {
       name: "",

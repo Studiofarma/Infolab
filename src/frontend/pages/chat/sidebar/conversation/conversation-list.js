@@ -553,6 +553,7 @@ class ConversationList extends BaseComponent {
     let lastMessageUser = this.getUserByUsername(message.sender);
 
     conversation.lastMessage = {
+      id: message.id,
       content: message.content,
       timestamp: message.timestamp,
       sender: {
@@ -574,6 +575,29 @@ class ConversationList extends BaseComponent {
     this.conversationList.sort(this.compareTimestamp);
 
     this.requestUpdate();
+  }
+
+  updateLastMessageIfItIsLastMessageOfConversation(message) {
+    let conversation = this.findConversationByRoomName(message.roomName);
+
+    let lastMessageUser = this.getUserByUsername(message.sender);
+
+    if (conversation.lastMessage.id === message.id) {
+      conversation.lastMessage = {
+        id: message.id,
+        content: message.content,
+        timestamp: message.timestamp,
+        sender: {
+          name: lastMessageUser.name,
+          id: lastMessageUser.id,
+          description: lastMessageUser.description,
+        },
+      };
+
+      this.conversationList.sort(this.compareTimestamp);
+
+      this.requestUpdate();
+    }
   }
 
   incrementUnreadMessageCounter(message) {
