@@ -52,7 +52,7 @@ public class RoomService {
         }
     }
 
-    public RoomEntity getDownloadInfoForRoom(RoomName roomName, Username username) {
+    public RoomEntity getDownloadInfoForRoom(RoomName roomName, Username username) throws IllegalArgumentException {
         return roomRepository.getDownloadInfoAsEmptyRoom(roomName, username);
     }
 

@@ -118,7 +118,12 @@ public class RoomApiController {
 
     @GetMapping(ROOMS_PATH + "/search/{roomName}")
     public RoomDto getRoomDownloadInfo(@PathVariable("roomName") String roomName, Principal principal) {
-        RoomEntity room = roomService.getDownloadInfoForRoom(RoomName.of(roomName), Username.of(principal.getName()));
+        RoomEntity room = RoomEntity.empty();
+        try {
+            room = roomService.getDownloadInfoForRoom(RoomName.of(roomName), Username.of(principal.getName()));
+        } catch (IllegalArgumentException e) {
+            log.error(e.getMessage());
+        }
 
         return FromEntitiesToDtosMapper.fromEntityToDto(room, principal.getName());
     }
