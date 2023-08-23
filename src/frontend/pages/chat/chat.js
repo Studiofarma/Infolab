@@ -47,7 +47,6 @@ export class Chat extends BaseComponent {
     activeChatName: { type: String },
     activeConversation: { type: ConversationDto },
     messages: { type: Array },
-    indexToBeDeleted: { type: Number },
     messageToBeDeleted: { type: MessageDto },
   };
 
@@ -434,7 +433,6 @@ export class Chat extends BaseComponent {
   }
 
   askDeletionConfirmation(event) {
-    this.indexToBeDeleted = event.detail.messageIndex;
     this.messageToBeDeleted = event.detail.messageToDelete;
     this.setDeletionConfirmationDialogRefIsOpened(true);
   }
