@@ -135,10 +135,15 @@ export class InputControls extends BaseComponent {
   clearMessage() {
     this.message = "";
     this.editorRef.value?.clearMessage();
+    this.saveMessageToLocalStorage();
   }
 
   focusEditor() {
     this.editorRef.value.focusEditor();
+  }
+
+  insertStoredTextInEditor() {
+    this.editorRef.value?.insertStoredTextInEditor();
   }
 
   insertEmoji(event) {
@@ -184,6 +189,10 @@ export class InputControls extends BaseComponent {
   updateMessage(event) {
     this.message = event.detail.content;
 
+    this.saveMessageToLocalStorage();
+  }
+
+  saveMessageToLocalStorage() {
     let cookie = CookieService.getCookie();
 
     localStorage.setItem(`message:${cookie.lastChat}`, this.message);

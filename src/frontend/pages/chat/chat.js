@@ -216,6 +216,7 @@ export class Chat extends BaseComponent {
                 .fetchMessagesAfterAndBeforeLastDownload}
               @il:conversation-changed=${(event) => {
                 this.setActiveChat(event);
+                this.insertStoredTextInEditor();
                 this.focusOnEditor(event);
                 this.firstNotReadMessage = null;
               }}
@@ -268,6 +269,7 @@ export class Chat extends BaseComponent {
                             @il:multiple-forwarded=${this.multipleForward}
                             @il:conversation-changed=${(event) => {
                               this.forwardMessage(event);
+                              this.insertStoredTextInEditor();
                               this.focusOnEditor(event);
                             }}
                           ></il-conversation-list>`
@@ -492,6 +494,10 @@ export class Chat extends BaseComponent {
 
   focusOnEditor() {
     this.inputControlsRef.value?.focusEditor();
+  }
+
+  insertStoredTextInEditor() {
+    this.inputControlsRef.value?.insertStoredTextInEditor();
   }
 
   async fetchMessagesLast(e) {
