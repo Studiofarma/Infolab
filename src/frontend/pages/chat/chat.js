@@ -220,6 +220,8 @@ export class Chat extends BaseComponent {
                 this.focusOnEditor(event);
                 this.firstNotReadMessage = null;
               }}
+              @il:conversation-is-going-to-change=${this
+                .ifIsEditingExitEditMode}
             ></il-conversation-list>
           </div>
 
@@ -272,6 +274,8 @@ export class Chat extends BaseComponent {
                               this.insertStoredTextInEditor();
                               this.focusOnEditor(event);
                             }}
+                            @il:conversation-is-going-to-change=${this
+                              .ifIsEditingExitEditMode}
                           ></il-conversation-list>`
                       )}
                     </div>
@@ -498,6 +502,10 @@ export class Chat extends BaseComponent {
 
   insertStoredTextInEditor() {
     this.inputControlsRef.value?.insertStoredTextInEditor();
+  }
+
+  ifIsEditingExitEditMode() {
+    this.inputControlsRef.value?.ifIsEditingExitEditMode();
   }
 
   async fetchMessagesLast(e) {

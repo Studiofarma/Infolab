@@ -135,7 +135,7 @@ export class InputControls extends BaseComponent {
   clearMessage() {
     this.message = "";
     this.editorRef.value?.clearMessage();
-    this.saveMessageToLocalStorage();
+    this.removeMessageFromLocalStorage();
   }
 
   focusEditor() {
@@ -198,6 +198,12 @@ export class InputControls extends BaseComponent {
     localStorage.setItem(`message:${cookie.lastChat}`, this.message);
   }
 
+  removeMessageFromLocalStorage() {
+    let cookie = CookieService.getCookie();
+
+    localStorage.removeItem(`message:${cookie.lastChat}`, this.message);
+  }
+
   editMessage(detail) {
     this.editorRef.value?.setEditorText(detail.message.content);
     this.isEditing = true;
@@ -235,6 +241,12 @@ export class InputControls extends BaseComponent {
     this.indexBeingEdited = undefined;
     this.clearMessage();
     this.focusEditor();
+  }
+
+  ifIsEditingExitEditMode() {
+    if (this.isEditing) {
+      this.handleEditCanceled();
+    }
   }
 }
 

@@ -415,6 +415,8 @@ class ConversationList extends BaseComponent {
   }
 
   changeRoom(event, conversation) {
+    this.dispatchEvent(new CustomEvent("il:conversation-is-going-to-change"));
+
     CookieService.setCookieByKey(
       CookieService.Keys.lastChat,
       conversation.roomName
