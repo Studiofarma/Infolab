@@ -14,6 +14,7 @@ import { TooltipTexts } from "../../enums/tooltip-texts";
 import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 import { MessageStatuses } from "../../enums/message-statuses";
 import { WebSocketMessageTypes } from "../../enums/websocket-message-types";
+import { GenericConstants } from "../../enums/generic-constants";
 
 import { ConversationDto } from "../../models/conversation-dto";
 import { BaseComponent } from "../../components/base-component";
@@ -47,6 +48,7 @@ export class Chat extends BaseComponent {
     activeChatName: { type: String },
     activeConversation: { type: ConversationDto },
     messages: { type: Array },
+    messageToBeDeleted: { type: MessageDto },
   };
 
   constructor() {
@@ -364,7 +366,7 @@ export class Chat extends BaseComponent {
     this.conversationListRef.value?.updateLastMessage(message);
   }
 
-  updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
+  updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
     editedMessage
   ) {
     this.conversationListRef.value?.updateLastMessageIfItIsLastMessageOfConversation(
@@ -432,16 +434,28 @@ export class Chat extends BaseComponent {
   }
 
   askDeletionConfirmation(event) {
-    this.indexToBeDeleted = event.detail.messageIndex;
+    this.messageToBeDeleted = event.detail.messageToDelete;
     this.setDeletionConfirmationDialogRefIsOpened(true);
   }
 
   deleteMessage() {
-    this.messages[this.indexToBeDeleted] = new MessageDto({
-      ...this.messages[this.indexToBeDeleted],
-      status: MessageStatuses.deleted,
+    let message = new WebSocketMessageDto({
+      type: WebSocketMessageTypes.delete,
+      delete: this.messageToBeDeleted,
     });
-    this.messagesListRef.value?.requestUpdate();
+
+    let activeChatName = this.formatActiveChatName(this.activeChatName);
+
+    if (this.stompClient) {
+      this.stompClient.send(
+        `/app/chat.delete${
+          activeChatName != "general" ? `.${activeChatName}` : ""
+        }`,
+        undefined,
+        JSON.stringify(message)
+      );
+    }
+
     this.setDeletionConfirmationDialogRefIsOpened(false);
   }
 
@@ -748,67 +762,122 @@ export class Chat extends BaseComponent {
 
   async onMessage(payload) {
     let message = new WebSocketMessageDto(JSON.parse(payload.body));
-
     if (message.type === WebSocketMessageTypes.chat) {
-      let chatMessage = new MessageDto(message.chat);
+      // CHAT
+      await this.manageChatMessageReceived(message);
+    } else if (message.type === WebSocketMessageTypes.edit) {
+      // EDIT
+      this.manageEditMessageReceived(message);
+    } else if (message.type === WebSocketMessageTypes.delete) {
+      // DELETE
+      this.manageDeleteMessageReceived(message);
+    }
+  }
 
-      if (chatMessage.content !== null) {
-        if (this.activeChatName == chatMessage.roomName) {
-          if (this.hasMorePrev === false) {
-            this.messages = [...this.messages, chatMessage];
-          } else {
-            // This means there are some not loaded messages more recent that those displayed.
-            let cookie = CookieService.getCookie();
+  async manageChatMessageReceived(message) {
+    let chatMessage = new MessageDto(message.chat);
 
-            if (chatMessage.sender === cookie.username) {
-              await this.scrollToBottomAndRefetch();
-            }
+    if (chatMessage.content !== null) {
+      if (this.activeChatName == chatMessage.roomName) {
+        if (this.hasMorePrev === false) {
+          this.messages = [...this.messages, chatMessage];
+        } else {
+          // This means there are some not loaded messages more recent that those displayed.
+          let cookie = CookieService.getCookie();
+
+          if (chatMessage.sender === cookie.username) {
+            await this.scrollToBottomAndRefetch();
           }
-        }
-
-        this.updateLastMessageInConversationList(chatMessage);
-
-        // set the message as unread:
-
-        if (this.login.username !== chatMessage.sender) {
-          // the counter won't be update if you are the sender
-          this.conversationListRef.value?.incrementUnreadMessageCounter(
-            chatMessage
-          );
         }
       }
 
-      this.conversationListRef.value?.clearSearchInput();
-      this.messageNotification(chatMessage);
-    } else if (message.type === WebSocketMessageTypes.edit) {
-      let editedMessage = new MessageDto(message.edit);
+      this.updateLastMessageInConversationList(chatMessage);
 
-      if (this.activeChatName === editedMessage.roomName) {
-        let index = this.messages.findIndex(
-          (item) => item.id === editedMessage.id
+      // set the message as unread:
+
+      if (this.login.username !== chatMessage.sender) {
+        // the counter won't be update if you are the sender
+        this.conversationListRef.value?.incrementUnreadMessageCounter(
+          chatMessage
         );
+      }
+    }
 
-        if (index > -1) {
-          this.messages[index] = new MessageDto({
-            ...this.messages[index],
-            content: editedMessage.content,
-            status: MessageStatuses.edited,
-          });
+    this.conversationListRef.value?.clearSearchInput();
+    this.messageNotification(chatMessage);
+  }
 
-          if (index === this.messages.length - 1)
-            this.updateLastMessageInConversationList(this.messages[index]);
-        } else {
-          this.updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
-            editedMessage
-          );
-        }
+  manageEditMessageReceived(message) {
+    let editedMessage = new MessageDto(message.edit);
+
+    if (this.activeChatName === editedMessage.roomName) {
+      let index = this.messages.findIndex(
+        (item) => item.id === editedMessage.id
+      );
+
+      if (index > -1) {
+        this.messages[index] = new MessageDto({
+          ...this.messages[index],
+          content: editedMessage.content,
+          status: MessageStatuses.edited,
+        });
+
+        if (index === this.messages.length - 1)
+          this.updateLastMessageInConversationList(this.messages[index]);
       } else {
-        this.updateEditedLastMessageIfItIsLastMessageOfConversationInConversationList(
+        this.updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
           editedMessage
         );
       }
+    } else {
+      this.updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
+        editedMessage
+      );
+    }
 
-      this.messagesListRef.value?.requestUpdate();
+    this.messagesListRef.value?.requestUpdate();
+  }
+
+  manageDeleteMessageReceived(message) {
+    let deletedMessage = new MessageDto(message.delete);
+
+    if (this.activeChatName === deletedMessage.roomName) {
+      let index = this.messages.findIndex(
+        (item) => item.id === deletedMessage.id
+      );
+
+      if (index > -1) {
+        this.messages[index] = new MessageDto({
+          ...this.messages[index],
+          content: "",
+          status: MessageStatuses.deleted,
+        });
+
+        if (index === this.messages.length - 1) {
+          this.updateLastMessageInConversationList(
+            new MessageDto({
+              ...this.messages[index],
+              content: GenericConstants.deletedMessageContent,
+            })
+          );
+        }
+
+        this.messagesListRef.value?.requestUpdate();
+      } else {
+        this.updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
+          new MessageDto({
+            ...deletedMessage,
+            content: GenericConstants.deletedMessageContent,
+          })
+        );
+      }
+    } else {
+      this.updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
+        new MessageDto({
+          ...deletedMessage,
+          content: GenericConstants.deletedMessageContent,
+        })
+      );
     }
   }
 
