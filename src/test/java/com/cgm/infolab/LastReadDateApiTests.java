@@ -89,11 +89,11 @@ public class LastReadDateApiTests {
 
         LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
-                message1Id.id());
+                message1Id.getId());
 
         LocalDateTime sentDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "sent_at"),
-                message1Id.id());
+                message1Id.getId());
 
         Assertions.assertTrue(readDate.isAfter(sentDate));
         Assertions.assertTrue(readDate.isBefore(LocalDateTime.now()));
@@ -109,11 +109,11 @@ public class LastReadDateApiTests {
 
         LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
-                message2Id.id());
+                message2Id.getId());
 
         LocalDateTime sentDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "sent_at"),
-                message2Id.id());
+                message2Id.getId());
 
         Assertions.assertTrue(readDate.isAfter(sentDate));
         Assertions.assertTrue(readDate.isBefore(LocalDateTime.now()));
@@ -123,7 +123,7 @@ public class LastReadDateApiTests {
         Assertions.assertThrows(EmptyResultDataAccessException.class,
                 () -> jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                         (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
-                        message5Id.id()));
+                        message5Id.getId()));
     }
 
     @Test
@@ -134,22 +134,22 @@ public class LastReadDateApiTests {
 
         LocalDateTime readDate1 = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
-                ids.get(0).id());
+                ids.get(0).getId());
 
         LocalDateTime sentDate1 = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "sent_at"),
-                ids.get(0).id());
+                ids.get(0).getId());
 
         Assertions.assertTrue(readDate1.isAfter(sentDate1));
         Assertions.assertTrue(readDate1.isBefore(LocalDateTime.now()));
 
         LocalDateTime readDate2 = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
-                ids.get(0).id());
+                ids.get(0).getId());
 
         LocalDateTime sentDate2 = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE id = ?",
                 (rs, rowNum) -> timestampMapper(rs, "sent_at"),
-                ids.get(0).id());
+                ids.get(0).getId());
 
         Assertions.assertTrue(readDate2.isAfter(sentDate2));
         Assertions.assertTrue(readDate2.isBefore(LocalDateTime.now()));
@@ -161,7 +161,7 @@ public class LastReadDateApiTests {
 
         Assertions.assertEquals(1, ids.size());
 
-        ids.add(IdDto.of(ids.get(0).id()));
+        ids.add(IdDto.of(ids.get(0).getId()));
 
         Assertions.assertEquals(2, ids.size());
 
@@ -170,7 +170,7 @@ public class LastReadDateApiTests {
         Assertions.assertDoesNotThrow(() -> { // if the result was of more than 1 object an exception would be thrown
             LocalDateTime readDate = jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
                     (rs, rowNum) -> timestampMapper(rs, "download_timestamp"),
-                    ids.get(0).id());
+                    ids.get(0).getId());
         });
     }
 
