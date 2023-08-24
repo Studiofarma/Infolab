@@ -19,7 +19,7 @@ public class CommandsApiController {
         this.chatService = chatService;
     }
 
-    @PostMapping("/api/commands/lastread")
+    @PostMapping(value = "/api/commands/lastread", consumes = {"application/json"})
     public void postLastReadDates(@RequestBody List<IdDto> messageIds, Principal principal) {
         chatService.addReadTimestampForMessages(Username.of(principal.getName()), messageIds);
     }

@@ -32,6 +32,7 @@ import "../../components/button-icon";
 import { WebSocketMessageDto } from "../../models/websocket-message-dto";
 import { MessageDto } from "../../models/message-dto";
 import { ConversationService } from "../../services/conversations-service";
+import { CommandsService } from "../../services/commands-service";
 
 export class Chat extends BaseComponent {
   static properties = {
@@ -795,6 +796,7 @@ export class Chat extends BaseComponent {
       if (this.activeChatName == chatMessage.roomName) {
         if (this.hasMorePrev === false) {
           this.messages = [...this.messages, chatMessage];
+          await CommandsService.setMessagesAsRead([chatMessage.id]);
         } else {
           // This means there are some not loaded messages more recent that those displayed.
           let cookie = CookieService.getCookie();
