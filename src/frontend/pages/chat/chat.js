@@ -32,6 +32,7 @@ import "../../components/button-icon";
 import { WebSocketMessageDto } from "../../models/websocket-message-dto";
 import { MessageDto } from "../../models/message-dto";
 import { ConversationService } from "../../services/conversations-service";
+import { CommandsService } from "../../services/commands-service";
 
 export class Chat extends BaseComponent {
   static properties = {
@@ -568,6 +569,14 @@ export class Chat extends BaseComponent {
         )
       ).reverse();
 
+      let ids = [];
+
+      this.messages.forEach((message) => {
+        ids.push(message.id);
+      });
+
+      CommandsService.setMessagesAsRead(ids);
+
       if (this.messages.length === MessagesService.pageSize) {
         this.hasMorePrev = true;
       }
@@ -641,9 +650,15 @@ export class Chat extends BaseComponent {
         await MessagesService.getPrevByRoomName(roomName, after)
       ).reverse();
 
+      let ids = [];
+      prevMessages.forEach((message) => {
+        ids.push(message.id);
+      });
+
       if (prevMessages.length === 0) {
         this.hasMorePrev = false;
       } else {
+        CommandsService.setMessagesAsRead(ids);
         this.messages = [...this.messages, ...prevMessages];
         this.hasFetchedNewMessages = true;
       }
@@ -712,6 +727,7 @@ export class Chat extends BaseComponent {
   async scrollToBottomAndRefetch() {
     if (this.hasMorePrev) {
       await this.fetchMessagesLast();
+      CommandsService.setAllMessagesAsRead();
     }
     this.scrollToBottom();
   }
@@ -802,6 +818,7 @@ export class Chat extends BaseComponent {
       if (this.activeChatName == chatMessage.roomName) {
         if (this.hasMorePrev === false) {
           this.messages = [...this.messages, chatMessage];
+          await CommandsService.setMessagesAsRead([chatMessage.id]);
         } else {
           // This means there are some not loaded messages more recent that those displayed.
           let cookie = CookieService.getCookie();

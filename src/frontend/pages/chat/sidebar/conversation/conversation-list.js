@@ -347,6 +347,31 @@ class ConversationList extends BaseComponent {
     }
   }
 
+  async updateConversation(conversation) {
+    if (
+      !this.isStartup &&
+      !this.isForwardList &&
+      conversation &&
+      conversation.unreadMessages > 0
+    ) {
+      try {
+        let downloadData = await ConversationService.getDownloadInfoByRoomName(
+          conversation.roomName
+        );
+        return {
+          ...conversation,
+          lastReadTimestamp: downloadData.lastReadTimestamp,
+          unreadMessages: downloadData.unreadMessages,
+        };
+      } catch (e) {
+        console.error(e);
+        return conversation;
+      }
+    } else {
+      return conversation;
+    }
+  }
+
   handleForward() {
     if (this.selectedChats.length === 1) {
       this.changeRoom(
@@ -419,7 +444,7 @@ class ConversationList extends BaseComponent {
     this.selectedRoom = { ...selected };
   }
 
-  changeRoom(event, conversation) {
+  async changeRoom(event, conversation) {
     this.dispatchEvent(new CustomEvent("il:conversation-is-going-to-change"));
 
     CookieService.setCookieByKey(
@@ -439,6 +464,8 @@ class ConversationList extends BaseComponent {
       JSON.stringify(this.findConversationByRoomName(conversation.roomName))
     );
 
+    let updatedConv = await this.updateConversation(conversation);
+
     this.dispatchEvent(
       new CustomEvent("il:conversation-changed", {
         detail: {
@@ -449,7 +476,7 @@ class ConversationList extends BaseComponent {
       })
     );
 
-    this.fetchMessages(conversation);
+    this.fetchMessages(updatedConv);
     this.clearSearchInput();
     this.requestUpdate();
   }

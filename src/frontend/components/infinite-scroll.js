@@ -55,7 +55,7 @@ export class InfiniteScroll extends LitElement {
     let offsetNext = 0;
     let offsetPrev = 0;
 
-    if (this.hasMoreNext && this.isReverse) {
+    if (this.isReverse) {
       offsetNext = e.target.scrollTop;
       offsetPrev =
         e.target.scrollHeight - e.target.clientHeight - e.target.scrollTop;
