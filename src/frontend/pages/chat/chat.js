@@ -588,6 +588,13 @@ export class Chat extends BaseComponent {
 
       this.requestUpdate("hasFetchedAfterDate", false);
 
+      if (e.detail.conversation) {
+        this.activeChatName = e.detail.conversation.roomName;
+        this.activeConversation = new ConversationDto({
+          ...e.detail.conversation,
+        });
+      }
+
       this.inputControlsRef?.value?.focusEditor();
     } else {
       this.fetchMessagesLast(e);
