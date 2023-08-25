@@ -116,6 +116,12 @@ export class Editor extends BaseComponent {
 
   focusEditor() {
     this.editorRef.value?.focus();
+    let selection = window.getSelection();
+    let range = document.createRange();
+    range.selectNodeContents(this.editorRef.value);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
   }
 
   insertStoredTextInEditor() {
