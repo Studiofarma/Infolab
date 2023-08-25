@@ -720,6 +720,7 @@ export class Chat extends BaseComponent {
   async scrollToBottomAndRefetch() {
     if (this.hasMorePrev) {
       await this.fetchMessagesLast();
+      CommandsService.setAllMessagesAsRead();
     }
     this.scrollToBottom();
   }

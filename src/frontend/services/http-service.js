@@ -56,7 +56,7 @@ export class HttpService {
   static async httpPost(url, data) {
     let cookie = CookieService.getCookie();
 
-    return axios({
+    let config = {
       url: url,
       method: "post",
       headers: {
@@ -67,7 +67,19 @@ export class HttpService {
         username: cookie.username,
         password: cookie.password,
       },
-      data: JSON.stringify(data),
-    });
+    };
+
+    if (data) {
+      config = {
+        ...config,
+        data: data,
+      };
+    }
+
+    return axios(config);
+  }
+
+  static async httpPostNoData(url) {
+    return HttpService.httpPost(url, null);
   }
 }
