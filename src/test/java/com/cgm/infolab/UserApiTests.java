@@ -10,8 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,6 +28,8 @@ public class UserApiTests {
     TestDbHelper testDbHelper;
     @Autowired
     TestApiHelper testApiHelper;
+    @Autowired
+    TestRestTemplate testRestTemplate;
 
     public UserEntity[] users =
             {UserEntity.of(0, Username.of("user0"), "user0 desc"),
@@ -87,5 +93,21 @@ public class UserApiTests {
         Assertions.assertEquals(5, responseBody.get(2).get("id"));
         Assertions.assertEquals("user5", responseBody.get(2).get("name"));
         Assertions.assertEquals("user5 desc", responseBody.get(2).get("description"));
+    }
+
+    @Test
+    void whenFetchingWithoutQueryParam_errorIsThrown() {
+        ResponseEntity<Object> response = testRestTemplate
+                .withBasicAuth("user1", "password1")
+                .getForEntity("/api/users", Object.class);
+
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void whenFetchingWithEmptyQueryParam_emptyListIsReturned() {
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/users?usernames=");
+
+        Assertions.assertEquals(0, responseBody.size());
     }
 }

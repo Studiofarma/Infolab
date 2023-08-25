@@ -23,14 +23,12 @@ import static com.cgm.infolab.controller.api.ApiConstants.*;
 public class UserApiController {
 
     private final UserService userService;
-    private final ApiHelper apiHelper; // TODO: remove if not used
     private final Logger log = LoggerFactory.getLogger(UserApiController.class);
 
 
     @Autowired
-    public UserApiController(UserService userService, ApiHelper apiHelper) {
+    public UserApiController(UserService userService) {
         this.userService = userService;
-        this.apiHelper = apiHelper;
     }
 
     @GetMapping("/api/users")
