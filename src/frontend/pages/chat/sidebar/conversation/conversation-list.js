@@ -80,10 +80,36 @@ class ConversationList extends BaseComponent {
   }
 
   async onLoad() {
-    await this.getAllUsers();
     await this.getNextRoomsFiltered();
     await this.updateLastOpenConversation();
     this.requestUpdate();
+  }
+
+  async updated(changedProperties) {
+    if (
+      changedProperties.has("conversationList") ||
+      changedProperties.has("newConversationList")
+    ) {
+      let ids = new Set();
+
+      if (changedProperties.has("conversationList")) {
+        this.conversationList.forEach((conversation) => {
+          if (conversation.roomType === "USER2USER") {
+            ids.add(conversation.otherParticipants[0].name);
+          }
+        });
+      }
+
+      if (changedProperties.has("newConversationList")) {
+        this.newConversationList.forEach((conversation) => {
+          if (conversation.roomType === "USER2USER") {
+            ids.add(conversation.otherParticipants[0].name);
+          }
+        });
+      }
+
+      if (ids.size > 0) await this.getAllUsers(Array.from(ids));
+    }
   }
 
   static styles = css`
@@ -564,9 +590,9 @@ class ConversationList extends BaseComponent {
     }
   }
 
-  async getAllUsers() {
+  async getAllUsers(usernames) {
     try {
-      this.usersList = await UsersService.getUsers(this.query);
+      this.usersList = await UsersService.getUsers(usernames);
     } catch (error) {
       console.error(error);
     }

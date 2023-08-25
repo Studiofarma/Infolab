@@ -37,15 +37,17 @@ export class MessagesList extends LitElement {
     this.messageBoxRef = createRef();
   }
 
-  updated(changedProperties) {
+  async updated(changedProperties) {
     if (changedProperties.has("messages")) {
       let ids = new Set();
 
       this.messages.forEach((message) => {
-        ids.add(message.sender);
+        if (message.sender !== this.cookie.username) {
+          ids.add(message.sender);
+        }
       });
 
-      this.getAllUsers(Array.from(ids));
+      if (ids.size > 0) await this.getAllUsers(Array.from(ids));
     }
   }
 
