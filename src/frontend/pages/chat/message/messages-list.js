@@ -41,9 +41,11 @@ export class MessagesList extends LitElement {
     if (changedProperties.has("messages")) {
       let usernames = new Set();
 
-      this.messages.forEach((message) => {
-        usernames.add(message.sender);
-      });
+      if (this.activeConversation?.roomType === "GROUP") {
+        this.messages.forEach((message) => {
+          usernames.add(message.sender);
+        });
+      }
 
       if (usernames.size > 0) await this.getAllUsers(Array.from(usernames));
     }
