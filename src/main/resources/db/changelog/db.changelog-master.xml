@@ -101,6 +101,6 @@
         <createIndex schemaName="infolab" tableName="download_dates" indexName="download_dates_message_id_index">
             <column name="message_id"/>
         </createIndex>
-        <addPrimaryKey schemaName="infolab" tableName="download_dates" columnNames="download_timestamp, username, message_id"/>
+        <addPrimaryKey schemaName="infolab" tableName="download_dates" columnNames="username, message_id"/>
     </changeSet>
 </databaseChangeLog>
