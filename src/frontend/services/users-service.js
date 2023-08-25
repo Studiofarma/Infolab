@@ -19,12 +19,16 @@ export class UsersService {
     if (sessionUsers) {
       let usernamesToFetch = [];
 
+      let alreadyPresentUsers = [];
+
       usernames.forEach((username) => {
         let index = sessionUsers.findIndex((user) => user.name === username);
 
         if (index === -1) {
           // The user is not present inside the sessionStorage so I will need to fetch it
           usernamesToFetch.push(username);
+        } else {
+          alreadyPresentUsers.push(sessionUsers[index]);
         }
       });
 
@@ -36,7 +40,7 @@ export class UsersService {
 
       sessionStorage.setItem(usersKey, JSON.stringify(allUsers));
 
-      users = allUsers;
+      users = [...alreadyPresentUsers, ...users];
     } else {
       users = await this.getUsersByUsernames(usernames);
 

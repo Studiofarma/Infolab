@@ -90,12 +90,12 @@ class ConversationList extends BaseComponent {
       changedProperties.has("conversationList") ||
       changedProperties.has("newConversationList")
     ) {
-      let ids = new Set();
+      let usernames = new Set();
 
       if (changedProperties.has("conversationList")) {
         this.conversationList.forEach((conversation) => {
           if (conversation.roomType === "USER2USER") {
-            ids.add(conversation.otherParticipants[0].name);
+            usernames.add(conversation.otherParticipants[0].name);
           }
         });
       }
@@ -103,12 +103,14 @@ class ConversationList extends BaseComponent {
       if (changedProperties.has("newConversationList")) {
         this.newConversationList.forEach((conversation) => {
           if (conversation.roomType === "USER2USER") {
-            ids.add(conversation.otherParticipants[0].name);
+            usernames.add(conversation.otherParticipants[0].name);
           }
         });
       }
 
-      if (ids.size > 0) await this.getAllUsers(Array.from(ids));
+      usernames.add(this.cookie.username);
+
+      if (usernames.size > 0) await this.getAllUsers(Array.from(usernames));
     }
   }
 
