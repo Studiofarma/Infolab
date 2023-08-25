@@ -569,6 +569,14 @@ export class Chat extends BaseComponent {
         )
       ).reverse();
 
+      let ids = [];
+
+      this.messages.forEach((message) => {
+        ids.push(message.id);
+      });
+
+      CommandsService.setMessagesAsRead(ids);
+
       if (this.messages.length === MessagesService.pageSize) {
         this.hasMorePrev = true;
       }
@@ -635,9 +643,15 @@ export class Chat extends BaseComponent {
         await MessagesService.getPrevByRoomName(roomName, after)
       ).reverse();
 
+      let ids = [];
+      prevMessages.forEach((message) => {
+        ids.push(message.id);
+      });
+
       if (prevMessages.length === 0) {
         this.hasMorePrev = false;
       } else {
+        CommandsService.setMessagesAsRead(ids);
         this.messages = [...this.messages, ...prevMessages];
         this.hasFetchedNewMessages = true;
       }

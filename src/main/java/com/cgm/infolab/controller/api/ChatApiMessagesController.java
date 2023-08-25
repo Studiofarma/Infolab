@@ -63,10 +63,6 @@ public class ChatApiMessagesController {
 
         if (!chatMessageEntities.isEmpty()) {
             chatMessageDtos = chatMessageEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToChatMessageDto).toList();
-            chatService.updateReadTimestamp(
-                    Username.of(principal.getName()),
-                    RoomName.of(roomName)
-            );
         } else {
             log.info("Non sono stati trovati messaggi nella room specificata");
         }
