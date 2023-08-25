@@ -61,59 +61,6 @@ public class UserRepository {
         }
     }
 
-    public List<UserEntity> getByUsernameWithLike(Username username) {
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put("similarUsername", username.value());
-        return queryUsers("username ILIKE :similarUsername || '%%'", "ORDER BY description ASC", arguments);
-    }
-
-    public List<UserEntity> getByUsernameWithLike(Username username, int pageSize, CursorEnum beforeOrAfter, String beforeOrAfterDescription) {
-        Map<String, Object> arguments = new HashMap<>();
-        arguments.put("similarUsername", username.value());
-        arguments.put("beforeOrAfterDescription", beforeOrAfterDescription);
-
-        // IMPORTANT NOTE: the ordering method (ASC or DESC) needs to be changed based on the
-        // cursor type (before or after) because if it was always ASC then page[before] would not work.
-        // This because the limit clause returns the first N results that satisfy the condition of being before the cursor.
-        // But if the ordering is ASC the first N records will be returned, not the closest ones to the cursor.
-        // ----------------------------------------
-        // Example: A B C D E F G. If I want to get 2 records before F then the set of records that are before the cursor
-        // are A B C D E. Limit takes the first 2 records of the result, so it will take A and B, but we want D and E.
-        // ----------------------------------------
-        // By switching ordering method this gets resolved.
-        String beforeOrAfterCondition;
-        String ascOrDesc;
-        if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
-            beforeOrAfterCondition = "<";
-            ascOrDesc = "DESC";
-        } else {
-            beforeOrAfterCondition = ">";
-            ascOrDesc = "ASC";
-        }
-
-        String beforeOrAfterQuery;
-        if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE) || beforeOrAfter.equals(CursorEnum.PAGE_AFTER)) {
-            beforeOrAfterQuery = "AND description %s :beforeOrAfterDescription".formatted(beforeOrAfterCondition);
-        } else {
-            beforeOrAfterQuery = "";
-        }
-
-        String limit = "";
-        if (pageSize >= 0) {
-            limit = "LIMIT :pageSize";
-            arguments.put("pageSize", pageSize);
-        }
-
-        List<UserEntity> userEntities = queryUsers("username ILIKE :similarUsername || '%%' %s".formatted(beforeOrAfterQuery),
-                "ORDER BY description %s %s".formatted(ascOrDesc, limit), arguments);
-
-        if (beforeOrAfter.equals(CursorEnum.PAGE_BEFORE)) {
-            Collections.reverse(userEntities);
-        }
-
-        return userEntities;
-    }
-
     private List<UserEntity> queryUsers(String where, String other, Map<String, ?> queryParams) {
         try {
             return getUserOrUsers()
