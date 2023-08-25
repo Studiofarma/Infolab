@@ -34,10 +34,10 @@ public class UserApiController {
     }
 
     @GetMapping("/api/users")
-    public List<UserDto> getUsers() {
+    public List<UserDto> getUsers(@RequestParam List<String> usernames) {
 
         List<UserDto> UserDtos = new ArrayList<>();
-        List<UserEntity> userEntities = new ArrayList<>(); // TODO: put here service method call
+        List<UserEntity> userEntities = userService.getUsersByUsernames(usernames.stream().map(Username::of).toList());
 
         if (!userEntities.isEmpty()) {
             UserDtos = userEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();

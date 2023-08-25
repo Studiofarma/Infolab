@@ -16,4 +16,8 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
+
+    public List<UserEntity> getUsersByUsernames(List<Username> usernames) {
+        return userRepository.getUsersByUsernames(usernames);
+    }
 }

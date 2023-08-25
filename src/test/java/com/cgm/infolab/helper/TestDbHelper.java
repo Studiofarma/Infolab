@@ -82,6 +82,10 @@ public class TestDbHelper {
                 "(?, ?, ?)", timestamp, message_id, username);
     }
 
+    public void insertCustomUser(long id, String username, String description) {
+        jdbcTemplate.update("INSERT INTO infolab.users (id, username, description) VALUES (?, ?, ?)", id, username, description);
+    }
+
     public List<ChatMessageEntity> getAllMessages() {
         return jdbcTemplate
                 .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, u_mex.description sender_description, r.id room_id, r.roomname roomname, r.visibility, m.sent_at, m.content, m.status " +

@@ -1,6 +1,5 @@
 package com.cgm.infolab.db.repository;
 
-import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
@@ -59,6 +58,15 @@ public class UserRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<UserEntity> getUsersByUsernames(List<Username> usernames) {
+        List<String> usernamesStrings = usernames.stream().map(Username::value).toList();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("usernames", usernamesStrings);
+
+        return queryUsers("username IN (:usernames)", "ORDER BY username ASC", params);
     }
 
     private List<UserEntity> queryUsers(String where, String other, Map<String, ?> queryParams) {
