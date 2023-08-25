@@ -15,6 +15,7 @@ const emojiPickerBottomOffset = 90;
 const enterKey = "Enter";
 
 import { BaseComponent } from "../../../components/base-component";
+import { CookieService } from "../../../services/cookie-service";
 
 export class InputControls extends BaseComponent {
   static properties = {
@@ -134,10 +135,15 @@ export class InputControls extends BaseComponent {
   clearMessage() {
     this.message = "";
     this.editorRef.value?.clearMessage();
+    this.removeMessageFromLocalStorage();
   }
 
   focusEditor() {
     this.editorRef.value.focusEditor();
+  }
+
+  insertStoredTextInEditor() {
+    this.editorRef.value?.insertStoredTextInEditor();
   }
 
   insertEmoji(event) {
@@ -182,6 +188,20 @@ export class InputControls extends BaseComponent {
 
   updateMessage(event) {
     this.message = event.detail.content;
+
+    this.saveMessageToLocalStorage();
+  }
+
+  saveMessageToLocalStorage() {
+    let cookie = CookieService.getCookie();
+
+    localStorage.setItem(`message:${cookie.lastChat}`, this.message);
+  }
+
+  removeMessageFromLocalStorage() {
+    let cookie = CookieService.getCookie();
+
+    localStorage.removeItem(`message:${cookie.lastChat}`, this.message);
   }
 
   editMessage(detail) {
@@ -221,6 +241,12 @@ export class InputControls extends BaseComponent {
     this.indexBeingEdited = undefined;
     this.clearMessage();
     this.focusEditor();
+  }
+
+  ifIsEditingExitEditMode() {
+    if (this.isEditing) {
+      this.handleEditCanceled();
+    }
   }
 }
 

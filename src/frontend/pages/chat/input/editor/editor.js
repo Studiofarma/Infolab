@@ -8,6 +8,7 @@ import { ThemeCSSVariables } from "../../../../enums/theme-css-variables";
 const enterKey = "Enter";
 
 import { BaseComponent } from "../../../../components/base-component";
+import { CookieService } from "../../../../services/cookie-service";
 
 export class Editor extends BaseComponent {
   static properties = {
@@ -115,6 +116,23 @@ export class Editor extends BaseComponent {
 
   focusEditor() {
     this.editorRef.value?.focus();
+    let selection = window.getSelection();
+    let range = document.createRange();
+    range.selectNodeContents(this.editorRef.value);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  insertStoredTextInEditor() {
+    const cookie = CookieService.getCookie();
+
+    const textFromStorage = localStorage.getItem(`message:${cookie.lastChat}`);
+    const text = textFromStorage ? textFromStorage : "";
+
+    this.editorRef.value.textContent = text;
+
+    this.textChanged();
   }
 
   onInput() {

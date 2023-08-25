@@ -330,15 +330,20 @@ class ConversationList extends BaseComponent {
     let conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
 
     if (this.isStartup && !this.isForwardList && conversation) {
-      let downloadData = await ConversationService.getDownloadInfoByRoomName(
-        conversation.roomName
-      );
+      try {
+        let downloadData = await ConversationService.getDownloadInfoByRoomName(
+          conversation.roomName
+        );
 
-      this.conversationOpenBeforeQuit = {
-        ...conversation,
-        lastReadTimestamp: downloadData.lastReadTimestamp,
-        unreadMessages: downloadData.unreadMessages,
-      };
+        this.conversationOpenBeforeQuit = {
+          ...conversation,
+          lastReadTimestamp: downloadData.lastReadTimestamp,
+          unreadMessages: downloadData.unreadMessages,
+        };
+      } catch (e) {
+        console.error(e);
+        this.conversationOpenBeforeQuit = conversation;
+      }
     }
   }
 
@@ -415,6 +420,8 @@ class ConversationList extends BaseComponent {
   }
 
   changeRoom(event, conversation) {
+    this.dispatchEvent(new CustomEvent("il:conversation-is-going-to-change"));
+
     CookieService.setCookieByKey(
       CookieService.Keys.lastChat,
       conversation.roomName
