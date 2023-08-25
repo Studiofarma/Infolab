@@ -3,40 +3,45 @@ import { CookieService } from "./cookie-service";
 import { HttpService } from "./http-service";
 
 const loggedUserKey = "logged-user";
+const usersKey = "users";
 
 export class UsersService {
   static cookie = CookieService.getCookie();
 
-  static async getUsers(query) {
-    let users = await HttpService.httpGetWithHeaders(
-      `/api/users?user=${query}`,
-      {
-        "X-Requested-With": "XMLHttpRequest",
-      }
-    );
+  /**
+   * @param {Array} usernames an array of usernames as string values
+   */
+  static async getUsers(usernames) {
+    let users;
 
-    // #region Mock data
-    // TODO: remove this region when data comes from BE
-    users.data.forEach((user, index) => {
-      user.status = index % 2 === 0 ? "online" : "offline";
-    });
+    let sessionUsers = JSON.parse(sessionStorage.getItem(usersKey));
 
-    users.data.forEach((user) => {
-      user.avatarLink = "";
-    });
-    // #endregion
+    if (sessionUsers) {
+      let usernamesToFetch = [];
 
-    if (query !== "") {
-      users.data = users.data.filter((user) =>
-        user.description.includes(query)
-      );
+      usernames.forEach((username) => {
+        let index = sessionUsers.findIndex((user) => user.name === username);
+
+        if (index === -1) {
+          // The user is not present inside the sessionStorage so I will need to fetch it
+          usernamesToFetch.push(username);
+        }
+      });
+
+      users = await this.getUsersByUsernames(usernamesToFetch);
+
+      let allUsers = [...sessionUsers, ...users];
+
+      sessionStorage.setItem(usersKey, allUsers);
+
+      users = allUsers;
+    } else {
+      users = await this.getUsersByUsernames(usernames);
+
+      sessionStorage.setItem(usersKey, users);
     }
 
-    users.data = users.data.map((user) => {
-      return new UserDto(user);
-    });
-
-    return users.data;
+    return users;
   }
 
   static async getLoggedUser() {
@@ -74,7 +79,7 @@ export class UsersService {
 
   /**
    *
-   * @param {Array} usernames
+   * @param {Array} usernames an array of usernames as string values
    */
   static async getUsersByUsernames(usernames) {
     if (usernames.length === 0)
