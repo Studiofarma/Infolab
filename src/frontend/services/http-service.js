@@ -47,4 +47,39 @@ export class HttpService {
       },
     });
   }
+
+  /**
+   *
+   * @param {Object} data must be a standard javascript object. It will be serialized to json automatically.
+   * @returns
+   */
+  static async httpPost(url, data) {
+    let cookie = CookieService.getCookie();
+
+    let config = {
+      url: url,
+      method: "post",
+      headers: {
+        "X-CSRF-TOKEN": cookie.token,
+        "Content-Type": "application/json",
+      },
+      auth: {
+        username: cookie.username,
+        password: cookie.password,
+      },
+    };
+
+    if (data) {
+      config = {
+        ...config,
+        data: data,
+      };
+    }
+
+    return axios(config);
+  }
+
+  static async httpPostNoData(url) {
+    return HttpService.httpPost(url, null);
+  }
 }

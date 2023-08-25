@@ -102,7 +102,7 @@ public class ChatService {
     }
 
     public int addReadTimestampForMessages(Username user, List<IdDto> messageIds) {
-        List<Long> ids = messageIds.stream().map(IdDto::id).toList();
+        List<Long> ids = messageIds.stream().map(IdDto::getId).toList();
         return downloadDateRepository.addDownloadDateToMessages(user, ids);
     }
 
