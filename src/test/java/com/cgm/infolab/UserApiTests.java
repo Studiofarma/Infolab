@@ -78,7 +78,7 @@ public class UserApiTests {
 
     @Test
     void whenFetchingMultipleUsernames_correctUsersAreReturned() {
-        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/users?usernames=user0,user4,user5");
+        List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/users?usernames=user0,user4,user5,");
 
         Assertions.assertEquals(3, responseBody.size());
 

@@ -51,7 +51,7 @@ export class UsersService {
     } else {
       let usersList;
       try {
-        usersList = await UsersService.getUsers("");
+        usersList = await UsersService.getUsersByUsernames([cookie.username]);
       } catch (error) {
         console.error(error);
       }
@@ -70,5 +70,37 @@ export class UsersService {
 
   static setUserAvatar(imageBlob) {
     // TODO: implementare la chiamata
+  }
+
+  /**
+   *
+   * @param {Array} usernames
+   */
+  static async getUsersByUsernames(usernames) {
+    if (usernames.length === 0)
+      throw Error("Empty array provided as parameter.");
+
+    let queryString = usernames.toString();
+
+    let users = await HttpService.httpGet(
+      `/api/users?usernames=${queryString}`
+    );
+
+    // #region Mock data
+    // TODO: remove this region when data comes from BE
+    users.data.forEach((user, index) => {
+      user.status = index % 2 === 0 ? "online" : "offline";
+    });
+
+    users.data.forEach((user) => {
+      user.avatarLink = "";
+    });
+    // #endregion
+
+    users.data = users.data.map((user) => {
+      return new UserDto(user);
+    });
+
+    return users.data;
   }
 }
