@@ -12,7 +12,7 @@ export class UsersService {
    * @param {Array} usernames an array of usernames as string values
    */
   static async getUsers(usernames) {
-    let users;
+    let users = [];
 
     let sessionUsers = JSON.parse(sessionStorage.getItem(usersKey));
 
@@ -28,17 +28,19 @@ export class UsersService {
         }
       });
 
-      users = await this.getUsersByUsernames(usernamesToFetch);
+      if (usernamesToFetch.length !== 0) {
+        users = await this.getUsersByUsernames(usernamesToFetch);
+      }
 
       let allUsers = [...sessionUsers, ...users];
 
-      sessionStorage.setItem(usersKey, allUsers);
+      sessionStorage.setItem(usersKey, JSON.stringify(allUsers));
 
       users = allUsers;
     } else {
       users = await this.getUsersByUsernames(usernames);
 
-      sessionStorage.setItem(usersKey, users);
+      sessionStorage.setItem(usersKey, JSON.stringify(users));
     }
 
     return users;
