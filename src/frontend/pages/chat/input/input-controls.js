@@ -115,6 +115,7 @@ export class InputControls extends BaseComponent {
               @il:edit-confirmed=${this.confirmEdit}
               @il:edit-canceled=${this.handleEditCanceled}
               @il:editor-mode-changed=${this.changeEditorMode}
+              @il:text-formatted=${this.handleFormatText}
               .editor=${this.editorRef}
               .isEditing=${this.isEditing}
             >
@@ -139,7 +140,11 @@ export class InputControls extends BaseComponent {
   }
 
   focusEditor() {
-    this.editorRef.value.focusEditor();
+    this.editorRef.value?.focusEditor();
+  }
+
+  focusEditorAndMoveCaretToEnd() {
+    this.editorRef.value?.focusEditorAndMoveCaretToEnd();
   }
 
   insertStoredTextInEditor() {
@@ -209,7 +214,7 @@ export class InputControls extends BaseComponent {
     this.isEditing = true;
     this.messageBeingEdited = detail.message;
     this.indexBeingEdited = detail.messageIndex;
-    this.focusEditor();
+    this.focusEditorAndMoveCaretToEnd();
   }
 
   changeEditorMode(event) {
@@ -232,7 +237,7 @@ export class InputControls extends BaseComponent {
     this.messageBeingEdited = {};
     this.indexBeingEdited = undefined;
     this.clearMessage();
-    this.focusEditor();
+    this.focusEditorAndMoveCaretToEnd();
   }
 
   handleEditCanceled() {
@@ -240,13 +245,29 @@ export class InputControls extends BaseComponent {
     this.messageBeingEdited = {};
     this.indexBeingEdited = undefined;
     this.clearMessage();
+    this.focusEditorAndMoveCaretToEnd();
+  }
+
+  handleFormatText(e) {
+    console.log(e);
+    this.allowInsertionInEditor();
+    document.execCommand(e.detail.command, false);
     this.focusEditor();
+    this.blockInsertionInEditor();
   }
 
   ifIsEditingExitEditMode() {
     if (this.isEditing) {
       this.handleEditCanceled();
     }
+  }
+
+  allowInsertionInEditor() {
+    this.editorRef.value?.setIsKeyDown(true);
+  }
+
+  blockInsertionInEditor() {
+    this.editorRef.value?.setIsKeyDown(false);
   }
 }
 

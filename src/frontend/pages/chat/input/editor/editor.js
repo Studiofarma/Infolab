@@ -114,14 +114,18 @@ export class Editor extends BaseComponent {
     this.isKeyDown = false;
   }
 
-  focusEditor() {
-    this.editorRef.value?.focus();
+  focusEditorAndMoveCaretToEnd() {
+    this.focusEditor();
     let selection = window.getSelection();
     let range = document.createRange();
     range.selectNodeContents(this.editorRef.value);
     range.collapse(false);
     selection.removeAllRanges();
     selection.addRange(range);
+  }
+
+  focusEditor() {
+    this.editorRef.value?.focus();
   }
 
   insertStoredTextInEditor() {
@@ -176,6 +180,10 @@ export class Editor extends BaseComponent {
 
   setEditorText(text) {
     this.editorRef.value.innerHTML = text;
+  }
+
+  setIsKeyDown(value) {
+    this.isKeyDown = value;
   }
 }
 

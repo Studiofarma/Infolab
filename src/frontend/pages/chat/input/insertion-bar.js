@@ -61,6 +61,11 @@ export class InsertionBar extends LitElement {
             this.areFormattingButtonsOpen,
             () =>
               html`<il-editor-formatting-buttons
+                @il:text-formatted=${(e) => {
+                  this.dispatchEvent(
+                    new CustomEvent(e.type, { detail: e.detail })
+                  );
+                }}
                 .editor=${this.editor}
               ></il-editor-formatting-buttons>`
           )}

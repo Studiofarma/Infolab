@@ -63,8 +63,16 @@ export class EditorFormattingButtons extends LitElement {
   }
 
   formatText(command) {
-    document.execCommand(command, false);
-    this.editor.value.focusEditor();
+    this.dispatchEvent(
+      new CustomEvent("il:text-formatted", {
+        detail: {
+          command: command,
+        },
+      })
+    );
+
+    // document.execCommand(command, false);
+    // this.editor.value.focusEditor();
   }
 }
 customElements.define("il-editor-formatting-buttons", EditorFormattingButtons);
