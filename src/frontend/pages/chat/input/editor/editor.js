@@ -25,14 +25,8 @@ export class Editor extends BaseComponent {
   }
 
   static styles = css`
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      ${ThemeColorService.getThemeVariables()};
-    }
-
     #editor {
+      ${ThemeColorService.getThemeVariables()};
       color: ${ThemeCSSVariables.text};
       background-color: ${ThemeCSSVariables.editorInputBg};
       flex: 1;
@@ -114,8 +108,8 @@ export class Editor extends BaseComponent {
     this.isKeyDown = false;
   }
 
-  focusEditor() {
-    this.editorRef.value?.focus();
+  focusEditorAndMoveCaretToEnd() {
+    this.focusEditor();
     let selection = window.getSelection();
     let range = document.createRange();
     range.selectNodeContents(this.editorRef.value);
@@ -124,13 +118,17 @@ export class Editor extends BaseComponent {
     selection.addRange(range);
   }
 
+  focusEditor() {
+    this.editorRef.value?.focus();
+  }
+
   insertStoredTextInEditor() {
     const cookie = CookieService.getCookie();
 
     const textFromStorage = localStorage.getItem(`message:${cookie.lastChat}`);
     const text = textFromStorage ? textFromStorage : "";
 
-    this.editorRef.value.textContent = text;
+    this.editorRef.value.innerHTML = text;
 
     this.textChanged();
   }
@@ -176,6 +174,10 @@ export class Editor extends BaseComponent {
 
   setEditorText(text) {
     this.editorRef.value.innerHTML = text;
+  }
+
+  setIsKeyDown(value) {
+    this.isKeyDown = value;
   }
 }
 

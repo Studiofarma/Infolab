@@ -218,7 +218,7 @@ export class Chat extends BaseComponent {
               @il:conversation-changed=${(event) => {
                 this.setActiveChat(event);
                 this.insertStoredTextInEditor();
-                this.focusOnEditor(event);
+                this.focusEditorAndMoveCaretToEnd(event);
                 this.firstNotReadMessage = null;
               }}
               @il:conversation-is-going-to-change=${this
@@ -273,7 +273,7 @@ export class Chat extends BaseComponent {
                             @il:conversation-changed=${(event) => {
                               this.forwardMessage(event);
                               this.insertStoredTextInEditor();
-                              this.focusOnEditor(event);
+                              this.focusEditorAndMoveCaretToEnd(event);
                             }}
                             @il:conversation-is-going-to-change=${this
                               .ifIsEditingExitEditMode}
@@ -497,8 +497,8 @@ export class Chat extends BaseComponent {
     }
   }
 
-  focusOnEditor() {
-    this.inputControlsRef.value?.focusEditor();
+  focusEditorAndMoveCaretToEnd() {
+    this.inputControlsRef.value?.focusEditorAndMoveCaretToEnd();
   }
 
   insertStoredTextInEditor() {
@@ -532,7 +532,7 @@ export class Chat extends BaseComponent {
         ...e.detail.conversation,
       });
 
-      this.inputControlsRef?.value?.focusEditor();
+      this.focusEditorAndMoveCaretToEnd();
     }
   }
 
@@ -595,7 +595,7 @@ export class Chat extends BaseComponent {
         });
       }
 
-      this.inputControlsRef?.value?.focusEditor();
+      this.focusEditorAndMoveCaretToEnd();
     } else {
       this.fetchMessagesLast(e);
     }
