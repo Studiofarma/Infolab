@@ -92,21 +92,17 @@ class ConversationList extends BaseComponent {
     ) {
       let usernames = new Set();
 
-      if (changedProperties.has("conversationList")) {
-        this.conversationList.forEach((conversation) => {
-          if (conversation.roomType === "USER2USER") {
-            usernames.add(conversation.otherParticipants[0].name);
-          }
-        });
-      }
+      this.conversationList.forEach((conversation) => {
+        if (conversation.roomType === "USER2USER") {
+          usernames.add(conversation.otherParticipants[0].name);
+        }
+      });
 
-      if (changedProperties.has("newConversationList")) {
-        this.newConversationList.forEach((conversation) => {
-          if (conversation.roomType === "USER2USER") {
-            usernames.add(conversation.otherParticipants[0].name);
-          }
-        });
-      }
+      this.newConversationList.forEach((conversation) => {
+        if (conversation.roomType === "USER2USER") {
+          usernames.add(conversation.otherParticipants[0].name);
+        }
+      });
 
       usernames.add(this.cookie.username);
 
