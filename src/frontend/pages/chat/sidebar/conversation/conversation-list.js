@@ -80,10 +80,38 @@ class ConversationList extends BaseComponent {
   }
 
   async onLoad() {
-    await this.getAllUsers();
     await this.getNextRoomsFiltered();
     await this.updateLastOpenConversation();
     this.requestUpdate();
+  }
+
+  async updated(changedProperties) {
+    if (
+      changedProperties.has("conversationList") ||
+      changedProperties.has("newConversationList")
+    ) {
+      let usernames = new Set();
+
+      if (changedProperties.has("conversationList")) {
+        this.conversationList.forEach((conversation) => {
+          if (conversation.roomType === "USER2USER") {
+            usernames.add(conversation.otherParticipants[0].name);
+          }
+        });
+      }
+
+      if (changedProperties.has("newConversationList")) {
+        this.newConversationList.forEach((conversation) => {
+          if (conversation.roomType === "USER2USER") {
+            usernames.add(conversation.otherParticipants[0].name);
+          }
+        });
+      }
+
+      usernames.add(this.cookie.username);
+
+      if (usernames.size > 0) await this.getAllUsers(Array.from(usernames));
+    }
   }
 
   static styles = css`
@@ -233,10 +261,7 @@ class ConversationList extends BaseComponent {
       (pharmacy) => {
         let conversation = new ConversationDto(pharmacy);
 
-        let conversationUser = this.findUser(
-          this.conversationList,
-          conversation
-        );
+        let conversationUser = this.getOtherUserInRoom(conversation);
 
         let lastMessageUser = conversation.lastMessage.sender;
 
@@ -277,10 +302,7 @@ class ConversationList extends BaseComponent {
       (pharmacy) => {
         let conversation = new ConversationDto(pharmacy);
 
-        let conversationUser = this.findUser(
-          this.newConversationList,
-          conversation
-        );
+        let conversationUser = this.getOtherUserInRoom(conversation);
 
         let lastMessageUser = conversation.lastMessage.sender;
 
@@ -481,15 +503,6 @@ class ConversationList extends BaseComponent {
     this.requestUpdate();
   }
 
-  getOtherUserInRoom(conversation) {
-    let username = this.extractUsername(conversation.roomName);
-
-    let userIndex = this.usersList.findIndex((user) => user.name == username);
-    if (userIndex < 0) return undefined;
-
-    return this.usersList[userIndex];
-  }
-
   setQueryString(event) {
     this.query = event.detail.query;
     this.selectedRoom = "";
@@ -564,9 +577,9 @@ class ConversationList extends BaseComponent {
     }
   }
 
-  async getAllUsers() {
+  async getAllUsers(usernames) {
     try {
-      this.usersList = await UsersService.getUsers(this.query);
+      this.usersList = await UsersService.getUsers(usernames);
     } catch (error) {
       console.error(error);
     }
@@ -581,10 +594,10 @@ class ConversationList extends BaseComponent {
     });
   }
 
-  updateLastMessage(message) {
+  async updateLastMessage(message) {
     let conversation = this.findConversationByRoomName(message.roomName);
 
-    let lastMessageUser = this.getUserByUsername(message.sender);
+    let lastMessageUser = (await UsersService.getUsers([message.sender]))[0];
 
     conversation.lastMessage = {
       id: message.id,
@@ -611,10 +624,10 @@ class ConversationList extends BaseComponent {
     this.requestUpdate();
   }
 
-  updateLastMessageIfItIsLastMessageOfConversation(message) {
+  async updateLastMessageIfItIsLastMessageOfConversation(message) {
     let conversation = this.findConversationByRoomName(message.roomName);
 
-    let lastMessageUser = this.getUserByUsername(message.sender);
+    let lastMessageUser = (await UsersService.getUsers([message.sender]))[0];
 
     if (conversation.lastMessage.id === message.id) {
       conversation.lastMessage = {
@@ -709,25 +722,14 @@ class ConversationList extends BaseComponent {
     return timestampB - timestampA;
   }
 
-  findUser(list, conversation) {
-    // TODO: semplificare quando arriverà dal backend (questo fa un giro assurdo perché nelle room non ci sono gli utenti che le compongono)
-    let convIndex = list.findIndex((elem) => {
-      return elem.roomName === conversation.roomName;
-    });
+  getOtherUserInRoom(conversation) {
+    if (!conversation.otherParticipants[0]) {
+      return;
+    }
 
-    let roomName = list[convIndex].roomName;
+    let username = conversation.otherParticipants[0].name;
 
-    let username = this.extractUsername(roomName);
-
-    let userIndex = this.usersList.findIndex((elem) => elem.name === username);
-
-    return this.usersList[userIndex];
-  }
-
-  extractUsername(roomName) {
-    let cookie = CookieService.getCookie();
-    let usernames = roomName.split("-");
-    return usernames.filter((elem) => elem !== cookie.username)[0];
+    return this.getUserByUsername(username);
   }
 
   handleConversationClick(e, conversation) {

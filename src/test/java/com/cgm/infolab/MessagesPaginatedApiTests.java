@@ -16,11 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -35,8 +33,6 @@ public class MessagesPaginatedApiTests {
     TestApiHelper testApiHelper;
     @Autowired
     TestRestTemplate testRestTemplate;
-    @Autowired
-    JdbcTemplate jdbcTemplate;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -144,7 +140,7 @@ public class MessagesPaginatedApiTests {
                 "user1", "password1").getForEntity("/api/messages/general?page[before]=%s&page[after]=%s".formatted(stringDateBefore, stringDateAfter),
                 Object.class);
 
-        Assertions.assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test

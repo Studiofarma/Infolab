@@ -3,40 +3,51 @@ import { CookieService } from "./cookie-service";
 import { HttpService } from "./http-service";
 
 const loggedUserKey = "logged-user";
+const usersKey = "users";
 
 export class UsersService {
   static cookie = CookieService.getCookie();
 
-  static async getUsers(query) {
-    let users = await HttpService.httpGetWithHeaders(
-      `/api/users?user=${query}`,
-      {
-        "X-Requested-With": "XMLHttpRequest",
+  /**
+   * @param {Array} usernames an array of usernames as string values
+   */
+  static async getUsers(usernames) {
+    let users = [];
+
+    let sessionUsers = JSON.parse(sessionStorage.getItem(usersKey));
+
+    if (sessionUsers) {
+      let usernamesToFetch = [];
+
+      let alreadyPresentUsers = [];
+
+      usernames.forEach((username) => {
+        let index = sessionUsers.findIndex((user) => user.name === username);
+
+        if (index === -1) {
+          // The user is not present inside the sessionStorage so I will need to fetch it
+          usernamesToFetch.push(username);
+        } else {
+          alreadyPresentUsers.push(sessionUsers[index]);
+        }
+      });
+
+      if (usernamesToFetch.length !== 0) {
+        users = await this.getUsersByUsernames(usernamesToFetch);
       }
-    );
 
-    // #region Mock data
-    // TODO: remove this region when data comes from BE
-    users.data.forEach((user, index) => {
-      user.status = index % 2 === 0 ? "online" : "offline";
-    });
+      let allUsers = [...sessionUsers, ...users];
 
-    users.data.forEach((user) => {
-      user.avatarLink = "";
-    });
-    // #endregion
+      sessionStorage.setItem(usersKey, JSON.stringify(allUsers));
 
-    if (query !== "") {
-      users.data = users.data.filter((user) =>
-        user.description.includes(query)
-      );
+      users = [...alreadyPresentUsers, ...users];
+    } else {
+      users = await this.getUsersByUsernames(usernames);
+
+      sessionStorage.setItem(usersKey, JSON.stringify(users));
     }
 
-    users.data = users.data.map((user) => {
-      return new UserDto(user);
-    });
-
-    return users.data;
+    return users;
   }
 
   static async getLoggedUser() {
@@ -51,7 +62,7 @@ export class UsersService {
     } else {
       let usersList;
       try {
-        usersList = await UsersService.getUsers("");
+        usersList = await UsersService.getUsersByUsernames([cookie.username]);
       } catch (error) {
         console.error(error);
       }
@@ -70,5 +81,37 @@ export class UsersService {
 
   static setUserAvatar(imageBlob) {
     // TODO: implementare la chiamata
+  }
+
+  /**
+   *
+   * @param {Array} usernames an array of usernames as string values
+   */
+  static async getUsersByUsernames(usernames) {
+    if (usernames.length === 0)
+      throw Error("Empty array provided as parameter.");
+
+    let queryString = usernames.toString();
+
+    let users = await HttpService.httpGet(
+      `/api/users?usernames=${queryString}`
+    );
+
+    // #region Mock data
+    // TODO: remove this region when data comes from BE
+    users.data.forEach((user, index) => {
+      user.status = index % 2 === 0 ? "online" : "offline";
+    });
+
+    users.data.forEach((user) => {
+      user.avatarLink = "";
+    });
+    // #endregion
+
+    users.data = users.data.map((user) => {
+      return new UserDto(user);
+    });
+
+    return users.data;
   }
 }

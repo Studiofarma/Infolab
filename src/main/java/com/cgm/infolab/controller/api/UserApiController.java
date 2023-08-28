@@ -23,30 +23,19 @@ import static com.cgm.infolab.controller.api.ApiConstants.*;
 public class UserApiController {
 
     private final UserService userService;
-    private final ApiHelper apiHelper;
     private final Logger log = LoggerFactory.getLogger(UserApiController.class);
 
 
     @Autowired
-    public UserApiController(UserService userService, ApiHelper apiHelper) {
+    public UserApiController(UserService userService) {
         this.userService = userService;
-        this.apiHelper = apiHelper;
     }
 
     @GetMapping("/api/users")
-    public List<UserDto> getUsername(@RequestParam("user") String user,
-                                     @RequestParam(required = false, name = PAGE_SIZE_API_NAME) @Min(1) @Max(15) Integer pageSize,
-                                     @RequestParam(required = false, name = PAGE_BEFORE_API_NAME) String pageBefore,
-                                     @RequestParam(required = false, name = PAGE_AFTER_API_NAME) String pageAfter) {
-
-        if (pageBefore != null && pageAfter != null) {
-            apiHelper.throwOnRangePagination();
-        }
-
-        if (pageSize == null) pageSize = -1;
+    public List<UserDto> getUsers(@RequestParam List<String> usernames) {
 
         List<UserDto> UserDtos = new ArrayList<>();
-        List<UserEntity> userEntities = userService.getUsersPaginatedWithLike(pageSize, pageBefore, pageAfter, Username.of(user));
+        List<UserEntity> userEntities = userService.getUsersByUsernames(usernames.stream().map(Username::of).toList());
 
         if (!userEntities.isEmpty()) {
             UserDtos = userEntities.stream().map(FromEntitiesToDtosMapper::fromEntityToDto).toList();

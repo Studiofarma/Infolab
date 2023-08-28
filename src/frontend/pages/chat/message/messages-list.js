@@ -33,10 +33,22 @@ export class MessagesList extends LitElement {
 
     this.hasMoreNext = true;
 
-    this.getAllUsers();
-
     // Refs
     this.messageBoxRef = createRef();
+  }
+
+  async updated(changedProperties) {
+    if (changedProperties.has("messages")) {
+      let usernames = new Set();
+
+      if (this.activeConversation?.roomType === "GROUP") {
+        this.messages.forEach((message) => {
+          usernames.add(message.sender);
+        });
+      }
+
+      if (usernames.size > 0) await this.getAllUsers(Array.from(usernames));
+    }
   }
 
   static styles = css`
@@ -179,9 +191,9 @@ export class MessagesList extends LitElement {
     return this.usersList[userIndex];
   }
 
-  async getAllUsers() {
+  async getAllUsers(usernames) {
     try {
-      this.usersList = await UsersService.getUsers("");
+      this.usersList = await UsersService.getUsers(usernames);
     } catch (error) {
       console.error(error);
     }
