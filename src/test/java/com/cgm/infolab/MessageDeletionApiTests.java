@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import static com.cgm.infolab.db.model.enumeration.StatusEnum.DELETED;
+import static com.cgm.infolab.db.model.enumeration.MessageStatusEnum.DELETED;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;

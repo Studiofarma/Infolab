@@ -31,6 +31,7 @@ public class UserRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("username", user.getName().value());
         parameters.put("description", user.getDescription());
+        parameters.put("status", user.getStatus().toString());
         return UserEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters), user.getName(), user.getDescription());
     }
 
@@ -83,7 +84,7 @@ public class UserRepository {
 
     private QueryResult getUserOrUsers() {
         return queryHelper
-                .query("SELECT *")
+                .query("SELECT *, status user_status")
                 .from("infolab.users");
     }
 }

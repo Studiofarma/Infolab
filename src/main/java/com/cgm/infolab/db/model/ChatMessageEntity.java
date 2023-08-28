@@ -1,7 +1,7 @@
 package com.cgm.infolab.db.model;
 
 import com.cgm.infolab.db.ID;
-import com.cgm.infolab.db.model.enumeration.StatusEnum;
+import com.cgm.infolab.db.model.enumeration.MessageStatusEnum;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -12,9 +12,9 @@ public class ChatMessageEntity {
     private RoomEntity room;
     private LocalDateTime timestamp;
     private String content;
-    private StatusEnum status;
+    private MessageStatusEnum status;
 
-    private ChatMessageEntity(long id, UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content, StatusEnum status) {
+    private ChatMessageEntity(long id, UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content, MessageStatusEnum status) {
         this.id = id;
         this.sender = sender;
         this.room = room;
@@ -27,7 +27,7 @@ public class ChatMessageEntity {
         return new ChatMessageEntity(ID.None, sender, room, timestamp, content, null);
     }
 
-    public static ChatMessageEntity of(long id, UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content, StatusEnum status) {
+    public static ChatMessageEntity of(long id, UserEntity sender, RoomEntity room, LocalDateTime timestamp, String content, MessageStatusEnum status) {
         return new ChatMessageEntity(id, sender, room, timestamp, content, status);
     }
 
@@ -75,11 +75,11 @@ public class ChatMessageEntity {
         this.content = content;
     }
 
-    public StatusEnum getStatus() {
+    public MessageStatusEnum getStatus() {
         return status;
     }
 
-    public void setStatus(StatusEnum status) {
+    public void setStatus(MessageStatusEnum status) {
         this.status = status;
     }
 

@@ -20,7 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import static com.cgm.infolab.db.model.enumeration.StatusEnum.DELETED;
+import static com.cgm.infolab.db.model.enumeration.MessageStatusEnum.DELETED;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "local"})

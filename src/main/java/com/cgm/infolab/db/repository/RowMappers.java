@@ -2,11 +2,8 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.ID;
 import com.cgm.infolab.db.model.*;
-import com.cgm.infolab.db.model.enumeration.RoomOrUserAsRoomEnum;
-import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
-import com.cgm.infolab.db.model.enumeration.StatusEnum;
+import com.cgm.infolab.db.model.enumeration.*;
 import com.cgm.infolab.db.model.Username;
-import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.sql.ResultSet;
@@ -30,10 +27,10 @@ public abstract class RowMappers {
                 roomType
         );
 
-        String statusString = rs.getString("status");
-        StatusEnum status = statusString != null && !statusString.trim().isEmpty() ? StatusEnum.valueOf(statusString.trim()) : null;
+        String statusString = rs.getString("message_status");
+        MessageStatusEnum status = statusString != null && !statusString.trim().isEmpty() ? MessageStatusEnum.valueOf(statusString.trim()) : null;
 
-        String content = status != null && status.equals(StatusEnum.DELETED) ? "" : rs.getString("content");
+        String content = status != null && status.equals(MessageStatusEnum.DELETED) ? "" : rs.getString("content");
 
         return ChatMessageEntity
                 .of(rs.getLong("message_id"),
@@ -108,16 +105,20 @@ public abstract class RowMappers {
 
         description = description == null || description.isEmpty() ? usernameString : description;
 
-        return UserEntity.of(rs.getLong("id"),
+        return UserEntity.of(
+                rs.getLong("id"),
                 Username.of(usernameString),
-                description);
+                description,
+                UserStatusEnum.valueOf(rs.getString("user_status").trim())
+        );
     }
 
     public static UserEntity mapToOtherUserEntity(ResultSet rs, int rowNum) throws SQLException {
         return UserEntity.of(
                 rs.getLong("other_user_id"),
                 Username.of(rs.getString("other_username")),
-                rs.getString("other_description")
+                rs.getString("other_description"),
+                UserStatusEnum.valueOf(rs.getString("other_status").trim())
         );
     }
 

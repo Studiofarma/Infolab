@@ -2,6 +2,7 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.helper.TestApiHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import org.junit.jupiter.api.Assertions;
@@ -48,7 +49,7 @@ public class UserApiTests {
         Arrays.stream(users)
                 .toList()
                 .forEach(
-                        userEntity -> testDbHelper.insertCustomUser(userEntity.getId(), userEntity.getName().value(), userEntity.getDescription())
+                        userEntity -> testDbHelper.insertCustomUser(userEntity.getId(), userEntity.getName().value(), userEntity.getDescription(), UserStatusEnum.OFFLINE)
                 );
     }
 

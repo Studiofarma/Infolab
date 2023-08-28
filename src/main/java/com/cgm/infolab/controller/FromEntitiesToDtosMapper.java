@@ -75,7 +75,7 @@ public abstract class FromEntitiesToDtosMapper {
 
 
     public static UserDto fromEntityToDto(UserEntity userEntity) {
-        return UserDto.of(userEntity.getName().value(), userEntity.getId(), userEntity.getDescription());
+        return UserDto.of(userEntity.getName().value(), userEntity.getId(), userEntity.getDescription(), userEntity.getStatus().toString());
     }
 
     public static BasicJsonDto<RoomDto> fromEntityToDto(String prev, String next, List<RoomEntity> roomEntities, String principalName) {
