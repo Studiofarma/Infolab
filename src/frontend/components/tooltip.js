@@ -96,6 +96,14 @@ export class Tooltip extends BaseComponent {
     this.offset = 4;
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+    // Setup target if needed
+    this.target ??= this.previousElementSibling;
+    // Ensure hidden at start
+    this.finishHide();
+  }
+
   // Target for which to show tooltip
   _target = null;
   get target() {
