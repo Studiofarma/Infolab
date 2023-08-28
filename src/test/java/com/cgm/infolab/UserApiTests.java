@@ -43,7 +43,7 @@ public class UserApiTests {
 
     @BeforeAll
     void beforeAll() {
-        testDbHelper.clearDb();
+        testDbHelper.clearDbExceptForGeneral();
 
         Arrays.stream(users)
                 .toList()
