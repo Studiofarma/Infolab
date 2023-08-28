@@ -134,7 +134,7 @@ export class Editor extends BaseComponent {
     const textFromStorage = localStorage.getItem(`message:${cookie.lastChat}`);
     const text = textFromStorage ? textFromStorage : "";
 
-    this.editorRef.value.textContent = text;
+    this.editorRef.value.innerHTML = text;
 
     this.textChanged();
   }
