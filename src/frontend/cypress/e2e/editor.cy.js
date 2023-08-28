@@ -70,7 +70,7 @@ describe("Editor spec", () => {
     cy.getEditor().invoke("text").should("be.equal", "😀");
   });
 
-  it("Editor formatting buttons works", () => {
+  it("Editor formatting buttons work", () => {
     cy.getLitElement(buttonIconPath)
       .find(".icon-button")
       .eq(1)
@@ -86,6 +86,30 @@ describe("Editor spec", () => {
     cy.getEditor().type("bold");
 
     cy.getEditor().find("b").should("exist");
+  });
+
+  it("Editor formatting buttons work with highlighted text", () => {
+    cy.getLitElement(buttonIconPath)
+      .find(".icon-button")
+      .eq(1)
+      .click({ force: true });
+
+    cy.getEditor().click({ force: true });
+
+    cy.getEditor().type("Italic test");
+
+    cy.getEditor().realPress(["Shift", "ArrowLeft", "ArrowLeft", "ArrowLeft"]); // This should highlight: est
+
+    cy.getLitElement(
+      "il-app,il-chat,il-input-controls,il-insertion-bar,il-editor-formatting-buttons,il-button-icon"
+    )
+      .find(".icon-button")
+      .eq(1)
+      .click({ force: true });
+
+    cy.getEditor().find("i").should("exist");
+
+    cy.getEditor().find("i").should("have.text", "est");
   });
 });
 
