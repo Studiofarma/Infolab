@@ -84,7 +84,6 @@ export class UsersService {
   }
 
   /**
-   *
    * @param {Array} usernames an array of usernames as string values
    */
   static async getUsersByUsernames(usernames) {
@@ -99,10 +98,6 @@ export class UsersService {
 
     // #region Mock data
     // TODO: remove this region when data comes from BE
-    users.data.forEach((user, index) => {
-      user.status = index % 2 === 0 ? "online" : "offline";
-    });
-
     users.data.forEach((user) => {
       user.avatarLink = "";
     });

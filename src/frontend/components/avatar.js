@@ -158,26 +158,28 @@ export class Avatar extends BaseComponent {
         ${when(
           this.isDefaultAvatar,
           () => html`<img src=${this.avatarLink ?? this.user?.avatarLink} />`,
-          () => html`<div
-            class=${this.sizeClass}
-            id="avatar-default"
-            style="background-color: ${this.color}"
-          >
-            ${this.initials}
-          </div>`
+          () =>
+            html`<div
+              class=${this.sizeClass}
+              id="avatar-default"
+              style="background-color: ${this.color}"
+            >
+              ${this.initials}
+            </div>`
         )}
         ${when(
           this.isSelected,
-          () => html`<div class="icon-button">
-            <il-icon name=${IconNames.checkCircle}></il-icon>
-          </div>`,
+          () =>
+            html`<div class="icon-button">
+              <il-icon name=${IconNames.checkCircle}></il-icon>
+            </div>`,
           () =>
             when(this.hasStatus, () =>
               choose(
                 this.user?.status,
                 [
                   [
-                    "online",
+                    "ONLINE",
                     () =>
                       html`<il-icon
                         class="icon-button online"
@@ -185,7 +187,7 @@ export class Avatar extends BaseComponent {
                       ></il-icon>`,
                   ], // TODO: change name and color
                   [
-                    "offline",
+                    "OFFLINE",
                     () =>
                       html`<il-icon
                         class="icon-button offline"

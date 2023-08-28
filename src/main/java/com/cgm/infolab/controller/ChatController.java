@@ -89,13 +89,13 @@ public class ChatController {
     @MessageMapping("/chat.unregister")
     @SendTo("/topic/public")
     public WebSocketMessageDto unregister(@Payload WebSocketMessageDto message) {
-        ChatMessageDto joinMessage = message.getJoin();
-        if (joinMessage == null) {
+        ChatMessageDto quitMessage = message.getQuit();
+        if (quitMessage == null) {
             log.warn("Received WebSocketMessageDto has been ignored because it has join field equals to null");
             return null;
         }
 
-        int rowsAffected = userService.updateUserStatus(Username.of(joinMessage.getSender()), UserStatusEnum.OFFLINE);
+        int rowsAffected = userService.updateUserStatus(Username.of(quitMessage.getSender()), UserStatusEnum.OFFLINE);
 
         if (rowsAffected == 1) {
             return message;
