@@ -17,7 +17,6 @@ public class QueryHelper {
     }
 
     public QueryResult query(String initialQuery) {
-        String query = "%s from ".formatted(initialQuery);
-        return new QueryResult(namedJdbcTemplate, query);
+        return new QueryResult(namedJdbcTemplate, initialQuery);
     }
 }

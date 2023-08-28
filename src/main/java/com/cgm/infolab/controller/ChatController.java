@@ -68,13 +68,40 @@ public class ChatController {
 
         headerAccessor.getSessionAttributes().put("username", joinMessage.getSender());
 
+        Username username = Username.of(joinMessage.getSender());
+
+        int rowsAffected = 0;
+
         try {
-            userService.saveUserInDb(Username.of(joinMessage.getSender()), UserStatusEnum.ONLINE);
+            userService.saveUserInDb(username, UserStatusEnum.ONLINE);
         } catch (DuplicateKeyException e) {
             log.info("User username=\"%s\" already existing in database".formatted(joinMessage.getSender()));
+            rowsAffected = userService.updateUserStatus(username, UserStatusEnum.ONLINE);
         }
 
-        return message;
+        if (rowsAffected == 1) {
+            return message;
+        } else {
+            return null;
+        }
+    }
+
+    @MessageMapping("/chat.unregister")
+    @SendTo("/topic/public")
+    public WebSocketMessageDto unregister(@Payload WebSocketMessageDto message) {
+        ChatMessageDto joinMessage = message.getJoin();
+        if (joinMessage == null) {
+            log.warn("Received WebSocketMessageDto has been ignored because it has join field equals to null");
+            return null;
+        }
+
+        int rowsAffected = userService.updateUserStatus(Username.of(joinMessage.getSender()), UserStatusEnum.OFFLINE);
+
+        if (rowsAffected == 1) {
+            return message;
+        } else {
+            return null;
+        }
     }
 
     @MessageMapping("/chat.send")

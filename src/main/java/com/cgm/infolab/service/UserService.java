@@ -25,4 +25,8 @@ public class UserService {
     public UserEntity saveUserInDb(Username username, UserStatusEnum status) throws DuplicateKeyException {
         return userRepository.add(UserEntity.of(username, username.value(), status));
     }
+
+    public int updateUserStatus(Username username, UserStatusEnum status) {
+        return userRepository.updateUserStatus(username, status);
+    }
 }

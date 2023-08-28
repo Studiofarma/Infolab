@@ -2,6 +2,7 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import org.junit.jupiter.api.Assertions;
@@ -45,5 +46,26 @@ public class UserRepositoryTests {
         UserEntity user2FromDb = userRepository.getByUsername(users[2].getName()).get();
 
         Assertions.assertEquals(user2FromDb.getName().value(), user2FromDb.getDescription());
+    }
+
+    @Test
+    void whenUserStatusIsUpdated_statusIsActuallyUpdated() {
+        UserEntity user0Before = userRepository.getByUsername(users[0].getName()).get();
+
+        Assertions.assertEquals(UserStatusEnum.OFFLINE, user0Before.getStatus());
+
+        int rowsAffected1 = userRepository.updateUserStatus(users[0].getName(), UserStatusEnum.ONLINE);
+
+        UserEntity user0After1 = userRepository.getByUsername(users[0].getName()).get();
+
+        Assertions.assertEquals(1, rowsAffected1);
+        Assertions.assertEquals(UserStatusEnum.ONLINE, user0After1.getStatus());
+
+        int rowsAffected2 = userRepository.updateUserStatus(users[0].getName(), UserStatusEnum.OFFLINE);
+
+        UserEntity user0After2 = userRepository.getByUsername(users[0].getName()).get();
+
+        Assertions.assertEquals(1, rowsAffected2);
+        Assertions.assertEquals(UserStatusEnum.OFFLINE, user0After2.getStatus());
     }
 }
