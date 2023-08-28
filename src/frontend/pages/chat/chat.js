@@ -369,14 +369,14 @@ export class Chat extends BaseComponent {
     this.setForwardListRefIsOpened(false);
   }
 
-  updateLastMessageInConversationList(message) {
-    this.conversationListRef.value?.updateLastMessage(message);
+  async updateLastMessageInConversationList(message) {
+    await this.conversationListRef.value?.updateLastMessage(message);
   }
 
-  updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
+  async updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
     editedMessage
   ) {
-    this.conversationListRef.value?.updateLastMessageIfItIsLastMessageOfConversation(
+    await this.conversationListRef.value?.updateLastMessageIfItIsLastMessageOfConversation(
       editedMessage
     );
   }
@@ -804,10 +804,10 @@ export class Chat extends BaseComponent {
       await this.manageChatMessageReceived(message);
     } else if (message.type === WebSocketMessageTypes.edit) {
       // EDIT
-      this.manageEditMessageReceived(message);
+      await this.manageEditMessageReceived(message);
     } else if (message.type === WebSocketMessageTypes.delete) {
       // DELETE
-      this.manageDeleteMessageReceived(message);
+      await this.manageDeleteMessageReceived(message);
     }
   }
 
@@ -829,7 +829,7 @@ export class Chat extends BaseComponent {
         }
       }
 
-      this.updateLastMessageInConversationList(chatMessage);
+      await this.updateLastMessageInConversationList(chatMessage);
 
       // set the message as unread:
 
@@ -845,7 +845,7 @@ export class Chat extends BaseComponent {
     this.messageNotification(chatMessage);
   }
 
-  manageEditMessageReceived(message) {
+  async manageEditMessageReceived(message) {
     let editedMessage = new MessageDto(message.edit);
 
     if (this.activeChatName === editedMessage.roomName) {
@@ -861,7 +861,7 @@ export class Chat extends BaseComponent {
         });
 
         if (index === this.messages.length - 1)
-          this.updateLastMessageInConversationList(this.messages[index]);
+          await this.updateLastMessageInConversationList(this.messages[index]);
       } else {
         this.updateEditedOrDeletedLastMessageIfItIsLastMessageOfConversation(
           editedMessage
@@ -876,7 +876,7 @@ export class Chat extends BaseComponent {
     this.messagesListRef.value?.requestUpdate();
   }
 
-  manageDeleteMessageReceived(message) {
+  async manageDeleteMessageReceived(message) {
     let deletedMessage = new MessageDto(message.delete);
 
     if (this.activeChatName === deletedMessage.roomName) {
@@ -892,7 +892,7 @@ export class Chat extends BaseComponent {
         });
 
         if (index === this.messages.length - 1) {
-          this.updateLastMessageInConversationList(
+          await this.updateLastMessageInConversationList(
             new MessageDto({
               ...this.messages[index],
               content: GenericConstants.deletedMessageContent,

@@ -594,10 +594,10 @@ class ConversationList extends BaseComponent {
     });
   }
 
-  updateLastMessage(message) {
+  async updateLastMessage(message) {
     let conversation = this.findConversationByRoomName(message.roomName);
 
-    let lastMessageUser = this.getUserByUsername(message.sender);
+    let lastMessageUser = (await UsersService.getUsers([message.sender]))[0];
 
     conversation.lastMessage = {
       id: message.id,
