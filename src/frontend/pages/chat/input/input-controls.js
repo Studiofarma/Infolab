@@ -249,7 +249,6 @@ export class InputControls extends BaseComponent {
   }
 
   handleFormatText(e) {
-    console.log(e);
     this.allowInsertionInEditor();
     document.execCommand(e.detail.command, false);
     this.focusEditor();
