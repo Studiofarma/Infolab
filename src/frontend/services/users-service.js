@@ -60,16 +60,14 @@ export class UsersService {
     if (sessionUser) {
       loggedUser = JSON.parse(sessionUser);
     } else {
-      let usersList;
       try {
-        usersList = await UsersService.getUsersByUsernames([cookie.username]);
+        loggedUser = await UsersService.getUsersByUsernames([cookie.username]);
       } catch (error) {
         console.error(error);
       }
 
-      loggedUser = usersList.filter((user) => user.name === cookie.username);
-
-      sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
+      if (loggedUser.length !== 0)
+        sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
     }
 
     return loggedUser[0];

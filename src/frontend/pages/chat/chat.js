@@ -33,6 +33,7 @@ import { WebSocketMessageDto } from "../../models/websocket-message-dto";
 import { MessageDto } from "../../models/message-dto";
 import { ConversationService } from "../../services/conversations-service";
 import { CommandsService } from "../../services/commands-service";
+import { UsersService } from "../../services/users-service";
 
 export class Chat extends BaseComponent {
   static properties = {
@@ -50,6 +51,8 @@ export class Chat extends BaseComponent {
     activeConversation: { type: ConversationDto },
     messages: { type: Array },
     messageToBeDeleted: { type: MessageDto },
+
+    canFetchLoggedUser: { type: Boolean },
   };
 
   constructor() {
@@ -70,6 +73,8 @@ export class Chat extends BaseComponent {
     this.hasFetchedBeforeAndAfter = false;
     this.firstNotReadMessage = null;
 
+    this.canFetchLoggedUser = false;
+
     this.activeChatName =
       CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
 
@@ -88,9 +93,11 @@ export class Chat extends BaseComponent {
     this.headerRef = createRef();
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     super.connectedCallback();
     this.createSocket();
+    await UsersService.getLoggedUser();
+    this.canFetchLoggedUser = true;
   }
 
   updated(changedProperties) {
@@ -230,6 +237,7 @@ export class Chat extends BaseComponent {
             <il-chat-header
               ${ref(this.headerRef)}
               userName=${this.login.username}
+              canFetchLoggedUser=${this.canFetchLoggedUser}
             ></il-chat-header>
             ${when(
               this.activeChatName === "",
