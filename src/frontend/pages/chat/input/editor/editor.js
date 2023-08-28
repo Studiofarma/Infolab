@@ -25,14 +25,8 @@ export class Editor extends BaseComponent {
   }
 
   static styles = css`
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      ${ThemeColorService.getThemeVariables()};
-    }
-
     #editor {
+      ${ThemeColorService.getThemeVariables()};
       color: ${ThemeCSSVariables.text};
       background-color: ${ThemeCSSVariables.editorInputBg};
       flex: 1;
