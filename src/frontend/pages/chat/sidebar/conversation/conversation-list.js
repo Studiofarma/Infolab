@@ -624,10 +624,10 @@ class ConversationList extends BaseComponent {
     this.requestUpdate();
   }
 
-  updateLastMessageIfItIsLastMessageOfConversation(message) {
+  async updateLastMessageIfItIsLastMessageOfConversation(message) {
     let conversation = this.findConversationByRoomName(message.roomName);
 
-    let lastMessageUser = this.getUserByUsername(message.sender);
+    let lastMessageUser = (await UsersService.getUsers([message.sender]))[0];
 
     if (conversation.lastMessage.id === message.id) {
       conversation.lastMessage = {
