@@ -3,14 +3,15 @@ package com.cgm.infolab.controller;
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.Username;
-import com.cgm.infolab.db.repository.UserRepository;
+import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
-import com.cgm.infolab.model.WebSocketMessageTypeEnum;
 import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -39,12 +40,14 @@ public class ChatController {
     //public JdbcTemplate jdbcTemplate;
 
     private final ChatService chatService;
+    private final UserService userService;
 
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     @Autowired
-    public ChatController(ChatService chatService) {
+    public ChatController(ChatService chatService, UserService userService) {
         this.chatService = chatService;
+        this.userService = userService;
     }
 
     // Questo metodo in teoria viene chiamato quando un utente entra nella chat general.
@@ -64,6 +67,13 @@ public class ChatController {
         }
 
         headerAccessor.getSessionAttributes().put("username", joinMessage.getSender());
+
+        try {
+            userService.saveUserInDb(Username.of(joinMessage.getSender()), UserStatusEnum.ONLINE);
+        } catch (DuplicateKeyException e) {
+            log.info("User username=\"%s\" already existing in database".formatted(joinMessage.getSender()));
+        }
+
         return message;
     }
 

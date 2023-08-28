@@ -29,6 +29,10 @@ public class UserEntity {
         return new UserEntity(ID.None, name, description, UserStatusEnum.OFFLINE);
     }
 
+    public static UserEntity of(Username name, String description, UserStatusEnum status) {
+        return new UserEntity(ID.None, name, description, status);
+    }
+
     public static UserEntity of(long id, Username name, String description) {
         return new UserEntity(id, name, description, UserStatusEnum.OFFLINE);
     }
