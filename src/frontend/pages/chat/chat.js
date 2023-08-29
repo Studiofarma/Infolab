@@ -833,6 +833,9 @@ export class Chat extends BaseComponent {
     } else if (message.type === WebSocketMessageTypes.delete) {
       // DELETE
       await this.manageDeleteMessageReceived(message);
+    } else if (message.type === WebSocketMessageTypes.join) {
+      // JOIN
+      this.manageJoinMessageReceived(message);
     }
   }
 
@@ -941,6 +944,17 @@ export class Chat extends BaseComponent {
           content: GenericConstants.deletedMessageContent,
         })
       );
+    }
+  }
+
+  async manageJoinMessageReceived(message) {
+    const joinMessage = message.join;
+
+    if (joinMessage.sender !== this.login.username) {
+      UsersService.updateUserInSessionStorage(joinMessage.sender, "ONLINE");
+
+      this.messagesListRef.value?.getAllNeededUsers();
+      this.conversationListRef.value?.getAllNeededUsers();
     }
   }
 

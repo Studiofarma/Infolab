@@ -90,23 +90,7 @@ class ConversationList extends BaseComponent {
       changedProperties.has("conversationList") ||
       changedProperties.has("newConversationList")
     ) {
-      let usernames = new Set();
-
-      this.conversationList.forEach((conversation) => {
-        if (conversation.roomType === "USER2USER") {
-          usernames.add(conversation.otherParticipants[0].name);
-        }
-      });
-
-      this.newConversationList.forEach((conversation) => {
-        if (conversation.roomType === "USER2USER") {
-          usernames.add(conversation.otherParticipants[0].name);
-        }
-      });
-
-      usernames.add(this.cookie.username);
-
-      if (usernames.size > 0) await this.getAllUsers(Array.from(usernames));
+      await this.getAllNeededUsers();
     }
   }
 
@@ -579,6 +563,26 @@ class ConversationList extends BaseComponent {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  async getAllNeededUsers() {
+    let usernames = new Set();
+
+    this.conversationList.forEach((conversation) => {
+      if (conversation.roomType === "USER2USER") {
+        usernames.add(conversation.otherParticipants[0].name);
+      }
+    });
+
+    this.newConversationList.forEach((conversation) => {
+      if (conversation.roomType === "USER2USER") {
+        usernames.add(conversation.otherParticipants[0].name);
+      }
+    });
+
+    usernames.add(this.cookie.username);
+
+    if (usernames.size > 0) await this.getAllUsers(Array.from(usernames));
   }
 
   setNewConversationList() {
