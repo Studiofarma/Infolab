@@ -75,10 +75,6 @@ export class UsersService {
     return loggedUser;
   }
 
-  static setUserDescription(newDescription) {
-    // TODO: implementare la chiamata
-  }
-
   static setUserAvatar(imageBlob) {
     // TODO: implementare la chiamata
   }

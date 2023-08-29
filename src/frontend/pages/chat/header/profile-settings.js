@@ -15,6 +15,7 @@ import "../../../components/input-with-icon";
 import "./theme-switcher";
 
 import { BaseComponent } from "../../../components/base-component";
+import { CommandsService } from "../../../services/commands-service";
 
 const maxLength = 30;
 
@@ -145,9 +146,9 @@ export class profileSettings extends BaseComponent {
 
   connectedCallback() {
     super.connectedCallback();
-    this.addEventListener("keydown", (event) => {
+    this.addEventListener("keydown", async (event) => {
       if (event.key === "Escape") this.restoreDefault();
-      if (event.key === "Enter") this.confirmChanges();
+      if (event.key === "Enter") await this.confirmChanges();
     });
   }
 
@@ -286,7 +287,7 @@ export class profileSettings extends BaseComponent {
     this.closeMenu();
   }
 
-  confirmChanges() {
+  async confirmChanges() {
     if (this.userDescription.trim() === "") {
       this.snackbarRef.value.openSnackbar(
         "INSERIRE UN NOME UTENTE NON VUOTO",
@@ -298,6 +299,7 @@ export class profileSettings extends BaseComponent {
     }
 
     if (this.userDescription !== this.currentUserDescription) {
+      await CommandsService.setUserDescription(this.userDescription);
       this.dispatchEvent(
         new CustomEvent("il:new-description-set", {
           detail: {
@@ -305,7 +307,6 @@ export class profileSettings extends BaseComponent {
           },
         })
       );
-      UsersService.setUserDescription(this.userDescription);
     }
 
     if (this.imagePath !== this.currentAvatarURL) {
