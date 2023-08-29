@@ -139,9 +139,9 @@ export class ChatHeader extends BaseComponent {
               <il-profile-settings
                 ${ref(this.profileSettingsRef)}
                 .user=${this.loggedUser}
-                currentUsername=${this.loggedUser?.description}
+                currentUserDescription=${this.loggedUser?.description}
                 currentAvatarURL=${this.loggedUser?.avatarLink}
-                username=${this.loggedUser?.description}
+                userDescription=${this.loggedUser?.description}
                 @il:new-description-set=${this.newDescriptionSetHandler}
                 @il:new-avatar-set=${this.newAvatarSetHandler}
                 @il:menu-closed=${this.closeProfileMenu}

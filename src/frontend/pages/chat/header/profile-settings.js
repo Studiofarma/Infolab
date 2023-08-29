@@ -22,9 +22,9 @@ export class profileSettings extends BaseComponent {
   static properties = {
     isFocused: { type: Boolean },
     imagePath: { type: String },
-    currentUsername: { type: String },
+    currentUserDescription: { type: String },
     currentAvatarURL: { type: String },
-    username: { type: String },
+    userDescription: { type: String },
     user: { type: Object },
   };
 
@@ -33,7 +33,7 @@ export class profileSettings extends BaseComponent {
     this.temp = "";
     this.imagePath = "";
     this.isFocused = false;
-    this.usernameInputRef = createRef();
+    this.userDescriptionInputRef = createRef();
     this.inputFileRef = createRef();
     this.snackbarRef = createRef();
     this.avatarRef = createRef();
@@ -162,7 +162,7 @@ export class profileSettings extends BaseComponent {
           <il-avatar
             .user=${this.user}
             sizeClass="large"
-            name=${this.username}
+            name=${this.userDescription}
             .avatarLink=${this.imagePath}
             ?isDefaultAvatar=${this.imagePath === ""}
             .hasStatus=${false}
@@ -173,7 +173,7 @@ export class profileSettings extends BaseComponent {
             }}
           >
             <il-button-icon
-              @click=${() => this.usernameInputRef.value.focus()}
+              @click=${() => this.userDescriptionInputRef.value.focus()}
               content=${IconNames.update}
             ></il-button-icon>
             Carica immagine
@@ -191,12 +191,12 @@ export class profileSettings extends BaseComponent {
             <p>Nome Utente:</p>
 
             <il-input-with-icon
-              ${ref(this.usernameInputRef)}
+              ${ref(this.userDescriptionInputRef)}
               .iconName=${IconNames.pencil}
-              @input=${this.setUsername}
+              @input=${this.setUserDescription}
               @il:icon-clicked=${this.focusAndSelectInput}
               placeholder="Inserisci un nome utente"
-              value=${this.username}
+              value=${this.userDescription}
             ></il-input-with-icon>
           </div>
 
@@ -232,8 +232,8 @@ export class profileSettings extends BaseComponent {
   }
 
   focusAndSelectInput() {
-    this.usernameInputRef.value.focusInput();
-    this.usernameInputRef.value.selectInput();
+    this.userDescriptionInputRef.value.focusInput();
+    this.userDescriptionInputRef.value.selectInput();
   }
 
   focus() {
@@ -244,7 +244,7 @@ export class profileSettings extends BaseComponent {
     if (c.has("isFocused") && this.isFocused) this.focusAndSelectInput();
   }
 
-  setUsername(event) {
+  setUserDescription(event) {
     if (event.target.value.length > maxLength) {
       this.snackbarRef.value.openSnackbar(
         `NON E' POSSIBILE SUPERARE I ${maxLength} CARATTERI`,
@@ -252,17 +252,22 @@ export class profileSettings extends BaseComponent {
         5000
       );
 
-      this.usernameInputRef.value.value = event.target.value.slice(0, -1);
+      this.userDescriptionInputRef.value.value = event.target.value.slice(
+        0,
+        -1
+      );
       return;
     }
 
-    this.username = event.target.value;
+    this.userDescription = event.target.value;
   }
 
   restoreDefault() {
     // restoring profile
-    this.username = this.currentUsername;
-    this.usernameInputRef.value?.setInputValue(this.currentUsername);
+    this.userDescription = this.currentUserDescription;
+    this.userDescriptionInputRef.value?.setInputValue(
+      this.currentUserDescription
+    );
 
     this.imagePath = this.currentAvatarURL;
     this.inputFileRef.value.value = this.currentAvatarURL;
@@ -282,7 +287,7 @@ export class profileSettings extends BaseComponent {
   }
 
   confirmChanges() {
-    if (this.username.trim() === "") {
+    if (this.userDescription.trim() === "") {
       this.snackbarRef.value.openSnackbar(
         "INSERIRE UN NOME UTENTE NON VUOTO",
         "error",
@@ -292,15 +297,15 @@ export class profileSettings extends BaseComponent {
       return;
     }
 
-    if (this.username !== this.currentUsername) {
+    if (this.userDescription !== this.currentUserDescription) {
       this.dispatchEvent(
         new CustomEvent("il:new-description-set", {
           detail: {
-            newDescription: this.username,
+            newDescription: this.userDescription,
           },
         })
       );
-      UsersService.setUserDescription(this.username);
+      UsersService.setUserDescription(this.userDescription);
     }
 
     if (this.imagePath !== this.currentAvatarURL) {
