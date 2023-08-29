@@ -98,6 +98,23 @@ export class Chat extends BaseComponent {
     this.createSocket();
     await UsersService.getLoggedUser();
     this.canFetchLoggedUser = true;
+
+    window.addEventListener("beforeunload", () => {
+      if (this.stompClient) {
+        const quitMessage = new WebSocketMessageDto({
+          type: WebSocketMessageTypes.quit,
+          quit: {
+            sender: this.login.username,
+          },
+        });
+
+        this.stompClient.send(
+          "/app/chat.unregister",
+          {},
+          JSON.stringify(quitMessage)
+        );
+      }
+    });
   }
 
   updated(changedProperties) {
