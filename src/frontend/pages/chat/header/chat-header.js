@@ -20,6 +20,7 @@ export class ChatHeader extends BaseComponent {
       loggedUser: {},
       conversation: {},
       canFetchLoggedUser: false,
+      descriptionChanged: false,
     };
   }
 
@@ -27,6 +28,7 @@ export class ChatHeader extends BaseComponent {
     super();
 
     this.isFirstFetch = true;
+    this.descriptionChanged = false;
 
     this.cookie = CookieService.getCookie();
 
@@ -36,10 +38,16 @@ export class ChatHeader extends BaseComponent {
     this.loggedUserAvatarRef = createRef();
   }
 
-  async updated() {
+  async updated(changedProperties) {
     if (this.canFetchLoggedUser && this.isFirstFetch) {
       this.loggedUser = await UsersService.getLoggedUser();
       this.isFirstFetch = false;
+    } else if (
+      changedProperties.has("descriptionChanged") &&
+      this.descriptionChanged
+    ) {
+      this.loggedUser = await UsersService.getLoggedUser();
+      this.descriptionChanged = false;
     }
   }
 
@@ -131,9 +139,9 @@ export class ChatHeader extends BaseComponent {
               <il-profile-settings
                 ${ref(this.profileSettingsRef)}
                 .user=${this.loggedUser}
-                currentUsername=${this.loggedUser?.description}
+                currentUserDescription=${this.loggedUser?.description}
                 currentAvatarURL=${this.loggedUser?.avatarLink}
-                username=${this.loggedUser?.description}
+                userDescription=${this.loggedUser?.description}
                 @il:new-description-set=${this.newDescriptionSetHandler}
                 @il:new-avatar-set=${this.newAvatarSetHandler}
                 @il:menu-closed=${this.closeProfileMenu}
@@ -154,7 +162,13 @@ export class ChatHeader extends BaseComponent {
     this.modalRef.value?.setDialogRefIsOpened(false);
   }
 
-  newDescriptionSetHandler() {}
+  newDescriptionSetHandler(e) {
+    UsersService.updateLoggedUserInSessionStorage({
+      description: e.detail.newDescription,
+    });
+    this.descriptionChanged = true;
+    this.requestUpdate();
+  }
 
   newAvatarSetHandler() {}
 
