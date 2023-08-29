@@ -59,27 +59,32 @@ public class ChatController {
     //region ROOM GENERAL
     @MessageMapping("/chat.register")
     @SendTo("/topic/public")
-    public WebSocketMessageDto register(@Payload WebSocketMessageDto message, SimpMessageHeaderAccessor headerAccessor){
+    public WebSocketMessageDto register(@Payload WebSocketMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
         ChatMessageDto joinMessage = message.getJoin();
         if (joinMessage == null) {
             log.warn("Received WebSocketMessageDto has been ignored because it has join field equals to null");
             return null;
         }
 
-        headerAccessor.getSessionAttributes().put("username", joinMessage.getSender());
+        headerAccessor.getSessionAttributes().put("username", principal.getName());
 
-        Username username = Username.of(joinMessage.getSender());
+        Username username = Username.of(principal.getName());
 
         int rowsAffected = 0;
+        boolean hasUserBeenCreated = false;
 
         try {
             userService.saveUserInDb(username, UserStatusEnum.ONLINE);
+            hasUserBeenCreated = true;
         } catch (DuplicateKeyException e) {
             log.info("User username=\"%s\" already existing in database".formatted(joinMessage.getSender()));
             rowsAffected = userService.updateUserStatus(username, UserStatusEnum.ONLINE);
         }
 
-        if (rowsAffected == 1) {
+        // This is needed for security
+        message.getJoin().setSender(principal.getName());
+
+        if (rowsAffected == 1 || hasUserBeenCreated) {
             return message;
         } else {
             return null;
@@ -88,14 +93,16 @@ public class ChatController {
 
     @MessageMapping("/chat.unregister")
     @SendTo("/topic/public")
-    public WebSocketMessageDto unregister(@Payload WebSocketMessageDto message) {
+    public WebSocketMessageDto unregister(@Payload WebSocketMessageDto message, Principal principal) {
         ChatMessageDto quitMessage = message.getQuit();
         if (quitMessage == null) {
             log.warn("Received WebSocketMessageDto has been ignored because it has join field equals to null");
             return null;
         }
 
-        int rowsAffected = userService.updateUserStatus(Username.of(quitMessage.getSender()), UserStatusEnum.OFFLINE);
+        int rowsAffected = userService.updateUserStatus(Username.of(principal.getName()), UserStatusEnum.OFFLINE);
+
+        message.getQuit().setSender(principal.getName());
 
         if (rowsAffected == 1) {
             return message;

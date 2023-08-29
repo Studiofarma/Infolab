@@ -87,7 +87,7 @@ class InfolabApplicationTests {
             }
         });
 
-        WebSocketMessageDto joinMessage = WebSocketMessageDto.ofJoin(ChatMessageDto.of(null, Username.of("banana").value()));
+        WebSocketMessageDto joinMessage = WebSocketMessageDto.ofJoin(ChatMessageDto.of(null, Username.of("user1").value()));
         client.send("/app/chat.register", joinMessage);
 
         await()
