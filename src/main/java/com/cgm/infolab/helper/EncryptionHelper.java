@@ -10,7 +10,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
@@ -18,21 +17,25 @@ import java.util.Base64;
 @Component
 public class EncryptionHelper {
     @Value("${encryption.key.password}")
-    private String key;
+    private String password;
+    @Value("${encryption.key.salt}")
+    private String salt;
     @Value("${encryption.key.iv}")
-    byte[] iv;
+    private byte[] iv;
 
-    public SecretKey getKeyFromPassword(String password, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    private final String ALGORITHM = "AES/CBC/PKCS5Padding";
+
+    private SecretKey getKeyFromPassword(String password, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
         SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
         return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
     }
 
-    public IvParameterSpec generateIv() {
+    private IvParameterSpec generateIv() {
         return new IvParameterSpec(iv);
     }
 
-    public String encrypt(String algorithm, String input, SecretKey key, IvParameterSpec iv)
+    private String encrypt(String algorithm, String input, SecretKey key, IvParameterSpec iv)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
             InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
@@ -43,7 +46,7 @@ public class EncryptionHelper {
         return Base64.getEncoder().encodeToString(cipherText);
     }
 
-    public String decrypt(String algorithm, String cipherText, SecretKey key, IvParameterSpec iv)
+    private String decrypt(String algorithm, String cipherText, SecretKey key, IvParameterSpec iv)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
 
         Cipher cipher = Cipher.getInstance(algorithm);
@@ -51,5 +54,25 @@ public class EncryptionHelper {
         byte[] plainText = cipher.doFinal(Base64.getDecoder().decode(cipherText));
 
         return new String(plainText);
+    }
+
+    public String encryptWithAes(String textToEncrypt)
+            throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException,
+            NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+
+        SecretKey key = getKeyFromPassword(password, salt);
+        IvParameterSpec ivParameterSpec = generateIv();
+
+        return encrypt(ALGORITHM, textToEncrypt, key, ivParameterSpec);
+    }
+
+    public String decryptWithAes(String textToDecrypt)
+            throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException,
+            NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+
+        SecretKey key = getKeyFromPassword(password, salt);
+        IvParameterSpec ivParameterSpec = generateIv();
+
+        return decrypt(ALGORITHM, textToDecrypt, key, ivParameterSpec);
     }
 }
