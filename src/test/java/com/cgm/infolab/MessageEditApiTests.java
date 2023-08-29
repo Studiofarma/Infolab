@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static com.cgm.infolab.db.model.enumeration.StatusEnum.EDITED;
+import static com.cgm.infolab.db.model.enumeration.MessageStatusEnum.EDITED;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;

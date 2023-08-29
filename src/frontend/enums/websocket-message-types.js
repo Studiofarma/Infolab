@@ -3,4 +3,5 @@ export const WebSocketMessageTypes = {
   edit: "EDIT",
   delete: "DELETE",
   join: "JOIN",
+  quit: "QUIT",
 };

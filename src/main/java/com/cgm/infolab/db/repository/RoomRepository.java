@@ -55,10 +55,11 @@ public class RoomRepository {
                         "m.id message_id, " +
                         "m.sent_at, " +
                         "m.content, " +
-                        "m.status, " +
+                        "m.status message_status, " +
                         "u_other.id other_user_id, " +
                         "u_other.username other_username, " +
                         "u_other.description other_description, " +
+                        "u_other.status other_status, " +
                         "CASE " +
                             "WHEN r.visibility = 'PUBLIC' THEN r.description " +
                             "ELSE u_other.description " +
@@ -91,12 +92,13 @@ public class RoomRepository {
                         "NULL as message_id,  " +
                         "NULL as sent_at,  " +
                         "NULL as content,  " +
-                        "NULL as status,  " +
-                        "u.id other_user_id,  " +
+                        "NULL as message_status,  " +
+                        "u.id other_user_id, " +
                         "u.username other_username,  " +
                         "u.description other_description,  " +
                         "NULL description,  " +
-                        "u.description new_user_description  " +
+                        "u.description new_user_description," +
+                        "u.status other_status " +
                     "FROM infolab.users u  " +
                     "WHERE u.username NOT IN (SELECT username FROM users_with_room) AND u.username <> :username ";
 

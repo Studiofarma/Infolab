@@ -21,8 +21,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-import static com.cgm.infolab.db.model.enumeration.StatusEnum.DELETED;
-import static com.cgm.infolab.db.model.enumeration.StatusEnum.EDITED;
+import static com.cgm.infolab.db.model.enumeration.MessageStatusEnum.DELETED;
+import static com.cgm.infolab.db.model.enumeration.MessageStatusEnum.EDITED;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "local"})

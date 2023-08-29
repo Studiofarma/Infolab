@@ -11,33 +11,40 @@ public class WebSocketMessageDto {
     private ChatMessageDto edit;
     private ChatMessageDto delete;
     private ChatMessageDto join;
+    private ChatMessageDto quit;
 
     private WebSocketMessageDto(@NonNull WebSocketMessageTypeEnum type,
                                 @Nullable ChatMessageDto chat,
                                 @Nullable ChatMessageDto edit,
                                 @Nullable ChatMessageDto delete,
-                                @Nullable ChatMessageDto join) {
+                                @Nullable ChatMessageDto join,
+                                @Nullable ChatMessageDto quit) {
         this.type = type;
         this.chat = chat;
         this.edit = edit;
         this.delete = delete;
         this.join = join;
+        this.quit = quit;
     }
 
     public static WebSocketMessageDto ofChat(ChatMessageDto chat) {
-        return new WebSocketMessageDto(WebSocketMessageTypeEnum.CHAT, chat, null, null, null);
+        return new WebSocketMessageDto(WebSocketMessageTypeEnum.CHAT, chat, null, null, null, null);
     }
 
     public static WebSocketMessageDto ofEdit(ChatMessageDto edit) {
-        return new WebSocketMessageDto(WebSocketMessageTypeEnum.EDIT, null, edit, null, null);
+        return new WebSocketMessageDto(WebSocketMessageTypeEnum.EDIT, null, edit, null, null, null);
     }
 
     public static WebSocketMessageDto ofDelete(ChatMessageDto delete) {
-        return new WebSocketMessageDto(WebSocketMessageTypeEnum.DELETE, null, null, delete, null);
+        return new WebSocketMessageDto(WebSocketMessageTypeEnum.DELETE, null, null, delete, null, null);
     }
 
     public static WebSocketMessageDto ofJoin(ChatMessageDto join) {
-        return new WebSocketMessageDto(WebSocketMessageTypeEnum.JOIN, null, null, null, join);
+        return new WebSocketMessageDto(WebSocketMessageTypeEnum.JOIN, null, null, null, join, null);
+    }
+
+    public static WebSocketMessageDto ofQuit(ChatMessageDto quit) {
+        return new WebSocketMessageDto(WebSocketMessageTypeEnum.QUIT, null,null, null, null, quit);
     }
 
     @NonNull
@@ -83,6 +90,15 @@ public class WebSocketMessageDto {
 
     public void setJoin(ChatMessageDto join) {
         this.join = join;
+    }
+
+    @Nullable
+    public ChatMessageDto getQuit() {
+        return quit;
+    }
+
+    public void setQuit(ChatMessageDto quit) {
+        this.quit = quit;
     }
 
     @Override

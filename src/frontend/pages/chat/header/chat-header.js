@@ -19,11 +19,15 @@ export class ChatHeader extends BaseComponent {
       otherUser: {},
       loggedUser: {},
       conversation: {},
+      canFetchLoggedUser: false,
     };
   }
 
   constructor() {
     super();
+
+    this.isFirstFetch = true;
+
     this.cookie = CookieService.getCookie();
 
     // Refs
@@ -32,8 +36,11 @@ export class ChatHeader extends BaseComponent {
     this.loggedUserAvatarRef = createRef();
   }
 
-  async firstUpdated() {
-    this.loggedUser = await UsersService.getLoggedUser();
+  async updated() {
+    if (this.canFetchLoggedUser && this.isFirstFetch) {
+      this.loggedUser = await UsersService.getLoggedUser();
+      this.isFirstFetch = false;
+    }
   }
 
   static styles = css`
@@ -98,12 +105,13 @@ export class ChatHeader extends BaseComponent {
           <div class="profileContainer">
             ${when(
               this.conversation?.description !== undefined,
-              () => html` <il-avatar
-                  .user=${this.otherUser}
-                  .conversation=${this.conversation}
-                  name=${this.conversation?.description}
-                ></il-avatar>
-                <h2>${this.conversation?.description}</h2>`,
+              () =>
+                html` <il-avatar
+                    .user=${this.otherUser}
+                    .conversation=${this.conversation}
+                    name=${this.conversation?.description}
+                  ></il-avatar>
+                  <h2>${this.conversation?.description}</h2>`,
               () => html``
             )}
           </div>

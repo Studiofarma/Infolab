@@ -2,6 +2,7 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import com.cgm.infolab.db.repository.queryhelper.QueryResult;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -31,6 +32,7 @@ public class UserRepository {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("username", user.getName().value());
         parameters.put("description", user.getDescription());
+        parameters.put("status", user.getStatus().toString());
         return UserEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters), user.getName(), user.getDescription());
     }
 
@@ -83,7 +85,19 @@ public class UserRepository {
 
     private QueryResult getUserOrUsers() {
         return queryHelper
-                .query("SELECT *")
+                .query("SELECT *, status user_status")
                 .from("infolab.users");
+    }
+
+    public int updateUserStatus(Username username, UserStatusEnum status) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", username.value());
+        params.put("status", status.toString());
+
+        return queryHelper
+                .query("UPDATE infolab.users SET status = :status")
+                .where("username = :username")
+                .update(params);
+
     }
 }

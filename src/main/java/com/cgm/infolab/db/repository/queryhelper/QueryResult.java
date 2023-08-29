@@ -19,7 +19,7 @@ public record QueryResult (NamedParameterJdbcTemplate namedJdbcTemplate, String 
     }
 
     public QueryResult from(@NonNull String table) {
-        String newQuery = query + table;
+        String newQuery = "%s from %s".formatted(query, table);
         return new QueryResult(namedJdbcTemplate, newQuery);
     }
 
@@ -58,7 +58,7 @@ public record QueryResult (NamedParameterJdbcTemplate namedJdbcTemplate, String 
         return result.stream().collect(Collectors.toMap(Pair::getKey, Pair::getValue));
     }
 
-    public void update(Map<String, ?> queryParams) {
-        namedJdbcTemplate.update(this.query(), queryParams);
+    public int update(Map<String, ?> queryParams) {
+        return namedJdbcTemplate.update(this.query(), queryParams);
     }
 }

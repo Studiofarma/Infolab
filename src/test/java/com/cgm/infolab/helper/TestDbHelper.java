@@ -3,6 +3,7 @@ package com.cgm.infolab.helper;
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
+import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.RowMappers;
 import com.cgm.infolab.db.repository.UserRepository;
@@ -10,6 +11,7 @@ import com.cgm.infolab.service.RoomService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.StatementCallback;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -82,20 +84,20 @@ public class TestDbHelper {
                 "(?, ?, ?)", timestamp, message_id, username);
     }
 
-    public void insertCustomUser(long id, String username, String description) {
-        jdbcTemplate.update("INSERT INTO infolab.users (id, username, description) VALUES (?, ?, ?)", id, username, description);
+    public void insertCustomUser(long id, String username, String description, UserStatusEnum status) {
+        jdbcTemplate.update("INSERT INTO infolab.users (id, username, description, status) VALUES (?, ?, ?, ?)", id, username, description, status.toString());
     }
 
     public List<ChatMessageEntity> getAllMessages() {
         return jdbcTemplate
-                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, u_mex.description sender_description, r.id room_id, r.roomname roomname, r.visibility, m.sent_at, m.content, m.status " +
+                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, u_mex.description sender_description, r.id room_id, r.roomname roomname, r.visibility, m.sent_at, m.content, m.status message_status " +
                         "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.roomname = m.recipient_room_name " +
                         "JOIN infolab.users u_mex ON u_mex.username = m.sender_name", RowMappers::mapToChatMessageEntity);
     }
 
     public <T> List<T> getAllMessages(RowMapper<T> rowMapper) {
         return jdbcTemplate
-                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, u_mex.description sender_description, r.id room_id, r.roomname roomname, r.visibility, m.sent_at, m.content, m.status " +
+                .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, u_mex.description sender_description, r.id room_id, r.roomname roomname, r.visibility, m.sent_at, m.content, m.status message_status " +
                         "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.roomname = m.recipient_room_name " +
                         "JOIN infolab.users u_mex ON u_mex.username = m.sender_name", rowMapper);
     }

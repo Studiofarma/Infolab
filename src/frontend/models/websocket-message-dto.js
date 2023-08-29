@@ -32,6 +32,14 @@ export class WebSocketMessageDto {
     roomName: "",
     status: "",
   };
+  quit = {
+    id: 0,
+    content: "",
+    timestamp: "",
+    sender: "",
+    roomName: "",
+    status: "",
+  };
 
   constructor(obj) {
     this.type = obj.type !== undefined ? obj.type : "";
@@ -39,5 +47,6 @@ export class WebSocketMessageDto {
     this.edit = obj.edit !== undefined ? obj.edit : {};
     this.delete = obj.delete !== undefined ? obj.delete : {};
     this.join = obj.join !== undefined ? obj.join : {};
+    this.quit = obj.quit !== undefined ? obj.quit : {};
   }
 }

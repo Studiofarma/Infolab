@@ -72,7 +72,7 @@ public class RunAfterStartup {
             try {
                 roomRepository.add(r);
             } catch (DuplicateKeyException e) {
-                log.info(String.format("Room roomName=\"%s\" già esistente nel database", r.getName().value()));
+                log.info(String.format("Room roomName=\"%s\" already existing in database", r.getName().value()));
             }
         }
     }
@@ -82,7 +82,7 @@ public class RunAfterStartup {
             try {
                 userRepository.add(u);
             } catch (DuplicateKeyException e) {
-                log.info(String.format("User username=\"%s\" già esistente nel database", u.getName().value()));
+                log.info(String.format("User username=\"%s\" already existing in database", u.getName().value()));
             }
         }
     }

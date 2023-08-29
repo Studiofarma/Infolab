@@ -3,14 +3,15 @@ package com.cgm.infolab.controller;
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.Username;
-import com.cgm.infolab.db.repository.UserRepository;
+import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
-import com.cgm.infolab.model.WebSocketMessageTypeEnum;
 import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -39,12 +40,14 @@ public class ChatController {
     //public JdbcTemplate jdbcTemplate;
 
     private final ChatService chatService;
+    private final UserService userService;
 
     private final Logger log = LoggerFactory.getLogger(ChatController.class);
 
     @Autowired
-    public ChatController(ChatService chatService) {
+    public ChatController(ChatService chatService, UserService userService) {
         this.chatService = chatService;
+        this.userService = userService;
     }
 
     // Questo metodo in teoria viene chiamato quando un utente entra nella chat general.
@@ -56,15 +59,56 @@ public class ChatController {
     //region ROOM GENERAL
     @MessageMapping("/chat.register")
     @SendTo("/topic/public")
-    public WebSocketMessageDto register(@Payload WebSocketMessageDto message, SimpMessageHeaderAccessor headerAccessor){
+    public WebSocketMessageDto register(@Payload WebSocketMessageDto message, SimpMessageHeaderAccessor headerAccessor, Principal principal){
         ChatMessageDto joinMessage = message.getJoin();
         if (joinMessage == null) {
             log.warn("Received WebSocketMessageDto has been ignored because it has join field equals to null");
             return null;
         }
 
-        headerAccessor.getSessionAttributes().put("username", joinMessage.getSender());
-        return message;
+        headerAccessor.getSessionAttributes().put("username", principal.getName());
+
+        Username username = Username.of(principal.getName());
+
+        int rowsAffected = 0;
+        boolean hasUserBeenCreated = false;
+
+        try {
+            userService.saveUserInDb(username, UserStatusEnum.ONLINE);
+            hasUserBeenCreated = true;
+        } catch (DuplicateKeyException e) {
+            log.info("User username=\"%s\" already existing in database".formatted(joinMessage.getSender()));
+            rowsAffected = userService.updateUserStatus(username, UserStatusEnum.ONLINE);
+        }
+
+        // This is needed for security
+        message.getJoin().setSender(principal.getName());
+
+        if (rowsAffected == 1 || hasUserBeenCreated) {
+            return message;
+        } else {
+            return null;
+        }
+    }
+
+    @MessageMapping("/chat.unregister")
+    @SendTo("/topic/public")
+    public WebSocketMessageDto unregister(@Payload WebSocketMessageDto message, Principal principal) {
+        ChatMessageDto quitMessage = message.getQuit();
+        if (quitMessage == null) {
+            log.warn("Received WebSocketMessageDto has been ignored because it has join field equals to null");
+            return null;
+        }
+
+        int rowsAffected = userService.updateUserStatus(Username.of(principal.getName()), UserStatusEnum.OFFLINE);
+
+        message.getQuit().setSender(principal.getName());
+
+        if (rowsAffected == 1) {
+            return message;
+        } else {
+            return null;
+        }
     }
 
     @MessageMapping("/chat.send")
