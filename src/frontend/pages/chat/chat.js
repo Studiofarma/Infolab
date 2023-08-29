@@ -954,7 +954,10 @@ export class Chat extends BaseComponent {
     const joinMessage = message.join;
 
     if (joinMessage.sender !== this.login.username) {
-      UsersService.updateUserInSessionStorage(joinMessage.sender, "ONLINE");
+      UsersService.updateUserStatusInSessionStorage(
+        joinMessage.sender,
+        "ONLINE"
+      );
 
       this.messagesListRef.value?.getAllNeededUsers();
       this.conversationListRef.value?.getAllNeededUsers();
@@ -965,7 +968,10 @@ export class Chat extends BaseComponent {
     const quitMessage = message.quit;
 
     if (quitMessage.sender !== this.login.username) {
-      UsersService.updateUserInSessionStorage(quitMessage.sender, "OFFLINE");
+      UsersService.updateUserStatusInSessionStorage(
+        quitMessage.sender,
+        "OFFLINE"
+      );
 
       this.messagesListRef.value?.getAllNeededUsers();
       this.conversationListRef.value?.getAllNeededUsers();

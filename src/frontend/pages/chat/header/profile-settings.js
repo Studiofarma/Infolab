@@ -293,7 +293,13 @@ export class profileSettings extends BaseComponent {
     }
 
     if (this.username !== this.currentUsername) {
-      this.dispatchEvent(new CustomEvent("il:new-description-set"));
+      this.dispatchEvent(
+        new CustomEvent("il:new-description-set", {
+          detail: {
+            newDescription: this.username,
+          },
+        })
+      );
       UsersService.setUserDescription(this.username);
     }
 

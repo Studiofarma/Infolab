@@ -66,11 +66,13 @@ export class UsersService {
         console.error(error);
       }
 
-      if (loggedUser.length !== 0)
+      if (loggedUser.length !== 0) {
+        loggedUser = loggedUser[0];
         sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
+      }
     }
 
-    return loggedUser[0];
+    return loggedUser;
   }
 
   static setUserDescription(newDescription) {
@@ -108,7 +110,7 @@ export class UsersService {
     return users.data;
   }
 
-  static updateUserInSessionStorage(username, status) {
+  static updateUserStatusInSessionStorage(username, status) {
     let sessionUsers = JSON.parse(sessionStorage.getItem(usersKey));
 
     if (sessionUsers) {
@@ -122,6 +124,19 @@ export class UsersService {
       }
 
       sessionStorage.setItem(usersKey, JSON.stringify(sessionUsers));
+    }
+  }
+
+  static updateLoggedUserInSessionStorage(user) {
+    let loggedUser = JSON.parse(sessionStorage.getItem(loggedUserKey));
+
+    if (loggedUser) {
+      loggedUser = {
+        ...loggedUser,
+        ...user,
+      };
+
+      sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
     }
   }
 }
