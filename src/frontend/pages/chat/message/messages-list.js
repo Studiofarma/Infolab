@@ -39,15 +39,7 @@ export class MessagesList extends LitElement {
 
   async updated(changedProperties) {
     if (changedProperties.has("messages")) {
-      let usernames = new Set();
-
-      if (this.activeConversation?.roomType === "GROUP") {
-        this.messages.forEach((message) => {
-          usernames.add(message.sender);
-        });
-      }
-
-      if (usernames.size > 0) await this.getAllUsers(Array.from(usernames));
+      await this.getAllNeededUsers();
     }
   }
 
@@ -197,6 +189,18 @@ export class MessagesList extends LitElement {
     } catch (error) {
       console.error(error);
     }
+  }
+
+  async getAllNeededUsers() {
+    let usernames = new Set();
+
+    if (this.activeConversation?.roomType === "GROUP") {
+      this.messages.forEach((message) => {
+        usernames.add(message.sender);
+      });
+    }
+
+    if (usernames.size > 0) await this.getAllUsers(Array.from(usernames));
   }
 
   textEditorResized(event) {

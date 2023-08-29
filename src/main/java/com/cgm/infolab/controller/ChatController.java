@@ -82,7 +82,7 @@ public class ChatController {
         }
 
         // This is needed for security
-        message.getJoin().setSender(principal.getName());
+        message.getJoin().setSender(Username.of(principal.getName()).value());
 
         if (rowsAffected == 1 || hasUserBeenCreated) {
             return message;
@@ -102,7 +102,7 @@ public class ChatController {
 
         int rowsAffected = userService.updateUserStatus(Username.of(principal.getName()), UserStatusEnum.OFFLINE);
 
-        message.getQuit().setSender(principal.getName());
+        message.getQuit().setSender(Username.of(principal.getName()).value());
 
         if (rowsAffected == 1) {
             return message;

@@ -5,6 +5,8 @@ const conversationPath =
 
 beforeEach(() => {
   cy.login({ user: "user1", password: "password1" });
+
+  cy.wait(1000);
 });
 
 describe("header component spec", () => {

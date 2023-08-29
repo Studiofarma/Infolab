@@ -98,6 +98,23 @@ export class Chat extends BaseComponent {
     this.createSocket();
     await UsersService.getLoggedUser();
     this.canFetchLoggedUser = true;
+
+    window.addEventListener("beforeunload", () => {
+      if (this.stompClient) {
+        const quitMessage = new WebSocketMessageDto({
+          type: WebSocketMessageTypes.quit,
+          quit: {
+            sender: this.login.username,
+          },
+        });
+
+        this.stompClient.send(
+          "/app/chat.unregister",
+          {},
+          JSON.stringify(quitMessage)
+        );
+      }
+    });
   }
 
   updated(changedProperties) {
@@ -816,6 +833,12 @@ export class Chat extends BaseComponent {
     } else if (message.type === WebSocketMessageTypes.delete) {
       // DELETE
       await this.manageDeleteMessageReceived(message);
+    } else if (message.type === WebSocketMessageTypes.join) {
+      // JOIN
+      this.manageJoinMessageReceived(message);
+    } else if (message.type === WebSocketMessageTypes.quit) {
+      // QUIT
+      this.manageQuitMessageReceived(message);
     }
   }
 
@@ -924,6 +947,28 @@ export class Chat extends BaseComponent {
           content: GenericConstants.deletedMessageContent,
         })
       );
+    }
+  }
+
+  async manageJoinMessageReceived(message) {
+    const joinMessage = message.join;
+
+    if (joinMessage.sender !== this.login.username) {
+      UsersService.updateUserInSessionStorage(joinMessage.sender, "ONLINE");
+
+      this.messagesListRef.value?.getAllNeededUsers();
+      this.conversationListRef.value?.getAllNeededUsers();
+    }
+  }
+
+  async manageQuitMessageReceived(message) {
+    const quitMessage = message.quit;
+
+    if (quitMessage.sender !== this.login.username) {
+      UsersService.updateUserInSessionStorage(quitMessage.sender, "OFFLINE");
+
+      this.messagesListRef.value?.getAllNeededUsers();
+      this.conversationListRef.value?.getAllNeededUsers();
     }
   }
 

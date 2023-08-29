@@ -107,4 +107,21 @@ export class UsersService {
 
     return users.data;
   }
+
+  static updateUserInSessionStorage(username, status) {
+    let sessionUsers = JSON.parse(sessionStorage.getItem(usersKey));
+
+    if (sessionUsers) {
+      let index = sessionUsers.findIndex((item) => item.name === username);
+
+      if (index > -1) {
+        sessionUsers[index] = {
+          ...sessionUsers[index],
+          status: status,
+        };
+      }
+
+      sessionStorage.setItem(usersKey, JSON.stringify(sessionUsers));
+    }
+  }
 }
