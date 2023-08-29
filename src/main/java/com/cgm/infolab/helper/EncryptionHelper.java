@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 public class EncryptionHelper {
@@ -23,12 +24,21 @@ public class EncryptionHelper {
     @Value("${encryption.key.iv}")
     private byte[] iv;
 
+    private final AtomicReference<SecretKeySpec> key = new AtomicReference<>();
+
     private final String ALGORITHM = "AES/CBC/PKCS5Padding";
 
     private SecretKey getKeyFromPassword(String password, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
-        return new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+        if (key.get() == null) {
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
+
+            SecretKeySpec secretKeySpec = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
+            key.set(secretKeySpec);
+            return secretKeySpec;
+        } else {
+            return key.get();
+        }
     }
 
     private IvParameterSpec generateIv() {
