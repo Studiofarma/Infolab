@@ -167,23 +167,23 @@ export class profileSettings extends BaseComponent {
             ?isDefaultAvatar=${this.imagePath === ""}
             .hasStatus=${false}
           ></il-avatar>
-          <button
+          <!-- <button
             @click=${() => {
-              this.inputFileRef.value.click();
-            }}
+            this.inputFileRef.value.click();
+          }}
           >
             <il-button-icon
               @click=${() => this.userDescriptionInputRef.value.focus()}
               content=${IconNames.update}
             ></il-button-icon>
             Carica immagine
-          </button>
-          <input
+          </button> -->
+          <!-- <input
             type="file"
             @change=${this.onFileUpload}
             accept="image/png, image/jpeg"
             ${ref(this.inputFileRef)}
-          />
+          /> -->
         </div>
 
         <section>
@@ -270,7 +270,7 @@ export class profileSettings extends BaseComponent {
     );
 
     this.imagePath = this.currentAvatarURL;
-    this.inputFileRef.value.value = this.currentAvatarURL;
+    // this.inputFileRef.value.value = this.currentAvatarURL; // REMOVED TEMPORARILY WITH THE IMAGE INPUT
 
     // restoring theme
     const restoredTheme = this.themeSwitcherRef.value?.getInitialTheme();
