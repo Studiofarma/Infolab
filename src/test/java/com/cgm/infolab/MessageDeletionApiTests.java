@@ -5,6 +5,7 @@ import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.helper.EncryptionHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
@@ -20,6 +21,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -44,6 +52,8 @@ public class MessageDeletionApiTests {
     public JdbcTemplate jdbcTemplate;
     @Autowired
     public MockMvc mvc;
+    @Autowired
+    public EncryptionHelper encryptionHelper;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -86,8 +96,8 @@ public class MessageDeletionApiTests {
     void whenOneMessageIsDeleted_inPrivateRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '2 Visible only to user0 and user1'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("2 Visible only to user0 and user1"));
 
         apiDeleteForUser1("/api/messages/user0-user1/%d".formatted(message2Id));
 
@@ -120,8 +130,8 @@ public class MessageDeletionApiTests {
     void whenOneMessageIsDeleted_inPublicRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '1 Hello general from user0'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("1 Hello general from user0"));
 
         apiDeleteForUser1("/api/messages/user0-user1/%d".formatted(message1Id));
 
@@ -154,8 +164,8 @@ public class MessageDeletionApiTests {
     void whenTryingToDelete_messageSentByAnotherUser_messageDoesNotGetDeleted() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("5 Visible only to user0 and user1"));
 
         apiDeleteForUser1("/api/messages/user0-user1/%d".formatted(message5Id));
 
@@ -180,6 +190,15 @@ public class MessageDeletionApiTests {
     }
 
     public ChatMessageEntity mapToChatMessageEntity(ResultSet rs, int rowNum) throws SQLException {
-        return ChatMessageEntity.of(rs.getLong("message_id"), UserEntity.empty(), RoomEntity.empty(), null, rs.getString("content"), null);
+        String decryptedContent;
+        String contentFromDb = rs.getString("content");
+        try {
+            decryptedContent = contentFromDb != null ? encryptionHelper.decryptWithAes(rs.getString("content")) : "";
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException |
+                 NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
+
+        return ChatMessageEntity.of(rs.getLong("message_id"), UserEntity.empty(), RoomEntity.empty(), null, decryptedContent, null);
     }
 }

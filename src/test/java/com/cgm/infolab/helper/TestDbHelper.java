@@ -11,9 +11,15 @@ import com.cgm.infolab.service.RoomService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.StatementCallback;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,12 +29,16 @@ public class TestDbHelper {
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
     private final RoomService roomService;
+    private final RowMappers rowMappers;
+    private final EncryptionHelper encryptionHelper;
 
-    public TestDbHelper(JdbcTemplate jdbcTemplate, UserRepository userRepository, RoomRepository roomRepository, RoomService roomService) {
+    public TestDbHelper(JdbcTemplate jdbcTemplate, UserRepository userRepository, RoomRepository roomRepository, RoomService roomService, RowMappers rowMappers, EncryptionHelper encryptionHelper) {
         this.jdbcTemplate = jdbcTemplate;
         this.userRepository = userRepository;
         this.roomRepository = roomRepository;
         this.roomService = roomService;
+        this.rowMappers = rowMappers;
+        this.encryptionHelper = encryptionHelper;
     }
 
     public void clearDb() {
@@ -75,8 +85,18 @@ public class TestDbHelper {
     }
 
     public void insertCustomMessage(long messageId, String senderName, String recipientRoomName, LocalDateTime sentAt, String content) {
+
+        String encryptedContent;
+
+        try {
+            encryptedContent = encryptionHelper.encryptWithAes(content);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException |
+                 NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+            throw new RuntimeException(e);
+        }
+
         jdbcTemplate.update("INSERT INTO infolab.chatmessages (id, sender_name, recipient_room_name, sent_at, content) values" +
-                "(?, ?, ?, ?, ?)", messageId, senderName, recipientRoomName, sentAt, content);
+                "(?, ?, ?, ?, ?)", messageId, senderName, recipientRoomName, sentAt, encryptedContent);
     }
 
     public void insertCustomReadDate(LocalDateTime timestamp, long message_id, String username) {
@@ -92,7 +112,7 @@ public class TestDbHelper {
         return jdbcTemplate
                 .query("SELECT m.id message_id, u_mex.id user_id, u_mex.username username, u_mex.description sender_description, r.id room_id, r.roomname roomname, r.visibility, m.sent_at, m.content, m.status message_status " +
                         "FROM infolab.chatmessages m JOIN infolab.rooms r ON r.roomname = m.recipient_room_name " +
-                        "JOIN infolab.users u_mex ON u_mex.username = m.sender_name", RowMappers::mapToChatMessageEntity);
+                        "JOIN infolab.users u_mex ON u_mex.username = m.sender_name", rowMappers::mapToChatMessageEntity);
     }
 
     public <T> List<T> getAllMessages(RowMapper<T> rowMapper) {

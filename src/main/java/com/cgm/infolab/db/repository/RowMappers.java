@@ -4,16 +4,36 @@ import com.cgm.infolab.db.ID;
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.enumeration.*;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.helper.EncryptionHelper;
 import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public abstract class RowMappers {
+@Component
+public class RowMappers {
 
-    public static ChatMessageEntity mapToChatMessageEntity(ResultSet rs, int rowNum) throws SQLException {
+    private final EncryptionHelper encryptionHelper;
+
+    private static final Logger log = LoggerFactory.getLogger(RowMappers.class);
+
+    public RowMappers(EncryptionHelper encryptionHelper) {
+        this.encryptionHelper = encryptionHelper;
+    }
+
+    public ChatMessageEntity mapToChatMessageEntity(ResultSet rs, int rowNum) throws SQLException {
 
         UserEntity user = UserEntity.of(Username.of(rs.getString("username")), rs.getString("sender_description"));
 
@@ -30,7 +50,15 @@ public abstract class RowMappers {
         String statusString = rs.getString("message_status");
         MessageStatusEnum status = statusString != null && !statusString.trim().isEmpty() ? MessageStatusEnum.valueOf(statusString.trim()) : null;
 
-        String content = status != null && status.equals(MessageStatusEnum.DELETED) ? "" : rs.getString("content");
+        String content = null;
+        try {
+            content = status != null && status.equals(MessageStatusEnum.DELETED)
+                    ? ""
+                    : encryptionHelper.decryptWithAes(rs.getString("content"));
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException |
+                 NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+            log.error("Error while decrypting the message: %s - %s".formatted(e.getClass(), e.getMessage()));
+        }
 
         return ChatMessageEntity
                 .of(rs.getLong("message_id"),
@@ -42,7 +70,7 @@ public abstract class RowMappers {
                 );
     }
 
-    public static RoomEntity mapToRoomEntity(ResultSet rs, int rowNum) throws SQLException {
+    public RoomEntity mapToRoomEntity(ResultSet rs, int rowNum) throws SQLException {
         String roomName = rs.getString("roomname");
         RoomTypeEnum roomType = getRoomType(roomName);
 
@@ -55,7 +83,7 @@ public abstract class RowMappers {
         );
     }
 
-    public static RoomEntity mapToRoomEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
+    public RoomEntity mapToRoomEntityWithMessages(ResultSet rs, int rowNum) throws SQLException {
         String roomName = rs.getString("roomname");
         RoomTypeEnum roomType = getRoomType(roomName);
 
@@ -98,7 +126,7 @@ public abstract class RowMappers {
         return room;
     }
 
-    public static UserEntity mapToUserEntity(ResultSet rs, int rowNum) throws SQLException {
+    public UserEntity mapToUserEntity(ResultSet rs, int rowNum) throws SQLException {
         String usernameString = rs.getString("username");
 
         String description = rs.getString("description");
@@ -113,7 +141,7 @@ public abstract class RowMappers {
         );
     }
 
-    public static UserEntity mapToOtherUserEntity(ResultSet rs, int rowNum) throws SQLException {
+    public UserEntity mapToOtherUserEntity(ResultSet rs, int rowNum) throws SQLException {
         return UserEntity.of(
                 rs.getLong("other_user_id"),
                 Username.of(rs.getString("other_username")),
@@ -122,7 +150,7 @@ public abstract class RowMappers {
         );
     }
 
-    public static UserEntity mapToNewUserEntity(ResultSet rs, int rowNum) throws SQLException {
+    public UserEntity mapToNewUserEntity(ResultSet rs, int rowNum) throws SQLException {
         return UserEntity.of(
                 rs.getLong("new_user_id"),
                 Username.of(rs.getString("new_user_username")),
@@ -130,11 +158,11 @@ public abstract class RowMappers {
         );
     }
 
-    public static Pair<RoomName, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
+    public Pair<RoomName, Integer> mapNotDownloadedMessagesCount(ResultSet rs, int rowNum) throws SQLException {
         return Pair.of(RoomName.of(rs.getString("roomname")), rs.getInt("not_downloaded_count"));
     }
 
-    public static Pair<RoomName, LocalDateTime> mapLastDownloadedDate(ResultSet rs, int rowNum) throws SQLException {
+    public Pair<RoomName, LocalDateTime> mapLastDownloadedDate(ResultSet rs, int rowNum) throws SQLException {
         if (rs.getTimestamp("download_timestamp") == null) {
             return Pair.of(RoomName.of(rs.getString("roomname")), null);
         } else {
@@ -143,7 +171,7 @@ public abstract class RowMappers {
     }
 
     // TODO: remove when roomType will come from the db
-    private static RoomTypeEnum getRoomType(String roomName) {
+    private RoomTypeEnum getRoomType(String roomName) {
         return roomName.equals("general") ? RoomTypeEnum.GROUP : RoomTypeEnum.USER2USER;
     }
 }

@@ -3,6 +3,7 @@ package com.cgm.infolab;
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.DownloadDateRepository;
+import com.cgm.infolab.helper.EncryptionHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
@@ -28,6 +29,8 @@ public class LastDownloadDateUpdateTests {
     public DownloadDateRepository downloadDateRepository;
     @Autowired
     public TestDbHelper testDbHelper;
+    @Autowired
+    public EncryptionHelper encryptionHelper;
 
     public RoomEntity general = RoomEntity.general();
 
@@ -67,7 +70,7 @@ public class LastDownloadDateUpdateTests {
     }
 
     @Test
-    void whenMessageIsDownloaded_lastDownloadDateExistsForUserThatDownloaded_doesNotForOthers() {
+    void whenMessageIsDownloaded_lastDownloadDateExistsForUserThatDownloaded_doesNotForOthers() throws Exception {
 
         chatService.saveMessageInDb(messageDtos[0], loggedInUser.getName(), general.getName(), null);
         chatService.saveMessageInDb(messageDtos[3], users[2].getName(), RoomName.of("user1-user2"), null);
@@ -78,7 +81,7 @@ public class LastDownloadDateUpdateTests {
                 query,
                 (rs, rowNum) -> rs.getString("content"),
                 users[0].getName().value(),
-                generalMessage
+                encryptionHelper.encryptWithAes(generalMessage)
         );
 
         Assertions.assertEquals(1, fromDb.size());
@@ -89,14 +92,14 @@ public class LastDownloadDateUpdateTests {
                 query,
                 (rs, rowNum) -> rs.getString("content"),
                 users[0].getName().value(),
-                "Visible only to user1 and user2"
+                encryptionHelper.encryptWithAes("Visible only to user1 and user2")
         );
 
         Assertions.assertEquals(0, fromDb2.size());
     }
 
     @Test
-    void whenOtherMessagesAreDownloaded_lastDownloadDateExistsForNewMessages_notUpdatedForPreviousMessages() {
+    void whenOtherMessagesAreDownloaded_lastDownloadDateExistsForNewMessages_notUpdatedForPreviousMessages() throws Exception {
 
         chatService.saveMessageInDb(messageDtos[0], loggedInUser.getName(), general.getName(), null);
 
@@ -106,7 +109,7 @@ public class LastDownloadDateUpdateTests {
                 query,
                 (rs, rowNum) -> rs.getTimestamp("download_timestamp"),
                 users[0].getName().value(),
-                generalMessage
+                encryptionHelper.encryptWithAes(generalMessage)
         )
         .get(0);
 
@@ -118,7 +121,7 @@ public class LastDownloadDateUpdateTests {
                 query,
                 (rs, rowNum) -> rs.getString("content"),
                 users[0].getName().value(),
-                generalMessage2
+                encryptionHelper.encryptWithAes(generalMessage2)
         );
 
         Assertions.assertEquals(1, fromDb.size());
@@ -127,7 +130,7 @@ public class LastDownloadDateUpdateTests {
                         query,
                         (rs, rowNum) -> rs.getTimestamp("download_timestamp"),
                         users[0].getName().value(),
-                        generalMessage2
+                        encryptionHelper.encryptWithAes(generalMessage2)
                 )
                 .get(0);
 

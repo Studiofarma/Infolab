@@ -16,11 +16,13 @@ import java.util.*;
 public class UserRepository {
     private final QueryHelper queryHelper;
     private final DataSource dataSource;
+    public final RowMappers rowMappers;
 
 
-    public UserRepository(QueryHelper queryHelper, DataSource dataSource) {
+    public UserRepository(QueryHelper queryHelper, DataSource dataSource, RowMappers rowMappers) {
         this.queryHelper = queryHelper;
         this.dataSource = dataSource;
+        this.rowMappers = rowMappers;
     }
 
     public UserEntity add(UserEntity user) {
@@ -55,7 +57,7 @@ public class UserRepository {
             return Optional.ofNullable(
                     getUserOrUsers()
                             .where(where)
-                            .executeForObject(RowMappers::mapToUserEntity, queryParams)
+                            .executeForObject(rowMappers::mapToUserEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -76,7 +78,7 @@ public class UserRepository {
             return getUserOrUsers()
                     .where(where)
                     .other(other)
-                    .executeForList(RowMappers::mapToUserEntity, queryParams);
+                    .executeForList(rowMappers::mapToUserEntity, queryParams);
 
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();

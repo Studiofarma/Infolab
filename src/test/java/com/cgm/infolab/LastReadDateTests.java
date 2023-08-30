@@ -5,6 +5,7 @@ import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.DownloadDateRepository;
+import com.cgm.infolab.helper.EncryptionHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
@@ -36,6 +37,8 @@ public class LastReadDateTests {
     JdbcTemplate jdbcTemplate;
     @Autowired
     DownloadDateRepository downloadDateRepository;
+    @Autowired
+    EncryptionHelper encryptionHelper;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -75,8 +78,9 @@ public class LastReadDateTests {
     }
 
     @Test
-    void whenUpdatingDownloadDate_forMessage1_itIsAfterSendDateAndBeforeNow() {
-        long message1Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '1 Hello general from user0'", this::messageIdMapper);
+    void whenUpdatingDownloadDate_forMessage1_itIsAfterSendDateAndBeforeNow() throws Exception {
+        long message1Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = ?",
+                this::messageIdMapper, encryptionHelper.encryptWithAes("1 Hello general from user0"));
 
         downloadDateRepository.addDownloadDateToMessages(users[1].getName(), List.of(message1Id));
 
@@ -93,8 +97,9 @@ public class LastReadDateTests {
     }
 
     @Test
-    void whenUpdatingDownloadDate_forMessage2_itIsAfterSendDateAndBeforeNow_message5DoesNotHaveIt() {
-        long message2Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '2 Visible only to user0 and user1'", this::messageIdMapper);
+    void whenUpdatingDownloadDate_forMessage2_itIsAfterSendDateAndBeforeNow_message5DoesNotHaveIt() throws Exception {
+        long message2Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = ?",
+                this::messageIdMapper, encryptionHelper.encryptWithAes("2 Visible only to user0 and user1"));
 
         downloadDateRepository.addDownloadDateToMessages(users[1].getName(), List.of(message2Id));
 
@@ -109,7 +114,8 @@ public class LastReadDateTests {
         Assertions.assertTrue(readDate.isAfter(sentDate));
         Assertions.assertTrue(readDate.isBefore(LocalDateTime.now()));
 
-        long message5Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '5 Visible only to user0 and user1'", this::messageIdMapper);
+        long message5Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = ?",
+                this::messageIdMapper, encryptionHelper.encryptWithAes("5 Visible only to user0 and user1"));
 
         Assertions.assertThrows(EmptyResultDataAccessException.class,
                 () -> jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
@@ -118,8 +124,12 @@ public class LastReadDateTests {
     }
 
     @Test
-    void whenUpdatingDownloadDates_forMessages3And6_theyAreAfterSendDateAndBeforeNow() {
-        List<Long> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = '3 Visible only to user0 and user1' OR content = '6 Visible only to user1 and user2'", this::messageIdMapper);
+    void whenUpdatingDownloadDates_forMessages3And6_theyAreAfterSendDateAndBeforeNow() throws Exception {
+        List<Long> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = ? OR content = ?",
+                this::messageIdMapper,
+                encryptionHelper.encryptWithAes("3 Visible only to user0 and user1"),
+                encryptionHelper.encryptWithAes("6 Visible only to user1 and user2")
+        );
 
         downloadDateRepository.addDownloadDateToMessages(users[1].getName(), ids);
 
@@ -147,8 +157,9 @@ public class LastReadDateTests {
     }
 
     @Test
-    void whenTryingToSetMultipleReadDates_forSameMessageAndUser_errorIsThrown() {
-        List<Long> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = '4 Hello general from user2'", this::messageIdMapper);
+    void whenTryingToSetMultipleReadDates_forSameMessageAndUser_errorIsThrown() throws Exception{
+        List<Long> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = ?",
+                this::messageIdMapper, encryptionHelper.encryptWithAes("4 Hello general from user2"));
 
         Assertions.assertEquals(1, ids.size());
 

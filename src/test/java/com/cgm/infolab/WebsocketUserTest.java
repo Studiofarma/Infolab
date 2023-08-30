@@ -41,6 +41,8 @@ public class WebsocketUserTest {
     public TestStompHelper testStompHelper;
     @Autowired
     public JdbcTemplate jdbcTemplate;
+    @Autowired
+    public RowMappers rowMappers;
 
     WebSocketStompClient websocket;
 
@@ -68,7 +70,7 @@ public class WebsocketUserTest {
 
         // Check that user does not exist before
         Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
-            UserEntity user = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", RowMappers::mapToUserEntity);
+            UserEntity user = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", rowMappers::mapToUserEntity);
         });
 
         StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
@@ -90,7 +92,7 @@ public class WebsocketUserTest {
         await()
                 .atMost(1, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
-                    UserEntity user1FromDb = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", RowMappers::mapToUserEntity);
+                    UserEntity user1FromDb = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", rowMappers::mapToUserEntity);
 
                     Assertions.assertEquals("user1", user1FromDb.getName().value());
                     Assertions.assertEquals("user1", user1FromDb.getDescription());
@@ -107,7 +109,7 @@ public class WebsocketUserTest {
 
         testDbHelper.addUsers(user1);
 
-        UserEntity user1Before = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", RowMappers::mapToUserEntity);
+        UserEntity user1Before = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", rowMappers::mapToUserEntity);
 
         Assertions.assertEquals(UserStatusEnum.OFFLINE, user1Before.getStatus());
 
@@ -130,7 +132,7 @@ public class WebsocketUserTest {
         await()
                 .atMost(1, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
-                    UserEntity user1FromDb = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", RowMappers::mapToUserEntity);
+                    UserEntity user1FromDb = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", rowMappers::mapToUserEntity);
 
                     Assertions.assertEquals("user1", user1FromDb.getName().value());
                     Assertions.assertEquals("user1", user1FromDb.getDescription());
@@ -148,7 +150,7 @@ public class WebsocketUserTest {
 
         testDbHelper.addUsers(user1Online);
 
-        UserEntity user1Before = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", RowMappers::mapToUserEntity);
+        UserEntity user1Before = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", rowMappers::mapToUserEntity);
 
         Assertions.assertEquals(UserStatusEnum.ONLINE, user1Before.getStatus());
 
@@ -171,7 +173,7 @@ public class WebsocketUserTest {
         await()
                 .atMost(1, TimeUnit.SECONDS)
                 .untilAsserted(() -> {
-                    UserEntity user1FromDb = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", RowMappers::mapToUserEntity);
+                    UserEntity user1FromDb = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", rowMappers::mapToUserEntity);
 
                     Assertions.assertEquals("user1", user1FromDb.getName().value());
                     Assertions.assertEquals("user1", user1FromDb.getDescription());

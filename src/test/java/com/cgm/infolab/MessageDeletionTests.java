@@ -3,6 +3,7 @@ package com.cgm.infolab;
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
+import com.cgm.infolab.helper.EncryptionHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
@@ -34,6 +35,8 @@ public class MessageDeletionTests {
     public ChatMessageRepository chatMessageRepository;
     @Autowired
     public JdbcTemplate jdbcTemplate;
+    @Autowired
+    public EncryptionHelper encryptionHelper;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -73,11 +76,11 @@ public class MessageDeletionTests {
     }
 
     @Test
-    void whenOneMessageIsDeleted_inPrivateRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() {
+    void whenOneMessageIsDeleted_inPrivateRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception{
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("5 Visible only to user0 and user1"));
 
         chatMessageRepository.updateMessageAsDeleted(users[0].getName(), message5Id);
 
@@ -107,11 +110,11 @@ public class MessageDeletionTests {
     }
 
     @Test
-    void whenOneMessageIsDeleted_inPublicRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() {
+    void whenOneMessageIsDeleted_inPublicRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '1 Hello general from user0'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("1 Hello general from user0"));
 
         chatMessageRepository.updateMessageAsDeleted(users[0].getName(), message1Id);
 
@@ -141,11 +144,11 @@ public class MessageDeletionTests {
     }
 
     @Test
-    void whenTryingToDelete_messageSentByAnotherUser_messageDoesNotGetDeleted() {
+    void whenTryingToDelete_messageSentByAnotherUser_messageDoesNotGetDeleted() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message4Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '4 Visible only to user0 and user2'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message4Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("4 Visible only to user0 and user2"));
 
         chatMessageRepository.updateMessageAsDeleted(users[0].getName(), message4Id);
 
