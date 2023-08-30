@@ -60,6 +60,7 @@ public class ChatMessageRepository {
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException |
                  NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
             log.error("Error while encrypting the message: %s - %s".formatted(e.getClass(), e.getMessage()));
+            throw new RuntimeException();
         }
 
         return ChatMessageEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters),
@@ -167,7 +168,17 @@ public class ChatMessageRepository {
         Map<String, Object> params = new HashMap<>();
         params.put("idToEdit", idToEdit);
         params.put("username", username.value());
-        params.put("newContent", newContent);
+
+        String encryptedContent;
+        try {
+            encryptedContent = encryptionHelper.encryptWithAes(newContent);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException |
+                 NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+            log.error("Error while encrypting the message: %s - %s".formatted(e.getClass(), e.getMessage()));
+            throw new RuntimeException();
+        }
+
+        params.put("newContent", encryptedContent);
 
         return queryHelper
                 .forUser(username)
