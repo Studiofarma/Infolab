@@ -6,6 +6,8 @@ const buttonIconPath = `${inputControlsPath},il-insertion-bar,il-button-icon`;
 beforeEach(() => {
   cy.login({ user: "user1", password: "password1" });
 
+  cy.wait(1000);
+
   cy.getLitElement(`${chatPath},il-conversation-list,il-conversation`)
     .find(".chat-box")
     .first()

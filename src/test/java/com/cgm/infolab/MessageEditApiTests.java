@@ -5,6 +5,7 @@ import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.helper.EncryptionHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
@@ -43,6 +44,8 @@ public class MessageEditApiTests {
     public JdbcTemplate jdbcTemplate;
     @Autowired
     public MockMvc mvc;
+    @Autowired
+    public EncryptionHelper encryptionHelper;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -85,8 +88,8 @@ public class MessageEditApiTests {
     void whenOneMessageIsEdited_inPrivateRoom_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '2 Visible only to user0 and user1'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("2 Visible only to user0 and user1"));
 
         apiPutForUser1("/api/messages/user0-user1/%d".formatted(message2Id), "Edited yayy!");
 
@@ -109,8 +112,8 @@ public class MessageEditApiTests {
     void whenOneMessageIsEdited_inPublicRoom_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '1 Hello general from user0'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("1 Hello general from user0"));
 
         apiPutForUser1("/api/messages/user0-user1/%d".formatted(message1Id), "Edited yayy!");
 
@@ -133,8 +136,8 @@ public class MessageEditApiTests {
     void whenTryingToEdit_messageSentByAnotherUser_messageDoesNotGetEdited() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("5 Visible only to user0 and user1"));
 
         apiPutForUser1("/api/messages/user0-user1/%d".formatted(message5Id), "Trying to edit ψ(｀∇´)ψ");
 

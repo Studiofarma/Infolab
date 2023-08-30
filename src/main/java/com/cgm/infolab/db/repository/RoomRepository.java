@@ -26,6 +26,7 @@ public class RoomRepository {
     private final QueryHelper queryHelper;
     private final DataSource dataSource;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final RowMappers rowMappers;
 
     private final String ROOMS_WHERE_ROOMNAME = "r.roomname = :roomName";
     private final String CASE_QUERY =
@@ -102,10 +103,11 @@ public class RoomRepository {
                     "FROM infolab.users u  " +
                     "WHERE u.username NOT IN (SELECT username FROM users_with_room) AND u.username <> :username ";
 
-    public RoomRepository(QueryHelper queryHelper, DataSource dataSource, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+    public RoomRepository(QueryHelper queryHelper, DataSource dataSource, NamedParameterJdbcTemplate namedParameterJdbcTemplate, RowMappers rowMappers) {
         this.queryHelper = queryHelper;
         this.dataSource = dataSource;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+        this.rowMappers = rowMappers;
     }
 
     public RoomEntity add(RoomEntity room) throws DuplicateKeyException {
@@ -168,7 +170,7 @@ public class RoomRepository {
             return Optional.ofNullable(
                     getRoom(username)
                             .where(where)
-                            .executeForObject(RowMappers::mapToRoomEntity, queryParams)
+                            .executeForObject(rowMappers::mapToRoomEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -187,7 +189,7 @@ public class RoomRepository {
             return Optional.ofNullable(
                     getRoomNoUserRestriction()
                             .where(where)
-                            .executeForObject(RowMappers::mapToRoomEntity, queryParams)
+                            .executeForObject(rowMappers::mapToRoomEntity, queryParams)
             );
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -389,7 +391,7 @@ public class RoomRepository {
                                         ascOrDesc,
                                         limit),
                         arguments,
-                        RowMappers::mapToRoomEntityWithMessages);
+                        rowMappers::mapToRoomEntityWithMessages);
     }
 
     private List<RoomEntity> queryExistingRooms(CursorEnum beforeOrAfter,
@@ -409,7 +411,7 @@ public class RoomRepository {
                                         nullsLastOrFirst,
                                         ascOrDescDescription,
                                         limit),
-                        arguments, RowMappers::mapToRoomEntityWithMessages);
+                        arguments, rowMappers::mapToRoomEntityWithMessages);
 
         if (!beforeOrAfter.equals(CursorEnum.NONE)) {
 
@@ -483,7 +485,7 @@ public class RoomRepository {
                 .join("left %s".formatted(GET_DOWNLOAD_DATES_INNER_JOIN))
                 .where("%s and %s".formatted(GET_DOWNLOAD_DATES_WHERE_IN_LIST, DOWNLOAD_DATES_WHERE_NULL))
                 .other("GROUP BY m.recipient_room_name")
-                .executeForMap(RowMappers::mapNotDownloadedMessagesCount, arguments);
+                .executeForMap(rowMappers::mapNotDownloadedMessagesCount, arguments);
     }
 
     public Map<RoomName, LocalDateTime> getLastDownloadedDatesGroupedByRoom(List<RoomName> roomNames, Username username) {
@@ -500,7 +502,7 @@ public class RoomRepository {
                 .join(GET_DOWNLOAD_DATES_INNER_JOIN)
                 .where(GET_DOWNLOAD_DATES_WHERE_IN_LIST)
                 .other("order by m.recipient_room_name, d.download_timestamp desc")
-                .executeForMap(RowMappers::mapLastDownloadedDate, arguments);
+                .executeForMap(rowMappers::mapLastDownloadedDate, arguments);
     }
 
     private List<RoomName> extractRoomNamesFromRoomList(List<RoomEntity> rooms) {

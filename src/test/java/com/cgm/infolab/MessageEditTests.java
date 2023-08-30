@@ -6,6 +6,7 @@ import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
+import com.cgm.infolab.helper.EncryptionHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
@@ -36,6 +37,8 @@ public class MessageEditTests {
     public ChatMessageRepository chatMessageRepository;
     @Autowired
     public JdbcTemplate jdbcTemplate;
+    @Autowired
+    public EncryptionHelper encryptionHelper;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -75,11 +78,11 @@ public class MessageEditTests {
     }
 
     @Test
-    void whenOneMessageIsEdited_inPrivateRoom_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() {
+    void whenOneMessageIsEdited_inPrivateRoom_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '5 Visible only to user0 and user1'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message5Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("5 Visible only to user0 and user1"));
 
         chatMessageRepository.editMessage(users[0].getName(), message5Id, "5 Message edited!!");
 
@@ -99,11 +102,11 @@ public class MessageEditTests {
     }
 
     @Test
-    void whenOneMessageIsEdited_inPublicRoom_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() {
+    void whenOneMessageIsEdited_inPublicRoom_itsContentIsTheSetOne_itsStatusIsEDITED_otherMessagesDidNotChange() throws Exception {
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '1 Hello general from user0'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message1Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("1 Hello general from user0"));
 
         chatMessageRepository.editMessage(users[0].getName(), message1Id, "1 Message edited!!");
 
@@ -123,11 +126,11 @@ public class MessageEditTests {
     }
 
     @Test
-    void whenTryingToEdit_messageSentByAnotherUser_messageDoesNotGetEdited() {
+    void whenTryingToEdit_messageSentByAnotherUser_messageDoesNotGetEdited() throws Exception{
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 
-        long message4Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '4 Visible only to user0 and user2'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message4Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("4 Visible only to user0 and user2"));
 
         chatMessageRepository.editMessage(users[0].getName(), message4Id, "Trying to edit message (｀∀´)Ψ");
 
@@ -143,12 +146,13 @@ public class MessageEditTests {
     }
 
     @Test
-    void whenTryingToEdit_deletedMessage_messageDoesNotGetEdited() {
+    void whenTryingToEdit_deletedMessage_messageDoesNotGetEdited() throws Exception {
 
-        jdbcTemplate.update("UPDATE infolab.chatmessages SET status = 'DELETED' WHERE content = '2 Visible only to user0 and user1'");
+        jdbcTemplate.update("UPDATE infolab.chatmessages SET status = 'DELETED' WHERE content = ?",
+                encryptionHelper.encryptWithAes("2 Visible only to user0 and user1"));
 
-        long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = '2 Visible only to user0 and user1'",
-                (rs, rowNum) -> rs.getLong("id"));
+        long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("2 Visible only to user0 and user1"));
 
         List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
 

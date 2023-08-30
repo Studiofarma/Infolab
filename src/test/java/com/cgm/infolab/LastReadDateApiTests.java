@@ -4,6 +4,7 @@ import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.helper.EncryptionHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.IdDto;
@@ -43,6 +44,8 @@ public class LastReadDateApiTests {
     JdbcTemplate jdbcTemplate;
     @Autowired
     MockMvc mvc;
+    @Autowired
+    EncryptionHelper encryptionHelper;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -83,7 +86,8 @@ public class LastReadDateApiTests {
 
     @Test
     void whenUpdatingDownloadDate_forMessage1_itIsAfterSendDateAndBeforeNow() throws Exception {
-        IdDto message1Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '1 Hello general from user0'", this::messageIdMapper);
+        IdDto message1Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = ?",
+                this::messageIdMapper, encryptionHelper.encryptWithAes("1 Hello general from user0"));
 
         postToApiForUser1("/api/commands/lastread", List.of(message1Id));
 
@@ -101,7 +105,8 @@ public class LastReadDateApiTests {
 
     @Test
     void whenUpdatingDownloadDate_forMessage2_itIsAfterSendDateAndBeforeNow_message5DoesNotHaveIt() throws Exception {
-        IdDto message2Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '2 Visible only to user0 and user1'", this::messageIdMapper);
+        IdDto message2Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = ?",
+                this::messageIdMapper, encryptionHelper.encryptWithAes("2 Visible only to user0 and user1"));
 
         postToApiForUser1("/api/commands/lastread", List.of(message2Id));
 
@@ -118,7 +123,8 @@ public class LastReadDateApiTests {
         Assertions.assertTrue(readDate.isAfter(sentDate));
         Assertions.assertTrue(readDate.isBefore(LocalDateTime.now()));
 
-        IdDto message5Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = '5 Visible only to user0 and user1'", this::messageIdMapper);
+        IdDto message5Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = ?",
+                this::messageIdMapper, encryptionHelper.encryptWithAes("5 Visible only to user0 and user1"));
 
         Assertions.assertThrows(EmptyResultDataAccessException.class,
                 () -> jdbcTemplate.queryForObject("SELECT * FROM infolab.download_dates WHERE message_id = ?",
@@ -128,7 +134,12 @@ public class LastReadDateApiTests {
 
     @Test
     void whenUpdatingDownloadDates_forMessages3And6_theyAreAfterSendDateAndBeforeNow() throws Exception {
-        List<IdDto> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = '3 Visible only to user0 and user1' OR content = '6 Visible only to user1 and user2'", this::messageIdMapper);
+        List<IdDto> ids = jdbcTemplate
+                .query("SELECT * FROM infolab.chatmessages WHERE content = ? OR content = ?",
+                        this::messageIdMapper,
+                        encryptionHelper.encryptWithAes("3 Visible only to user0 and user1"),
+                        encryptionHelper.encryptWithAes("6 Visible only to user1 and user2")
+                );
 
         postToApiForUser1("/api/commands/lastread", ids);
 
@@ -157,7 +168,8 @@ public class LastReadDateApiTests {
 
     @Test
     void whenTryingToSetMultipleReadDates_forSameMessageAndUser_errorIsThrown() throws Exception {
-        List<IdDto> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = '4 Hello general from user2'", this::messageIdMapper);
+        List<IdDto> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = ?",
+                this::messageIdMapper, encryptionHelper.encryptWithAes("4 Hello general from user2"));
 
         Assertions.assertEquals(1, ids.size());
 

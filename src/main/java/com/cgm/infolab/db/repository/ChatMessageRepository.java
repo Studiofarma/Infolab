@@ -5,6 +5,7 @@ import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import com.cgm.infolab.db.repository.queryhelper.UserQueryResult;
+import com.cgm.infolab.helper.EncryptionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DuplicateKeyException;
@@ -12,7 +13,14 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.sql.DataSource;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -20,15 +28,19 @@ import java.util.*;
 public class ChatMessageRepository {
     private final DataSource dataSource;
     private final QueryHelper queryHelper;
+    private final EncryptionHelper encryptionHelper;
+    private final RowMappers rowMappers;
 
     private final Logger log = LoggerFactory.getLogger(ChatMessageRepository.class);
 
     private final String JOIN_MESSAGES =
             "JOIN infolab.chatmessages m ON r.roomname = m.recipient_room_name";
 
-    public ChatMessageRepository(DataSource dataSource, QueryHelper queryHelper) {
+    public ChatMessageRepository(DataSource dataSource, QueryHelper queryHelper, EncryptionHelper encryptionHelper, RowMappers rowMappers) {
         this.dataSource = dataSource;
         this.queryHelper = queryHelper;
+        this.encryptionHelper = encryptionHelper;
+        this.rowMappers = rowMappers;
     }
 
     public ChatMessageEntity add(ChatMessageEntity message) throws DuplicateKeyException {
@@ -41,8 +53,15 @@ public class ChatMessageRepository {
         parameters.put("sender_name", message.getSender().getName().value());
         parameters.put("recipient_room_name", message.getRoom().getName().value());
         parameters.put("sent_at", message.getTimestamp());
-        parameters.put("content", message.getContent());
         parameters.put("status", message.getStatus());
+
+        try {
+            parameters.put("content", encryptionHelper.encryptWithAes(message.getContent()));
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException |
+                 NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+            log.error("Error while encrypting the message: %s - %s".formatted(e.getClass(), e.getMessage()));
+            throw new RuntimeException();
+        }
 
         return ChatMessageEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters),
                 message.getSender(),
@@ -118,7 +137,7 @@ public class ChatMessageRepository {
             return getMessages(username)
                     .where(where)
                     .other(other)
-                    .executeForList(RowMappers::mapToChatMessageEntity, queryParams);
+                    .executeForList(rowMappers::mapToChatMessageEntity, queryParams);
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<>();
         }
@@ -149,7 +168,17 @@ public class ChatMessageRepository {
         Map<String, Object> params = new HashMap<>();
         params.put("idToEdit", idToEdit);
         params.put("username", username.value());
-        params.put("newContent", newContent);
+
+        String encryptedContent;
+        try {
+            encryptedContent = encryptionHelper.encryptWithAes(newContent);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | InvalidAlgorithmParameterException |
+                 NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeyException e) {
+            log.error("Error while encrypting the message: %s - %s".formatted(e.getClass(), e.getMessage()));
+            throw new RuntimeException();
+        }
+
+        params.put("newContent", encryptedContent);
 
         return queryHelper
                 .forUser(username)
