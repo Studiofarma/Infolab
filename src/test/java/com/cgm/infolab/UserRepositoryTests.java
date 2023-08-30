@@ -26,7 +26,10 @@ public class UserRepositoryTests {
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0"), "user0 desc"),
                     UserEntity.of(Username.of("user1"), ""),
-                    UserEntity.of(Username.of("user2"), null)};
+                    UserEntity.of(Username.of("user2"), null),
+                    UserEntity.of(Username.of("user3"), "user3 desc"),
+                    UserEntity.of(Username.of("user4"), "user4 desc"),
+            };
 
     @BeforeAll
     void setupAll() {
@@ -67,5 +70,19 @@ public class UserRepositoryTests {
 
         Assertions.assertEquals(1, rowsAffected2);
         Assertions.assertEquals(UserStatusEnum.OFFLINE, user0After2.getStatus());
+    }
+
+    @Test
+    void whenUpdatingUserDescription_descriptionIsUpdatedCorrectly() {
+        UserEntity user3Before = userRepository.getByUsername(users[3].getName()).get();
+
+        Assertions.assertEquals("user3 desc", user3Before.getDescription());
+
+        int rowsAffected = userRepository.updateUserDescription(users[3].getName(), "Banana");
+
+        UserEntity user3After = userRepository.getByUsername(users[3].getName()).get();
+
+        Assertions.assertEquals(1, rowsAffected);
+        Assertions.assertEquals("Banana", user3After.getDescription());
     }
 }

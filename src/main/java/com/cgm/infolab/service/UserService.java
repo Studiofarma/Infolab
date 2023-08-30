@@ -29,4 +29,8 @@ public class UserService {
     public int updateUserStatus(Username username, UserStatusEnum status) {
         return userRepository.updateUserStatus(username, status);
     }
+
+    public int updateUserDescription(Username username, String newDescription) {
+        return userRepository.updateUserDescription(username, newDescription);
+    }
 }
