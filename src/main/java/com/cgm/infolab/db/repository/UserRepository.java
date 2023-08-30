@@ -100,4 +100,15 @@ public class UserRepository {
                 .update(params);
 
     }
+
+    public int updateUserDescription(Username username, String newDescription) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", username.value());
+        params.put("newDesc", newDescription);
+
+        return queryHelper
+                .query("UPDATE infolab.users SET description = :newDesc")
+                .where("username = :username")
+                .update(params);
+    }
 }

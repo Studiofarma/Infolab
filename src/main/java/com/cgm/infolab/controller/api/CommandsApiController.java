@@ -4,6 +4,7 @@ import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.IdDto;
 import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.service.UserService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,9 +17,13 @@ import java.util.List;
 public class CommandsApiController {
 
     private final ChatService chatService;
+    private final UserService userService;
+    private final ApiHelper apiHelper;
 
-    public CommandsApiController(ChatService chatService) {
+    public CommandsApiController(ChatService chatService, UserService userService, ApiHelper apiHelper) {
         this.chatService = chatService;
+        this.userService = userService;
+        this.apiHelper = apiHelper;
     }
 
     @PostMapping(value = "/api/commands/lastread", consumes = {"application/json"})
@@ -29,5 +34,14 @@ public class CommandsApiController {
     @PostMapping("/api/commands/readall")
     public void postReadAll(@RequestParam String roomName, Principal principal) {
         chatService.updateReadTimestamp(Username.of(principal.getName()), RoomName.of(roomName));
+    }
+
+    @PostMapping("/api/commands/changedesc")
+    public void postNewUserDescription(@RequestParam String newDesc, Principal principal) {
+        if (newDesc == null || newDesc.isEmpty()) {
+            apiHelper.throwBadRequestStatus("You cannot set an empty description.");
+        }
+
+        userService.updateUserDescription(Username.of(principal.getName()), newDesc);
     }
 }
