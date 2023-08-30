@@ -74,6 +74,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/chat/**").authenticated()
                 .requestMatchers("/chat").authenticated()
                 .requestMatchers("/csrf").authenticated()
+                .requestMatchers("/internal/**").authenticated()
             )
             .addFilterBefore(SecurityConfiguration::authInHeadersOrQueryString, BasicAuthenticationFilter.class)
             .httpBasic()
