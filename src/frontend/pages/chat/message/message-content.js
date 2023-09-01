@@ -214,7 +214,10 @@ export class MessageContent extends BaseComponent {
               () =>
                 html` <p
                   class="receiver-name"
-                  style="color: ${this.getColorForSenderName()}"
+                  style="color: ${ThemeColorService.getColorForUser(
+                    this.user?.id,
+                    0
+                  )}"
                 >
                   ${when(
                     this.message.sender != this.cookie.username,
@@ -263,27 +266,6 @@ export class MessageContent extends BaseComponent {
         </main>
       </div>
     `;
-  }
-
-  getColorForSenderName() {
-    switch (this.user?.id % 8) {
-      case 0:
-        return `${ThemeCSSVariables.avatarBg0}`;
-      case 1:
-        return `${ThemeCSSVariables.avatarBg1}`;
-      case 2:
-        return `${ThemeCSSVariables.avatarBg2}`;
-      case 3:
-        return `${ThemeCSSVariables.avatarBg3}`;
-      case 4:
-        return `${ThemeCSSVariables.avatarBg4}`;
-      case 5:
-        return `${ThemeCSSVariables.avatarBg5}`;
-      case 6:
-        return `${ThemeCSSVariables.avatarBg6}`;
-      case 7:
-        return `${ThemeCSSVariables.avatarBg7}`;
-    }
   }
 }
 
