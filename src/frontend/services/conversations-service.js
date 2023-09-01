@@ -37,6 +37,16 @@ export class ConversationService {
     return new ConversationDto(conversation);
   }
 
+  static async getConversationByRoomName(roomName) {
+    let conversation = (
+      await HttpService.httpGet(
+        encodeURI(`/api/rooms/roomname?nameToSearch=${roomName}`)
+      )
+    ).data;
+
+    return new ConversationDto(conversation);
+  }
+
   static async getNextConversations(clientComponentName) {
     let conversations = (
       await HttpService.httpGet(

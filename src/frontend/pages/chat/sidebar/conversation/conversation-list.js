@@ -595,7 +595,9 @@ class ConversationList extends BaseComponent {
   }
 
   async updateLastMessage(message) {
-    let conversation = this.findConversationByRoomName(message.roomName);
+    let conversation = await this.findConversationByRoomNameOrFetchIt(
+      message.roomName
+    );
 
     let lastMessageUser = (await UsersService.getUsers([message.sender]))[0];
 
@@ -625,7 +627,9 @@ class ConversationList extends BaseComponent {
   }
 
   async updateLastMessageIfItIsLastMessageOfConversation(message) {
-    let conversation = this.findConversationByRoomName(message.roomName);
+    let conversation = await this.findConversationByRoomNameOrFetchIt(
+      message.roomName
+    );
 
     let lastMessageUser = (await UsersService.getUsers([message.sender]))[0];
 
@@ -788,6 +792,26 @@ class ConversationList extends BaseComponent {
     }
 
     return this.conversationList[index];
+  }
+
+  async findConversationByRoomNameOrFetchIt(roomName) {
+    let conversation = this.findInOpenConversationList(roomName);
+
+    if (!conversation) {
+      conversation = this.findInNewConversationList(roomName);
+    }
+
+    if (!conversation) {
+      conversation = await ConversationService.getConversationByRoomName(
+        roomName
+      );
+    }
+
+    if (!conversation) {
+      conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+    }
+
+    return conversation;
   }
 
   findConversationByRoomName(roomName) {
