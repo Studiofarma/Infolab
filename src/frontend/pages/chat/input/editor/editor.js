@@ -38,6 +38,12 @@ export class Editor extends BaseComponent {
       max-height: 100px;
       border-radius: 5px;
       overflow-y: auto;
+
+      width: calc(100% - 10px);
+      max-width: calc(100% - 10px);
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
     }
 
     #editor[placeholder]:empty:before {
