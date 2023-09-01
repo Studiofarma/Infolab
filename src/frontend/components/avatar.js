@@ -113,6 +113,11 @@ export class Avatar extends BaseComponent {
   }
 
   createAvatarWithInitials() {
+    if (
+      this.conversation?.roomName === "lorenzo-user1" ||
+      this.user?.name === "user1"
+    )
+      console.log(this.user, this.conversation);
     if (this.avatarLink || this.user?.avatarLink) {
       this.isDefaultAvatar = true;
     } else {
@@ -128,6 +133,11 @@ export class Avatar extends BaseComponent {
   }
 
   render() {
+    if (
+      this.conversation?.roomName === "lorenzo-user1" ||
+      this.user?.name === "user1"
+    )
+      console.log(this.user, this.conversation);
     this.createAvatarWithInitials();
 
     return html`
