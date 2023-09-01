@@ -790,33 +790,34 @@ export class Chat extends BaseComponent {
       return;
     }
 
-    let room =
+    let conversation =
       await this.conversationListRef.value?.findConversationByRoomNameOrFetchIt(
         message.roomName
       );
 
     if (Notification.permission === "granted") {
-      let notification = new Notification(room.description, {
+      let notification = new Notification(conversation.description, {
         body: message.content,
       });
 
-      // notification.onclick = function () {
-      //   this.conversationListRef.value.sidebarListRef.value.selectChat(
-
-      //   );
-      //   window.focus("/");
-      // };
+      notification.onclick = async () => {
+        await this.conversationListRef.value?.changeRoom(
+          new CustomEvent("il:notification-click"),
+          conversation
+        );
+        window.focus("/");
+      };
     } else if (Notification.permission !== "denied") {
       Notification.requestPermission().then(function (permission) {
         if (permission === "granted") {
-          let notification = new Notification(roomName, {
+          let notification = new Notification(conversation.description, {
             body: message.content,
           });
 
-          notification.onclick = function () {
-            this.conversationListRef.value.sidebarListRef.value.selectChat(
-              message,
-              this.activeConversation?.description
+          notification.onclick = async () => {
+            await this.conversationListRef.value?.changeRoom(
+              new CustomEvent("il:notification-click"),
+              conversation
             );
             window.focus("/");
           };
