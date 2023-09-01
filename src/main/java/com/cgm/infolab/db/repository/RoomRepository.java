@@ -434,6 +434,9 @@ public class RoomRepository {
     }
 
     private List<RoomEntity> addDownloadInfoToRooms(List<RoomEntity> rooms, Username username) {
+        if (rooms.isEmpty()) {
+            return rooms;
+        }
 
         List<RoomName> roomNames = extractRoomNamesFromRoomList(rooms);
 
