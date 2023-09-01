@@ -179,6 +179,10 @@ export class ChatHeader extends BaseComponent {
   setOtherUser(user) {
     this.otherUser = user;
   }
+
+  getOtherUser() {
+    return this.otherUser;
+  }
 }
 
 customElements.define("il-chat-header", ChatHeader);
