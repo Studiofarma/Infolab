@@ -962,7 +962,7 @@ export class Chat extends BaseComponent {
       this.messagesListRef.value?.getAllNeededUsers();
       this.conversationListRef.value?.getAllNeededUsers();
 
-      if (joinMessage.sender === this.headerRef.value?.getOtherUser().name) {
+      if (joinMessage.sender === this.headerRef.value?.getOtherUser()?.name) {
         let user = (await UsersService.getUsers([joinMessage.sender]))[0];
         this.headerRef.value?.setOtherUser(user);
       }
@@ -981,7 +981,7 @@ export class Chat extends BaseComponent {
       this.messagesListRef.value?.getAllNeededUsers();
       this.conversationListRef.value?.getAllNeededUsers();
 
-      if (quitMessage.sender === this.headerRef.value?.getOtherUser().name) {
+      if (quitMessage.sender === this.headerRef.value?.getOtherUser()?.name) {
         let user = (await UsersService.getUsers([quitMessage.sender]))[0];
         this.headerRef.value?.setOtherUser(user);
       }

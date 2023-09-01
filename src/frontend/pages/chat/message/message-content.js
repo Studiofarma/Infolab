@@ -111,7 +111,7 @@ export class MessageContent extends BaseComponent {
 
     .receiver-name {
       font-size: 13px;
-      color: ${ThemeCSSVariables.messageSenderNameText};
+      font-weight: bold;
     }
 
     .message {
@@ -212,7 +212,13 @@ export class MessageContent extends BaseComponent {
               this.activeConversation?.roomType ===
                 ConversationDto.roomTypeEnum.group,
               () =>
-                html` <p class="receiver-name">
+                html` <p
+                  class="receiver-name"
+                  style="color: ${ThemeColorService.getColorForUser(
+                    this.user?.id,
+                    0
+                  )}"
+                >
                   ${when(
                     this.message.sender != this.cookie.username,
                     () => this.user?.description

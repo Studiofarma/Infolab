@@ -121,33 +121,10 @@ export class Avatar extends BaseComponent {
     this.initials = this.getInitials(
       this.name ?? this.user?.description ?? this.conversation?.description
     );
-    switch (
-      (this.user?.id ?? this.conversation?.id) % 8 // Note that the BE doesn't return ID, yet it is inside the dto. By default it is 0.
-    ) {
-      case 0:
-        this.color = `${ThemeCSSVariables.avatarBg0}`;
-        break;
-      case 1:
-        this.color = `${ThemeCSSVariables.avatarBg1}`;
-        break;
-      case 2:
-        this.color = `${ThemeCSSVariables.avatarBg2}`;
-        break;
-      case 3:
-        this.color = `${ThemeCSSVariables.avatarBg3}`;
-        break;
-      case 4:
-        this.color = `${ThemeCSSVariables.avatarBg4}`;
-        break;
-      case 5:
-        this.color = `${ThemeCSSVariables.avatarBg5}`;
-        break;
-      case 6:
-        this.color = `${ThemeCSSVariables.avatarBg6}`;
-        break;
-      case 7:
-        this.color = `${ThemeCSSVariables.avatarBg7}`;
-    }
+    this.color = ThemeColorService.getColorForUser(
+      this.user?.id,
+      this.conversation?.id
+    ); // Note that the BE doesn't return ID, yet it is inside the dto. By default it is 0.
   }
 
   render() {
