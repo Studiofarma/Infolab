@@ -785,24 +785,27 @@ export class Chat extends BaseComponent {
     );
   }
 
-  messageNotification(message) {
+  async messageNotification(message) {
     if (!message.content || this.login.username === message.sender) {
       return;
     }
 
-    let roomName = this.activeConversation?.description;
+    let room =
+      await this.conversationListRef.value?.findConversationByRoomNameOrFetchIt(
+        message.roomName
+      );
 
     if (Notification.permission === "granted") {
-      let notification = new Notification(roomName, {
+      let notification = new Notification(room.description, {
         body: message.content,
       });
 
-      notification.onclick = function () {
-        this.conversationListRef.value.sidebarListRef.value.selectChat(
-          roomName
-        );
-        window.focus("/");
-      };
+      // notification.onclick = function () {
+      //   this.conversationListRef.value.sidebarListRef.value.selectChat(
+
+      //   );
+      //   window.focus("/");
+      // };
     } else if (Notification.permission !== "denied") {
       Notification.requestPermission().then(function (permission) {
         if (permission === "granted") {
@@ -873,7 +876,7 @@ export class Chat extends BaseComponent {
     }
 
     this.conversationListRef.value?.clearSearchInput();
-    this.messageNotification(chatMessage);
+    await this.messageNotification(chatMessage);
   }
 
   async manageEditMessageReceived(message) {
