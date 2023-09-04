@@ -51,8 +51,6 @@ export class UsersService {
   }
 
   static async getLoggedUser() {
-    let cookie = CookieService.getCookie();
-
     let loggedUser;
 
     const sessionUser = sessionStorage.getItem(loggedUserKey);

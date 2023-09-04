@@ -99,6 +99,10 @@ export class Chat extends BaseComponent {
     await UsersService.getLoggedUser();
     this.canFetchLoggedUser = true;
 
+    if (await ThemeColorService.initService()) {
+      location.reload();
+    }
+
     window.addEventListener("beforeunload", () => {
       if (this.stompClient) {
         const quitMessage = new WebSocketMessageDto({
