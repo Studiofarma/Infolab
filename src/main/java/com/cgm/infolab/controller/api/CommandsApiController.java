@@ -17,13 +17,9 @@ import java.util.List;
 public class CommandsApiController {
 
     private final ChatService chatService;
-    private final UserService userService;
-    private final ApiHelper apiHelper;
 
-    public CommandsApiController(ChatService chatService, UserService userService, ApiHelper apiHelper) {
+    public CommandsApiController(ChatService chatService) {
         this.chatService = chatService;
-        this.userService = userService;
-        this.apiHelper = apiHelper;
     }
 
     @PostMapping(value = "/api/commands/lastread", consumes = {"application/json"})
@@ -34,14 +30,5 @@ public class CommandsApiController {
     @PostMapping("/api/commands/readall")
     public void postReadAll(@RequestParam String roomName, Principal principal) {
         chatService.updateReadTimestamp(Username.of(principal.getName()), RoomName.of(roomName));
-    }
-
-    @PostMapping("/api/commands/changedesc")
-    public void postNewUserDescription(@RequestParam String newDesc, Principal principal) {
-        if (newDesc == null || newDesc.isEmpty()) {
-            apiHelper.throwBadRequestStatus("You cannot set an empty description.");
-        }
-
-        userService.updateUserDescription(Username.of(principal.getName()), newDesc);
     }
 }

@@ -20,6 +20,7 @@
             </column>
             <column name="description" type="varchar(500)" />
             <column name="status" type="char(20)"/>
+            <column name="theme" type="char(20)" />
         </createTable>
         <createIndex schemaName="infolab" tableName="users" indexName="users_index">
             <column name="username" />

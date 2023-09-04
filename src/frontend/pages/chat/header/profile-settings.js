@@ -15,7 +15,7 @@ import "../../../components/input-with-icon";
 import "./theme-switcher";
 
 import { BaseComponent } from "../../../components/base-component";
-import { CommandsService } from "../../../services/commands-service";
+import { UserProfileService } from "../../../services/user-profile-service";
 
 const maxLength = 30;
 
@@ -299,7 +299,7 @@ export class profileSettings extends BaseComponent {
     }
 
     if (this.userDescription !== this.currentUserDescription) {
-      await CommandsService.setUserDescription(this.userDescription);
+      await UserProfileService.setUserDescription(this.userDescription);
       this.dispatchEvent(
         new CustomEvent("il:new-description-set", {
           detail: {
