@@ -315,10 +315,16 @@ export class profileSettings extends BaseComponent {
     }
 
     // confirming theme
+    await UserProfileService.setUserTheme(
+      ThemeColorService.getCurrentThemeName()
+    );
     this.themeSwitcherRef.value?.setIsThemesSelectionOpened(false);
     this.themeSwitcherRef.value?.setInitialTheme(
       ThemeColorService.getCurrentThemeName()
     );
+    UsersService.updateLoggedUserInSessionStorage({
+      theme: ThemeColorService.getCurrentThemeName().toUpperCase(),
+    });
 
     this.closeMenu();
   }
