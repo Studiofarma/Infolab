@@ -35,6 +35,7 @@ public class UserRepository {
         parameters.put("username", user.getName().value());
         parameters.put("description", user.getDescription());
         parameters.put("status", user.getStatus().toString());
+        parameters.put("theme", user.getTheme().toString());
         return UserEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters), user.getName(), user.getDescription());
     }
 
