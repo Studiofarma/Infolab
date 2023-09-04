@@ -2,6 +2,7 @@ package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.ThemeEnum;
 import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.db.repository.queryhelper.QueryHelper;
 import com.cgm.infolab.db.repository.queryhelper.QueryResult;
@@ -111,6 +112,17 @@ public class UserRepository {
 
         return queryHelper
                 .query("UPDATE infolab.users SET description = :newDesc")
+                .where("username = :username")
+                .update(params);
+    }
+
+    public int updateUserTheme(Username username, ThemeEnum themeEnum) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("username", username.value());
+        params.put("theme", themeEnum.toString());
+
+        return queryHelper
+                .query("UPDATE infolab.users SET theme = :theme")
                 .where("username = :username")
                 .update(params);
     }
