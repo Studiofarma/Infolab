@@ -78,6 +78,16 @@ public abstract class FromEntitiesToDtosMapper {
         return UserDto.of(userEntity.getName().value(), userEntity.getId(), userEntity.getDescription(), userEntity.getStatus().toString());
     }
 
+    public static UserDto fromEntityToDtoComplete(UserEntity userEntity) {
+        return UserDto.of(
+                userEntity.getName().value(),
+                userEntity.getId(),
+                userEntity.getDescription(),
+                userEntity.getStatus().toString(),
+                userEntity.getTheme().toString()
+        );
+    }
+
     public static BasicJsonDto<RoomDto> fromEntityToDto(String prev, String next, List<RoomEntity> roomEntities, String principalName) {
         PaginationLinksDto linksDto = PaginationLinksDto.of(prev, next);
 

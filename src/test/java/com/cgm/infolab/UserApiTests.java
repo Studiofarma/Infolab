@@ -6,6 +6,8 @@ import com.cgm.infolab.db.model.enumeration.ThemeEnum;
 import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.helper.TestApiHelper;
 import com.cgm.infolab.helper.TestDbHelper;
+import com.cgm.infolab.model.UserDto;
+import org.h2.index.LinkedIndex;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -117,5 +119,15 @@ public class UserApiTests {
         List<LinkedHashMap> responseBody = testApiHelper.getFromApiForUser1("/api/users?usernames=");
 
         Assertions.assertEquals(0, responseBody.size());
+    }
+
+    @Test
+    void whenFetchingLoggedUser_theExpectedOneIsReturned() {
+        UserDto responseBody = testApiHelper.getUserFromApiForUser1("/api/users/loggeduser");
+
+        Assertions.assertEquals("user1", responseBody.getName());
+        Assertions.assertEquals("user1 desc", responseBody.getDescription());
+        Assertions.assertEquals("OFFLINE", responseBody.getStatus());
+        Assertions.assertEquals("LIGHT", responseBody.getTheme());
     }
 }

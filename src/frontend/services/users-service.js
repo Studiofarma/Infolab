@@ -61,15 +61,19 @@ export class UsersService {
       loggedUser = JSON.parse(sessionUser);
     } else {
       try {
-        loggedUser = await UsersService.getUsersByUsernames([cookie.username]);
+        loggedUser = (await HttpService.httpGet("/api/users/loggeduser")).data;
       } catch (error) {
         console.error(error);
       }
 
-      if (loggedUser.length !== 0) {
-        loggedUser = loggedUser[0];
-        sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
-      }
+      // #region Mock data
+      // TODO: remove this region when data comes from BE
+      loggedUser.avatarLink = "";
+      // #endregion
+
+      loggedUser = new UserDto(loggedUser);
+
+      sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
     }
 
     return loggedUser;

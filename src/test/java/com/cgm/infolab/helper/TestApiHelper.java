@@ -1,6 +1,7 @@
 package com.cgm.infolab.helper;
 
 import com.cgm.infolab.model.BasicJsonDto;
+import com.cgm.infolab.model.UserDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -35,6 +37,16 @@ public class TestApiHelper {
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
         return (List<LinkedHashMap>) response.getBody();
+    }
+
+    public UserDto getUserFromApiForUser1(String url) {
+        ResponseEntity<UserDto> response = testRestTemplate
+                .withBasicAuth("user1", "password1")
+                .getForEntity(url, UserDto.class);
+
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        return response.getBody();
     }
 
     public BasicJsonDto<LinkedHashMap> getFromApiForUser1WithJsonDto(String url) {
