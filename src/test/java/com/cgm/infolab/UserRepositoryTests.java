@@ -2,6 +2,7 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.ThemeEnum;
 import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.helper.TestDbHelper;
@@ -84,5 +85,19 @@ public class UserRepositoryTests {
 
         Assertions.assertEquals(1, rowsAffected);
         Assertions.assertEquals("Banana", user3After.getDescription());
+    }
+
+    @Test
+    void whenUpdatingUserTheme_themeIsUpdatedCorrectly() {
+        UserEntity user4Before = userRepository.getByUsername(users[4].getName()).get();
+
+        Assertions.assertEquals(ThemeEnum.LIGHT, user4Before.getTheme());
+
+        int rowsAffected = userRepository.updateUserTheme(users[4].getName(), ThemeEnum.DARK);
+
+        UserEntity user4After = userRepository.getByUsername(users[4].getName()).get();
+
+        Assertions.assertEquals(1, rowsAffected);
+        Assertions.assertEquals(ThemeEnum.DARK, user4After.getTheme());
     }
 }

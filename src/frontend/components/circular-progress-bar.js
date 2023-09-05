@@ -1,8 +1,9 @@
-import { html, css, LitElement } from "lit";
+import { html, css } from "lit";
 import { ThemeColorService } from "../services/theme-color-service";
 import { ThemeCSSVariables } from "../enums/theme-css-variables";
+import { BaseComponent } from "./base-component";
 
-class CircularProgressBar extends LitElement {
+class CircularProgressBar extends BaseComponent {
   static styles = css`
     .circular-progress {
       ${ThemeColorService.getThemeVariables()};

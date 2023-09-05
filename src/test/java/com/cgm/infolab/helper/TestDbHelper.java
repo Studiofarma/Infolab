@@ -3,6 +3,7 @@ package com.cgm.infolab.helper;
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
+import com.cgm.infolab.db.model.enumeration.ThemeEnum;
 import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.RowMappers;
@@ -104,8 +105,9 @@ public class TestDbHelper {
                 "(?, ?, ?)", timestamp, message_id, username);
     }
 
-    public void insertCustomUser(long id, String username, String description, UserStatusEnum status) {
-        jdbcTemplate.update("INSERT INTO infolab.users (id, username, description, status) VALUES (?, ?, ?, ?)", id, username, description, status.toString());
+    public void insertCustomUser(long id, String username, String description, UserStatusEnum status, ThemeEnum theme) {
+        jdbcTemplate.update("INSERT INTO infolab.users (id, username, description, status, theme) VALUES (?, ?, ?, ?, ?)",
+                id, username, description, status.toString(), theme.toString());
     }
 
     public List<ChatMessageEntity> getAllMessages() {

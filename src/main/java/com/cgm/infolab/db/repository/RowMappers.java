@@ -137,7 +137,8 @@ public class RowMappers {
                 rs.getLong("id"),
                 Username.of(usernameString),
                 description,
-                UserStatusEnum.valueOf(rs.getString("user_status").trim())
+                UserStatusEnum.valueOf(rs.getString("user_status").trim()),
+                ThemeEnum.valueOf(rs.getString("theme").trim())
         );
     }
 

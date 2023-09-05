@@ -4,6 +4,8 @@ import { lightTheme } from "../enums/themes/lightTheme";
 import { darkTheme } from "../enums/themes/darkTheme";
 import { ThemeCSSVariables } from "../enums/theme-css-variables";
 
+import { UsersService } from "./users-service";
+
 export class ThemeColorService {
   static changeThemeEvent = new CustomEvent("change-theme");
 
@@ -12,12 +14,33 @@ export class ThemeColorService {
     dark: darkTheme,
   };
 
+  static async initService() {
+    const themeFromDb = (
+      await UsersService.getLoggedUser()
+    ).theme.toLowerCase();
+
+    if (localStorage.getItem("theme") !== themeFromDb) {
+      let isStorageEmptyAndThemeFromDbLight =
+        !localStorage.getItem("theme") && themeFromDb === "light";
+
+      ThemeColorService.setCurrentThemeName(themeFromDb);
+
+      if (isStorageEmptyAndThemeFromDbLight) {
+        return false;
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
   static getCurrentThemeName() {
-    return sessionStorage.getItem("theme") ?? "light";
+    return localStorage.getItem("theme") ?? "light";
   }
 
   static setCurrentThemeName(value) {
-    sessionStorage.setItem("theme", value);
+    localStorage.setItem("theme", value);
   }
 
   static getCurrentTheme() {

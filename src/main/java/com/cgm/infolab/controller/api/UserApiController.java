@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,5 +44,20 @@ public class UserApiController {
             log.info("Non sono stati trovati users");
         }
         return UserDtos;
+    }
+
+    @GetMapping("/api/users/loggeduser")
+    public UserDto getLoggedUser(Principal principal) {
+
+        UserDto userDto = UserDto.empty();
+        List<UserEntity> userEntities = userService.getUsersByUsernames(List.of(Username.of(principal.getName())));
+
+        if (!userEntities.isEmpty()) {
+            userDto = FromEntitiesToDtosMapper.fromEntityToDtoComplete(userEntities.get(0));
+        } else {
+            log.info("Non è stato trovato nessuno user");
+        }
+
+        return userDto;
     }
 }

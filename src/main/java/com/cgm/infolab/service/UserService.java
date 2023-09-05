@@ -2,6 +2,7 @@ package com.cgm.infolab.service;
 
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.enumeration.ThemeEnum;
 import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.db.repository.UserRepository;
 import org.springframework.dao.DuplicateKeyException;
@@ -32,5 +33,9 @@ public class UserService {
 
     public int updateUserDescription(Username username, String newDescription) {
         return userRepository.updateUserDescription(username, newDescription);
+    }
+
+    public int updateUserTheme(Username username, ThemeEnum theme) {
+        return userRepository.updateUserTheme(username, theme);
     }
 }

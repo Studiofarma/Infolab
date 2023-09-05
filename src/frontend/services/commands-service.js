@@ -12,10 +12,4 @@ export class CommandsService {
       `/api/commands/readall?roomName=${cookie.lastChat}`
     );
   }
-
-  static async setUserDescription(newDescription) {
-    await HttpService.httpPost(
-      `/api/commands/changedesc?newDesc=${newDescription}`
-    );
-  }
 }
