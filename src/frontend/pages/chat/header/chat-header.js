@@ -113,15 +113,13 @@ export class ChatHeader extends BaseComponent {
           <div class="profileContainer">
             ${when(
               this.conversation?.description !== undefined,
-              () => {
-                console.log("Other user:", this.otherUser, this.conversation);
-                return html` <il-avatar
+              () =>
+                html` <il-avatar
                     .user=${this.otherUser}
                     .conversation=${this.conversation}
                     name=${this.conversation?.description}
                   ></il-avatar>
-                  <h2>${this.conversation?.description}</h2>`;
-              },
+                  <h2>${this.conversation?.description}</h2>`,
               () => html``
             )}
           </div>
