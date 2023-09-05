@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoomService {
@@ -50,6 +51,10 @@ public class RoomService {
         } else { // pageBefore != null
             return roomRepository.getExistingRoomsAndUsersWithoutRoomAsRooms(pageSize, CursorEnum.PAGE_BEFORE, pageBefore, nameToSearch, username);
         }
+    }
+
+    public Optional<RoomEntity> getRoomByRoomName(RoomName roomName, Username username) {
+        return roomRepository.getByRoomNameComplete(roomName, username);
     }
 
     public RoomEntity getDownloadInfoForRoom(RoomName roomName, Username username) throws IllegalArgumentException {
