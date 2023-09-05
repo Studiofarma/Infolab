@@ -175,6 +175,10 @@ public class RowMappers {
         }
     }
 
+    public AvatarEntity mapToAvatarEntity(ResultSet rs, int rowNum) throws SQLException {
+        return AvatarEntity.of(rs.getLong("av_id"), rs.getBlob("image"));
+    }
+
     // TODO: remove when roomType will come from the db
     private RoomTypeEnum getRoomType(String roomName) {
         return roomName.equals("general") ? RoomTypeEnum.GROUP : RoomTypeEnum.USER2USER;
