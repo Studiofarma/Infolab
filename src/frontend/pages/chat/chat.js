@@ -789,35 +789,39 @@ export class Chat extends BaseComponent {
     );
   }
 
-  messageNotification(message) {
+  async messageNotification(message) {
     if (!message.content || this.login.username === message.sender) {
       return;
     }
 
-    let roomName = this.activeConversation?.description;
+    let conversation =
+      await this.conversationListRef.value?.findConversationByRoomNameOrFetchIt(
+        message.roomName
+      );
 
     if (Notification.permission === "granted") {
-      let notification = new Notification(roomName, {
+      let notification = new Notification(conversation.description, {
         body: message.content,
       });
 
-      notification.onclick = function () {
-        this.conversationListRef.value.sidebarListRef.value.selectChat(
-          roomName
+      notification.onclick = async () => {
+        await this.conversationListRef.value?.changeRoom(
+          new CustomEvent("il:notification-click"),
+          conversation
         );
         window.focus("/");
       };
     } else if (Notification.permission !== "denied") {
       Notification.requestPermission().then(function (permission) {
         if (permission === "granted") {
-          let notification = new Notification(roomName, {
+          let notification = new Notification(conversation.description, {
             body: message.content,
           });
 
-          notification.onclick = function () {
-            this.conversationListRef.value.sidebarListRef.value.selectChat(
-              message,
-              this.activeConversation?.description
+          notification.onclick = async () => {
+            await this.conversationListRef.value?.changeRoom(
+              new CustomEvent("il:notification-click"),
+              conversation
             );
             window.focus("/");
           };
@@ -877,7 +881,7 @@ export class Chat extends BaseComponent {
     }
 
     this.conversationListRef.value?.clearSearchInput();
-    this.messageNotification(chatMessage);
+    await this.messageNotification(chatMessage);
   }
 
   async manageEditMessageReceived(message) {
