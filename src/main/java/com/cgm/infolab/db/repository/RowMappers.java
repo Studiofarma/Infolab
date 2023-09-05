@@ -133,12 +133,16 @@ public class RowMappers {
 
         description = description == null || description.isEmpty() ? usernameString : description;
 
+        Long avatarId = rs.getObject("avatar_id", Long.class);
+        avatarId = avatarId != null ? avatarId : ID.None;
+
         return UserEntity.of(
                 rs.getLong("id"),
                 Username.of(usernameString),
                 description,
                 UserStatusEnum.valueOf(rs.getString("user_status").trim()),
-                ThemeEnum.valueOf(rs.getString("theme").trim())
+                ThemeEnum.valueOf(rs.getString("theme").trim()),
+                avatarId
         );
     }
 

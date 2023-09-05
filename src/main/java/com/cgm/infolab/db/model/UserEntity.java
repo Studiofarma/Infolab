@@ -12,41 +12,43 @@ public class UserEntity {
     private String description;
     private UserStatusEnum status;
     private ThemeEnum theme;
+    private long avatarId;
 
-    private UserEntity(long id, Username name, String description, UserStatusEnum status, ThemeEnum theme) {
+    private UserEntity(long id, Username name, String description, UserStatusEnum status, ThemeEnum theme, long avatarId) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
         this.theme = theme;
+        this.avatarId = avatarId;
     }
 
     public static UserEntity of(Username name) {
-        return new UserEntity(ID.None, name, "", UserStatusEnum.OFFLINE, ThemeEnum.LIGHT);
+        return new UserEntity(ID.None, name, "", UserStatusEnum.OFFLINE, ThemeEnum.LIGHT, ID.None);
     }
 
     public static UserEntity of(Username name, String description) {
-        return new UserEntity(ID.None, name, description, UserStatusEnum.OFFLINE, ThemeEnum.LIGHT);
+        return new UserEntity(ID.None, name, description, UserStatusEnum.OFFLINE, ThemeEnum.LIGHT, ID.None);
     }
 
     public static UserEntity of(Username name, String description, UserStatusEnum status) {
-        return new UserEntity(ID.None, name, description, status, ThemeEnum.LIGHT);
+        return new UserEntity(ID.None, name, description, status, ThemeEnum.LIGHT, ID.None);
     }
 
     public static UserEntity of(long id, Username name, String description) {
-        return new UserEntity(id, name, description, UserStatusEnum.OFFLINE, ThemeEnum.LIGHT);
+        return new UserEntity(id, name, description, UserStatusEnum.OFFLINE, ThemeEnum.LIGHT, ID.None);
     }
 
     public static UserEntity of(long id, Username name, String description, UserStatusEnum status) {
-        return new UserEntity(id, name, description, status, ThemeEnum.LIGHT);
+        return new UserEntity(id, name, description, status, ThemeEnum.LIGHT, ID.None);
     }
 
-    public static UserEntity of(long id, Username name, String description, UserStatusEnum status, ThemeEnum theme) {
-        return new UserEntity(id, name, description, status, theme);
+    public static UserEntity of(long id, Username name, String description, UserStatusEnum status, ThemeEnum theme, long avatarId) {
+        return new UserEntity(id, name, description, status, theme, avatarId);
     }
 
     public static UserEntity empty() {
-        return new UserEntity(ID.None, Username.empty(), "", UserStatusEnum.OFFLINE, ThemeEnum.LIGHT);
+        return new UserEntity(ID.None, Username.empty(), "", UserStatusEnum.OFFLINE, ThemeEnum.LIGHT, ID.None);
     }
 
     public long getId() {
@@ -87,6 +89,14 @@ public class UserEntity {
 
     public void setTheme(ThemeEnum theme) {
         this.theme = theme;
+    }
+
+    public long getAvatarId() {
+        return avatarId;
+    }
+
+    public void setAvatarId(long avatarId) {
+        this.avatarId = avatarId;
     }
 
     @Override
