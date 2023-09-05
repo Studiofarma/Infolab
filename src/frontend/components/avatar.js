@@ -136,8 +136,9 @@ export class Avatar extends BaseComponent {
           this.isDefaultAvatar,
           () =>
             html`<img
+              async
               class=${this.sizeClass}
-              src=${this.avatarLink ?? this.user?.avatarLink}
+              src=${this.avatarLink ? this.avatarLink : this.user?.avatarLink}
             />`,
           () =>
             html`<div

@@ -272,8 +272,9 @@ export class profileSettings extends BaseComponent {
       this.currentUserDescription
     );
 
+    URL.revokeObjectURL(this.imagePath);
     this.imagePath = this.currentAvatarURL;
-    this.inputFileRef.value.value = this.currentAvatarURL;
+    this.inputFileRef.value.value = "";
 
     // restoring theme
     const restoredTheme = this.themeSwitcherRef.value?.getInitialTheme();
@@ -311,22 +312,27 @@ export class profileSettings extends BaseComponent {
       );
     }
 
-    if (this.imagePath !== this.currentAvatarURL) {
+    if (this.imagePath && this.imagePath !== this.currentAvatarURL) {
       this.dispatchEvent(new CustomEvent("il:new-avatar-set"));
       UserProfileService.setUserAvatar(this.imagePath);
     }
 
     // confirming theme
-    await UserProfileService.setUserTheme(
+    if (
+      this.themeSwitcherRef.value?.getInitialTheme() !==
       ThemeColorService.getCurrentThemeName()
-    );
-    this.themeSwitcherRef.value?.setIsThemesSelectionOpened(false);
-    this.themeSwitcherRef.value?.setInitialTheme(
-      ThemeColorService.getCurrentThemeName()
-    );
-    UsersService.updateLoggedUserInSessionStorage({
-      theme: ThemeColorService.getCurrentThemeName().toUpperCase(),
-    });
+    ) {
+      await UserProfileService.setUserTheme(
+        ThemeColorService.getCurrentThemeName()
+      );
+      this.themeSwitcherRef.value?.setIsThemesSelectionOpened(false);
+      this.themeSwitcherRef.value?.setInitialTheme(
+        ThemeColorService.getCurrentThemeName()
+      );
+      UsersService.updateLoggedUserInSessionStorage({
+        theme: ThemeColorService.getCurrentThemeName().toUpperCase(),
+      });
+    }
 
     this.closeMenu();
   }
