@@ -5,6 +5,7 @@ import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.RoomOrUserAsRoomEnum;
+import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.helper.DateTimeHelper;
 import com.cgm.infolab.model.BasicJsonDto;
 import com.cgm.infolab.model.RoomCursor;
@@ -135,6 +136,13 @@ public class RoomApiController {
     @PostMapping("/api/rooms/{username}")
     public void postPrivateRoom(@PathVariable("username") String username, Principal principal){
         roomService.createPrivateRoomAndSubscribeUsers(Username.of(username), Username.of(principal.getName()));
+    }
+
+    @GetMapping("/api/rooms/roomname")
+    public RoomDto getRoomByRoomName(@RequestParam String nameToSearch, Principal principal) {
+        RoomEntity roomEntity = roomService.getRoomByRoomName(RoomName.of(nameToSearch), Username.of(principal.getName())).orElseGet(RoomEntity::empty);
+
+        return FromEntitiesToDtosMapper.fromEntityToDto(roomEntity, principal.getName());
     }
 
     /**
