@@ -10,6 +10,14 @@
             create schema infolab
         </sql>
 
+        <!-- Table Avatars -->
+        <createTable schemaName="infolab" tableName="avatars">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="avatars_pk"/>
+            </column>
+            <column name="image" type="blob" />
+        </createTable>
+
         <!-- Table Users -->
         <createTable schemaName="infolab" tableName="users">
             <column name="id" type="bigint" autoIncrement="true">
@@ -21,6 +29,9 @@
             <column name="description" type="varchar(500)" />
             <column name="status" type="char(20)"/>
             <column name="theme" type="char(20)" />
+            <column name="avatar_id" type="bigint" >
+                <constraints foreignKeyName="fk_avatar_id" references="infolab.avatars(id)"/>
+            </column>
         </createTable>
         <createIndex schemaName="infolab" tableName="users" indexName="users_index">
             <column name="username" />
