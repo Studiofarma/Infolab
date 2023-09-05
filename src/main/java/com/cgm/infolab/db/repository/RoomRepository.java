@@ -71,7 +71,7 @@ public class RoomRepository {
                     "LEFT JOIN infolab.users u_mex ON u_mex.username = m.sender_name " +
                     "LEFT JOIN infolab.rooms_subscriptions s_other ON r.roomname = s_other.roomname and s_other.username <> s.username " +
                     "LEFT JOIN infolab.users u_other ON u_other.username = s_other.username " +
-                    "WHERE (s.username = :username OR r.visibility='PUBLIC') " +
+                    "WHERE (s.username = :username OR r.visibility='PUBLIC') %s " + // !!!!! HERE TO ADD WHERE CONDITIONS !!!!!
                     "ORDER BY r.roomname, m.sent_at DESC " +
                     ") " +
                     "SELECT * FROM not_ordered_result ";
@@ -141,6 +141,23 @@ public class RoomRepository {
         Map<String, Object> arguments = new HashMap<>();
         arguments.put("roomName", roomName.value());
         return queryRoom(ROOMS_WHERE_ROOMNAME, username, arguments);
+    }
+
+    public Optional<RoomEntity> getByRoomNameComplete(RoomName roomName, Username username) {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("username", username.value());
+        arguments.put("roomName", roomName.value());
+        try {
+            return Optional.ofNullable(
+                    namedParameterJdbcTemplate.queryForObject(
+                            GET_EXISTING_ROOMS_QUERY.formatted("AND (r.roomname = :roomName)"),
+                            arguments,
+                            rowMappers::mapToRoomEntityWithMessages
+                            )
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     // Questo metodo è necessario perché altrimenti nella creazione della RoomSubscription in ChatController
@@ -405,7 +422,7 @@ public class RoomRepository {
         List<RoomEntity> roomsFromDb = namedParameterJdbcTemplate
                 .query("%s %s ORDER BY sent_at %s NULLS %s, description %s %s"
                                 .formatted(
-                                        GET_EXISTING_ROOMS_QUERY,
+                                        GET_EXISTING_ROOMS_QUERY.formatted(""),
                                         whereCondition,
                                         ascOrDescTimestamp,
                                         nullsLastOrFirst,

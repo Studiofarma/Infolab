@@ -472,7 +472,7 @@ class ConversationList extends BaseComponent {
       new CustomEvent("il:conversation-changed", {
         detail: {
           conversation: conversation,
-          user: this.getOtherUserInRoom(conversation),
+          user: await this.getOtherUserInRoomOrFetch(conversation),
           eventType: event.type,
         },
       })
@@ -595,7 +595,9 @@ class ConversationList extends BaseComponent {
   }
 
   async updateLastMessage(message) {
-    let conversation = this.findConversationByRoomName(message.roomName);
+    let conversation = await this.findConversationByRoomNameOrFetchIt(
+      message.roomName
+    );
 
     let lastMessageUser = (await UsersService.getUsers([message.sender]))[0];
 
@@ -625,7 +627,9 @@ class ConversationList extends BaseComponent {
   }
 
   async updateLastMessageIfItIsLastMessageOfConversation(message) {
-    let conversation = this.findConversationByRoomName(message.roomName);
+    let conversation = await this.findConversationByRoomNameOrFetchIt(
+      message.roomName
+    );
 
     let lastMessageUser = (await UsersService.getUsers([message.sender]))[0];
 
@@ -732,6 +736,16 @@ class ConversationList extends BaseComponent {
     return this.getUserByUsername(username);
   }
 
+  getOtherUserInRoomOrFetch(conversation) {
+    if (!conversation.otherParticipants[0]) {
+      return;
+    }
+
+    let username = conversation.otherParticipants[0].name;
+
+    return this.getUserByUsernameOrFetch(username);
+  }
+
   handleConversationClick(e, conversation) {
     if (!this.isForwardList) this.changeRoom(e, conversation);
 
@@ -790,6 +804,26 @@ class ConversationList extends BaseComponent {
     return this.conversationList[index];
   }
 
+  async findConversationByRoomNameOrFetchIt(roomName) {
+    let conversation = this.findInOpenConversationList(roomName);
+
+    if (!conversation) {
+      conversation = this.findInNewConversationList(roomName);
+    }
+
+    if (!conversation) {
+      conversation = await ConversationService.getConversationByRoomName(
+        roomName
+      );
+    }
+
+    if (!conversation) {
+      conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+    }
+
+    return conversation;
+  }
+
   findConversationByRoomName(roomName) {
     let conversation = this.findInOpenConversationList(roomName);
 
@@ -837,6 +871,20 @@ class ConversationList extends BaseComponent {
     let userIndex = this.usersList.findIndex((user) => user.name == username);
 
     if (userIndex < 0) return { username: undefined, description: undefined };
+
+    return this.usersList[userIndex];
+  }
+
+  async getUserByUsernameOrFetch(username) {
+    if (username === undefined)
+      return { username: undefined, description: undefined };
+    if (this.usersList === undefined)
+      return { username: undefined, description: undefined };
+
+    let userIndex = this.usersList.findIndex((user) => user.name == username);
+
+    if (userIndex < 0)
+      return (await UsersService.getUsersByUsernames([username]))[0];
 
     return this.usersList[userIndex];
   }
