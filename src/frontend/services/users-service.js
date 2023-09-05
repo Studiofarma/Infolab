@@ -64,10 +64,18 @@ export class UsersService {
         console.error(error);
       }
 
-      // #region Mock data
-      // TODO: remove this region when data comes from BE
-      loggedUser.avatarLink = "";
-      // #endregion
+      let basicAuth = window.btoa(
+        UsersService.cookie.username + ":" + UsersService.cookie.password
+      );
+
+      if (loggedUser.avatarLink !== null) {
+        loggedUser = {
+          ...loggedUser,
+          avatarLink: `${
+            loggedUser.avatarLink
+          }?access_token=${basicAuth.toString()}`,
+        };
+      }
 
       loggedUser = new UserDto(loggedUser);
 
@@ -75,10 +83,6 @@ export class UsersService {
     }
 
     return loggedUser;
-  }
-
-  static setUserAvatar(imageBlob) {
-    // TODO: implementare la chiamata
   }
 
   /**
@@ -94,12 +98,19 @@ export class UsersService {
       `/api/users?usernames=${queryString}`
     );
 
-    // #region Mock data
-    // TODO: remove this region when data comes from BE
-    users.data.forEach((user) => {
-      user.avatarLink = "";
+    let basicAuth = window.btoa(
+      UsersService.cookie.username + ":" + UsersService.cookie.password
+    );
+
+    users.data = users.data.map((user) => {
+      if (user.avatarLink === null) {
+        return user;
+      }
+      return {
+        ...user,
+        avatarLink: `${user.avatarLink}?access_token=${basicAuth.toString()}`,
+      };
     });
-    // #endregion
 
     users.data = users.data.map((user) => {
       return new UserDto(user);

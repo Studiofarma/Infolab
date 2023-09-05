@@ -12,4 +12,11 @@ export class UserProfileService {
       `/api/profile/changetheme?newTheme=${newTheme.toUpperCase()}`
     );
   }
+
+  static async setUserAvatar(imageLocalUrl) {
+    const response = await fetch(imageLocalUrl);
+    const blob = await response.blob();
+
+    await HttpService.httpPost("/api/profile/changeavatar", blob);
+  }
 }
