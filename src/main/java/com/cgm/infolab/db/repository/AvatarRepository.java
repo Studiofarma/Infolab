@@ -1,6 +1,7 @@
 package com.cgm.infolab.db.repository;
 
 import com.cgm.infolab.controller.api.ChatApiMessagesController;
+import com.cgm.infolab.db.ID;
 import com.cgm.infolab.db.model.AvatarEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
@@ -31,13 +32,15 @@ public class AvatarRepository {
         this.rowMappers = rowMappers;
     }
 
-    public long add(AvatarEntity avatar, Username username) throws DuplicateKeyException, IllegalArgumentException {
+    public Long addOrUpdate(AvatarEntity avatar, Username username) throws DuplicateKeyException, IllegalArgumentException {
 
         Map<String, Object> params = new HashMap<>();
         params.put("username", username.value());
 
+        UserEntity userEntity;
+
         try {
-            UserEntity userEntity = queryHelper
+             userEntity = queryHelper
                     .query("SELECT *, status user_status")
                     .from("infolab.users")
                     .where("username = :username")
@@ -47,6 +50,16 @@ public class AvatarRepository {
             throw new IllegalArgumentException("User with username=%s not found.".formatted(username.value()));
         }
 
+        if (userEntity.getAvatarId() == ID.None) {
+            return simpleAdd(avatar, params);
+        } else {
+            avatar.setId(userEntity.getAvatarId());
+            simpleUpdate(avatar);
+            return null;
+        }
+    }
+
+    private long simpleAdd(AvatarEntity avatar, Map<String, Object> params) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("avatars")
@@ -65,6 +78,17 @@ public class AvatarRepository {
                 .update(params);
 
         return generatedId;
+    }
+
+    private void simpleUpdate(AvatarEntity avatar) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("image", avatar.getImage());
+        params.put("avatarId", avatar.getId());
+
+        queryHelper
+                .query("UPDATE infolab.avatars SET image = :image")
+                .where("id = :avatarId")
+                .update(params);
     }
 
     public Optional<AvatarEntity> getAvatarById(Username username, long id) {

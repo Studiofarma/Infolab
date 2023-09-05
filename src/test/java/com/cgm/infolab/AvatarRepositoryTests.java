@@ -10,7 +10,6 @@ import com.cgm.infolab.helper.TestDbHelper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -56,7 +55,7 @@ public class AvatarRepositoryTests {
 
         AvatarEntity avatar = AvatarEntity.of(testBlob);
 
-        Assertions.assertDoesNotThrow(() -> avatarRepository.add(avatar, user1.getName()));
+        Assertions.assertDoesNotThrow(() -> avatarRepository.addOrUpdate(avatar, user1.getName()));
 
         AvatarEntity avatarFromDb = jdbcTemplate.queryForObject("SELECT * FROM infolab.avatars",
                 (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBlob("image")));
@@ -68,7 +67,7 @@ public class AvatarRepositoryTests {
     void whenAddingAvatarToDb_itIsCorrectlyAssociatedWithUser() throws SQLException, IOException {
         AvatarEntity avatar = AvatarEntity.of(testBlob);
 
-        Assertions.assertDoesNotThrow(() -> avatarRepository.add(avatar, user1.getName()));
+        Assertions.assertDoesNotThrow(() -> avatarRepository.addOrUpdate(avatar, user1.getName()));
 
         UserEntity user = userRepository.getByUsername(user1.getName()).get();
 
@@ -86,8 +85,34 @@ public class AvatarRepositoryTests {
         AvatarEntity avatar = AvatarEntity.of(testBlob);
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            avatarRepository.add(avatar, Username.of("user2"));
+            avatarRepository.addOrUpdate(avatar, Username.of("user2"));
         });
+    }
+
+    @Test
+    void whenAddingAvatar_toUserThatAlreadyHasOne_itIsUpdated() throws SQLException, IOException {
+        jdbcTemplate.update("INSERT INTO infolab.avatars (id, image) VALUES (?, ?)", 10, testBlob);
+
+        int affectedRows1 = jdbcTemplate.update("UPDATE infolab.users SET avatar_id = 10 WHERE username = 'user1'");
+
+        Assertions.assertEquals(1, affectedRows1);
+
+        AvatarEntity avatar1 = jdbcTemplate.queryForObject("SELECT * FROM infolab.avatars WHERE id = ?",
+                (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBlob("image")),
+                10);
+
+        Assertions.assertArrayEquals(testBlob.getBinaryStream().readAllBytes(), avatar1.getImage().getBinaryStream().readAllBytes());
+
+        Long returnedId = avatarRepository.addOrUpdate(AvatarEntity.of(testBlob2), user1.getName());
+
+        Assertions.assertNull(returnedId);
+
+        AvatarEntity avatar2 = jdbcTemplate.queryForObject("SELECT * FROM infolab.avatars WHERE id = ?",
+                (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBlob("image")),
+                10);
+
+        Assertions.assertEquals(avatar1.getId(), avatar2.getId()); // This is always true because it is in the where of the query. It is here for clarity.
+        Assertions.assertArrayEquals(testBlob2.getBinaryStream().readAllBytes(), avatar2.getImage().getBinaryStream().readAllBytes());
     }
 
     @Test
