@@ -125,29 +125,25 @@ public class AvatarRepositoryTests {
         Assertions.assertEquals(1, affectedRows1);
         Assertions.assertEquals(1, affectedRowsBanana);
 
-        AvatarEntity avatar1 = avatarRepository.getAvatarById(Username.of("user1"), 10).get();
+        AvatarEntity avatar1 = avatarRepository.getAvatarById(10).get();
 
         Assertions.assertArrayEquals(testBlob.getBinaryStream().readAllBytes(), avatar1.getImage().getBinaryStream().readAllBytes());
 
-        AvatarEntity avatarBanana = avatarRepository.getAvatarById(Username.of("banana"), 20).get();
+        AvatarEntity avatarBanana = avatarRepository.getAvatarById(20).get();
 
         Assertions.assertArrayEquals(testBlob2.getBinaryStream().readAllBytes(), avatarBanana.getImage().getBinaryStream().readAllBytes());
     }
 
     @Test
-    void whenFetchingAvatarById_ofNotExistingUser_orNotExistingId_emptyOptionalIsReturned() {
-        jdbcTemplate.update("INSERT INTO infolab.avatars (id, image) VALUES (?, ?), (?, ?)", 10, testBlob, 20, testBlob2);
+    void whenFetchingAvatarById_ofNotExistingId_emptyOptionalIsReturned() {
+        jdbcTemplate.update("INSERT INTO infolab.avatars (id, image) VALUES (?, ?)", 10, testBlob);
 
         int affectedRows1 = jdbcTemplate.update("UPDATE infolab.users SET avatar_id = 10 WHERE username = 'user1'");
-        int affectedRowsBanana = jdbcTemplate.update("UPDATE infolab.users SET avatar_id = 20 WHERE username = 'banana'");
 
         Assertions.assertEquals(1, affectedRows1);
-        Assertions.assertEquals(1, affectedRowsBanana);
 
-        Optional<AvatarEntity> optional1 = avatarRepository.getAvatarById(Username.of("user2"), 10);
-        Optional<AvatarEntity> optional2 = avatarRepository.getAvatarById(Username.of("user1"), 20);
+        Optional<AvatarEntity> optional = avatarRepository.getAvatarById(20);
 
-        Assertions.assertTrue(optional1.isEmpty());
-        Assertions.assertTrue(optional2.isEmpty());
+        Assertions.assertTrue(optional.isEmpty());
     }
 }

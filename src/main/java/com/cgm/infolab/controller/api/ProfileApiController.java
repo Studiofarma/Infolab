@@ -6,6 +6,7 @@ import com.cgm.infolab.db.model.enumeration.ThemeEnum;
 import com.cgm.infolab.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.sql.rowset.serial.SerialBlob;
@@ -47,15 +48,15 @@ public class ProfileApiController {
         userService.updateUserTheme(Username.of(principal.getName()), themeEnum);
     }
 
-    @PostMapping("/api/profile/changeavatar")
+    @PostMapping(value = "/api/profile/changeavatar")
     public void postAvatarChange(@RequestBody byte[] data, Principal principal) throws SQLException {
         userService.saveAvatarInDb(AvatarEntity.of(new SerialBlob(data)), Username.of(principal.getName()));
     }
 
     @GetMapping("/api/profile/avatar/{avatarId}")
-    public byte[] getAvatarImage(@PathVariable long avatarId, Principal principal) throws SQLException, IOException {
-        AvatarEntity avatar = userService.getAvatarByIdForUser(Username.of(principal.getName()), avatarId).orElseGet(() -> {
-            apiHelper.throwNotFoundStatus("No avatar with id=%d and of user with username=%s has been found.".formatted(avatarId, principal));
+    public byte[] getAvatarImage(@PathVariable long avatarId) throws SQLException, IOException {
+        AvatarEntity avatar = userService.getAvatarByIdForUser(avatarId).orElseGet(() -> {
+            apiHelper.throwNotFoundStatus("No avatar with id=%d has been found.".formatted(avatarId));
             return null;
         });
 

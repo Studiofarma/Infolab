@@ -48,7 +48,7 @@ public class UserService {
         return avatarRepository.addOrUpdate(avatar, username);
     }
 
-    public Optional<AvatarEntity> getAvatarByIdForUser(Username username, long avatarId) {
-        return avatarRepository.getAvatarById(username, avatarId);
+    public Optional<AvatarEntity> getAvatarByIdForUser(long avatarId) {
+        return avatarRepository.getAvatarById(avatarId);
     }
 }

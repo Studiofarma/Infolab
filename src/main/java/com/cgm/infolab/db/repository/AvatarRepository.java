@@ -90,9 +90,8 @@ public class AvatarRepository {
                 .update(params);
     }
 
-    public Optional<AvatarEntity> getAvatarById(Username username, long id) {
+    public Optional<AvatarEntity> getAvatarById(long id) {
         Map<String, Object> params = new HashMap<>();
-        params.put("username", username.value());
         params.put("avatarId", id);
 
         try {
@@ -100,8 +99,7 @@ public class AvatarRepository {
                     queryHelper
                     .query("SELECT a.id av_id, a.image")
                     .from("infolab.avatars a")
-                    .join("JOIN infolab.users u ON u.avatar_id = a.id")
-                    .where("a.id = :avatarId AND u.username = :username")
+                    .where("a.id = :avatarId")
                     .executeForObject(rowMappers::mapToAvatarEntity, params)
             );
         } catch (EmptyResultDataAccessException e) {
