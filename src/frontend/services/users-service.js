@@ -73,7 +73,7 @@ export class UsersService {
           ...loggedUser,
           avatarLink: `${
             loggedUser.avatarLink
-          }?access_token=${basicAuth.toString()}`,
+          }?access_token=${basicAuth.toString()}&cacheInvalidator=${new Date().toISOString()}`, // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
         };
       }
 
@@ -108,7 +108,9 @@ export class UsersService {
       }
       return {
         ...user,
-        avatarLink: `${user.avatarLink}?access_token=${basicAuth.toString()}`,
+        avatarLink: `${
+          user.avatarLink
+        }?access_token=${basicAuth.toString()}&cacheInvalidator=${new Date().toISOString()}`, // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
       };
     });
 
@@ -136,16 +138,20 @@ export class UsersService {
     }
   }
 
-  static updateLoggedUserInSessionStorage(user) {
+  static updateLoggedUserInSessionStorage(objectWithProperties) {
     let loggedUser = JSON.parse(sessionStorage.getItem(loggedUserKey));
 
     if (loggedUser) {
       loggedUser = {
         ...loggedUser,
-        ...user,
+        ...objectWithProperties,
       };
 
       sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
     }
+  }
+
+  static invalidateLoggedUserInSessionStorage() {
+    sessionStorage.removeItem(loggedUserKey);
   }
 }

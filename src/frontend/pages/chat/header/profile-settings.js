@@ -313,8 +313,8 @@ export class profileSettings extends BaseComponent {
     }
 
     if (this.imagePath && this.imagePath !== this.currentAvatarURL) {
+      await UserProfileService.setUserAvatar(this.imagePath);
       this.dispatchEvent(new CustomEvent("il:new-avatar-set"));
-      UserProfileService.setUserAvatar(this.imagePath);
     }
 
     // confirming theme

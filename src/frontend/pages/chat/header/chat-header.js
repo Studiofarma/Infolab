@@ -21,6 +21,7 @@ export class ChatHeader extends BaseComponent {
       conversation: {},
       canFetchLoggedUser: false,
       descriptionChanged: false,
+      userInvalidated: false,
     };
   }
 
@@ -29,6 +30,7 @@ export class ChatHeader extends BaseComponent {
 
     this.isFirstFetch = true;
     this.descriptionChanged = false;
+    this.userInvalidated = false;
 
     this.cookie = CookieService.getCookie();
 
@@ -43,11 +45,14 @@ export class ChatHeader extends BaseComponent {
       this.loggedUser = await UsersService.getLoggedUser();
       this.isFirstFetch = false;
     } else if (
-      changedProperties.has("descriptionChanged") &&
-      this.descriptionChanged
+      (changedProperties.has("descriptionChanged") &&
+        this.descriptionChanged) ||
+      (changedProperties.has("userInvalidated") && this.userInvalidated)
     ) {
       this.loggedUser = await UsersService.getLoggedUser();
       this.descriptionChanged = false;
+      this.userInvalidated = false;
+      this.loggedUserAvatarRef.value?.requestUpdate();
     }
   }
 
@@ -170,7 +175,11 @@ export class ChatHeader extends BaseComponent {
     this.requestUpdate();
   }
 
-  newAvatarSetHandler() {}
+  newAvatarSetHandler() {
+    UsersService.invalidateLoggedUserInSessionStorage();
+    this.userInvalidated = true;
+    this.requestUpdate();
+  }
 
   setConversation(conversation) {
     this.conversation = conversation;
