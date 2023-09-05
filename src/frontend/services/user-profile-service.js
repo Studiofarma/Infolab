@@ -18,5 +18,7 @@ export class UserProfileService {
     const blob = await response.blob();
 
     await HttpService.httpPost("/api/profile/changeavatar", blob);
+
+    URL.revokeObjectURL(imageLocalUrl);
   }
 }
