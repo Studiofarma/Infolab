@@ -175,12 +175,16 @@ export class ChatHeader extends BaseComponent {
   newAvatarSetHandler() {
     const link = this.loggedUser.avatarLink;
 
-    UsersService.updateLoggedUserInSessionStorage({
-      avatarLink: `${link.substring(
-        0,
-        link.indexOf("cacheInvalidator")
-      )}cacheInvalidator=${new Date().toISOString()}`,
-    });
+    if (link) {
+      UsersService.updateLoggedUserInSessionStorage({
+        avatarLink: `${link.substring(
+          0,
+          link.indexOf("cacheInvalidator")
+        )}cacheInvalidator=${new Date().toISOString()}`,
+      });
+    } else {
+      UsersService.deleteLoggedUserFromSessionStorage();
+    }
     this.userInvalidated = true;
     this.requestUpdate();
   }

@@ -150,4 +150,8 @@ export class UsersService {
       sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
     }
   }
+
+  static deleteLoggedUserFromSessionStorage() {
+    sessionStorage.removeItem(loggedUserKey);
+  }
 }
