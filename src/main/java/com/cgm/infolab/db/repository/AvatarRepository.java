@@ -1,6 +1,5 @@
 package com.cgm.infolab.db.repository;
 
-import com.cgm.infolab.controller.api.ChatApiMessagesController;
 import com.cgm.infolab.db.ID;
 import com.cgm.infolab.db.model.AvatarEntity;
 import com.cgm.infolab.db.model.UserEntity;
@@ -24,7 +23,7 @@ public class AvatarRepository {
     private final QueryHelper queryHelper;
     private final RowMappers rowMappers;
 
-    private final Logger log = LoggerFactory.getLogger(ChatApiMessagesController.class);
+    private final Logger log = LoggerFactory.getLogger(AvatarRepository.class);
 
     public AvatarRepository(DataSource dataSource, QueryHelper queryHelper, RowMappers rowMappers) {
         this.dataSource = dataSource;
