@@ -1,14 +1,20 @@
 package com.cgm.infolab.controller;
 
+import com.cgm.infolab.db.ID;
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.enumeration.RoomOrUserAsRoomEnum;
 import com.cgm.infolab.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.security.Principal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FromEntitiesToDtosMapper {
+
+    private static final Logger log = LoggerFactory.getLogger(FromEntitiesToDtosMapper.class);
 
     public static ChatMessageDto fromEntityToChatMessageDto(ChatMessageEntity messageEntity) {
         String status = messageEntity.getStatus() != null ? messageEntity.getStatus().toString() : null;
@@ -75,16 +81,27 @@ public abstract class FromEntitiesToDtosMapper {
 
 
     public static UserDto fromEntityToDto(UserEntity userEntity) {
-        return UserDto.of(userEntity.getName().value(), userEntity.getId(), userEntity.getDescription(), userEntity.getStatus().toString());
-    }
 
-    public static UserDto fromEntityToDtoComplete(UserEntity userEntity) {
         return UserDto.of(
                 userEntity.getName().value(),
                 userEntity.getId(),
                 userEntity.getDescription(),
                 userEntity.getStatus().toString(),
-                userEntity.getTheme().toString()
+                buildAvatarLinkForUser(userEntity)
+        );
+    }
+
+    public static UserDto fromEntityToDtoComplete(UserEntity userEntity) {
+
+
+
+        return UserDto.of(
+                userEntity.getName().value(),
+                userEntity.getId(),
+                userEntity.getDescription(),
+                userEntity.getStatus().toString(),
+                userEntity.getTheme().toString(),
+                buildAvatarLinkForUser(userEntity)
         );
     }
 
@@ -96,5 +113,20 @@ public abstract class FromEntitiesToDtosMapper {
         roomEntities.forEach(roomEntity -> roomDtos.add(fromEntityToDto(roomEntity, principalName)));
 
         return BasicJsonDto.of(linksDto, roomDtos);
+    }
+
+    private static URI buildAvatarLinkForUser(UserEntity userEntity) {
+
+        URI avatarURI = null;
+
+        if (userEntity.getAvatarId() != ID.None) {
+            try {
+                avatarURI = new URI("/api/profile/avatar/%s".formatted(userEntity.getAvatarId()));
+            } catch (URISyntaxException e) {
+                log.warn("The avatar uri for user with username=%s has not been built correctly".formatted(userEntity.getName().value()));
+            }
+        }
+
+        return avatarURI;
     }
 }
