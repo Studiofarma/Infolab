@@ -104,12 +104,12 @@ public class UserEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserEntity that = (UserEntity) o;
-        return id == that.id && Objects.equals(name, that.name) && Objects.equals(description, that.description) && status == that.status && theme == that.theme;
+        return id == that.id && avatarId == that.avatarId && Objects.equals(name, that.name) && Objects.equals(description, that.description) && status == that.status && theme == that.theme;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, status, theme);
+        return Objects.hash(id, name, description, status, theme, avatarId);
     }
 
     @Override
@@ -120,6 +120,7 @@ public class UserEntity {
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 ", theme=" + theme +
+                ", avatarId=" + avatarId +
                 '}';
     }
 }
