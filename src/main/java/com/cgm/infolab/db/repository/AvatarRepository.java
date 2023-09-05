@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class AvatarRepository {
@@ -66,16 +67,22 @@ public class AvatarRepository {
         return generatedId;
     }
 
-    public AvatarEntity getAvatarById(Username username, long id) throws EmptyResultDataAccessException {
+    public Optional<AvatarEntity> getAvatarById(Username username, long id) {
         Map<String, Object> params = new HashMap<>();
         params.put("username", username.value());
         params.put("avatarId", id);
 
-        return queryHelper
-                .query("SELECT a.id av_id, a.image")
-                .from("infolab.avatars a")
-                .join("JOIN infolab.users u ON u.avatar_id = a.id")
-                .where("a.id = :avatarId AND u.username = :username")
-                .executeForObject(rowMappers::mapToAvatarEntity, params);
+        try {
+            return Optional.ofNullable(
+                    queryHelper
+                    .query("SELECT a.id av_id, a.image")
+                    .from("infolab.avatars a")
+                    .join("JOIN infolab.users u ON u.avatar_id = a.id")
+                    .where("a.id = :avatarId AND u.username = :username")
+                    .executeForObject(rowMappers::mapToAvatarEntity, params)
+            );
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

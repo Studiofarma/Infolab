@@ -18,6 +18,7 @@ import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({"test", "local"})
@@ -99,17 +100,17 @@ public class AvatarRepositoryTests {
         Assertions.assertEquals(1, affectedRows1);
         Assertions.assertEquals(1, affectedRowsBanana);
 
-        AvatarEntity avatar1 = avatarRepository.getAvatarById(Username.of("user1"), 10);
+        AvatarEntity avatar1 = avatarRepository.getAvatarById(Username.of("user1"), 10).get();
 
         Assertions.assertArrayEquals(testBlob.getBinaryStream().readAllBytes(), avatar1.getImage().getBinaryStream().readAllBytes());
 
-        AvatarEntity avatarBanana = avatarRepository.getAvatarById(Username.of("banana"), 20);
+        AvatarEntity avatarBanana = avatarRepository.getAvatarById(Username.of("banana"), 20).get();
 
         Assertions.assertArrayEquals(testBlob2.getBinaryStream().readAllBytes(), avatarBanana.getImage().getBinaryStream().readAllBytes());
     }
 
     @Test
-    void whenFetchingAvatarById_ofNotExistingUser_orNotExistingId_exceptionIsThrown() {
+    void whenFetchingAvatarById_ofNotExistingUser_orNotExistingId_emptyOptionalIsReturned() {
         jdbcTemplate.update("INSERT INTO infolab.avatars (id, image) VALUES (?, ?), (?, ?)", 10, testBlob, 20, testBlob2);
 
         int affectedRows1 = jdbcTemplate.update("UPDATE infolab.users SET avatar_id = 10 WHERE username = 'user1'");
@@ -118,7 +119,10 @@ public class AvatarRepositoryTests {
         Assertions.assertEquals(1, affectedRows1);
         Assertions.assertEquals(1, affectedRowsBanana);
 
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> avatarRepository.getAvatarById(Username.of("user2"), 10));
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> avatarRepository.getAvatarById(Username.of("user1"), 20));
+        Optional<AvatarEntity> optional1 = avatarRepository.getAvatarById(Username.of("user2"), 10);
+        Optional<AvatarEntity> optional2 = avatarRepository.getAvatarById(Username.of("user1"), 20);
+
+        Assertions.assertTrue(optional1.isEmpty());
+        Assertions.assertTrue(optional2.isEmpty());
     }
 }
