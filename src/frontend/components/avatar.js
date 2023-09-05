@@ -35,6 +35,10 @@ export class Avatar extends BaseComponent {
       width: 50px;
       height: 50px;
       object-fit: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
     }
 
     #avatar-default {
