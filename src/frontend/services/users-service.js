@@ -64,9 +64,9 @@ export class UsersService {
         console.error(error);
       }
 
-      let basicAuth = window.btoa(
-        UsersService.cookie.username + ":" + UsersService.cookie.password
-      );
+      const cookie = CookieService.getCookie();
+
+      let basicAuth = window.btoa(cookie.username + ":" + cookie.password);
 
       if (loggedUser.avatarLink !== null) {
         loggedUser = {
@@ -98,9 +98,9 @@ export class UsersService {
       `/api/users?usernames=${queryString}`
     );
 
-    let basicAuth = window.btoa(
-      UsersService.cookie.username + ":" + UsersService.cookie.password
-    );
+    const cookie = CookieService.getCookie();
+
+    let basicAuth = window.btoa(cookie.username + ":" + cookie.password);
 
     users.data = users.data.map((user) => {
       if (user.avatarLink === null) {
