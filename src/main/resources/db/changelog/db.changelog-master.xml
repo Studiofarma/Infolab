@@ -5,17 +5,21 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
 		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
+    <property name="blob_type" value="bytea" dbms="postgresql"/>
+    <property name="blob_type" value="blob" dbms="h2"/>
+
     <changeSet id="rebuilding all" author="Lorenzo Rinaldi">
         <sql>
             create schema infolab
         </sql>
+
 
         <!-- Table Avatars -->
         <createTable schemaName="infolab" tableName="avatars">
             <column name="id" type="bigint" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="avatars_pk"/>
             </column>
-            <column name="image" type="blob" />
+            <column name="image" type="${blob_type}" />
         </createTable>
 
         <!-- Table Users -->
