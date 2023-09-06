@@ -66,6 +66,8 @@ public class ChatController {
             return null;
         }
 
+        log.info("The user with username=%s has just registered to the chat.".formatted(principal.getName()));
+
         headerAccessor.getSessionAttributes().put("username", principal.getName());
 
         Username username = Username.of(principal.getName());
@@ -99,6 +101,8 @@ public class ChatController {
             log.warn("Received WebSocketMessageDto has been ignored because it has join field equals to null");
             return null;
         }
+
+        log.info("The user with username=%s has just unregistered from the chat.".formatted(principal.getName()));
 
         int rowsAffected = userService.updateUserStatus(Username.of(principal.getName()), UserStatusEnum.OFFLINE);
 
