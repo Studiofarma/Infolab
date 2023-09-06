@@ -57,6 +57,7 @@ public class TestDbHelper {
         jdbcTemplate.update("DELETE FROM infolab.chatmessages");
         jdbcTemplate.update("DELETE FROM infolab.rooms_subscriptions");
         jdbcTemplate.update("DELETE FROM infolab.users");
+        jdbcTemplate.update("DELETE FROM infolab.avatars");
     }
 
     public void clearMessages() {

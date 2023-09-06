@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.sql.rowset.serial.SerialBlob;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -21,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class RowMappers {
@@ -133,12 +135,15 @@ public class RowMappers {
 
         description = description == null || description.isEmpty() ? usernameString : description;
 
+        Long avatarId = rs.getObject("avatar_id", Long.class);
+
         return UserEntity.of(
                 rs.getLong("id"),
                 Username.of(usernameString),
                 description,
                 UserStatusEnum.valueOf(rs.getString("user_status").trim()),
-                ThemeEnum.valueOf(rs.getString("theme").trim())
+                ThemeEnum.valueOf(rs.getString("theme").trim()),
+                Optional.ofNullable(avatarId)
         );
     }
 
@@ -169,6 +174,10 @@ public class RowMappers {
         } else {
             return Pair.of(RoomName.of(rs.getString("roomname")), rs.getObject("download_timestamp", LocalDateTime.class));
         }
+    }
+
+    public AvatarEntity mapToAvatarEntity(ResultSet rs, int rowNum) throws SQLException {
+        return AvatarEntity.of(rs.getLong("av_id"), rs.getBytes("image"));
     }
 
     // TODO: remove when roomType will come from the db

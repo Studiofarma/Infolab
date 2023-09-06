@@ -4,7 +4,9 @@ import com.cgm.infolab.db.ID;
 import com.cgm.infolab.db.model.enumeration.ThemeEnum;
 import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 
+import javax.swing.text.html.Option;
 import java.util.Objects;
+import java.util.Optional;
 
 public class UserEntity {
     private long id;
@@ -12,41 +14,43 @@ public class UserEntity {
     private String description;
     private UserStatusEnum status;
     private ThemeEnum theme;
+    private Optional<Long> avatarId;
 
-    private UserEntity(long id, Username name, String description, UserStatusEnum status, ThemeEnum theme) {
+    private UserEntity(long id, Username name, String description, UserStatusEnum status, ThemeEnum theme, Optional<Long> avatarId) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
         this.theme = theme;
+        this.avatarId = avatarId;
     }
 
     public static UserEntity of(Username name) {
-        return new UserEntity(ID.None, name, "", UserStatusEnum.OFFLINE, ThemeEnum.LIGHT);
+        return new UserEntity(ID.None, name, "", UserStatusEnum.OFFLINE, ThemeEnum.LIGHT, Optional.empty());
     }
 
     public static UserEntity of(Username name, String description) {
-        return new UserEntity(ID.None, name, description, UserStatusEnum.OFFLINE, ThemeEnum.LIGHT);
+        return new UserEntity(ID.None, name, description, UserStatusEnum.OFFLINE, ThemeEnum.LIGHT, Optional.empty());
     }
 
     public static UserEntity of(Username name, String description, UserStatusEnum status) {
-        return new UserEntity(ID.None, name, description, status, ThemeEnum.LIGHT);
+        return new UserEntity(ID.None, name, description, status, ThemeEnum.LIGHT, Optional.empty());
     }
 
     public static UserEntity of(long id, Username name, String description) {
-        return new UserEntity(id, name, description, UserStatusEnum.OFFLINE, ThemeEnum.LIGHT);
+        return new UserEntity(id, name, description, UserStatusEnum.OFFLINE, ThemeEnum.LIGHT, Optional.empty());
     }
 
     public static UserEntity of(long id, Username name, String description, UserStatusEnum status) {
-        return new UserEntity(id, name, description, status, ThemeEnum.LIGHT);
+        return new UserEntity(id, name, description, status, ThemeEnum.LIGHT, Optional.empty());
     }
 
-    public static UserEntity of(long id, Username name, String description, UserStatusEnum status, ThemeEnum theme) {
-        return new UserEntity(id, name, description, status, theme);
+    public static UserEntity of(long id, Username name, String description, UserStatusEnum status, ThemeEnum theme, Optional<Long> avatarId) {
+        return new UserEntity(id, name, description, status, theme, avatarId);
     }
 
     public static UserEntity empty() {
-        return new UserEntity(ID.None, Username.empty(), "", UserStatusEnum.OFFLINE, ThemeEnum.LIGHT);
+        return new UserEntity(ID.None, Username.empty(), "", UserStatusEnum.OFFLINE, ThemeEnum.LIGHT, Optional.empty());
     }
 
     public long getId() {
@@ -89,17 +93,25 @@ public class UserEntity {
         this.theme = theme;
     }
 
+    public Optional<Long> getAvatarId() {
+        return avatarId;
+    }
+
+    public void setAvatarId(Optional<Long> avatarId) {
+        this.avatarId = avatarId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserEntity that = (UserEntity) o;
-        return id == that.id && Objects.equals(name, that.name) && Objects.equals(description, that.description) && status == that.status && theme == that.theme;
+        return id == that.id && avatarId == that.avatarId && Objects.equals(name, that.name) && Objects.equals(description, that.description) && status == that.status && theme == that.theme;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, status, theme);
+        return Objects.hash(id, name, description, status, theme, avatarId);
     }
 
     @Override
@@ -110,6 +122,7 @@ public class UserEntity {
                 ", description='" + description + '\'' +
                 ", status=" + status +
                 ", theme=" + theme +
+                ", avatarId=" + avatarId +
                 '}';
     }
 }
