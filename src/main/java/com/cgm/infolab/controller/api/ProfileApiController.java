@@ -6,10 +6,8 @@ import com.cgm.infolab.db.model.enumeration.ThemeEnum;
 import com.cgm.infolab.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.sql.rowset.serial.SerialBlob;
 import java.io.IOException;
 import java.security.Principal;
 import java.sql.SQLException;
@@ -49,17 +47,17 @@ public class ProfileApiController {
     }
 
     @PostMapping(value = "/api/profile/changeavatar")
-    public void postAvatarChange(@RequestBody byte[] data, Principal principal) throws SQLException {
-        userService.saveAvatarInDb(AvatarEntity.of(new SerialBlob(data)), Username.of(principal.getName()));
+    public void postAvatarChange(@RequestBody byte[] data, Principal principal) {
+        userService.saveAvatarInDb(AvatarEntity.of(data), Username.of(principal.getName()));
     }
 
     @GetMapping("/api/profile/avatar/{avatarId}")
-    public byte[] getAvatarImage(@PathVariable long avatarId) throws SQLException, IOException {
+    public byte[] getAvatarImage(@PathVariable long avatarId) {
         AvatarEntity avatar = userService.getAvatarByIdForUser(avatarId).orElseGet(() -> {
             apiHelper.throwNotFoundStatus("No avatar with id=%d has been found.".formatted(avatarId));
             return null;
         });
 
-        return avatar.getImage().getBinaryStream().readAllBytes();
+        return avatar.getImage();
     }
 }

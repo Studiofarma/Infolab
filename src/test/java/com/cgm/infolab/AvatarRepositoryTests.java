@@ -34,14 +34,8 @@ public class AvatarRepositoryTests {
 
     private final UserEntity user1 = UserEntity.of(Username.of("user1"), "user1 desc");
     private final UserEntity userBanana = UserEntity.of(Username.of("banana"), "user banana desc");
-    private Blob testBlob;
-    private Blob testBlob2;
-
-    @BeforeAll
-    void beforeAll() throws SQLException {
-        testBlob = new SerialBlob("Test blob data".getBytes());
-        testBlob2 = new SerialBlob("Test blob number 2 data".getBytes());
-    }
+    private byte[] testBlob = "Test blob data".getBytes();
+    private byte[] testBlob2 = "Test blob number 2 data".getBytes();
 
     @BeforeEach
     void setUp() {
@@ -51,20 +45,20 @@ public class AvatarRepositoryTests {
     }
 
     @Test
-    void whenAddingAvatarToDb_itIsSavedCorrectly() throws SQLException, IOException {
+    void whenAddingAvatarToDb_itIsSavedCorrectly() {
 
         AvatarEntity avatar = AvatarEntity.of(testBlob);
 
         Assertions.assertDoesNotThrow(() -> avatarRepository.addOrUpdate(avatar, user1.getName()));
 
         AvatarEntity avatarFromDb = jdbcTemplate.queryForObject("SELECT * FROM infolab.avatars",
-                (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBlob("image")));
+                (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBytes("image")));
 
-        Assertions.assertArrayEquals(testBlob.getBinaryStream().readAllBytes(), avatarFromDb.getImage().getBinaryStream().readAllBytes());
+        Assertions.assertArrayEquals(testBlob, avatarFromDb.getImage());
     }
 
     @Test
-    void whenAddingAvatarToDb_itIsCorrectlyAssociatedWithUser() throws SQLException, IOException {
+    void whenAddingAvatarToDb_itIsCorrectlyAssociatedWithUser() {
         AvatarEntity avatar = AvatarEntity.of(testBlob);
 
         Assertions.assertDoesNotThrow(() -> avatarRepository.addOrUpdate(avatar, user1.getName()));
@@ -74,10 +68,10 @@ public class AvatarRepositoryTests {
         Assertions.assertNotEquals(ID.None, user.getAvatarId());
 
         AvatarEntity avatarFromDb = jdbcTemplate.queryForObject("SELECT * FROM infolab.avatars WHERE id = ?",
-                (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBlob("image")),
+                (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBytes("image")),
                 user.getAvatarId());
 
-        Assertions.assertArrayEquals(testBlob.getBinaryStream().readAllBytes(), avatarFromDb.getImage().getBinaryStream().readAllBytes());
+        Assertions.assertArrayEquals(testBlob, avatarFromDb.getImage());
     }
 
     @Test
@@ -90,7 +84,7 @@ public class AvatarRepositoryTests {
     }
 
     @Test
-    void whenAddingAvatar_toUserThatAlreadyHasOne_itIsUpdated() throws SQLException, IOException {
+    void whenAddingAvatar_toUserThatAlreadyHasOne_itIsUpdated() {
         jdbcTemplate.update("INSERT INTO infolab.avatars (id, image) VALUES (?, ?)", 10, testBlob);
 
         int affectedRows1 = jdbcTemplate.update("UPDATE infolab.users SET avatar_id = 10 WHERE username = 'user1'");
@@ -98,25 +92,25 @@ public class AvatarRepositoryTests {
         Assertions.assertEquals(1, affectedRows1);
 
         AvatarEntity avatar1 = jdbcTemplate.queryForObject("SELECT * FROM infolab.avatars WHERE id = ?",
-                (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBlob("image")),
+                (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBytes("image")),
                 10);
 
-        Assertions.assertArrayEquals(testBlob.getBinaryStream().readAllBytes(), avatar1.getImage().getBinaryStream().readAllBytes());
+        Assertions.assertArrayEquals(testBlob, avatar1.getImage());
 
         Long returnedId = avatarRepository.addOrUpdate(AvatarEntity.of(testBlob2), user1.getName());
 
         Assertions.assertNull(returnedId);
 
         AvatarEntity avatar2 = jdbcTemplate.queryForObject("SELECT * FROM infolab.avatars WHERE id = ?",
-                (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBlob("image")),
+                (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBytes("image")),
                 10);
 
         Assertions.assertEquals(avatar1.getId(), avatar2.getId()); // This is always true because it is in the where of the query. It is here for clarity.
-        Assertions.assertArrayEquals(testBlob2.getBinaryStream().readAllBytes(), avatar2.getImage().getBinaryStream().readAllBytes());
+        Assertions.assertArrayEquals(testBlob2, avatar2.getImage());
     }
 
     @Test
-    void whenFetchingAvatarById_correctAvatarIsReturned() throws SQLException, IOException {
+    void whenFetchingAvatarById_correctAvatarIsReturned() {
         jdbcTemplate.update("INSERT INTO infolab.avatars (id, image) VALUES (?, ?), (?, ?)", 10, testBlob, 20, testBlob2);
 
         int affectedRows1 = jdbcTemplate.update("UPDATE infolab.users SET avatar_id = 10 WHERE username = 'user1'");
@@ -127,11 +121,11 @@ public class AvatarRepositoryTests {
 
         AvatarEntity avatar1 = avatarRepository.getAvatarById(10).get();
 
-        Assertions.assertArrayEquals(testBlob.getBinaryStream().readAllBytes(), avatar1.getImage().getBinaryStream().readAllBytes());
+        Assertions.assertArrayEquals(testBlob, avatar1.getImage());
 
         AvatarEntity avatarBanana = avatarRepository.getAvatarById(20).get();
 
-        Assertions.assertArrayEquals(testBlob2.getBinaryStream().readAllBytes(), avatarBanana.getImage().getBinaryStream().readAllBytes());
+        Assertions.assertArrayEquals(testBlob2, avatarBanana.getImage());
     }
 
     @Test
