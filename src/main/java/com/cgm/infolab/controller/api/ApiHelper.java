@@ -17,4 +17,8 @@ public class ApiHelper {
     public void throwForbiddenStatus() {
         throw new ResponseStatusException(HttpStatus.FORBIDDEN);
     }
+
+    public void throwNotFoundStatus(String message) {
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, message);
+    }
 }
