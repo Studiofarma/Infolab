@@ -121,7 +121,7 @@ public abstract class FromEntitiesToDtosMapper {
 
         if (userEntity.getAvatarId().isPresent()) {
             try {
-                avatarURI = new URI("/api/profile/avatar/%s".formatted(userEntity.getAvatarId()));
+                avatarURI = new URI("/api/profile/avatar/%s".formatted(userEntity.getAvatarId().get()));
             } catch (URISyntaxException e) {
                 log.warn("The avatar uri for user with username=%s has not been built correctly".formatted(userEntity.getName().value()));
             }
