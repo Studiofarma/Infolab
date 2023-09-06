@@ -119,7 +119,7 @@ public abstract class FromEntitiesToDtosMapper {
 
         URI avatarURI = null;
 
-        if (userEntity.getAvatarId() != ID.None) {
+        if (userEntity.getAvatarId().isPresent()) {
             try {
                 avatarURI = new URI("/api/profile/avatar/%s".formatted(userEntity.getAvatarId()));
             } catch (URISyntaxException e) {

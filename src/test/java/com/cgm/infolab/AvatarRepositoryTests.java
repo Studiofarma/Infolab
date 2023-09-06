@@ -58,18 +58,18 @@ public class AvatarRepositoryTests {
     }
 
     @Test
-    void whenAddingAvatarToDb_itIsCorrectlyAssociatedWithUser() {
+    void whenAddingAvatarToDb_itIsCorrectlyAssociatedWithUser() throws InterruptedException {
         AvatarEntity avatar = AvatarEntity.of(testBlob);
 
         Assertions.assertDoesNotThrow(() -> avatarRepository.addOrUpdate(avatar, user1.getName()));
 
         UserEntity user = userRepository.getByUsername(user1.getName()).get();
 
-        Assertions.assertNotEquals(ID.None, user.getAvatarId());
+        Assertions.assertTrue(user.getAvatarId().isPresent());
 
         AvatarEntity avatarFromDb = jdbcTemplate.queryForObject("SELECT * FROM infolab.avatars WHERE id = ?",
                 (rs, rowNum) -> AvatarEntity.of(rs.getLong("id"), rs.getBytes("image")),
-                user.getAvatarId());
+                user.getAvatarId().get());
 
         Assertions.assertArrayEquals(testBlob, avatarFromDb.getImage());
     }
