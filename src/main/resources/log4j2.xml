@@ -2,7 +2,7 @@
 <Configuration monitorInterval="60">
     <Properties>
         <Property name="path">logs</Property>
-        <Property name="pattern">[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n</Property>
+        <Property name="pattern">[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] [%X{request_id}] %c{1} - %msg%n</Property>
         <Property name="backupPattern">$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log.gz</Property>
         <Property name="logFileName">app_log.log</Property>
         <Property name="appenderToUse">${env:logType:-plain}</Property>
