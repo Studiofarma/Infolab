@@ -49,10 +49,10 @@ public class AvatarRepository {
             throw new IllegalArgumentException("User with username=%s not found.".formatted(username.value()));
         }
 
-        if (userEntity.getAvatarId() == ID.None) {
+        if (userEntity.getAvatarId().isEmpty()) {
             return simpleAdd(avatar, params);
         } else {
-            avatar.setId(userEntity.getAvatarId());
+            avatar.setId(userEntity.getAvatarId().get());
             simpleUpdate(avatar);
             return null;
         }

@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class RowMappers {
@@ -135,7 +136,6 @@ public class RowMappers {
         description = description == null || description.isEmpty() ? usernameString : description;
 
         Long avatarId = rs.getObject("avatar_id", Long.class);
-        avatarId = avatarId != null ? avatarId : ID.None;
 
         return UserEntity.of(
                 rs.getLong("id"),
@@ -143,7 +143,7 @@ public class RowMappers {
                 description,
                 UserStatusEnum.valueOf(rs.getString("user_status").trim()),
                 ThemeEnum.valueOf(rs.getString("theme").trim()),
-                avatarId
+                Optional.ofNullable(avatarId)
         );
     }
 
