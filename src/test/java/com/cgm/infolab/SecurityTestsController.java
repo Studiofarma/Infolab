@@ -28,8 +28,23 @@ public class SecurityTestsController {
         return "ok";
     }
 
+    @GetMapping("/js/index.js")
+    public String js(){
+        return "ok";
+    }
+
+    @GetMapping("/css/index.css")
+    public String css(){
+        return "ok";
+    }
+
     @PostMapping("/chat/test")
     public String chatPost(){
+        return "chatPost requires authentication";
+    }
+
+    @RequestMapping("/h2-console/")
+    public String h2(){
         return "chatPost requires authentication";
     }
 

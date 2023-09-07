@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,6 +35,7 @@ import java.util.Enumeration;
 
 import static java.util.Collections.enumeration;
 import static java.util.Collections.singleton;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSocketSecurity
@@ -67,28 +69,23 @@ public class SecurityConfiguration {
                     .antMatcher("/h2-console/**")
                     .matches(request))
             )
-            .httpBasic()
-            .and()
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/**").authenticated()
                 .requestMatchers("/chat/**").authenticated()
                 .requestMatchers("/chat").authenticated()
                 .requestMatchers("/csrf").authenticated()
             )
+            .httpBasic(withDefaults())
             .addFilterBefore(SecurityConfiguration::authInHeadersOrQueryString, BasicAuthenticationFilter.class)
-            .httpBasic()
-            .and()
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/*").permitAll()
                 .requestMatchers("/css/**").permitAll()
                 .requestMatchers("/js/**").permitAll()
             )
-            .anonymous().and()
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/h2-console/**").permitAll()
             )
-            .headers().frameOptions().sameOrigin().and()
-            .anonymous().and()
+            .headers(headers -> headers.frameOptions().sameOrigin())
             .build();
     }
 
