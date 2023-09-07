@@ -1,14 +1,13 @@
-const chatPath = "il-app,il-chat";
-const inputControlsPath = `${chatPath},il-input-controls`;
-const editorPath = `${inputControlsPath},il-editor`;
-const buttonIconPath = `${inputControlsPath},il-insertion-bar,il-button-icon`;
+import { Paths } from "../support/paths-enum";
+
+const buttonIconPath = `${Paths.inputControlsPath},il-insertion-bar,il-button-icon`;
 
 beforeEach(() => {
   cy.login({ user: "user1", password: "password1" });
 
   cy.wait(1000);
 
-  cy.getLitElement(`${chatPath},il-conversation-list,il-conversation`)
+  cy.getLitElement(`${Paths.chatPath},il-conversation-list,il-conversation`)
     .find(".chat-box")
     .first()
     .click({ force: true });
@@ -16,7 +15,7 @@ beforeEach(() => {
 
 describe("Editor spec", () => {
   it("Editor exists", () => {
-    cy.litElementExist(editorPath);
+    cy.litElementExist(Paths.editorPath);
   });
 
   it("Editor types", () => {
@@ -62,7 +61,7 @@ describe("Editor spec", () => {
       .eq(0)
       .click({ force: true });
 
-    cy.getLitElement(`${inputControlsPath},il-emoji-picker,emoji-picker`)
+    cy.getLitElement(`${Paths.inputControlsPath},il-emoji-picker,emoji-picker`)
       .find(".tabpanel")
       .find(".emoji-menu")
       .find("button")

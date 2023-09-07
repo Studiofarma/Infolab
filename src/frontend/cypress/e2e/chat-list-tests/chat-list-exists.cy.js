@@ -1,25 +1,25 @@
-const conversationListPath = "il-app,il-chat,il-conversation-list";
+import { Paths } from "../../support/paths-enum";
 
 describe("chat list render spec", () => {
   it("chat list exists after login", () => {
-    cy.countElements(conversationListPath, "il-conversation", 9);
+    cy.countElements(Paths.conversationListPath, "il-conversation", 9);
   });
 
   it("separator 'Conversazioni' exists after login", () => {
-    cy.getLitElement(conversationListPath)
+    cy.getLitElement(Paths.conversationListPath)
       .find(".separator")
       .eq(0)
       .should("have.text", "Conversazioni");
   });
 
   it("separator 'Nuove conversazioni' exists after login", () => {
-    cy.getLitElement(conversationListPath)
+    cy.getLitElement(Paths.conversationListPath)
       .contains("Nuove conversazioni")
       .should("exist");
   });
 
   it("filter exist after login", () => {
-    cy.litElementExist(`${conversationListPath},il-input-search`);
+    cy.litElementExist(`${Paths.conversationListPath},il-input-search`);
   });
 });
 
