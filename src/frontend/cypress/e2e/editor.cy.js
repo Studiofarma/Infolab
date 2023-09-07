@@ -1,6 +1,6 @@
 import { Paths } from "../support/paths-enum";
 
-const buttonIconPath = `${Paths.inputControlsPath},il-insertion-bar,il-button-icon`;
+const sendButtonIconPath = `${Paths.inputControlsPath},il-insertion-bar,il-button-icon`;
 
 beforeEach(() => {
   cy.login({ user: "user1", password: "password1" });
@@ -47,7 +47,7 @@ describe("Editor spec", () => {
 
     cy.getEditor().type("Test67890");
 
-    cy.getLitElement(buttonIconPath)
+    cy.getLitElement(sendButtonIconPath)
       .find(".icon-button")
       .last()
       .click({ force: true });
@@ -56,7 +56,7 @@ describe("Editor spec", () => {
   });
 
   it("Emoji works", () => {
-    cy.getLitElement(buttonIconPath)
+    cy.getLitElement(sendButtonIconPath)
       .find(".icon-button")
       .eq(0)
       .click({ force: true });
@@ -72,7 +72,7 @@ describe("Editor spec", () => {
   });
 
   it("Editor formatting buttons work", () => {
-    cy.getLitElement(buttonIconPath)
+    cy.getLitElement(sendButtonIconPath)
       .find(".icon-button")
       .eq(1)
       .click({ force: true });
@@ -90,7 +90,7 @@ describe("Editor spec", () => {
   });
 
   it("Editor formatting buttons work with highlighted text", () => {
-    cy.getLitElement(buttonIconPath)
+    cy.getLitElement(sendButtonIconPath)
       .find(".icon-button")
       .eq(1)
       .click({ force: true });

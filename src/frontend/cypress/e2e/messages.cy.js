@@ -1,17 +1,10 @@
-const messagesListPath = "il-app, il-chat, il-messages-list";
-const messagePath = `${messagesListPath}, il-message`;
-const messageContentPath = `${messagePath}, il-message-content`;
-const messageMenuPopoverPath =
-  "il-app, il-chat, il-messages-list, il-message, il-message-menu-popover";
+import { Paths } from "../support/paths-enum";
 
-// Il primo è per le conversazioni della sidebar, il secondo per quelli della forward-list
-const sidebarConversationPath =
-  "il-app,il-chat, il-conversation-list, il-conversation";
-const conversationInForwardListPath =
-  "il-app,il-chat, #forwardList, il-conversation";
+const messageContentPath = `${Paths.messagePath}, il-message-content`;
 
-const buttonTextPath = "il-app,il-chat, il-conversation-list, il-button-text";
-const sidebarConversationList = "il-app,il-chat, il-conversation-list";
+const conversationInForwardListPath = `${Paths.chatPath}, #forwardList, il-conversation`;
+
+const buttonTextPath = `${Paths.conversationListPath}, il-button-text`;
 const chatName = '[data-cy="chat-name"]';
 
 beforeEach(() => {
@@ -27,10 +20,10 @@ beforeEach(() => {
 
 describe("messages spec", () => {
   it("asserting that the messages container exists ", () => {
-    cy.litElementExist(messagesListPath);
+    cy.litElementExist(Paths.messagesListPath);
     // sending some test messages in case they aren't present by default
     cy.sendTestMessages(2);
-    cy.litElementExist(messagePath);
+    cy.litElementExist(Paths.messagePath);
   });
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
@@ -64,11 +57,11 @@ describe("messages spec", () => {
   // // //-----------------------------------------------------
   it("asserting that the options menu icon will display when you hover on a message", () => {
     cy.clickScrollToBottomButton();
-    cy.getLitElement(messagePath)
+    cy.getLitElement(Paths.messagePath)
       .first()
       .find(".message-body")
       .trigger("mouseover", { force: true });
-    cy.getLitElement(`${messageMenuPopoverPath}, il-button-icon`)
+    cy.getLitElement(Paths.popoverIconButtonPath)
       .find(".icon-button")
       .should("be.visible");
   });
@@ -80,7 +73,7 @@ describe("messages spec", () => {
 
     cy.clickOnTheLastOptionsMenu();
 
-    cy.getLitElement(`${messageMenuPopoverPath}, il-message-options`)
+    cy.getLitElement(Paths.messageOptions)
       .find("div")
       .should("be.visible")
       .and("not.to.be.empty");
@@ -159,7 +152,7 @@ describe("messages spec", () => {
         cy.getLitElement(buttonTextPath).find("button").click({ force: true });
         // checking if message has been forwarded
         for (let i = 0; i < 2; i++) {
-          cy.getLitElement(sidebarConversationPath)
+          cy.getLitElement(Paths.conversationInConversationListPath)
             .find(".chat-name")
             .eq(i)
             .invoke("text")
@@ -195,7 +188,7 @@ describe("messages spec", () => {
     cy.clickOnTheLastOptionsMenu();
     cy.clickOptionButton("Scrivi in privato");
     // asserting that user2 has been moved to user1's chat
-    cy.getLitElement(sidebarConversationList)
+    cy.getLitElement(Paths.conversationListPath)
       .find("il-conversation.active")
       .shadow()
       .find(".chat-name")

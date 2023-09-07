@@ -1,17 +1,10 @@
 import { Paths } from "./paths-enum";
 
-const messagePath = `${Paths.chatPath}, il-messages-list, il-message`;
-const messageMenuPopoverPath = `${messagePath}, il-message-menu-popover`;
-const iconButtonPath = `${messageMenuPopoverPath}, il-button-icon`;
-
-const conversationPath = `${Paths.conversationListPath},il-conversation`;
-
 const loginPath = "il-app,il-login";
 
 const chatName = '[data-cy="chat-name"]';
 const conversationList = "il-conversation-list";
 const editor = "#editor";
-const chat = "il-chat";
 const conversation = "il-conversation";
 const activeConversation = "il-conversation.active";
 
@@ -94,14 +87,14 @@ Cypress.Commands.add("sendTestMessages", (number) => {
 });
 
 Cypress.Commands.add("openChat", (name) => {
-  cy.getLitElement(conversationPath)
+  cy.getLitElement(Paths.conversationInConversationListPath)
     .find(".chat-name")
     .each((element, index) => {
       cy.wrap(element)
         .invoke("text")
         .then((txt) => {
           if (txt.trim() === name) {
-            cy.getLitElement(conversationPath)
+            cy.getLitElement(Paths.conversationInConversationListPath)
               .find(".chat-name")
               .eq(index)
               .click({ force: true });
@@ -152,14 +145,14 @@ Cypress.Commands.add("checkOpenedConversationName", (text) => {
 // ------------------------------------
 
 Cypress.Commands.add("hoverOnTheLast", () => {
-  cy.getLitElement(messagePath)
+  cy.getLitElement(Paths.messagePath)
     .last()
     .find(".message-body")
     .trigger("mouseover", { force: true });
 });
 
 Cypress.Commands.add("clickOnTheLastOptionsMenu", () => {
-  cy.getLitElement(iconButtonPath)
+  cy.getLitElement(Paths.popoverIconButtonPath)
     .last()
     .find(".icon-button")
     .click({ force: true });
@@ -177,7 +170,7 @@ Cypress.Commands.add("clickOptionButton", (option) => {
 
 Cypress.Commands.add("getOptionButton", (option) => {
   return cy
-    .getLitElement(`${messageMenuPopoverPath}, il-message-options`)
+    .getLitElement(Paths.messageOptions)
     .last()
     .find("il-message-button-option")
     .shadow()

@@ -1,12 +1,12 @@
 import { Paths } from "../../support/paths-enum";
 
-const buttonIconPath = `${Paths.sidebarInputSearchPath},il-button-icon`;
+const searchButtonIconPath = `${Paths.sidebarInputSearchPath},il-button-icon`;
 
 const conversation = "il-conversation";
 
 describe("search spec", () => {
   it("icon is magnifying glass", () => {
-    cy.getLitElement(buttonIconPath)
+    cy.getLitElement(searchButtonIconPath)
       .find("il-icon[name*=mdiMagnify]")
       .should("exist");
   });
@@ -16,7 +16,7 @@ describe("search spec", () => {
       .find("input")
       .click({ force: true });
 
-    cy.getLitElement(buttonIconPath)
+    cy.getLitElement(searchButtonIconPath)
       .find("il-icon[name*=mdiMagnify]")
       .should("exist");
   });
@@ -26,7 +26,7 @@ describe("search spec", () => {
       .find("input")
       .type("test", { force: true });
 
-    cy.getLitElement(buttonIconPath)
+    cy.getLitElement(searchButtonIconPath)
       .find("il-icon[name*=mdiClose]")
       .should("exist");
   });

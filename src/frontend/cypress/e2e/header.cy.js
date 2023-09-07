@@ -1,7 +1,7 @@
+import { Paths } from "../support/paths-enum";
+
 const headerPath = "il-app,il-chat,il-chat-header";
 const avatarPath = "il-app,il-chat,il-chat-header, il-avatar";
-const conversationPath =
-  "il-app,il-chat, il-conversation-list, il-conversation";
 
 beforeEach(() => {
   cy.login({ user: "user1", password: "password1" });
@@ -43,7 +43,7 @@ describe("header component spec", () => {
   });
 
   it("get the correct avatar when you open a chat", () => {
-    cy.getLitElement(conversationPath)
+    cy.getLitElement(Paths.conversationInConversationListPath)
       .find(".chat-name")
       .as("conversation")
       .each((el, index) => {
@@ -68,7 +68,7 @@ describe("header component spec", () => {
   });
 
   it("asserting that the avatar of a contact contains the correct initials ", () => {
-    cy.getLitElement(conversationPath)
+    cy.getLitElement(Paths.conversationInConversationListPath)
       .find(".chat-name")
       .as("conversation")
       .each((el, index) => {
