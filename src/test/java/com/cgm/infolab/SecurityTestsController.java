@@ -1,9 +1,11 @@
 package com.cgm.infolab;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 
@@ -40,7 +42,12 @@ public class SecurityTestsController {
         return "ok";
     }
 
-    @GetMapping("/api/user")
+    @GetMapping("/api/badrequest")
+    public String badrequest(){
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "bad booom");
+    }
+
+    @RequestMapping("/api/user")
     public String user(Principal principal){
         return principal.getName();
     }

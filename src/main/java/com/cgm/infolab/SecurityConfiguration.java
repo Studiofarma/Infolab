@@ -58,6 +58,7 @@ public class SecurityConfiguration {
                 "/api/**",
                 "/chat/**",
                 "/chat",
+                "/error",
                 "/csrf"
             )
             .csrf(csrf -> csrf

@@ -119,4 +119,29 @@ public class SecurityTests {
             .andExpect(content().string("user1"));
     }
 
+    @Test
+    void whenUsingGetWithAJwtICanGetTheUsernameOfThePrincipal() throws Exception {
+        client
+            .perform(get("/api/user").with(jwt().jwt(builder -> builder.claim("sub", "user1"))))
+            .andExpect(status().isOk())
+            .andExpect(content().string("user1"));
+    }
+    @Test
+    void whenUsingPostWithAJwtICanGetTheUsernameOfThePrincipal() throws Exception {
+        client
+            .perform(post("/api/user").with(jwt().jwt(builder -> builder.claim("sub", "user1"))))
+            .andExpect(status().isOk())
+            .andExpect(content().string("user1"));
+    }
+
+    @Test
+    @WithMockUser
+    void whenThrowingBadRequestItShouldReturnBadRequest() throws Exception {
+        client
+            .perform(get("/api/badrequest"))
+            .andExpect(status().isBadRequest());
+    }
+
+
+
 }
