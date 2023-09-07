@@ -9,8 +9,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -27,7 +26,7 @@ public class SecurityTests {
     void callToAnUnprotectedRouteEndPointShouldFail() throws Exception {
         client
             .perform(get("/public/test"))
-            .andExpect(status().isUnauthorized());
+            .andExpect(status().isForbidden());
     }
 
     @Test
@@ -52,7 +51,7 @@ public class SecurityTests {
 
     @Test
     @WithMockUser
-    void callToASecuredRouteEndPointShouldFailWithAnAuthenticatedUserShouldBeOk() throws Exception {
+    void callToASecuredRouteEndPointWithAnAuthenticatedUserShouldBeOk() throws Exception {
         client
             .perform(get("/api/test"))
             .andExpect(status().isOk());

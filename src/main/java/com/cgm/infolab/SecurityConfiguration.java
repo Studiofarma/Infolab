@@ -12,29 +12,20 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
-import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.security.web.csrf.DefaultCsrfToken;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
-import java.util.Enumeration;
 
-import static java.util.Collections.enumeration;
-import static java.util.Collections.singleton;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
@@ -63,29 +54,47 @@ public class SecurityConfiguration {
         CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
         requestHandler.setCsrfRequestAttributeName(null);
         return http
+            .securityMatcher(
+                "/api/**",
+                "/chat/**",
+                "/chat",
+                "/csrf"
+            )
             .csrf(csrf -> csrf
                 .csrfTokenRequestHandler(requestHandler)
-                .ignoringRequestMatchers(request -> AntPathRequestMatcher
-                    .antMatcher("/h2-console/**")
-                    .matches(request))
             )
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/**").authenticated()
-                .requestMatchers("/chat/**").authenticated()
-                .requestMatchers("/chat").authenticated()
-                .requestMatchers("/csrf").authenticated()
-            )
+            .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
             .httpBasic(withDefaults())
             .addFilterBefore(SecurityConfiguration::authInHeadersOrQueryString, BasicAuthenticationFilter.class)
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/*").permitAll()
-                .requestMatchers("/css/**").permitAll()
-                .requestMatchers("/js/**").permitAll()
-            )
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/h2-console/**").permitAll()
-            )
             .headers(headers -> headers.frameOptions().sameOrigin())
+            .build();
+    }
+
+    @Bean
+    public SecurityFilterChain configureH2(HttpSecurity http) throws Exception{
+        return http
+            .securityMatcher("/h2-console/**")
+            .csrf(AbstractHttpConfigurer::disable)
+            .anonymous(withDefaults())
+            .build();
+    }
+
+    @Bean
+    public SecurityFilterChain configureAssets(HttpSecurity http) throws Exception{
+        return http
+            .securityMatcher(
+                "/index.html",
+                "/css/**",
+                "/js/**"
+            )
+            .anonymous(withDefaults())
+            .build();
+    }
+
+    @Bean
+    public SecurityFilterChain configureUnprotected(HttpSecurity http) throws Exception{
+        return http
+            .authorizeHttpRequests(authz -> authz.anyRequest().denyAll())
             .build();
     }
 
