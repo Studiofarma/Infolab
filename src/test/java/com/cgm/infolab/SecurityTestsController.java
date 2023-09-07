@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
+
 @RestController
 public class SecurityTestsController {
 
@@ -36,6 +38,11 @@ public class SecurityTestsController {
     @GetMapping("/css/index.css")
     public String css(){
         return "ok";
+    }
+
+    @GetMapping("/api/user")
+    public String user(Principal principal){
+        return principal.getName();
     }
 
     @PostMapping("/chat/test")

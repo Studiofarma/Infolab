@@ -13,6 +13,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {SecurityTestsController.class})
@@ -108,6 +109,15 @@ public class SecurityTests {
         client
             .perform(post("/h2-console/"))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "user1", password = "password1")
+    void whenUsingGetWithAUserICanGetTheUsernameOfThePrincipal() throws Exception {
+        client
+            .perform(get("/api/user"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("user1"));
     }
 
 }
