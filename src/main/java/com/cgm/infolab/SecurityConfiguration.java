@@ -84,7 +84,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain configureAssets(HttpSecurity http) throws Exception{
         return http
             .securityMatcher(
-                "/index.html",
+                "/*",
                 "/css/**",
                 "/js/**"
             )

@@ -35,6 +35,9 @@ public class SecurityTests {
             .perform(get("/index.html"))
             .andExpect(status().isOk());
         client
+            .perform(get("/index2.html"))
+            .andExpect(status().isOk());
+        client
             .perform(get("/css/index.css"))
             .andExpect(status().isOk());
         client

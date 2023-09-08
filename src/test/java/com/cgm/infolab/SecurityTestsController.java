@@ -32,6 +32,11 @@ public class SecurityTestsController {
         return "ok";
     }
 
+    @GetMapping("/index2.html")
+    public String index2(){
+        return "ok";
+    }
+
     @GetMapping("/js/index.js")
     public String js(){
         return "ok";
