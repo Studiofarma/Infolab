@@ -168,23 +168,23 @@ export class profileSettings extends BaseComponent {
             ?isDefaultAvatar=${this.imagePath === ""}
             .hasStatus=${false}
           ></il-avatar>
-          <!-- <button
+          <button
             @click=${() => {
-            this.inputFileRef.value.click();
-          }}
+              this.inputFileRef.value.click();
+            }}
           >
             <il-button-icon
               @click=${() => this.userDescriptionInputRef.value.focus()}
               content=${IconNames.update}
             ></il-button-icon>
             Carica immagine
-          </button> -->
-          <!-- <input
+          </button>
+          <input
             type="file"
             @change=${this.onFileUpload}
             accept="image/png, image/jpeg"
             ${ref(this.inputFileRef)}
-          /> -->
+          />
         </div>
 
         <section>
@@ -227,8 +227,10 @@ export class profileSettings extends BaseComponent {
   }
 
   onFileUpload() {
+    URL.revokeObjectURL(this.imagePath);
     let file = this.inputFileRef.value?.files[0];
-    this.imagePath = URL.createObjectURL(file);
+    const blob = new Blob([file], { type: file.type });
+    this.imagePath = URL.createObjectURL(blob);
     this.requestUpdate();
   }
 
@@ -270,8 +272,9 @@ export class profileSettings extends BaseComponent {
       this.currentUserDescription
     );
 
+    URL.revokeObjectURL(this.imagePath);
     this.imagePath = this.currentAvatarURL;
-    // this.inputFileRef.value.value = this.currentAvatarURL; // REMOVED TEMPORARILY WITH THE IMAGE INPUT
+    this.inputFileRef.value.value = "";
 
     // restoring theme
     const restoredTheme = this.themeSwitcherRef.value?.getInitialTheme();
@@ -309,22 +312,27 @@ export class profileSettings extends BaseComponent {
       );
     }
 
-    if (this.imagePath !== this.currentAvatarURL) {
+    if (this.imagePath && this.imagePath !== this.currentAvatarURL) {
+      await UserProfileService.setUserAvatar(this.imagePath);
       this.dispatchEvent(new CustomEvent("il:new-avatar-set"));
-      UsersService.setUserAvatar(this.imagePath);
     }
 
     // confirming theme
-    await UserProfileService.setUserTheme(
+    if (
+      this.themeSwitcherRef.value?.getInitialTheme() !==
       ThemeColorService.getCurrentThemeName()
-    );
-    this.themeSwitcherRef.value?.setIsThemesSelectionOpened(false);
-    this.themeSwitcherRef.value?.setInitialTheme(
-      ThemeColorService.getCurrentThemeName()
-    );
-    UsersService.updateLoggedUserInSessionStorage({
-      theme: ThemeColorService.getCurrentThemeName().toUpperCase(),
-    });
+    ) {
+      await UserProfileService.setUserTheme(
+        ThemeColorService.getCurrentThemeName()
+      );
+      this.themeSwitcherRef.value?.setIsThemesSelectionOpened(false);
+      this.themeSwitcherRef.value?.setInitialTheme(
+        ThemeColorService.getCurrentThemeName()
+      );
+      UsersService.updateLoggedUserInSessionStorage({
+        theme: ThemeColorService.getCurrentThemeName().toUpperCase(),
+      });
+    }
 
     this.closeMenu();
   }

@@ -64,10 +64,18 @@ export class UsersService {
         console.error(error);
       }
 
-      // #region Mock data
-      // TODO: remove this region when data comes from BE
-      loggedUser.avatarLink = "";
-      // #endregion
+      const cookie = CookieService.getCookie();
+
+      let basicAuth = window.btoa(cookie.username + ":" + cookie.password);
+
+      if (loggedUser.avatarLink !== null) {
+        loggedUser = {
+          ...loggedUser,
+          avatarLink: `${
+            loggedUser.avatarLink
+          }?access_token=${basicAuth.toString()}&cacheInvalidator=${new Date().toISOString()}`, // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
+        };
+      }
 
       loggedUser = new UserDto(loggedUser);
 
@@ -75,10 +83,6 @@ export class UsersService {
     }
 
     return loggedUser;
-  }
-
-  static setUserAvatar(imageBlob) {
-    // TODO: implementare la chiamata
   }
 
   /**
@@ -94,12 +98,21 @@ export class UsersService {
       `/api/users?usernames=${queryString}`
     );
 
-    // #region Mock data
-    // TODO: remove this region when data comes from BE
-    users.data.forEach((user) => {
-      user.avatarLink = "";
+    const cookie = CookieService.getCookie();
+
+    let basicAuth = window.btoa(cookie.username + ":" + cookie.password);
+
+    users.data = users.data.map((user) => {
+      if (user.avatarLink === null) {
+        return user;
+      }
+      return {
+        ...user,
+        avatarLink: `${
+          user.avatarLink
+        }?access_token=${basicAuth.toString()}&cacheInvalidator=${new Date().toISOString()}`, // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
+      };
     });
-    // #endregion
 
     users.data = users.data.map((user) => {
       return new UserDto(user);
@@ -125,16 +138,20 @@ export class UsersService {
     }
   }
 
-  static updateLoggedUserInSessionStorage(user) {
+  static updateLoggedUserInSessionStorage(objectWithProperties) {
     let loggedUser = JSON.parse(sessionStorage.getItem(loggedUserKey));
 
     if (loggedUser) {
       loggedUser = {
         ...loggedUser,
-        ...user,
+        ...objectWithProperties,
       };
 
       sessionStorage.setItem(loggedUserKey, JSON.stringify(loggedUser));
     }
+  }
+
+  static deleteLoggedUserFromSessionStorage() {
+    sessionStorage.removeItem(loggedUserKey);
   }
 }
