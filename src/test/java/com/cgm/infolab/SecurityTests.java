@@ -1,22 +1,18 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.controller.CsrfController;
-import com.cgm.infolab.model.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.awt.*;
-
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {SecurityTestsController.class})
@@ -30,13 +26,22 @@ public class SecurityTests {
     void callToAnUnprotectedRouteEndPointShouldFail() throws Exception {
         client
             .perform(get("/public/test"))
-            .andExpect(status().isUnauthorized());
+            .andExpect(status().isForbidden());
     }
 
     @Test
     void callToIndexShouldSucceed() throws Exception {
         client
             .perform(get("/index.html"))
+            .andExpect(status().isOk());
+        client
+            .perform(get("/index2.html"))
+            .andExpect(status().isOk());
+        client
+            .perform(get("/css/index.css"))
+            .andExpect(status().isOk());
+        client
+            .perform(get("/js/index.js"))
             .andExpect(status().isOk());
     }
 
@@ -49,7 +54,7 @@ public class SecurityTests {
 
     @Test
     @WithMockUser
-    void callToASecuredRouteEndPointShouldFailWithAnAuthenticatedUserShouldBeOk() throws Exception {
+    void callToASecuredRouteEndPointWithAnAuthenticatedUserShouldBeOk() throws Exception {
         client
             .perform(get("/api/test"))
             .andExpect(status().isOk());
@@ -61,6 +66,21 @@ public class SecurityTests {
         client
             .perform(get("/chat/test"))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser
+    void getCsrfTokenWithUserIsOk() throws Exception {
+        client
+            .perform(get("/csrf"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void getCsrfTokenWithoutUserShouldFail() throws Exception {
+        client
+            .perform(get("/csrf"))
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
@@ -78,5 +98,53 @@ public class SecurityTests {
             .perform(post("/chat/test"))
             .andExpect(status().isForbidden());
     }
+
+    @Test
+    void getToH2WithoutUserShouldBeOk() throws Exception {
+        client
+            .perform(get("/h2-console/"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    void postingToH2WithoutUserShouldBeOk() throws Exception {
+        client
+            .perform(post("/h2-console/"))
+            .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(username = "user1", password = "password1")
+    void whenUsingGetWithAUserICanGetTheUsernameOfThePrincipal() throws Exception {
+        client
+            .perform(get("/api/user"))
+            .andExpect(status().isOk())
+            .andExpect(content().string("user1"));
+    }
+
+    @Test
+    void whenUsingGetWithAJwtICanGetTheUsernameOfThePrincipal() throws Exception {
+        client
+            .perform(get("/api/user").with(jwt().jwt(builder -> builder.claim("sub", "user1"))))
+            .andExpect(status().isOk())
+            .andExpect(content().string("user1"));
+    }
+    @Test
+    void whenUsingPostWithAJwtICanGetTheUsernameOfThePrincipal() throws Exception {
+        client
+            .perform(post("/api/user").with(jwt().jwt(builder -> builder.claim("sub", "user1"))))
+            .andExpect(status().isOk())
+            .andExpect(content().string("user1"));
+    }
+
+    @Test
+    @WithMockUser
+    void whenThrowingBadRequestItShouldReturnBadRequest() throws Exception {
+        client
+            .perform(get("/api/badrequest"))
+            .andExpect(status().isBadRequest());
+    }
+
+
 
 }
