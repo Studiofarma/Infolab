@@ -68,7 +68,7 @@ public class TestStompHelper {
 
         WebSocketHttpHeaders headers = setCookies(csrfResponse);
         StompSession session = websocket
-                .connectAsync(String.format("http://localhost:%d/chat?access_token=%s", port, encodedAuth("user1", "password1")), headers, stompHeaders, new StompSessionHandlerAdapter() {})
+                .connectAsync(String.format("http://localhost:%d/chat?basic=%s", port, encodedAuth("user1", "password1")), headers, stompHeaders, new StompSessionHandlerAdapter() {})
                 .get(1, TimeUnit.SECONDS);
         return session;
     }

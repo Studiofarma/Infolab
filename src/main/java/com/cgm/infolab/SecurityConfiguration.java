@@ -6,6 +6,8 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
+import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -14,10 +16,13 @@ import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.annotation.web.socket.EnableWebSocketSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.messaging.access.intercept.MessageMatcherDelegatingAuthorizationManager;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,6 +30,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 import java.io.IOException;
+import java.util.function.Supplier;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -66,6 +72,7 @@ public class SecurityConfiguration {
             )
             .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
             .httpBasic(withDefaults())
+            .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
             .addFilterBefore(SecurityConfiguration::authInHeadersOrQueryString, BasicAuthenticationFilter.class)
             .headers(headers -> headers.frameOptions().sameOrigin())
             .build();
@@ -97,6 +104,17 @@ public class SecurityConfiguration {
         return http
             .authorizeHttpRequests(authz -> authz.anyRequest().denyAll())
             .build();
+    }
+
+    @Bean
+    JwtDecoder jwtDecoder(@Value("${jwk.seturi.hostname}") String hostname, @Value("${jwk.seturi.endpoint}") String endpoint) {
+        return jwtDecoder(() -> NimbusJwtDecoder.withJwkSetUri(hostname + endpoint).build());
+    }
+
+    public static NimbusJwtDecoder jwtDecoder(Supplier<NimbusJwtDecoder> decoderFn) {
+        NimbusJwtDecoder jwtDecoder = decoderFn.get();
+        jwtDecoder.setClaimSetConverter(new UsernameSubClaimAdapter());
+        return jwtDecoder;
     }
 
     @Bean
@@ -150,13 +168,19 @@ public class SecurityConfiguration {
     }
 
     private static void authInHeadersOrQueryString(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        String fromQueryString = request.getParameterMap().getOrDefault("access_token", new String[]{null})[0];
-        if(fromQueryString != null){
+        Pair<String, String> fromQueryString = getFromQueryString(request, "access_token");
+        if(fromQueryString.getValue() == null){
+            fromQueryString = getFromQueryString(request, "basic");
+        }
+
+        if(fromQueryString.getValue() != null){
+            String key = fromQueryString.getKey();
+            String value = fromQueryString.getValue();
             HttpServletRequestWrapper wrappedRequest = new HttpServletRequestWrapper((HttpServletRequest) request){
                 @Override
                 public String getHeader(String name) {
                     if(name.equals(HttpHeaders.AUTHORIZATION)){
-                        return String.format("Basic %s", fromQueryString);
+                        return String.format(key.equals("basic") ? "Basic %s" : "Bearer %s", value);
                     }
                     return super.getHeader(name);
                 }
@@ -166,6 +190,10 @@ public class SecurityConfiguration {
         }else {
             filterChain.doFilter(request, response);
         }
+    }
+
+    private static Pair<String, String> getFromQueryString(ServletRequest request, String key) {
+        return Pair.of(key, request.getParameterMap().getOrDefault(key, new String[]{null})[0]);
     }
 }
 
