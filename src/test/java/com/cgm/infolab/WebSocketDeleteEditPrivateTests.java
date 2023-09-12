@@ -1,5 +1,6 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.configuration.TestSecurityConfiguration;
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
 import com.cgm.infolab.db.model.enumeration.VisibilityEnum;

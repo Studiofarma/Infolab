@@ -1,5 +1,6 @@
-package com.cgm.infolab;
+package com.cgm.infolab.configuration;
 
+import com.cgm.infolab.SecurityConfiguration;
 import com.cgm.infolab.helper.TestJwtHelper;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

@@ -1,5 +1,6 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.configuration.TestSecurityConfiguration;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.UserStatusEnum;

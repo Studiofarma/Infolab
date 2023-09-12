@@ -1,6 +1,8 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.configuration.TestSecurityConfiguration;
 import com.cgm.infolab.controller.CsrfController;
+import com.cgm.infolab.controller.SecurityTestsController;
 import com.cgm.infolab.helper.TestJwtHelper;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Test;

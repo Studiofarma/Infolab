@@ -1,5 +1,6 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.configuration.TestSecurityConfiguration;
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
