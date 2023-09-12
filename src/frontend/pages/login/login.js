@@ -25,6 +25,7 @@ export class Login extends BaseComponent {
     header: "",
     token: "",
     cookie: { type: Object },
+    jwt: { type: String },
   };
 
   constructor() {
@@ -36,6 +37,10 @@ export class Login extends BaseComponent {
     this.isPasswordFieldEmpty = false;
     this.header = "";
     this.token = "";
+
+    const params = new URL(window.location.href).searchParams;
+    this.jwt = params.get("access_token");
+    if (this.jwt) this.loginConfirm();
 
     this.cookie = CookieService.getCookie();
     if (this.cookie.isValid) this.loginConfirm();
@@ -236,6 +241,13 @@ export class Login extends BaseComponent {
   }
 
   loginConfirm() {
+    if (this.jwt) {
+      LoginService.getLoginWithToken(this.jwt).then((response) => {
+        this.loginConfirmEvent();
+      });
+      return;
+    }
+
     if (this.cookie.isValid) {
       this.username = this.cookie.username;
       this.password = this.cookie.password;

@@ -82,4 +82,14 @@ export class HttpService {
   static async httpPostNoData(url) {
     return HttpService.httpPost(url, null);
   }
+
+  static async httpGetWithHeadersAndJwt(url, headers, jwt) {
+    headers = { ...headers, Authorization: `Bearer ${jwt}` };
+
+    return axios({
+      url: url,
+      method: "get",
+      headers: headers,
+    });
+  }
 }

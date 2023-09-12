@@ -11,4 +11,14 @@ export class LoginService {
       password
     );
   }
+
+  static async getLoginWithToken(jwt) {
+    return HttpService.httpGetWithHeadersAndJwt(
+      "/csrf",
+      {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      jwt
+    );
+  }
 }
