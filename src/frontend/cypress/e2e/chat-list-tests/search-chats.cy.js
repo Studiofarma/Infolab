@@ -117,7 +117,7 @@ describe("search spec", () => {
       .find("div")
       .contains("Conversazioni")
       .parent()
-      .find(".no-result")
+      .find('[data-cy="no-result"]')
       .should("exist");
   });
 
@@ -130,7 +130,7 @@ describe("search spec", () => {
       .find("div")
       .contains("Nuove conversazioni")
       .parent()
-      .find(".no-result")
+      .find('[data-cy="no-result"]')
       .should("exist");
   });
 });

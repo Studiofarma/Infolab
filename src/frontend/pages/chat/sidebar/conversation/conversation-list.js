@@ -25,7 +25,9 @@ const arrowUp = "ArrowUp";
 const arrowDown = "ArrowDown";
 const enter = "Enter";
 
-const noResult = html`<p class="no-result">Nessun risultato</p>`;
+const noResult = html`<p data-cy="no-result" class="no-result">
+  Nessun risultato
+</p>`;
 
 const selectedRoomKey = "selected-room"; // This is for the room the user is inside
 const selectedChatsKey = "selected-chats"; // This for the rooms the user has selected in the forward list
@@ -201,13 +203,13 @@ class ConversationList extends BaseComponent {
           .threshold=${500}
         >
           <div>
-            <p class="separator">Conversazioni</p>
+            <p data-cy="separator" class="separator">Conversazioni</p>
             <div class="conversation-list">
               ${this.renderConversationList()}
             </div>
           </div>
           <div>
-            <p class="separator">Nuove conversazioni</p>
+            <p data-cy="separator" class="separator">Nuove conversazioni</p>
             <div class="conversation-list">
               ${this.renderNewConversationList()}
             </div>

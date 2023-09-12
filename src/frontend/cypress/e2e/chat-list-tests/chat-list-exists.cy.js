@@ -7,7 +7,7 @@ describe("chat list render spec", () => {
 
   it("separator 'Conversazioni' exists after login", () => {
     cy.getLitElement(Paths.conversationListPath)
-      .find(".separator")
+      .find('[data-cy="separator"]')
       .eq(0)
       .should("have.text", "Conversazioni");
   });

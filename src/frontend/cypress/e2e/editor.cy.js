@@ -8,7 +8,7 @@ beforeEach(() => {
   cy.wait(1000);
 
   cy.getLitElement(`${Paths.chatPath},il-conversation-list,il-conversation`)
-    .find(".chat-box")
+    .find('[data-cy="chat-box"]')
     .first()
     .click({ force: true });
 });
