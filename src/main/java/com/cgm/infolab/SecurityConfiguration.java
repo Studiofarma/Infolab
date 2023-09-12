@@ -9,7 +9,9 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -126,6 +128,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
+    @Conditional(IsDevOrTestCondition.class)
     public UserDetailsManager users(){
         UserDetails user1 = User
                 .withUsername("user1")
