@@ -73,7 +73,7 @@ export class UsersService {
           ...loggedUser,
           avatarLink: `${
             loggedUser.avatarLink
-          }?access_token=${basicAuth.toString()}&cacheInvalidator=${new Date().toISOString()}`, // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
+          }?basic=${basicAuth.toString()}&cacheInvalidator=${new Date().toISOString()}`, // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
         };
       }
 
@@ -110,7 +110,7 @@ export class UsersService {
         ...user,
         avatarLink: `${
           user.avatarLink
-        }?access_token=${basicAuth.toString()}&cacheInvalidator=${new Date().toISOString()}`, // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
+        }?basic=${basicAuth.toString()}&cacheInvalidator=${new Date().toISOString()}`, // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
       };
     });
 

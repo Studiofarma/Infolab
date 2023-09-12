@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -50,6 +51,10 @@ public class WebSocketDeleteEditPublicTests {
     UserEntity user1 = UserEntity.of(Username.of("user1"));
 
     RoomEntity general = RoomEntity.general();
+
+    // This is here because the @Import annotation does not work
+    @TestConfiguration
+    public static class SecurityConfiguration extends TestSecurityConfiguration {}
 
     @BeforeAll
     public void setupAll(){

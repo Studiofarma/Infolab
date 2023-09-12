@@ -2,7 +2,7 @@ package com.cgm.infolab;
 
 import com.cgm.infolab.controller.CsrfController;
 import com.cgm.infolab.helper.TestJwtHelper;
-import com.nimbusds.jose.JOSEException;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -12,26 +12,20 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.text.ParseException;
-
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {SecurityTestsController.class})
-@Import({SecurityConfiguration.class, CsrfController.class, SecurityTestConfiguration.class})
+@Import({SecurityConfiguration.class, CsrfController.class, TestSecurityConfiguration.class})
 @ActiveProfiles("test")
 public class SecurityTests {
     @Autowired
     private MockMvc client;
 
     private final TestJwtHelper testJwtHelper = new TestJwtHelper();
-
-    public SecurityTests() throws ParseException, JOSEException {
-    }
 
     @Test
     void callToAnUnprotectedRouteEndPointShouldFail() throws Exception {
@@ -157,5 +151,21 @@ public class SecurityTests {
         client
             .perform(get("/api/badrequest"))
             .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void getProtectedEndpointWithQueryStringBasicAuthIsOk() throws Exception {
+        String encodedAuth = Base64.encodeBase64String("%s:%s".formatted("user1", "password1").getBytes());
+        client
+                .perform(get("/chat/test?basic=%s".formatted(encodedAuth)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void getProtectedEndpointWithQueryStringJwtIsOk() throws Exception {
+        Jwt jwt = testJwtHelper.generateToken("test", "user1");
+        client
+                .perform(get("/chat/test?access_token=%s".formatted(jwt.getTokenValue())))
+                .andExpect(status().isOk());
     }
 }

@@ -51,19 +51,23 @@ public class TestJwtHelper {
     private final JWKSet privateJwkSet;
     private final RSAPublicKey publicKey;
 
-    public TestJwtHelper() throws ParseException, JOSEException {
-        this.publicJwkSet = JWKSet.parse(this.publicJwkStr);
-        this.privateJwkSet = JWKSet.parse(this.privateJwkStr);
-        this.publicKey = this.publicJwkSet
-                .getKeyByKeyId(keyId)
-                .toRSAKey()
-                .toRSAPublicKey();
+    public TestJwtHelper() {
+        try {
+            this.publicJwkSet = JWKSet.parse(this.publicJwkStr);
+            this.privateJwkSet = JWKSet.parse(this.privateJwkStr);
+            this.publicKey = this.publicJwkSet
+                    .getKeyByKeyId(keyId)
+                    .toRSAKey()
+                    .toRSAPublicKey();
+        } catch (ParseException | JOSEException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Jwt generateToken(String scope, String username) {
         NimbusJwtEncoder tokenEncoder = new NimbusJwtEncoder((jwkSelector, securityContext) -> jwkSelector.select(privateJwkSet));
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
-                .expiresAt(Instant.now().plusMillis(60000))
+                .expiresAt(Instant.now().plusMillis(0))
                 .claim("scope", scope)
                 .claim("user_name", username)
                 .build();

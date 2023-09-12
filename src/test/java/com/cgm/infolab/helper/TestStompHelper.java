@@ -1,8 +1,6 @@
 package com.cgm.infolab.helper;
 
 import com.cgm.infolab.MyCsrfToken;
-import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.Username;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -13,6 +11,7 @@ import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -30,8 +29,6 @@ public class TestStompHelper {
 
     private final TestRestTemplate rest;
     private final ObjectMapper objectMapper;
-
-    private final UserEntity user1 = UserEntity.of(Username.of("user1"));
 
     public TestStompHelper(TestRestTemplate rest, ObjectMapper objectMapper) {
         this.rest = rest;
@@ -53,12 +50,13 @@ public class TestStompHelper {
     }
 
     public StompSession getStompSessionForUser1(WebSocketStompClient websocket, Integer port) throws InterruptedException, ExecutionException, TimeoutException {
-        String basicAuth = basicAuth(user1.getName().value(), "password1");
+        Jwt jwt = new TestJwtHelper().generateToken("test", "user1");
+        String auth = "Bearer " + jwt.getTokenValue();
 
         ResponseEntity<MyCsrfToken> csrfResponse = rest.exchange(
                 RequestEntity
                         .get("/csrf")
-                        .header(HttpHeaders.AUTHORIZATION, basicAuth)
+                        .header(HttpHeaders.AUTHORIZATION, auth)
                         .build(),
                 MyCsrfToken.class);
 
@@ -67,8 +65,12 @@ public class TestStompHelper {
         stompHeaders.add(csrf.headerName(), csrf.token());
 
         WebSocketHttpHeaders headers = setCookies(csrfResponse);
+
+//        StompSession session = websocket
+//                .connectAsync(String.format("http://localhost:%d/chat?basic=%s", port, encodedAuth("user1", "password1")), headers, stompHeaders, new StompSessionHandlerAdapter() {})
+//                .get(1, TimeUnit.SECONDS);
         StompSession session = websocket
-                .connectAsync(String.format("http://localhost:%d/chat?basic=%s", port, encodedAuth("user1", "password1")), headers, stompHeaders, new StompSessionHandlerAdapter() {})
+                .connectAsync(String.format("http://localhost:%d/chat?access_token=%s", port, jwt.getTokenValue()), headers, stompHeaders, new StompSessionHandlerAdapter() {})
                 .get(1, TimeUnit.SECONDS);
         return session;
     }

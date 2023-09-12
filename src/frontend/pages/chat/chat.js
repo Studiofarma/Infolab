@@ -719,7 +719,7 @@ export class Chat extends BaseComponent {
       this.login.username + ":" + this.login.password
     );
 
-    const socket = new SockJS("chat?access_token=" + basicAuth.toString());
+    const socket = new SockJS("chat?basic=" + basicAuth.toString());
     this.stompClient = Stomp.over(socket);
 
     let headers = {};
