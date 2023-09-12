@@ -13,32 +13,32 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 public class EncryptionHelper {
-    @Value("${encryption.key.password}")
     private String password;
-    @Value("${encryption.key.salt}")
     private String salt;
-    @Value("${encryption.key.iv}")
     private byte[] iv;
 
-    private final AtomicReference<SecretKeySpec> key = new AtomicReference<>();
+    private final SecretKeySpec key;
+    private final IvParameterSpec ivParameterSpec;
 
     private final String ALGORITHM = "AES/CBC/PKCS5Padding";
 
-    private SecretKey getKeyFromPassword(String password, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        if (key.get() == null) {
+    public EncryptionHelper(@Value("${encryption.key.password}") String password, @Value("${encryption.key.salt}") String salt, @Value("${encryption.key.iv}") byte[] iv) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        this.password = password;
+        this.salt = salt;
+        this.iv = iv;
+        key = getKeyFromPassword(this.password, this.salt);
+        ivParameterSpec = generateIv();
+    }
+
+    private SecretKeySpec getKeyFromPassword(String password, String salt) throws NoSuchAlgorithmException, InvalidKeySpecException {
             SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 65536, 256);
 
             SecretKeySpec secretKeySpec = new SecretKeySpec(factory.generateSecret(spec).getEncoded(), "AES");
-            key.set(secretKeySpec);
             return secretKeySpec;
-        } else {
-            return key.get();
-        }
     }
 
     private IvParameterSpec generateIv() {
@@ -70,18 +70,12 @@ public class EncryptionHelper {
             throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException,
             NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
 
-        SecretKey key = getKeyFromPassword(password, salt);
-        IvParameterSpec ivParameterSpec = generateIv();
-
         return encrypt(ALGORITHM, textToEncrypt, key, ivParameterSpec);
     }
 
     public String decryptWithAes(String textToDecrypt)
             throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidAlgorithmParameterException,
             NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
-
-        SecretKey key = getKeyFromPassword(password, salt);
-        IvParameterSpec ivParameterSpec = generateIv();
 
         return decrypt(ALGORITHM, textToDecrypt, key, ivParameterSpec);
     }
