@@ -7,16 +7,16 @@ export class StorageService {
     lastConversationName: "last-conversation-name",
 
     csrfToken: "csrf-token",
+
+    users: "users",
+    loggedUser: "logged-user",
   };
 
   /**
    * @param {StorageService.Keys} key
    */
   static getItemByKey(key) {
-    if (
-      key === StorageService.Keys.username ||
-      key === StorageService.Keys.password
-    ) {
+    if (StorageService.#isUsernameOrPassword(key)) {
       return CookieService.getCookieByKey(key);
     } else {
       const sessionResult = JSON.parse(sessionStorage.getItem(key));
@@ -36,13 +36,35 @@ export class StorageService {
   }
 
   static setItemByKeyPermanent(key, item) {
-    if (
-      key === StorageService.Keys.username ||
-      key === StorageService.Keys.password
-    ) {
+    if (StorageService.#isUsernameOrPassword(key)) {
       CookieService.setCookieByKey(key, item);
     } else {
       localStorage.setItem(key, JSON.stringify(item));
     }
+  }
+
+  /**
+   * @param {StorageService.Keys} key
+   */
+  static deleteItemByKeyFromSession(key) {
+    sessionStorage.removeItem(key);
+  }
+
+  static deleteItemByKeyFromPremanent(key) {
+    if (StorageService.#isUsernameOrPassword(key)) {
+      CookieService.setCookieByKey(key, "");
+    } else {
+      localStorage.removeItem(key);
+    }
+  }
+
+  /**
+   * @param {StorageService.Keys} key
+   */
+  static #isUsernameOrPassword(key) {
+    return (
+      key === StorageService.Keys.username ||
+      key === StorageService.Keys.password
+    );
   }
 }
