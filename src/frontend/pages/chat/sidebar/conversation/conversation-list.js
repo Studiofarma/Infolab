@@ -327,7 +327,7 @@ class ConversationList extends BaseComponent {
 
   setActiveChatName(value) {
     this.activeChatName = value;
-    StorageService.setItemByKey(
+    StorageService.setItemByKeyPermanent(
       StorageService.Keys.lastConversationName,
       value
     );
@@ -464,12 +464,12 @@ class ConversationList extends BaseComponent {
   async changeRoom(event, conversation) {
     this.dispatchEvent(new CustomEvent("il:conversation-is-going-to-change"));
 
-    StorageService.setItemByKey(
+    StorageService.setItemByKeyPermanent(
       StorageService.Keys.lastConversationName,
       conversation.roomName
     );
 
-    StorageService.setItemByKey(
+    StorageService.setItemByKeyPermanent(
       StorageService.Keys.lastConversationName,
       conversation.roomName
     );
