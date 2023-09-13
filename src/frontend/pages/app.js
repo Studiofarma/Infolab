@@ -28,11 +28,10 @@ export class App extends LitElement {
     return html`
       ${when(
         this.login.username === "",
-        () =>
-          html`
-            <il-login @il:login-confirmed="${this.loginConfirm}"></il-login>
-          `,
-        () => html` <il-chat .login=${this.login}></il-chat> `
+        () => html`
+          <il-login @il:login-confirmed="${this.loginConfirm}"></il-login>
+        `,
+        () => html` <il-chat></il-chat> `
       )}
     `;
   }
