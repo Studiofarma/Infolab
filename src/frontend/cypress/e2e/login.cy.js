@@ -2,7 +2,10 @@ describe("Login spec", () => {
   it("login fail", () => {
     cy.login({ user: "a", password: "a" });
 
-    cy.getCookie("token", { domain: "localhost" }).should("not.exist");
+    cy.window()
+      .its("sessionStorage")
+      .invoke("getItem", "csrf-token")
+      .should("not.exist");
   });
 
   it("login works", () => {
@@ -10,7 +13,10 @@ describe("Login spec", () => {
 
     cy.litElementExist("il-app,il-chat");
 
-    cy.getCookie("token", { domain: "localhost" }).should("exist");
+    cy.window()
+      .its("sessionStorage")
+      .invoke("getItem", "csrf-token")
+      .should("exist");
   });
 });
 
