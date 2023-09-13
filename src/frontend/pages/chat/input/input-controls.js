@@ -213,11 +213,7 @@ export class InputControls extends BaseComponent {
     const lastConversationName = StorageService.getItemByKey(
       StorageService.Keys.lastConversationName
     );
-    StorageService.deleteStoredMessageForRoom(
-      `message:${StorageService.getItemByKey(
-        StorageService.Keys.lastConversationName
-      )}`
-    );
+    StorageService.deleteStoredMessageForRoom(lastConversationName);
   }
 
   editMessage(detail) {
