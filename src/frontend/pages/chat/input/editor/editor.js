@@ -130,11 +130,12 @@ export class Editor extends BaseComponent {
   }
 
   insertStoredTextInEditor() {
-    const textFromStorage = localStorage.getItem(
-      `message:${StorageService.getItemByKey(
-        StorageService.Keys.lastConversationName
-      )}`
+    const lastConversationName = StorageService.getItemByKey(
+      StorageService.Keys.lastConversationName
     );
+
+    const textFromStorage =
+      StorageService.getStoredMessageForRoom(lastConversationName);
     const text = textFromStorage ? textFromStorage : "";
 
     this.editorRef.value.innerHTML = text;

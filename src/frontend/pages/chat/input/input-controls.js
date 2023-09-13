@@ -199,20 +199,24 @@ export class InputControls extends BaseComponent {
   }
 
   saveMessageToLocalStorage() {
-    localStorage.setItem(
-      `message:${StorageService.getItemByKey(
-        StorageService.Keys.lastConversationName
-      )}`,
+    const lastConversationName = StorageService.getItemByKey(
+      StorageService.Keys.lastConversationName
+    );
+
+    StorageService.storeCurrentMessageForRoom(
+      lastConversationName,
       this.message
     );
   }
 
   removeMessageFromLocalStorage() {
-    localStorage.removeItem(
+    const lastConversationName = StorageService.getItemByKey(
+      StorageService.Keys.lastConversationName
+    );
+    StorageService.deleteStoredMessageForRoom(
       `message:${StorageService.getItemByKey(
         StorageService.Keys.lastConversationName
-      )}`,
-      this.message
+      )}`
     );
   }
 

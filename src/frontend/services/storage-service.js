@@ -4,9 +4,10 @@ export class StorageService {
   static Keys = {
     username: "username",
     password: "password",
-    lastConversationName: "last-conversation-name",
-
     csrfToken: "csrf-token",
+
+    lastConversationName: "last-conversation-name",
+    selectedRoom: "selected-room",
 
     users: "users",
     loggedUser: "logged-user",
@@ -18,12 +19,17 @@ export class StorageService {
    * @param {StorageService.Keys} key
    */
   static getItemByKey(key) {
+    if (key.includes("message:")) {
+      console.log();
+    }
     if (StorageService.#isUsernameOrPassword(key)) {
       return CookieService.getCookieByKey(key);
     } else {
-      const sessionResult = JSON.parse(sessionStorage.getItem(key));
+      const sessionJson = sessionStorage.getItem(key);
+      const sessionResult = sessionJson ? JSON.parse(sessionJson) : sessionJson;
       if (!sessionResult) {
-        return JSON.parse(localStorage.getItem(key));
+        const localJson = localStorage.getItem(key);
+        return localJson ? JSON.parse(localJson) : localJson;
       }
       return sessionResult;
     }
@@ -52,12 +58,37 @@ export class StorageService {
     sessionStorage.removeItem(key);
   }
 
-  static deleteItemByKeyFromPremanent(key) {
+  static deleteItemByKeyFromPermanent(key) {
     if (StorageService.#isUsernameOrPassword(key)) {
       CookieService.setCookieByKey(key, "");
     } else {
       localStorage.removeItem(key);
     }
+  }
+
+  /**
+   * @param {String} roomName
+   */
+  static getStoredMessageForRoom(roomName) {
+    const key = StorageService.#generateKeyFromRoomname(roomName);
+    StorageService.getItemByKey(key);
+  }
+
+  /**
+   * @param {String} roomName
+   * @param {String} message
+   */
+  static storeCurrentMessageForRoom(roomName, message) {
+    const key = StorageService.#generateKeyFromRoomname(roomName);
+    StorageService.setItemByKeyPermanent(key, message);
+  }
+
+  /**
+   * @param {String} roomName
+   */
+  static deleteStoredMessageForRoom(roomName) {
+    const key = StorageService.#generateKeyFromRoomname(roomName);
+    StorageService.deleteItemByKeyFromPermanent(key);
   }
 
   /**
@@ -68,5 +99,13 @@ export class StorageService {
       key === StorageService.Keys.username ||
       key === StorageService.Keys.password
     );
+  }
+
+  /**
+   * @param {String} roomName
+   * @returns generated key as string
+   */
+  static #generateKeyFromRoomname(roomName) {
+    return `message:${roomName}`;
   }
 }

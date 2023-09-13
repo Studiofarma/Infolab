@@ -344,7 +344,9 @@ class ConversationList extends BaseComponent {
   //#endregion -----------------------------
 
   async updateLastOpenConversation() {
-    let conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+    let conversation = StorageService.getItemByKey(
+      StorageService.Keys.selectedRoom
+    );
 
     if (this.isStartup && !this.isForwardList && conversation) {
       try {
@@ -474,14 +476,14 @@ class ConversationList extends BaseComponent {
       conversation.roomName
     );
 
-    localStorage.setItem(selectedRoomKey, JSON.stringify(conversation));
+    StorageService.setItemByKeyPermanent(selectedRoomKey, conversation);
 
     // unset the unread messages counter
     this.unsetUnreadMessages(conversation.roomName);
 
-    localStorage.setItem(
+    StorageService.setItemByKeyPermanent(
       selectedRoomKey,
-      JSON.stringify(this.findConversationByRoomName(conversation.roomName))
+      this.findConversationByRoomName(conversation.roomName)
     );
 
     let updatedConv = await this.updateConversation(conversation);
@@ -825,7 +827,9 @@ class ConversationList extends BaseComponent {
     }
 
     if (!conversation) {
-      conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+      conversation = StorageService.getItemByKey(
+        StorageService.Keys.selectedRoom
+      );
     }
 
     return conversation;
@@ -839,7 +843,9 @@ class ConversationList extends BaseComponent {
     }
 
     if (!conversation) {
-      conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+      conversation = StorageService.getItemByKey(
+        StorageService.Keys.selectedRoom
+      );
     }
 
     return conversation;
