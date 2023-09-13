@@ -13,4 +13,8 @@ export class CommandsService {
       )}`
     );
   }
+
+  static isDevOrTest() {
+    return process.env.PROFILE === "dev" || process.env.PROFILE === "test";
+  }
 }

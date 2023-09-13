@@ -1,4 +1,5 @@
 import { UserDto } from "../models/user-dto";
+import { CommandsService } from "./commands-service";
 import { HttpService } from "./http-service";
 import { StorageService } from "./storage-service";
 
@@ -68,11 +69,18 @@ export class UsersService {
       );
 
       if (loggedUser.avatarLink !== null) {
+        let link = `${
+          loggedUser.avatarLink
+        }?cacheInvalidator=${new Date().toISOString()}`;
+        // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
+
+        if (CommandsService.isDevOrTest()) {
+          link = `${link}&basic=${basicAuth.toString()}`;
+        }
+
         loggedUser = {
           ...loggedUser,
-          avatarLink: `${
-            loggedUser.avatarLink
-          }?basic=${basicAuth.toString()}&cacheInvalidator=${new Date().toISOString()}`, // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
+          avatarLink: link,
         };
       }
 
@@ -112,11 +120,19 @@ export class UsersService {
       if (user.avatarLink === null) {
         return user;
       }
+
+      let link = `${
+        user.avatarLink
+      }?cacheInvalidator=${new Date().toISOString()}`;
+      // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
+
+      if (CommandsService.isDevOrTest()) {
+        link = `${link}&basic=${basicAuth.toString()}`;
+      }
+
       return {
         ...user,
-        avatarLink: `${
-          user.avatarLink
-        }?basic=${basicAuth.toString()}&cacheInvalidator=${new Date().toISOString()}`, // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
+        avatarLink: link,
       };
     });
 

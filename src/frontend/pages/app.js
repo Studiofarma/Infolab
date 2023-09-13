@@ -3,31 +3,19 @@ import { when } from "lit/directives/when.js";
 import "./login/login.js";
 import "./chat/chat.js";
 export class App extends LitElement {
-  static get properties() {
-    return {
-      login: {
-        username: "",
-        password: "",
-        headerName: "",
-        token: "",
-      },
-    };
-  }
+  static properties = {
+    isLoggedIn: { Boolean },
+  };
 
   constructor() {
     super();
-    this.login = {
-      username: "",
-      password: "",
-      headerName: "",
-      token: "",
-    };
+    this.isLoggedIn = false;
   }
 
   render() {
     return html`
       ${when(
-        this.login.username === "",
+        !this.isLoggedIn,
         () => html`
           <il-login @il:login-confirmed="${this.loginConfirm}"></il-login>
         `,
@@ -37,7 +25,7 @@ export class App extends LitElement {
   }
 
   loginConfirm(e) {
-    this.login = e.detail.login;
+    this.isLoggedIn = true;
   }
 }
 

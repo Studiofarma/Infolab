@@ -1,3 +1,4 @@
+import { CommandsService } from "./commands-service";
 import { StorageService } from "./storage-service";
 
 const axios = require("axios").default;
@@ -37,15 +38,13 @@ export class HttpService {
     username,
     password
   ) {
-    return axios({
-      url: url,
-      method: "get",
-      headers: headers,
-      auth: {
-        username: username,
-        password: password,
-      },
-    });
+    const config = { url: url, method: "get", headers: headers };
+
+    if (CommandsService.isDevOrTest()) {
+      config.auth = { username: username, password: password };
+    }
+
+    return axios(config);
   }
 
   /**
@@ -63,10 +62,6 @@ export class HttpService {
         "X-CSRF-TOKEN": csrfToken,
         "Content-Type": "application/json",
       },
-      auth: {
-        username: username,
-        password: password,
-      },
     };
 
     if (data) {
@@ -76,21 +71,18 @@ export class HttpService {
       };
     }
 
+    if (CommandsService.isDevOrTest()) {
+      config.auth = {
+        username: username,
+        password: password,
+      };
+    }
+
     return axios(config);
   }
 
   static async httpPostNoData(url) {
     return HttpService.httpPost(url, null);
-  }
-
-  static async httpGetWithHeadersAndJwt(url, headers, jwt) {
-    headers = { ...headers, Authorization: `Bearer ${jwt}` };
-
-    return axios({
-      url: url,
-      method: "get",
-      headers: headers,
-    });
   }
 
   /**
