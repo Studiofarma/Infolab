@@ -1,5 +1,6 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.helper.TestJwtHelper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -8,10 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -112,6 +110,13 @@ public class SecurityConfiguration {
     @Bean
     JwtDecoder jwtDecoder(@Value("${jwk.seturi.hostname}") String hostname, @Value("${jwk.seturi.endpoint}") String endpoint) {
         return jwtDecoder(() -> NimbusJwtDecoder.withJwkSetUri(hostname + endpoint).build());
+    }
+
+    @Bean
+    @Primary
+    @Conditional(IsDevOrTestCondition.class)
+    JwtDecoder testJwtDecoder() {
+        return jwtDecoder(() -> NimbusJwtDecoder.withPublicKey(new TestJwtHelper().getPublicKey()).build());
     }
 
     public static NimbusJwtDecoder jwtDecoder(Supplier<NimbusJwtDecoder> decoderFn) {
