@@ -14,6 +14,7 @@ import "../../components/input-field";
 import "../../components/input-password";
 
 import { BaseComponent } from "../../components/base-component";
+import { StorageService } from "../../services/storage-service";
 
 export class Login extends BaseComponent {
   static properties = {
@@ -30,8 +31,6 @@ export class Login extends BaseComponent {
 
   constructor() {
     super();
-    this.username = "";
-    this.password = "";
     this.isPasswordVisible = false;
     this.isUsernameFieldEmpty = false;
     this.isPasswordFieldEmpty = false;
@@ -42,8 +41,9 @@ export class Login extends BaseComponent {
     this.jwt = params.get("access_token");
     if (this.jwt) this.loginConfirm();
 
-    this.cookie = CookieService.getCookie();
-    if (this.cookie.isValid) this.loginConfirm();
+    this.username = StorageService.getItemByKey(StorageService.Keys.username);
+    this.password = StorageService.getItemByKey(StorageService.Keys.password);
+    if (this.username && this.password) this.loginConfirm();
 
     // Refs
     this.snackbarRef = createRef();
@@ -157,10 +157,10 @@ export class Login extends BaseComponent {
   `;
 
   setCookieWithCurrentData() {
-    CookieService.setCookieByKey(CookieService.Keys.username, this.username);
-    CookieService.setCookieByKey(CookieService.Keys.password, this.password);
-    CookieService.setCookieByKey(CookieService.Keys.header, this.header);
-    CookieService.setCookieByKey(CookieService.Keys.token, this.token);
+    StorageService.setItemByKey(StorageService.Keys.username, this.username);
+    StorageService.setItemByKey(StorageService.Keys.password, this.password);
+    StorageService.setItemByKey(StorageService.Keys.csrfHeader, this.header);
+    StorageService.setItemByKey(StorageService.Keys.csrfToken, this.token);
   }
 
   render() {
@@ -246,11 +246,6 @@ export class Login extends BaseComponent {
         this.loginConfirmEvent();
       });
       return;
-    }
-
-    if (this.cookie.isValid) {
-      this.username = this.cookie.username;
-      this.password = this.cookie.password;
     }
 
     if (this.username === "" && this.password === "") {

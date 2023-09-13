@@ -6,7 +6,6 @@ import "./profile-settings";
 import "../../../components/button-icon";
 import "../../../components/modal";
 import { UsersService } from "../../../services/users-service";
-import { CookieService } from "../../../services/cookie-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
@@ -30,8 +29,6 @@ export class ChatHeader extends BaseComponent {
     this.isFirstFetch = true;
     this.descriptionChanged = false;
     this.userInvalidated = false;
-
-    this.cookie = CookieService.getCookie();
 
     // Refs
     this.modalRef = createRef();

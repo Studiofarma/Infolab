@@ -1,13 +1,11 @@
 import { UserDto } from "../models/user-dto";
-import { CookieService } from "./cookie-service";
 import { HttpService } from "./http-service";
+import { StorageService } from "./storage-service";
 
 const loggedUserKey = "logged-user";
 const usersKey = "users";
 
 export class UsersService {
-  static cookie = CookieService.getCookie();
-
   /**
    * @param {Array} usernames an array of usernames as string values
    */
@@ -64,9 +62,11 @@ export class UsersService {
         console.error(error);
       }
 
-      const cookie = CookieService.getCookie();
-
-      let basicAuth = window.btoa(loggedUser.name + ":" + cookie.password);
+      let basicAuth = window.btoa(
+        loggedUser.name +
+          ":" +
+          StorageService.getItemByKey(StorageService.Keys.password)
+      );
 
       if (loggedUser.avatarLink !== null) {
         loggedUser = {
@@ -98,10 +98,13 @@ export class UsersService {
       `/api/users?usernames=${queryString}`
     );
 
-    const cookie = CookieService.getCookie();
     const loggedUser = await UsersService.getLoggedUser();
 
-    let basicAuth = window.btoa(loggedUser.name + ":" + cookie.password);
+    let basicAuth = window.btoa(
+      loggedUser.name +
+        ":" +
+        StorageService.getItemByKey(StorageService.Keys.password)
+    );
 
     users.data = users.data.map((user) => {
       if (user.avatarLink === null) {

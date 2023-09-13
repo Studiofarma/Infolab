@@ -6,7 +6,6 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
 import { MessagesService } from "../../services/messages-service";
-import { CookieService } from "../../services/cookie-service";
 import { ThemeColorService } from "../../services/theme-color-service";
 
 import { IconNames } from "../../enums/icon-names";
@@ -35,6 +34,7 @@ import { ConversationService } from "../../services/conversations-service";
 import { CommandsService } from "../../services/commands-service";
 import { UsersService } from "../../services/users-service";
 import { UserDto } from "../../models/user-dto";
+import { StorageService } from "../../services/storage-service";
 
 export class Chat extends BaseComponent {
   static properties = {
@@ -71,7 +71,8 @@ export class Chat extends BaseComponent {
     this.canFetchLoggedUser = false;
 
     this.activeChatName =
-      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
+      StorageService.getItemByKey(StorageService.Keys.lastConversationName) ||
+      "";
 
     window.addEventListener("resize", () => {
       this.scrollToBottom();
@@ -539,8 +540,9 @@ export class Chat extends BaseComponent {
 
     let roomName = e?.detail?.conversation?.roomName;
     if (!roomName) {
-      const cookie = CookieService.getCookie();
-      roomName = cookie.lastChat;
+      roomName = StorageService.getItemByKey(
+        StorageService.Keys.lastConversationName
+      );
     }
 
     this.messages = (
@@ -631,8 +633,9 @@ export class Chat extends BaseComponent {
       let roomName = e?.detail?.conversation?.roomName;
 
       if (!roomName) {
-        const cookie = CookieService.getCookie();
-        roomName = cookie.lastChat;
+        roomName = StorageService.getItemByKey(
+          StorageService.Keys.lastConversationName
+        );
       }
 
       let before = null;
@@ -658,8 +661,9 @@ export class Chat extends BaseComponent {
       let roomName = e?.detail?.conversation?.roomName;
 
       if (!roomName) {
-        const cookie = CookieService.getCookie();
-        roomName = cookie.lastChat;
+        roomName = StorageService.getItemByKey(
+          StorageService.Keys.lastConversationName
+        );
       }
 
       let after = null;
@@ -711,14 +715,18 @@ export class Chat extends BaseComponent {
   }
 
   createSocket() {
-    let cookie = CookieService.getCookie();
-    let basicAuth = window.btoa(this.loggedUser?.name + ":" + cookie.password);
+    let basicAuth = window.btoa(
+      this.loggedUser?.name +
+        ":" +
+        StorageService.getItemByKey(StorageService.Keys.password)
+    );
 
     const socket = new SockJS("chat?basic=" + basicAuth.toString());
     this.stompClient = Stomp.over(socket);
 
     let headers = {};
-    headers[cookie.header] = cookie.token;
+    headers[StorageService.getItemByKey(StorageService.Keys.csrfHeader)] =
+      StorageService.getItemByKey(StorageService.Keys.csrfToken);
     this.stompClient.connect(
       headers,
       () => this.onConnect(),

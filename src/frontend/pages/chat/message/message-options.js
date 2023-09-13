@@ -1,7 +1,6 @@
 import { html, css } from "lit";
 import { when } from "lit/directives/when.js";
 
-import { CookieService } from "../../../services/cookie-service.js";
 import { ThemeColorService } from "../../../services/theme-color-service.js";
 
 import { IconNames } from "../../../enums/icon-names.js";
@@ -19,11 +18,6 @@ export class MessageOptions extends BaseComponent {
       type: { type: String },
       messageIndex: { type: Number },
     };
-  }
-
-  constructor() {
-    super();
-    this.cookie = CookieService.getCookie();
   }
 
   static styles = css`

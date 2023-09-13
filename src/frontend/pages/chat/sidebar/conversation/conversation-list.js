@@ -3,7 +3,6 @@ import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 import { repeat } from "lit/directives/repeat.js";
 
-import { CookieService } from "../../../../services/cookie-service";
 import { ConversationService } from "../../../../services/conversations-service";
 import { UsersService } from "../../../../services/users-service";
 import { ThemeColorService } from "../../../../services/theme-color-service";
@@ -19,6 +18,7 @@ import "../../../../components/infinite-scroll";
 import { ConversationDto } from "../../../../models/conversation-dto";
 import { BaseComponent } from "../../../../components/base-component";
 import { UserDto } from "../../../../models/user-dto";
+import { StorageService } from "../../../../services/storage-service";
 
 const debounce = require("lodash.debounce");
 
@@ -74,7 +74,6 @@ class ConversationList extends BaseComponent {
       this.requestUpdate();
     }, 750);
 
-    this.cookie = CookieService.getCookie();
     this.onLoad();
 
     // Refs
@@ -260,8 +259,10 @@ class ConversationList extends BaseComponent {
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
           class=${"conversation " +
-          (conversation.roomName == this.cookie.lastChat ||
-          conversation.roomName == this.selectedRoom.roomName
+          (conversation.roomName ==
+            StorageService.getItemByKey(
+              StorageService.Keys.lastConversationName
+            ) || conversation.roomName == this.selectedRoom.roomName
             ? "active"
             : "")}
           id=${conversation.roomName == this.selectedRoom.roomName
@@ -301,8 +302,10 @@ class ConversationList extends BaseComponent {
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
           class=${"conversation new-conversation " +
-          (conversation.roomName == this.cookie.lastChat ||
-          conversation.roomName == this.selectedRoom.roomName
+          (conversation.roomName ==
+            StorageService.getItemByKey(
+              StorageService.Keys.lastConversationName
+            ) || conversation.roomName == this.selectedRoom.roomName
             ? "active"
             : "")}
           .conversation=${conversation}
@@ -324,7 +327,10 @@ class ConversationList extends BaseComponent {
 
   setActiveChatName(value) {
     this.activeChatName = value;
-    this.cookie.lastChat = value;
+    StorageService.setItemByKey(
+      StorageService.Keys.lastConversationName,
+      value
+    );
   }
 
   getConversationList() {
@@ -458,12 +464,15 @@ class ConversationList extends BaseComponent {
   async changeRoom(event, conversation) {
     this.dispatchEvent(new CustomEvent("il:conversation-is-going-to-change"));
 
-    CookieService.setCookieByKey(
-      CookieService.Keys.lastChat,
+    StorageService.setItemByKey(
+      StorageService.Keys.lastConversationName,
       conversation.roomName
     );
 
-    this.cookie.lastChat = conversation.roomName;
+    StorageService.setItemByKey(
+      StorageService.Keys.lastConversationName,
+      conversation.roomName
+    );
 
     localStorage.setItem(selectedRoomKey, JSON.stringify(conversation));
 
