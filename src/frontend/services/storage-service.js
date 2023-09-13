@@ -10,6 +10,8 @@ export class StorageService {
 
     users: "users",
     loggedUser: "logged-user",
+
+    theme: "theme",
   };
 
   /**

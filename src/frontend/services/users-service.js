@@ -20,7 +20,7 @@ export class UsersService {
         let index = sessionUsers.findIndex((user) => user.name === username);
 
         if (index === -1) {
-          // The user is not present inside the sessionStorage so I will need to fetch it
+          // The user is not stored so I will need to fetch it
           usernamesToFetch.push(username);
         } else {
           alreadyPresentUsers.push(sessionUsers[index]);
