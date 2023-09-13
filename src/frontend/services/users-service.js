@@ -66,7 +66,7 @@ export class UsersService {
 
       const cookie = CookieService.getCookie();
 
-      let basicAuth = window.btoa(cookie.username + ":" + cookie.password);
+      let basicAuth = window.btoa(loggedUser.name + ":" + cookie.password);
 
       if (loggedUser.avatarLink !== null) {
         loggedUser = {
@@ -99,8 +99,9 @@ export class UsersService {
     );
 
     const cookie = CookieService.getCookie();
+    const loggedUser = await UsersService.getLoggedUser();
 
-    let basicAuth = window.btoa(cookie.username + ":" + cookie.password);
+    let basicAuth = window.btoa(loggedUser.name + ":" + cookie.password);
 
     users.data = users.data.map((user) => {
       if (user.avatarLink === null) {

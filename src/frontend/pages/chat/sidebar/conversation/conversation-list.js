@@ -18,6 +18,7 @@ import "../../../../components/infinite-scroll";
 
 import { ConversationDto } from "../../../../models/conversation-dto";
 import { BaseComponent } from "../../../../components/base-component";
+import { UserDto } from "../../../../models/user-dto";
 
 const debounce = require("lodash.debounce");
 
@@ -47,6 +48,8 @@ class ConversationList extends BaseComponent {
     hasMore: { type: Boolean },
 
     conversationOpenBeforeQuit: { type: Object },
+
+    loggedUser: { type: UserDto },
   };
 
   constructor() {
@@ -77,6 +80,12 @@ class ConversationList extends BaseComponent {
     // Refs
     this.inputRef = createRef();
     this.infiniteScrollRef = createRef();
+  }
+
+  async connectedCallback() {
+    super.connectedCallback();
+
+    this.loggedUser = await UsersService.getLoggedUser();
   }
 
   async onLoad() {
@@ -580,18 +589,9 @@ class ConversationList extends BaseComponent {
       }
     });
 
-    usernames.add(this.cookie.username);
+    if (this.loggedUser) usernames.add(this.loggedUser?.name);
 
     if (usernames.size > 0) await this.getAllUsers(Array.from(usernames));
-  }
-
-  setNewConversationList() {
-    let cookie = CookieService.getCookie();
-    this.usersList.forEach((user) => {
-      if (user.name != cookie.username) {
-        this.setUsersList(user);
-      }
-    });
   }
 
   async updateLastMessage(message) {
@@ -673,9 +673,7 @@ class ConversationList extends BaseComponent {
   }
 
   setUsersList(user) {
-    let cookie = CookieService.getCookie();
-
-    let roomName = this.chatNameRecomposer(cookie.username, user.name);
+    let roomName = this.chatNameRecomposer(this.loggedUser?.name, user.name);
 
     let isPresent = this.conversationList.some(
       (obj) => obj.roomName === roomName

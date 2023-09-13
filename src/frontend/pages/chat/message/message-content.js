@@ -1,7 +1,6 @@
 import { html, css } from "lit";
 import { when } from "lit/directives/when.js";
 
-import { CookieService } from "../../../services/cookie-service";
 import { HtmlParserService } from "./../../../services/html-parser-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
@@ -10,6 +9,8 @@ import { ConversationDto } from "../../../models/conversation-dto";
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 
 import { BaseComponent } from "../../../components/base-component";
+import { UserDto } from "../../../models/user-dto";
+import { UsersService } from "../../../services/users-service";
 
 export class MessageContent extends BaseComponent {
   static properties = {
@@ -18,11 +19,13 @@ export class MessageContent extends BaseComponent {
     activeConversation: { type: ConversationDto },
     roomType: { type: String },
     user: { type: Object },
+    loggedUser: { type: UserDto },
   };
 
-  constructor() {
-    super();
-    this.cookie = CookieService.getCookie();
+  async connectedCallback() {
+    super.connectedCallback();
+
+    this.loggedUser = await UsersService.getLoggedUser();
   }
 
   static styles = css`
@@ -203,7 +206,7 @@ export class MessageContent extends BaseComponent {
         <main>
           <div
             class=${
-              this.message.sender == this.cookie.username
+              this.message.sender == this.loggedUser?.name
                 ? "sender"
                 : "receiver"
             }
@@ -220,7 +223,7 @@ export class MessageContent extends BaseComponent {
                   )}"
                 >
                   ${when(
-                    this.message.sender != this.cookie.username,
+                    this.message.sender != this.loggedUser?.name,
                     () => this.user?.description
                   )}
                 </p>`
