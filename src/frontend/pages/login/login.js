@@ -159,7 +159,6 @@ export class Login extends BaseComponent {
   setCookieWithCurrentData() {
     StorageService.setItemByKey(StorageService.Keys.username, this.username);
     StorageService.setItemByKey(StorageService.Keys.password, this.password);
-    StorageService.setItemByKey(StorageService.Keys.csrfHeader, this.header);
     StorageService.setItemByKey(StorageService.Keys.csrfToken, this.token);
   }
 

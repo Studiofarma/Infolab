@@ -725,8 +725,9 @@ export class Chat extends BaseComponent {
     this.stompClient = Stomp.over(socket);
 
     let headers = {};
-    headers[StorageService.getItemByKey(StorageService.Keys.csrfHeader)] =
-      StorageService.getItemByKey(StorageService.Keys.csrfToken);
+    headers["X-CSRF-TOKEN"] = StorageService.getItemByKey(
+      StorageService.Keys.csrfToken
+    );
     this.stompClient.connect(
       headers,
       () => this.onConnect(),

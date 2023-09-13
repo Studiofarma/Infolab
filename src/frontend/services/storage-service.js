@@ -4,7 +4,6 @@ export class StorageService {
   static Keys = {
     username: "username",
     password: "password",
-    csrfHeader: "header",
     csrfToken: "token",
     lastConversationName: "last-chat",
   };
