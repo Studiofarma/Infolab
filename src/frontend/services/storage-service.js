@@ -71,7 +71,7 @@ export class StorageService {
    */
   static getStoredMessageForRoom(roomName) {
     const key = StorageService.#generateKeyFromRoomname(roomName);
-    StorageService.getItemByKey(key);
+    return StorageService.getItemByKey(key);
   }
 
   /**
