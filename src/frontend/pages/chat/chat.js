@@ -721,12 +721,11 @@ export class Chat extends BaseComponent {
         StorageService.getItemByKey(StorageService.Keys.password)
     );
 
-    let queryString;
+    let queryString = "chat?basic=";
     if (CommandsService.isDevOrTest()) {
-      queryString = "chat?basic=" + basicAuth.toString();
-    } else {
-      queryString = "chat";
+      queryString += basicAuth.toString();
     }
+
     const socket = new SockJS(queryString);
     this.stompClient = Stomp.over(socket);
 
