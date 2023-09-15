@@ -1,5 +1,6 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.configuration.TestSecurityConfiguration;
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
 import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -33,7 +35,7 @@ import static com.cgm.infolab.model.WebSocketMessageTypeEnum.EDIT;
 import static org.awaitility.Awaitility.await;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"test", "local"})
+@ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WebSocketDeleteEditPrivateTests {
     @LocalServerPort
@@ -48,6 +50,10 @@ public class WebSocketDeleteEditPrivateTests {
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
     UserEntity user1 = UserEntity.of(Username.of("user1"));
     RoomEntity bananaUser1 = RoomEntity.of(RoomName.of("banana-user1"), VisibilityEnum.PRIVATE, RoomTypeEnum.USER2USER);
+
+    // This is here because the @Import annotation does not work
+    @TestConfiguration
+    public static class SecurityConfiguration extends TestSecurityConfiguration {}
 
     @BeforeAll
     public void setupAll(){

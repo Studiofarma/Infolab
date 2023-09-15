@@ -6,6 +6,7 @@ import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
 import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.db.repository.UserRepository;
+import com.cgm.infolab.helper.TestJwtHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -45,8 +46,7 @@ public class RunAfterStartup {
     public RunAfterStartup(
         RoomRepository roomRepository,
         UserRepository userRepository,
-        Environment env
-        ) {
+        Environment env) {
 
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
@@ -60,11 +60,17 @@ public class RunAfterStartup {
     public void addComponentsToDb() {
         saveRooms(ROOMS);
 
-        if(Arrays.asList(env.getActiveProfiles()).contains("dev")){
+        if(Arrays.asList(env.getActiveProfiles()).contains(ProfilesConstants.DEV)){
             saveRooms(TEST_ROOMS);
             saveUsers(TEST_USERS);
-        }
 
+            System.out.printf(
+                    "Jwt to authenticate as lorenzo: %s%n",
+                    new TestJwtHelper()
+                            .generateToken("infolab", "lorenzo", 3600000) // 1 hour expiration time
+                            .getTokenValue()
+            );
+        }
     }
 
     private void saveRooms(RoomEntity[] roomEntities) {

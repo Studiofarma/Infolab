@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"test"})
+@ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LastDownloadDateUpdateTests {
     @Autowired
@@ -103,6 +103,8 @@ public class LastDownloadDateUpdateTests {
 
         chatService.saveMessageInDb(messageDtos[0], loggedInUser.getName(), general.getName(), null);
 
+        Thread.sleep(100);
+
         downloadDateRepository.addWhereNotDownloadedYetForUser(loggedInUser.getName(), general.getName());
 
         Timestamp timestampFirstMessage = jdbcTemplate.query(
@@ -114,6 +116,8 @@ public class LastDownloadDateUpdateTests {
         .get(0);
 
         chatService.saveMessageInDb(messageDtos[1], loggedInUser.getName(), general.getName(), null);
+
+        Thread.sleep(100);
 
         downloadDateRepository.addWhereNotDownloadedYetForUser(loggedInUser.getName(), general.getName());
 

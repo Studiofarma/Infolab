@@ -1,6 +1,6 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.configuration.TestSecurityConfiguration;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
@@ -9,28 +9,26 @@ import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.helper.TestStompHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.concurrent.*;
 
 import static org.awaitility.Awaitility.await;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"test", "local"})
+@ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WebsocketUserTest {
     @LocalServerPort
@@ -46,10 +44,11 @@ public class WebsocketUserTest {
 
     WebSocketStompClient websocket;
 
-    UserEntity userBanana = UserEntity.of(Username.of("banana"));
     UserEntity user1 = UserEntity.of(Username.of("user1"));
 
-    RoomEntity general = RoomEntity.general();
+    // This is here because the @Import annotation does not work
+    @TestConfiguration
+    public static class SecurityConfiguration extends TestSecurityConfiguration {}
 
     @BeforeAll
     public void setupAll() {
