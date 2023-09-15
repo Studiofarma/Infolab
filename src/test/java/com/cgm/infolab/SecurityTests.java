@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = {SecurityTestsController.class})
 @Import({SecurityConfiguration.class, CsrfController.class, TestSecurityConfiguration.class})
-@ActiveProfiles("test")
+@ActiveProfiles(ProfilesConstants.TEST)
 public class SecurityTests {
     @Autowired
     private MockMvc client;

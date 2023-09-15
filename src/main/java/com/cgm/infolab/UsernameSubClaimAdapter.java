@@ -13,8 +13,8 @@ public class UsernameSubClaimAdapter implements Converter<Map<String, Object>, M
     public Map<String, Object> convert(Map<String, Object> claims) {
         Map<String, Object> convertedClaims = this.delegate.convert(claims);
 
-        String username = (String) convertedClaims.get("user_name");
-        convertedClaims.put("sub", username);
+        String username = (String) convertedClaims.get(JwtConstants.PRINCIPAL_KEY);
+        convertedClaims.put(JwtConstants.SUBJECT_KEY, username);
 
         return convertedClaims;
     }

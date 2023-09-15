@@ -66,21 +66,10 @@ public class TestStompHelper {
 
         WebSocketHttpHeaders headers = setCookies(csrfResponse);
 
-//        StompSession session = websocket
-//                .connectAsync(String.format("http://localhost:%d/chat?basic=%s", port, encodedAuth("user1", "password1")), headers, stompHeaders, new StompSessionHandlerAdapter() {})
-//                .get(1, TimeUnit.SECONDS);
         StompSession session = websocket
                 .connectAsync(String.format("http://localhost:%d/chat?access_token=%s", port, jwt.getTokenValue()), headers, stompHeaders, new StompSessionHandlerAdapter() {})
                 .get(1, TimeUnit.SECONDS);
         return session;
-    }
-
-    private static String basicAuth(String user, String password) {
-        return String.format("Basic %s", encodedAuth(user, password));
-    }
-
-    private static String encodedAuth(String user, String password) {
-        return Base64.encodeBase64String(String.format("%s:%s", user, password).getBytes());
     }
 
     private static WebSocketHttpHeaders setCookies(ResponseEntity<MyCsrfToken> csrfResponse) {

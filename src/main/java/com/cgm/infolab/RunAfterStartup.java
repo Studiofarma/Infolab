@@ -9,7 +9,6 @@ import com.cgm.infolab.db.repository.UserRepository;
 import com.cgm.infolab.helper.TestJwtHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
@@ -41,15 +40,14 @@ public class RunAfterStartup {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
     private final Environment env;
-    @Value("${server.port}")
-    private int port;
 
     private final Logger log = LoggerFactory.getLogger(RunAfterStartup.class);
 
     public RunAfterStartup(
         RoomRepository roomRepository,
         UserRepository userRepository,
-        Environment env) {
+        Environment env
+        ) {
 
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
@@ -63,13 +61,16 @@ public class RunAfterStartup {
     public void addComponentsToDb() {
         saveRooms(ROOMS);
 
-        if(Arrays.asList(env.getActiveProfiles()).contains("dev")){
+        if(Arrays.asList(env.getActiveProfiles()).contains(ProfilesConstants.DEV)){
             saveRooms(TEST_ROOMS);
             saveUsers(TEST_USERS);
 
-            System.out.println(
-                    "URL to login as lorenzo through jwt: http://localhost:%d/?access_token=%s"
-                            .formatted(port, new TestJwtHelper().generateToken("infolab", "lorenzo").getTokenValue()));
+            System.out.printf(
+                    "Jwt to authenticate as lorenzo: %s%n",
+                    new TestJwtHelper()
+                            .generateToken("infolab", "lorenzo", 3600000) // 1 hour expiration time
+                            .getTokenValue()
+            );
         }
     }
 

@@ -31,7 +31,7 @@ import java.util.List;
 import static com.cgm.infolab.db.model.enumeration.MessageStatusEnum.DELETED;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"test", "local"})
+@ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class MessageDeletionTests {
     @Autowired
