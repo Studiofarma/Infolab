@@ -3,7 +3,6 @@ import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 import { repeat } from "lit/directives/repeat.js";
 
-import { CookieService } from "../../../../services/cookie-service";
 import { ConversationService } from "../../../../services/conversations-service";
 import { UsersService } from "../../../../services/users-service";
 import { ThemeColorService } from "../../../../services/theme-color-service";
@@ -18,6 +17,8 @@ import "../../../../components/infinite-scroll";
 
 import { ConversationDto } from "../../../../models/conversation-dto";
 import { BaseComponent } from "../../../../components/base-component";
+import { UserDto } from "../../../../models/user-dto";
+import { StorageService } from "../../../../services/storage-service";
 
 const debounce = require("lodash.debounce");
 
@@ -47,6 +48,8 @@ class ConversationList extends BaseComponent {
     hasMore: { type: Boolean },
 
     conversationOpenBeforeQuit: { type: Object },
+
+    loggedUser: { type: UserDto },
   };
 
   constructor() {
@@ -71,12 +74,17 @@ class ConversationList extends BaseComponent {
       this.requestUpdate();
     }, 750);
 
-    this.cookie = CookieService.getCookie();
     this.onLoad();
 
     // Refs
     this.inputRef = createRef();
     this.infiniteScrollRef = createRef();
+  }
+
+  async connectedCallback() {
+    super.connectedCallback();
+
+    this.loggedUser = await UsersService.getLoggedUser();
   }
 
   async onLoad() {
@@ -251,8 +259,10 @@ class ConversationList extends BaseComponent {
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
           class=${"conversation " +
-          (conversation.roomName == this.cookie.lastChat ||
-          conversation.roomName == this.selectedRoom.roomName
+          (conversation.roomName ==
+            StorageService.getItemByKey(
+              StorageService.Keys.lastConversationName
+            ) || conversation.roomName == this.selectedRoom.roomName
             ? "active"
             : "")}
           id=${conversation.roomName == this.selectedRoom.roomName
@@ -292,8 +302,10 @@ class ConversationList extends BaseComponent {
           .isSelectable=${this.isForwardList && this.selectedChats.length != 0}
           .isSelected=${this.selectedChats.includes(conversation.roomName)}
           class=${"conversation new-conversation " +
-          (conversation.roomName == this.cookie.lastChat ||
-          conversation.roomName == this.selectedRoom.roomName
+          (conversation.roomName ==
+            StorageService.getItemByKey(
+              StorageService.Keys.lastConversationName
+            ) || conversation.roomName == this.selectedRoom.roomName
             ? "active"
             : "")}
           .conversation=${conversation}
@@ -315,7 +327,10 @@ class ConversationList extends BaseComponent {
 
   setActiveChatName(value) {
     this.activeChatName = value;
-    this.cookie.lastChat = value;
+    StorageService.setItemByKeyPermanent(
+      StorageService.Keys.lastConversationName,
+      value
+    );
   }
 
   getConversationList() {
@@ -329,7 +344,9 @@ class ConversationList extends BaseComponent {
   //#endregion -----------------------------
 
   async updateLastOpenConversation() {
-    let conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+    let conversation = StorageService.getItemByKey(
+      StorageService.Keys.selectedRoom
+    );
 
     if (this.isStartup && !this.isForwardList && conversation) {
       try {
@@ -449,21 +466,24 @@ class ConversationList extends BaseComponent {
   async changeRoom(event, conversation) {
     this.dispatchEvent(new CustomEvent("il:conversation-is-going-to-change"));
 
-    CookieService.setCookieByKey(
-      CookieService.Keys.lastChat,
+    StorageService.setItemByKeyPermanent(
+      StorageService.Keys.lastConversationName,
       conversation.roomName
     );
 
-    this.cookie.lastChat = conversation.roomName;
+    StorageService.setItemByKeyPermanent(
+      StorageService.Keys.lastConversationName,
+      conversation.roomName
+    );
 
-    localStorage.setItem(selectedRoomKey, JSON.stringify(conversation));
+    StorageService.setItemByKeyPermanent(selectedRoomKey, conversation);
 
     // unset the unread messages counter
     this.unsetUnreadMessages(conversation.roomName);
 
-    localStorage.setItem(
+    StorageService.setItemByKeyPermanent(
       selectedRoomKey,
-      JSON.stringify(this.findConversationByRoomName(conversation.roomName))
+      this.findConversationByRoomName(conversation.roomName)
     );
 
     let updatedConv = await this.updateConversation(conversation);
@@ -580,18 +600,9 @@ class ConversationList extends BaseComponent {
       }
     });
 
-    usernames.add(this.cookie.username);
+    if (this.loggedUser) usernames.add(this.loggedUser?.name);
 
     if (usernames.size > 0) await this.getAllUsers(Array.from(usernames));
-  }
-
-  setNewConversationList() {
-    let cookie = CookieService.getCookie();
-    this.usersList.forEach((user) => {
-      if (user.name != cookie.username) {
-        this.setUsersList(user);
-      }
-    });
   }
 
   async updateLastMessage(message) {
@@ -673,9 +684,7 @@ class ConversationList extends BaseComponent {
   }
 
   setUsersList(user) {
-    let cookie = CookieService.getCookie();
-
-    let roomName = this.chatNameRecomposer(cookie.username, user.name);
+    let roomName = this.chatNameRecomposer(this.loggedUser?.name, user.name);
 
     let isPresent = this.conversationList.some(
       (obj) => obj.roomName === roomName
@@ -818,7 +827,9 @@ class ConversationList extends BaseComponent {
     }
 
     if (!conversation) {
-      conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+      conversation = StorageService.getItemByKey(
+        StorageService.Keys.selectedRoom
+      );
     }
 
     return conversation;
@@ -832,7 +843,9 @@ class ConversationList extends BaseComponent {
     }
 
     if (!conversation) {
-      conversation = JSON.parse(localStorage.getItem(selectedRoomKey));
+      conversation = StorageService.getItemByKey(
+        StorageService.Keys.selectedRoom
+      );
     }
 
     return conversation;

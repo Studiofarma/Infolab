@@ -9,6 +9,7 @@ const enterKey = "Enter";
 
 import { BaseComponent } from "../../../../components/base-component";
 import { CookieService } from "../../../../services/cookie-service";
+import { StorageService } from "../../../../services/storage-service";
 
 export class Editor extends BaseComponent {
   static properties = {
@@ -129,9 +130,12 @@ export class Editor extends BaseComponent {
   }
 
   insertStoredTextInEditor() {
-    const cookie = CookieService.getCookie();
+    const lastConversationName = StorageService.getItemByKey(
+      StorageService.Keys.lastConversationName
+    );
 
-    const textFromStorage = localStorage.getItem(`message:${cookie.lastChat}`);
+    const textFromStorage =
+      StorageService.getStoredMessageForRoom(lastConversationName);
     const text = textFromStorage ? textFromStorage : "";
 
     this.editorRef.value.innerHTML = text;

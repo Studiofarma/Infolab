@@ -16,6 +16,7 @@ const enterKey = "Enter";
 
 import { BaseComponent } from "../../../components/base-component";
 import { CookieService } from "../../../services/cookie-service";
+import { StorageService } from "../../../services/storage-service";
 
 export class InputControls extends BaseComponent {
   static properties = {
@@ -198,15 +199,21 @@ export class InputControls extends BaseComponent {
   }
 
   saveMessageToLocalStorage() {
-    let cookie = CookieService.getCookie();
+    const lastConversationName = StorageService.getItemByKey(
+      StorageService.Keys.lastConversationName
+    );
 
-    localStorage.setItem(`message:${cookie.lastChat}`, this.message);
+    StorageService.storeCurrentMessageForRoom(
+      lastConversationName,
+      this.message
+    );
   }
 
   removeMessageFromLocalStorage() {
-    let cookie = CookieService.getCookie();
-
-    localStorage.removeItem(`message:${cookie.lastChat}`, this.message);
+    const lastConversationName = StorageService.getItemByKey(
+      StorageService.Keys.lastConversationName
+    );
+    StorageService.deleteStoredMessageForRoom(lastConversationName);
   }
 
   editMessage(detail) {

@@ -2,7 +2,6 @@ import { html, css } from "lit";
 import { ref, createRef } from "lit/directives/ref.js";
 import { when } from "lit/directives/when.js";
 
-import { CookieService } from "../../../services/cookie-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
@@ -15,6 +14,8 @@ import { MessageStatuses } from "../../../enums/message-statuses";
 
 import { ConversationDto } from "../../../models/conversation-dto";
 import { BaseComponent } from "../../../components/base-component";
+import { UserDto } from "../../../models/user-dto";
+import { UsersService } from "../../../services/users-service";
 
 export class Message extends BaseComponent {
   static properties = {
@@ -26,15 +27,21 @@ export class Message extends BaseComponent {
     roomType: { type: String },
     userList: { type: Array },
     user: { type: Object },
+    loggedUser: { type: UserDto },
   };
 
   constructor() {
     super();
-    this.cookie = CookieService.getCookie();
 
     // Refs
     this.buttonIconRef = createRef();
     this.messageMenuPopoverRef = createRef();
+  }
+
+  async connectedCallback() {
+    super.connectedCallback();
+
+    this.loggedUser = await UsersService.getLoggedUser();
   }
 
   static styles = css`
@@ -111,7 +118,7 @@ export class Message extends BaseComponent {
       >
         <il-message-content
           .user=${this.user}
-          class=${this.message.sender == this.cookie.username
+          class=${this.message.sender == this.loggedUser?.name
             ? "sender"
             : "receiver"}
           .message=${this.message}

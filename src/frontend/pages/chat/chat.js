@@ -6,7 +6,6 @@ import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 
 import { MessagesService } from "../../services/messages-service";
-import { CookieService } from "../../services/cookie-service";
 import { ThemeColorService } from "../../services/theme-color-service";
 
 import { IconNames } from "../../enums/icon-names";
@@ -34,6 +33,8 @@ import { MessageDto } from "../../models/message-dto";
 import { ConversationService } from "../../services/conversations-service";
 import { CommandsService } from "../../services/commands-service";
 import { UsersService } from "../../services/users-service";
+import { UserDto } from "../../models/user-dto";
+import { StorageService } from "../../services/storage-service";
 
 export class Chat extends BaseComponent {
   static properties = {
@@ -46,24 +47,18 @@ export class Chat extends BaseComponent {
     firstNotReadMessage: { type: MessageDto },
     hasFetchedBeforeAndAfter: { type: Boolean },
 
-    login: { type: Object },
     activeChatName: { type: String },
     activeConversation: { type: ConversationDto },
     messages: { type: Array },
     messageToBeDeleted: { type: MessageDto },
 
     canFetchLoggedUser: { type: Boolean },
+
+    loggedUser: { type: UserDto },
   };
 
   constructor() {
     super();
-
-    this.login = {
-      username: "",
-      password: "",
-      headerName: "",
-      token: "",
-    };
     this.messages = [];
     this.scrolledToBottom = false;
     this.hasMoreNext = false;
@@ -76,7 +71,8 @@ export class Chat extends BaseComponent {
     this.canFetchLoggedUser = false;
 
     this.activeChatName =
-      CookieService.getCookieByKey(CookieService.Keys.lastChat) || "";
+      StorageService.getItemByKey(StorageService.Keys.lastConversationName) ||
+      "";
 
     window.addEventListener("resize", () => {
       this.scrollToBottom();
@@ -95,8 +91,9 @@ export class Chat extends BaseComponent {
 
   async connectedCallback() {
     super.connectedCallback();
+    this.loggedUser = await UsersService.getLoggedUser();
+
     this.createSocket();
-    await UsersService.getLoggedUser();
     this.canFetchLoggedUser = true;
 
     if (await ThemeColorService.initService()) {
@@ -108,7 +105,7 @@ export class Chat extends BaseComponent {
         const quitMessage = new WebSocketMessageDto({
           type: WebSocketMessageTypes.quit,
           quit: {
-            sender: this.login.username,
+            sender: this.loggedUser?.name,
           },
         });
 
@@ -257,7 +254,7 @@ export class Chat extends BaseComponent {
           <div class="chat">
             <il-chat-header
               ${ref(this.headerRef)}
-              userName=${this.login.username}
+              userName=${this.loggedUser?.name}
               canFetchLoggedUser=${this.canFetchLoggedUser}
             ></il-chat-header>
             ${when(
@@ -414,7 +411,7 @@ export class Chat extends BaseComponent {
     if (event.detail.list[0] == undefined) return;
 
     const chatMessage = new MessageDto({
-      sender: this.login.username,
+      sender: this.loggedUser?.name,
       content: this.messageToForward,
     });
 
@@ -508,7 +505,7 @@ export class Chat extends BaseComponent {
         id: message.id,
         content: message.content,
         roomName: message.roomName,
-        sender: this.login.username,
+        sender: this.loggedUser?.name,
         timestamp: message.timestamp,
       },
     });
@@ -543,8 +540,9 @@ export class Chat extends BaseComponent {
 
     let roomName = e?.detail?.conversation?.roomName;
     if (!roomName) {
-      const cookie = CookieService.getCookie();
-      roomName = cookie.lastChat;
+      roomName = StorageService.getItemByKey(
+        StorageService.Keys.lastConversationName
+      );
     }
 
     this.messages = (
@@ -635,8 +633,9 @@ export class Chat extends BaseComponent {
       let roomName = e?.detail?.conversation?.roomName;
 
       if (!roomName) {
-        const cookie = CookieService.getCookie();
-        roomName = cookie.lastChat;
+        roomName = StorageService.getItemByKey(
+          StorageService.Keys.lastConversationName
+        );
       }
 
       let before = null;
@@ -662,8 +661,9 @@ export class Chat extends BaseComponent {
       let roomName = e?.detail?.conversation?.roomName;
 
       if (!roomName) {
-        const cookie = CookieService.getCookie();
-        roomName = cookie.lastChat;
+        roomName = StorageService.getItemByKey(
+          StorageService.Keys.lastConversationName
+        );
       }
 
       let after = null;
@@ -716,14 +716,23 @@ export class Chat extends BaseComponent {
 
   createSocket() {
     let basicAuth = window.btoa(
-      this.login.username + ":" + this.login.password
+      this.loggedUser?.name +
+        ":" +
+        StorageService.getItemByKey(StorageService.Keys.password)
     );
 
-    const socket = new SockJS("chat?basic=" + basicAuth.toString());
+    let queryString = "chat?basic=";
+    if (CommandsService.isDevOrTest()) {
+      queryString += basicAuth.toString();
+    }
+
+    const socket = new SockJS(queryString);
     this.stompClient = Stomp.over(socket);
 
     let headers = {};
-    headers[this.login.headerName] = this.login.token;
+    headers["X-CSRF-TOKEN"] = StorageService.getItemByKey(
+      StorageService.Keys.csrfToken
+    );
     this.stompClient.connect(
       headers,
       () => this.onConnect(),
@@ -773,7 +782,7 @@ export class Chat extends BaseComponent {
     );
 
     this.stompClient.subscribe(
-      `/queue/${this.login.username}`,
+      `/queue/${this.loggedUser?.name}`,
       async (payload) => await this.onMessage(payload)
     );
 
@@ -783,14 +792,14 @@ export class Chat extends BaseComponent {
       JSON.stringify(
         new WebSocketMessageDto({
           type: WebSocketMessageTypes.join,
-          join: { sender: this.login.username, status: null },
+          join: { sender: this.loggedUser?.name, status: null },
         })
       )
     );
   }
 
   async messageNotification(message) {
-    if (!message.content || this.login.username === message.sender) {
+    if (!message.content || this.loggedUser?.name === message.sender) {
       return;
     }
 
@@ -860,9 +869,7 @@ export class Chat extends BaseComponent {
           await CommandsService.setMessagesAsRead([chatMessage.id]);
         } else {
           // This means there are some not loaded messages more recent that those displayed.
-          let cookie = CookieService.getCookie();
-
-          if (chatMessage.sender === cookie.username) {
+          if (chatMessage.sender === this.loggedUser?.name) {
             await this.scrollToBottomAndRefetch();
           }
         }
@@ -872,7 +879,7 @@ export class Chat extends BaseComponent {
 
       // set the message as unread:
 
-      if (this.login.username !== chatMessage.sender) {
+      if (this.loggedUser?.name !== chatMessage.sender) {
         // the counter won't be update if you are the sender
         this.conversationListRef.value?.incrementUnreadMessageCounter(
           chatMessage
@@ -961,7 +968,7 @@ export class Chat extends BaseComponent {
   async manageJoinMessageReceived(message) {
     const joinMessage = message.join;
 
-    if (joinMessage.sender !== this.login.username) {
+    if (joinMessage.sender !== this.loggedUser?.name) {
       UsersService.updateUserStatusInSessionStorage(
         joinMessage.sender,
         "ONLINE"
@@ -980,7 +987,7 @@ export class Chat extends BaseComponent {
   async manageQuitMessageReceived(message) {
     const quitMessage = message.quit;
 
-    if (quitMessage.sender !== this.login.username) {
+    if (quitMessage.sender !== this.loggedUser?.name) {
       UsersService.updateUserStatusInSessionStorage(
         quitMessage.sender,
         "OFFLINE"
@@ -1001,7 +1008,7 @@ export class Chat extends BaseComponent {
       const chatMessage = new WebSocketMessageDto({
         type: type,
         chat: {
-          sender: this.login.username,
+          sender: this.loggedUser?.name,
           content: messageContent,
         },
       });
@@ -1032,10 +1039,9 @@ export class Chat extends BaseComponent {
   }
 
   formatActiveChatName(activeChatName) {
-    let cookie = CookieService.getCookie();
     if (activeChatName.includes("-")) {
       activeChatName = activeChatName.split("-");
-      activeChatName.splice(activeChatName.indexOf(cookie.username), 1);
+      activeChatName.splice(activeChatName.indexOf(this.loggedUser?.name), 1);
       return activeChatName[0];
     }
     return activeChatName;

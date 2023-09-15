@@ -2,7 +2,6 @@ import { html, css } from "lit";
 import { when } from "lit/directives/when.js";
 
 import { IconNames } from "../../../../enums/icon-names";
-import { CookieService } from "../../../../services/cookie-service";
 import { HtmlParserService } from "../../../../services/html-parser-service";
 import { ThemeColorService } from "../../../../services/theme-color-service";
 
@@ -14,6 +13,8 @@ import "../../../../components/icon";
 import "../../../../components/button-icon";
 import { MessageStatuses } from "../../../../enums/message-statuses";
 import { GenericConstants } from "../../../../enums/generic-constants";
+import { UserDto } from "../../../../models/user-dto";
+import { UsersService } from "../../../../services/users-service";
 
 class Conversation extends BaseComponent {
   static properties = {
@@ -22,11 +23,13 @@ class Conversation extends BaseComponent {
     isSelected: false,
     conversationUser: { type: Object },
     lastMessageUser: { type: Object },
+    loggedUser: { type: UserDto },
   };
 
-  constructor() {
-    super();
-    this.cookie = CookieService.getCookie();
+  async connectedCallback() {
+    super.connectedCallback();
+
+    this.loggedUser = await UsersService.getLoggedUser();
   }
 
   static styles = css`
@@ -212,7 +215,7 @@ class Conversation extends BaseComponent {
     let content = lastMessage.content;
     const sender = lastMessage.sender;
     const description = this.conversation.description;
-    const loggedUsername = this.cookie.username;
+    const loggedUsername = this.loggedUser?.name;
     const userDescription = this.lastMessageUser?.description;
 
     if (lastMessage.status === MessageStatuses.deleted) {
