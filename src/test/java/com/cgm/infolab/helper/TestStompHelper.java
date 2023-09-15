@@ -72,14 +72,6 @@ public class TestStompHelper {
         return session;
     }
 
-    private static String basicAuth(String user, String password) {
-        return String.format("Basic %s", encodedAuth(user, password));
-    }
-
-    private static String encodedAuth(String user, String password) {
-        return Base64.encodeBase64String(String.format("%s:%s", user, password).getBytes());
-    }
-
     private static WebSocketHttpHeaders setCookies(ResponseEntity<MyCsrfToken> csrfResponse) {
         String cookies = csrfResponse.getHeaders().getFirst(HttpHeaders.SET_COOKIE);
         assert cookies != null;
