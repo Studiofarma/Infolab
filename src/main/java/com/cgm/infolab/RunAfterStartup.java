@@ -46,8 +46,7 @@ public class RunAfterStartup {
     public RunAfterStartup(
         RoomRepository roomRepository,
         UserRepository userRepository,
-        Environment env
-        ) {
+        Environment env) {
 
         this.roomRepository = roomRepository;
         this.userRepository = userRepository;
