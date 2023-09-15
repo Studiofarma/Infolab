@@ -64,10 +64,10 @@ public class TestJwtHelper {
         }
     }
 
-    public Jwt generateToken(String scope, String username) {
+    public Jwt generateToken(String scope, String username, long expirationTimeMillis) {
         NimbusJwtEncoder tokenEncoder = new NimbusJwtEncoder((jwkSelector, securityContext) -> jwkSelector.select(privateJwkSet));
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
-                .expiresAt(Instant.now().plusMillis(0))
+                .expiresAt(Instant.now().plusMillis(expirationTimeMillis))
                 .claim("scope", scope)
                 .claim("user_name", username)
                 .build();
@@ -75,6 +75,10 @@ public class TestJwtHelper {
         JwtEncoderParameters encoderParameters = JwtEncoderParameters.from(claimsSet);
 
         return tokenEncoder.encode(encoderParameters);
+    }
+
+    public Jwt generateToken(String scope, String username) {
+        return generateToken(scope, username, 60000);
     }
 
     public RSAPublicKey getPublicKey() {
