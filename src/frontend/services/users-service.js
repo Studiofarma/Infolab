@@ -71,13 +71,11 @@ export class UsersService {
       if (loggedUser.avatarLink !== null) {
         let link = `${
           loggedUser.avatarLink
-        }?cacheInvalidator=${new Date().toISOString()}&`;
+        }?cacheInvalidator=${new Date().toISOString()}&basic=`;
         // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
 
         if (CommandsService.isDevOrTest()) {
-          link += `basic=${basicAuth.toString()}`;
-        } else {
-          link += "access_token=";
+          link += basicAuth.toString();
         }
 
         loggedUser = {
@@ -125,13 +123,11 @@ export class UsersService {
 
       let link = `${
         user.avatarLink
-      }?cacheInvalidator=${new Date().toISOString()}&`;
+      }?cacheInvalidator=${new Date().toISOString()}&basic=`;
       // Note that cache invalidator is needed because even if the image changes the link will remain the same. Adding that part makes the browser refetch the image.
 
       if (CommandsService.isDevOrTest()) {
-        link += `basic=${basicAuth.toString()}`;
-      } else {
-        link += "access_token=";
+        link += basicAuth.toString();
       }
 
       return {
