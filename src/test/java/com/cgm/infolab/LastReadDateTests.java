@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"test"})
+@ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LastReadDateTests {
     @Autowired

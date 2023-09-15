@@ -26,7 +26,7 @@ import static com.cgm.infolab.db.model.enumeration.MessageStatusEnum.DELETED;
 import static com.cgm.infolab.db.model.enumeration.MessageStatusEnum.EDITED;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"test", "local"})
+@ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class MessageEditTests {
     @Autowired

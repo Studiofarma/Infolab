@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"test", "local"})
+@ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class RoomAndMessagesVisibilityTests {
     @Autowired

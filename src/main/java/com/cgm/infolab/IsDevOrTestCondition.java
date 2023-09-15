@@ -13,6 +13,6 @@ public class IsDevOrTestCondition implements Condition {
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
         Environment  env = context.getEnvironment();
         List<String> profiles = Arrays.asList(env.getActiveProfiles());
-        return profiles.contains("dev") || profiles.contains("test");
+        return profiles.contains(ProfilesConstants.DEV) || profiles.contains(ProfilesConstants.TEST);
     }
 }

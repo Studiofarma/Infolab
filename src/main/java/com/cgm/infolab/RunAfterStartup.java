@@ -60,7 +60,7 @@ public class RunAfterStartup {
     public void addComponentsToDb() {
         saveRooms(ROOMS);
 
-        if(Arrays.asList(env.getActiveProfiles()).contains("dev")){
+        if(Arrays.asList(env.getActiveProfiles()).contains(ProfilesConstants.DEV)){
             saveRooms(TEST_ROOMS);
             saveUsers(TEST_USERS);
 
