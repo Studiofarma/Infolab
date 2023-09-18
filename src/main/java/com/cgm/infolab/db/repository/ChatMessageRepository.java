@@ -43,7 +43,7 @@ public class ChatMessageRepository {
         this.rowMappers = rowMappers;
     }
 
-    public ChatMessageEntity add(ChatMessageEntity message) throws DuplicateKeyException {
+    public long add(ChatMessageEntity message) throws DuplicateKeyException {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("chatmessages")
@@ -63,13 +63,7 @@ public class ChatMessageRepository {
             throw new RuntimeException();
         }
 
-        return ChatMessageEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters),
-                message.getSender(),
-                message.getRoom(),
-                message.getTimestamp(),
-                message.getContent(),
-                message.getStatus()
-        );
+        return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
     // Handy for testing
