@@ -36,6 +36,6 @@ public class CommandsApiController {
 
     @PostMapping("/api/commands/createuser")
     public void postCreateUser(@RequestParam String description, Principal principal) {
-        userService.createUser(Username.of(principal.getName()), description);
+        userService.saveUserInDb(Username.of(principal.getName()), description);
     }
 }
