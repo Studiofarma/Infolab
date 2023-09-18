@@ -17,9 +17,11 @@ import java.util.List;
 public class CommandsApiController {
 
     private final ChatService chatService;
+    private final UserService userService;
 
-    public CommandsApiController(ChatService chatService) {
+    public CommandsApiController(ChatService chatService, UserService userService) {
         this.chatService = chatService;
+        this.userService = userService;
     }
 
     @PostMapping(value = "/api/commands/lastread", consumes = {"application/json"})
@@ -30,5 +32,10 @@ public class CommandsApiController {
     @PostMapping("/api/commands/readall")
     public void postReadAll(@RequestParam String roomName, Principal principal) {
         chatService.updateReadTimestamp(Username.of(principal.getName()), RoomName.of(roomName));
+    }
+
+    @PostMapping("/api/commands/createuser")
+    public void postCreateUser(@RequestParam String description, Principal principal) {
+        userService.createUser(Username.of(principal.getName()), description);
     }
 }

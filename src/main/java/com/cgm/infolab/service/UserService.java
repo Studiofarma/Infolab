@@ -51,4 +51,8 @@ public class UserService {
     public Optional<AvatarEntity> getAvatarByIdForUser(long avatarId) {
         return avatarRepository.getAvatarById(avatarId);
     }
+
+    public void createUser(Username username, String description) {
+        userRepository.add(UserEntity.of(username, description));
+    }
 }
