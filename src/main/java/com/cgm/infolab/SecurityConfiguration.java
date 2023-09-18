@@ -9,7 +9,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.security.authorization.AuthorizationDecision;
@@ -82,9 +85,10 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain configureH2(HttpSecurity http) throws Exception{
         return http
-            .securityMatcher("/h2-console/**")
+            .securityMatcher("/*", "/h2-console/**")
             .csrf(AbstractHttpConfigurer::disable)
             .anonymous(withDefaults())
+            .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions().sameOrigin())
             .build();
     }
 
