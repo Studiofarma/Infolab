@@ -1,6 +1,9 @@
 import { Paths } from "../support/paths-enum";
 
 const sendButtonIconPath = `${Paths.inputControlsPath},il-insertion-bar,il-button-icon`;
+const formattingButtonsPath = `${Paths.inputControlsPath},il-insertion-bar,il-editor-formatting-buttons,il-button-icon`;
+
+const iconButtonComponent = '[data-cy="icon-button"]';
 
 beforeEach(() => {
   cy.login({ user: "user1", password: "password1" });
@@ -48,7 +51,7 @@ describe("Editor spec", () => {
     cy.getEditor().type("Test67890");
 
     cy.getLitElement(sendButtonIconPath)
-      .find(".icon-button")
+      .find(iconButtonComponent)
       .last()
       .click({ force: true });
 
@@ -57,7 +60,7 @@ describe("Editor spec", () => {
 
   it("Emoji works", () => {
     cy.getLitElement(sendButtonIconPath)
-      .find(".icon-button")
+      .find(iconButtonComponent)
       .eq(0)
       .click({ force: true });
 
@@ -73,14 +76,12 @@ describe("Editor spec", () => {
 
   it("Editor formatting buttons work", () => {
     cy.getLitElement(sendButtonIconPath)
-      .find(".icon-button")
+      .find(iconButtonComponent)
       .eq(1)
       .click({ force: true });
 
-    cy.getLitElement(
-      "il-app,il-chat,il-input-controls,il-insertion-bar,il-editor-formatting-buttons,il-button-icon"
-    )
-      .find(".icon-button")
+    cy.getLitElement(formattingButtonsPath)
+      .find(iconButtonComponent)
       .eq(0)
       .click({ force: true });
 
@@ -91,7 +92,7 @@ describe("Editor spec", () => {
 
   it("Editor formatting buttons work with highlighted text", () => {
     cy.getLitElement(sendButtonIconPath)
-      .find(".icon-button")
+      .find(iconButtonComponent)
       .eq(1)
       .click({ force: true });
 
@@ -101,10 +102,8 @@ describe("Editor spec", () => {
 
     cy.getEditor().realPress(["Shift", "ArrowLeft", "ArrowLeft", "ArrowLeft"]); // This should highlight: est
 
-    cy.getLitElement(
-      "il-app,il-chat,il-input-controls,il-insertion-bar,il-editor-formatting-buttons,il-button-icon"
-    )
-      .find(".icon-button")
+    cy.getLitElement(formattingButtonsPath)
+      .find(iconButtonComponent)
       .eq(1)
       .click({ force: true });
 

@@ -78,7 +78,7 @@ describe("search spec", () => {
       .find(conversation)
       .last()
       .shadow()
-      .find(".chat-box")
+      .find('[data-cy="chat-box"]')
       .click({ force: true });
 
     cy.getLitElement(Paths.sidebarInputSearchPath)

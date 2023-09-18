@@ -71,19 +71,6 @@ export class Message extends BaseComponent {
       justify-self: flex-start;
     }
 
-    .message-timestamp {
-      text-align: end;
-      font-size: 11px;
-    }
-
-    .message-body:has(.sender) .message-timestamp {
-      color: ${ThemeCSSVariables.timestampMessageTextSender};
-    }
-
-    .message-body:has(.receiver) .message-timestamp {
-      color: ${ThemeCSSVariables.timestampMessageTextReceiver};
-    }
-
     .message-date {
       justify-self: center;
       padding: 5px;
@@ -112,6 +99,7 @@ export class Message extends BaseComponent {
       )}
 
       <div
+        data-cy="message-body"
         class="message-body"
         @mouseover=${this.showPopover}
         @mouseleave=${this.hidePopover}
