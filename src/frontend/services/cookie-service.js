@@ -4,9 +4,6 @@ export class CookieService {
   static Keys = {
     username: "username",
     password: "password",
-    header: "header",
-    token: "token",
-    lastChat: "last-chat",
   };
 
   static getCookieByKey(name) {
@@ -17,33 +14,7 @@ export class CookieService {
 
     return result;
   }
-  static getCookie() {
-    let isValid = true;
-    const username = CookieService.getCookieByKey(CookieService.Keys.username);
-    if (!username) isValid = false;
 
-    const password = CookieService.getCookieByKey(CookieService.Keys.password);
-    if (!password) isValid = false;
-
-    const header = CookieService.getCookieByKey(CookieService.Keys.header);
-    if (!header) isValid = false;
-
-    const token = CookieService.getCookieByKey(CookieService.Keys.token);
-    if (!token) isValid = false;
-
-    const lastChat = CookieService.getCookieByKey(CookieService.Keys.lastChat);
-
-    let cookie = {
-      username: username,
-      password: password,
-      header: header,
-      token: token,
-      lastChat: lastChat,
-      isValid: isValid,
-    };
-
-    return new CookieDto(cookie);
-  }
   static setCookieByKey(key, value) {
     let expires = new Date(Date.now());
     expires.setDate(expires.getDate() + 1);

@@ -1,5 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
 
 module.exports = {
   entry: {
@@ -31,6 +32,10 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, "./index.html"),
+    }),
+    // This should be assignable from cli when running the program with $env:PROFILE="something" on a line different from the one that starts the program
+    new webpack.EnvironmentPlugin({
+      PROFILE: "dev",
     }),
   ],
 

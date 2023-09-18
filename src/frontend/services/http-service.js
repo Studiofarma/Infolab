@@ -1,16 +1,17 @@
-import { CookieService } from "./cookie-service";
+import { CommandsService } from "./commands-service";
+import { StorageService } from "./storage-service";
 
 const axios = require("axios").default;
 
 export class HttpService {
   static async httpGet(url) {
-    let cookie = CookieService.getCookie();
+    const { username, password } = HttpService.#getCredentials();
 
     return HttpService.httpGetWithHeadersAndCredentials(
       url,
       {},
-      cookie.username,
-      cookie.password
+      username,
+      password
     );
   }
 
@@ -18,13 +19,13 @@ export class HttpService {
    * @param {Object} headers should be an object containing all the headers. It must not be undefined or null.
    */
   static async httpGetWithHeaders(url, headers) {
-    let cookie = CookieService.getCookie();
+    const { username, password } = HttpService.#getCredentials();
 
     return HttpService.httpGetWithHeadersAndCredentials(
       url,
       headers,
-      cookie.username,
-      cookie.password
+      username,
+      password
     );
   }
 
@@ -37,15 +38,13 @@ export class HttpService {
     username,
     password
   ) {
-    return axios({
-      url: url,
-      method: "get",
-      headers: headers,
-      auth: {
-        username: username,
-        password: password,
-      },
-    });
+    const config = { url: url, method: "get", headers: headers };
+
+    if (CommandsService.isDevOrTest()) {
+      config.auth = { username: username, password: password };
+    }
+
+    return axios(config);
   }
 
   /**
@@ -54,18 +53,14 @@ export class HttpService {
    * @returns
    */
   static async httpPost(url, data) {
-    let cookie = CookieService.getCookie();
+    const { username, password, csrfToken } = HttpService.#getCredentials();
 
     let config = {
       url: url,
       method: "post",
       headers: {
-        "X-CSRF-TOKEN": cookie.token,
+        "X-CSRF-TOKEN": csrfToken,
         "Content-Type": "application/json",
-      },
-      auth: {
-        username: cookie.username,
-        password: cookie.password,
       },
     };
 
@@ -76,10 +71,29 @@ export class HttpService {
       };
     }
 
+    if (CommandsService.isDevOrTest()) {
+      config.auth = {
+        username: username,
+        password: password,
+      };
+    }
+
     return axios(config);
   }
 
   static async httpPostNoData(url) {
     return HttpService.httpPost(url, null);
+  }
+
+  /**
+   * @returns object with username, password and csrfToken fields
+   */
+  static #getCredentials() {
+    const username = StorageService.getItemByKey(StorageService.Keys.username);
+    const password = StorageService.getItemByKey(StorageService.Keys.password);
+    const csrfToken = StorageService.getItemByKey(
+      StorageService.Keys.csrfToken
+    );
+    return { username: username, password: password, csrfToken: csrfToken };
   }
 }

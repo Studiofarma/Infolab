@@ -14,6 +14,7 @@ import "../../components/input-field";
 import "../../components/input-password";
 
 import { BaseComponent } from "../../components/base-component";
+import { StorageService } from "../../services/storage-service";
 
 export class Login extends BaseComponent {
   static properties = {
@@ -22,23 +23,24 @@ export class Login extends BaseComponent {
     isPasswordVisible: false,
     isUsernameFieldEmpty: false,
     isPasswordFieldEmpty: false,
-    header: "",
-    token: "",
+    csrfToken: "",
     cookie: { type: Object },
   };
 
   constructor() {
     super();
-    this.username = "";
-    this.password = "";
     this.isPasswordVisible = false;
     this.isUsernameFieldEmpty = false;
     this.isPasswordFieldEmpty = false;
-    this.header = "";
-    this.token = "";
+    this.csrfToken = "";
 
-    this.cookie = CookieService.getCookie();
-    if (this.cookie.isValid) this.loginConfirm();
+    if (this.isDevOrTest()) {
+      this.username = StorageService.getItemByKey(StorageService.Keys.username);
+      this.password = StorageService.getItemByKey(StorageService.Keys.password);
+      if (this.username && this.password) this.loginConfirm();
+    } else {
+      this.loginConfirmWithJwt();
+    }
 
     // Refs
     this.snackbarRef = createRef();
@@ -151,11 +153,25 @@ export class Login extends BaseComponent {
     }
   `;
 
-  setCookieWithCurrentData() {
-    CookieService.setCookieByKey(CookieService.Keys.username, this.username);
-    CookieService.setCookieByKey(CookieService.Keys.password, this.password);
-    CookieService.setCookieByKey(CookieService.Keys.header, this.header);
-    CookieService.setCookieByKey(CookieService.Keys.token, this.token);
+  storeCurrentData() {
+    if (this.username) {
+      StorageService.setItemByKeyPermanent(
+        StorageService.Keys.username,
+        this.username
+      );
+    }
+
+    if (this.password) {
+      StorageService.setItemByKeyPermanent(
+        StorageService.Keys.password,
+        this.password
+      );
+    }
+
+    StorageService.setItemByKeySession(
+      StorageService.Keys.csrfToken,
+      this.csrfToken
+    );
   }
 
   render() {
@@ -221,26 +237,10 @@ export class Login extends BaseComponent {
   }
 
   loginConfirmEvent() {
-    this.dispatchEvent(
-      new CustomEvent("il:login-confirmed", {
-        detail: {
-          login: {
-            username: this.username,
-            password: this.password,
-            headerName: this.header,
-            token: this.token,
-          },
-        },
-      })
-    );
+    this.dispatchEvent(new CustomEvent("il:login-confirmed"));
   }
 
   loginConfirm() {
-    if (this.cookie.isValid) {
-      this.username = this.cookie.username;
-      this.password = this.cookie.password;
-    }
-
     if (this.username === "" && this.password === "") {
       this.isUsernameFieldEmpty = true;
       this.isPasswordFieldEmpty = true;
@@ -259,9 +259,8 @@ export class Login extends BaseComponent {
 
     LoginService.getLogin(this.username, this.password)
       .then((response) => {
-        this.header = response.data.headerName;
-        this.token = response.data.token;
-        this.setCookieWithCurrentData();
+        this.csrfToken = response.data.token;
+        this.storeCurrentData();
         this.loginConfirmEvent();
       })
       .catch(() => {
@@ -273,6 +272,18 @@ export class Login extends BaseComponent {
           5000
         );
       });
+  }
+
+  loginConfirmWithJwt() {
+    LoginService.getLogin().then((response) => {
+      this.csrfToken = response.data.token;
+      this.storeCurrentData();
+      this.loginConfirmEvent();
+    });
+  }
+
+  isDevOrTest() {
+    return process.env.PROFILE === "dev" || process.env.PROFILE === "test";
   }
 }
 

@@ -1,5 +1,4 @@
 import { html, css } from "lit";
-import { CookieService } from "../../../services/cookie-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
 import { IconNames } from "../../../enums/icon-names";
@@ -9,6 +8,8 @@ import { ThemeCSSVariables } from "../../../enums/theme-css-variables";
 import "../../../components/button-icon";
 
 import { BaseComponent } from "../../../components/base-component";
+import { UserDto } from "../../../models/user-dto";
+import { UsersService } from "../../../services/users-service";
 
 const menuOptionLeft = "-73px";
 const menuOptionRight = "33px";
@@ -20,11 +21,13 @@ export class MessageMenuPopover extends BaseComponent {
     message: { type: Object },
     messageIndex: { type: Number },
     activeChatName: { type: String },
+    loggedUser: { type: UserDto },
   };
 
-  constructor() {
-    super();
-    this.cookie = CookieService.getCookie();
+  async connectedCallback() {
+    super.connectedCallback();
+
+    this.loggedUser = await UsersService.getLoggedUser();
   }
 
   static styles = css`
@@ -51,10 +54,9 @@ export class MessageMenuPopover extends BaseComponent {
         <il-message-options
           slot="popup"
           .message=${this.message}
-          .cookie=${this.cookie}
           .messageIndex=${this.messageIndex}
           .room=${this.activeChatName}
-          .type=${this.message.sender == this.cookie.username
+          .type=${this.message.sender == this.loggedUser?.name
             ? "sender"
             : "receiver"}
           @il:message-copied=${(event) => {
@@ -90,12 +92,12 @@ export class MessageMenuPopover extends BaseComponent {
       this.messageIndex === this.messages.length - 1 &&
       this.messages.length !== 1
     ) {
-      return this.message.sender == this.cookie.username
+      return this.message.sender == this.loggedUser?.name
         ? { top: lastMenuOptionTop, left: menuOptionLeft }
         : { top: lastMenuOptionTop, right: menuOptionRight };
     }
 
-    return this.message.sender == this.cookie.username
+    return this.message.sender == this.loggedUser?.name
       ? { top: "0px", left: menuOptionLeft }
       : { top: "0px", right: menuOptionRight };
   }

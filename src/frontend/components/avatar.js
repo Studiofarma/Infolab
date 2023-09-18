@@ -32,9 +32,13 @@ export class Avatar extends BaseComponent {
 
     img {
       border-radius: 50%;
-      width: 100%;
-      height: 100%;
+      width: 50px;
+      height: 50px;
       object-fit: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
     }
 
     #avatar-default {
@@ -134,7 +138,12 @@ export class Avatar extends BaseComponent {
       <div class=${"avatar " + this.sizeClass}>
         ${when(
           this.isDefaultAvatar,
-          () => html`<img src=${this.avatarLink ?? this.user?.avatarLink} />`,
+          () =>
+            html`<img
+              async
+              class=${this.sizeClass}
+              src=${this.avatarLink ? this.avatarLink : this.user?.avatarLink}
+            />`,
           () =>
             html`<div
               class=${this.sizeClass}

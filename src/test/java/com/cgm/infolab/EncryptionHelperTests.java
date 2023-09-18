@@ -17,7 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"test", "local"})
+@ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class EncryptionHelperTests {
 

@@ -3,7 +3,6 @@ import { repeat } from "lit/directives/repeat.js";
 import { when } from "lit/directives/when.js";
 import { createRef, ref } from "lit/directives/ref.js";
 
-import { CookieService } from "../../../services/cookie-service";
 import { UsersService } from "../../../services/users-service";
 import { ThemeColorService } from "../../../services/theme-color-service";
 
@@ -29,7 +28,6 @@ export class MessagesList extends LitElement {
 
   constructor() {
     super();
-    this.cookie = CookieService.getCookie();
 
     this.hasMoreNext = true;
 

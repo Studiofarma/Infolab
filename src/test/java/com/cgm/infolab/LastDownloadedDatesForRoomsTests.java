@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({"test"})
+@ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LastDownloadedDatesForRoomsTests {
 

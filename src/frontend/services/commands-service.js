@@ -1,5 +1,5 @@
-import { CookieService } from "./cookie-service";
 import { HttpService } from "./http-service";
+import { StorageService } from "./storage-service";
 
 export class CommandsService {
   static async setMessagesAsRead(listOfMessages) {
@@ -7,9 +7,14 @@ export class CommandsService {
   }
 
   static async setAllMessagesAsRead() {
-    let cookie = CookieService.getCookie();
     await HttpService.httpPostNoData(
-      `/api/commands/readall?roomName=${cookie.lastChat}`
+      `/api/commands/readall?roomName=${StorageService.getItemByKey(
+        StorageService.Keys.lastConversationName
+      )}`
     );
+  }
+
+  static isDevOrTest() {
+    return process.env.PROFILE === "dev" || process.env.PROFILE === "test";
   }
 }
