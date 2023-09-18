@@ -1,7 +1,7 @@
 import { Paths } from "../support/paths-enum";
 
-const headerPath = "il-app,il-chat,il-chat-header";
-const avatarPath = "il-app,il-chat,il-chat-header, il-avatar";
+const headerPath = `${Paths.chatPath},il-chat-header`;
+const avatarPath = `${headerPath}, il-avatar`;
 
 beforeEach(() => {
   cy.login({ user: "user1", password: "password1" });
