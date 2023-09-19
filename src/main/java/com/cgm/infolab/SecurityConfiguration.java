@@ -82,6 +82,10 @@ public class SecurityConfiguration {
             .build();
     }
 
+    // IMPORTANT NOTE: There is not a SecurityFilterChain for /h2-console/** paths because it never gets triggered
+    //  making it misleading.
+    // The chain that actually gets triggered is the one with /* path.
+
     @Bean
     public SecurityFilterChain configureAssets(HttpSecurity http) throws Exception{
         return http
