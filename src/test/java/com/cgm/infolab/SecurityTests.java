@@ -106,19 +106,7 @@ public class SecurityTests {
             .andExpect(status().isForbidden());
     }
 
-    @Test
-    void getToH2WithoutUserShouldBeOk() throws Exception {
-        client
-            .perform(get("/h2-console/"))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    void postingToH2WithoutUserShouldBeOk() throws Exception {
-        client
-            .perform(post("/h2-console/"))
-            .andExpect(status().isOk());
-    }
+    // TODO: put comment
 
     @Test
     @WithMockUser(username = "user1", password = "password1")

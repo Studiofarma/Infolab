@@ -83,16 +83,6 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain configureH2(HttpSecurity http) throws Exception{
-        return http
-            .securityMatcher("/*", "/h2-console/**")
-            .csrf(AbstractHttpConfigurer::disable)
-            .anonymous(withDefaults())
-            .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions().sameOrigin())
-            .build();
-    }
-
-    @Bean
     public SecurityFilterChain configureAssets(HttpSecurity http) throws Exception{
         return http
             .securityMatcher(
@@ -100,7 +90,9 @@ public class SecurityConfiguration {
                 "/css/**",
                 "/js/**"
             )
+            .csrf(AbstractHttpConfigurer::disable)
             .anonymous(withDefaults())
+            .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions().sameOrigin())
             .build();
     }
 
