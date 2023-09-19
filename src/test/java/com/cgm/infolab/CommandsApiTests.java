@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
@@ -91,16 +92,17 @@ public class CommandsApiTests {
     }
 
     private void postToApiForUser1ExpectingOk(String url) throws Exception {
-        mvc.perform(
-                post(url)
-                        .with(jwt().jwt(jwt -> jwt.subject("user1")))
-        ).andExpect(status().isOk());
+        postToApiForUser1(url).andExpect(status().isOk());
     }
 
     private void postToApiForUser1ExpectingBadRequest(String url) throws Exception {
-        mvc.perform(
+        postToApiForUser1(url).andExpect(status().isBadRequest());
+    }
+
+    private ResultActions postToApiForUser1(String url) throws Exception {
+        return mvc.perform(
                 post(url)
                         .with(jwt().jwt(jwt -> jwt.subject("user1")))
-        ).andExpect(status().isBadRequest());
+        );
     }
 }
