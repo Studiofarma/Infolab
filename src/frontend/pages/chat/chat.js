@@ -93,7 +93,7 @@ export class Chat extends BaseComponent {
     super.connectedCallback();
     this.loggedUser = await UsersService.getLoggedUser();
 
-    this.createSocket();
+    await this.createSocket();
     this.canFetchLoggedUser = true;
 
     if (await ThemeColorService.initService()) {
@@ -714,16 +714,29 @@ export class Chat extends BaseComponent {
     );
   }
 
-  createSocket() {
+  async addJwtToQueryString() {
+    try {
+      if (MY_JWT) {
+        return `access_token=${MY_JWT}`;
+      }
+    } catch (e) {
+      await new Promise((r) => setTimeout(r, 100));
+      return await this.addJwtToQueryString();
+    }
+  }
+
+  async createSocket() {
     let basicAuth = window.btoa(
       this.loggedUser?.name +
         ":" +
         StorageService.getItemByKey(StorageService.Keys.password)
     );
 
-    let queryString = "chat?basic=";
+    let queryString = "chat?";
     if (CommandsService.isDevOrTest()) {
-      queryString += basicAuth.toString();
+      queryString += `basic=${basicAuth.toString()}`;
+    } else {
+      queryString += await this.addJwtToQueryString(queryString);
     }
 
     const socket = new SockJS(queryString);
