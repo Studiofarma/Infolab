@@ -110,7 +110,7 @@ public class RoomRepository {
         this.rowMappers = rowMappers;
     }
 
-    public RoomEntity add(RoomEntity room) throws DuplicateKeyException {
+    public long add(RoomEntity room) throws DuplicateKeyException {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("rooms")
@@ -120,16 +120,7 @@ public class RoomRepository {
         parameters.put("roomname", room.getName().value());
         parameters.put("visibility", room.getVisibility().name());
         parameters.put("description", room.getDescription());
-        return RoomEntity.of(
-                (long)simpleJdbcInsert.executeAndReturnKey(parameters),
-                room.getName(),
-                room.getVisibility(),
-                room.getRoomType(),
-                room.getDescription(),
-                room.getRoomOrUser(),
-                room.getMessages(),
-                room.getOtherParticipants()
-        );
+        return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
     /**

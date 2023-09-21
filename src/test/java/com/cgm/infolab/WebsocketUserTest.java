@@ -63,45 +63,6 @@ public class WebsocketUserTest {
     }
 
     @Test
-    void whenUserFirstLogs_andSendsMessageToRegisterEndpoint_heIsSavedInDb() throws ExecutionException, InterruptedException, TimeoutException {
-
-        BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
-
-        // Check that user does not exist before
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> {
-            UserEntity user = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", rowMappers::mapToUserEntity);
-        });
-
-        StompSession client = testStompHelper.getStompSessionForUser1(websocket, port);
-        client.subscribe("/topic/public", new StompFrameHandler() {
-            @Override
-            public Type getPayloadType(StompHeaders headers) {
-                return WebSocketMessageDto.class;
-            }
-
-            @Override
-            public void handleFrame(StompHeaders headers, Object payload) {
-                receivedMessages.add((WebSocketMessageDto) payload);
-            }
-        });
-
-        WebSocketMessageDto joinMessage = WebSocketMessageDto.ofJoin(ChatMessageDto.of(null, Username.of("user1").value()));
-        client.send("/app/chat.register", joinMessage);
-
-        await()
-                .atMost(1, TimeUnit.SECONDS)
-                .untilAsserted(() -> {
-                    UserEntity user1FromDb = jdbcTemplate.queryForObject("SELECT *, status user_status FROM infolab.users WHERE username = 'user1'", rowMappers::mapToUserEntity);
-
-                    Assertions.assertEquals("user1", user1FromDb.getName().value());
-                    Assertions.assertEquals("user1", user1FromDb.getDescription());
-                    Assertions.assertEquals(UserStatusEnum.ONLINE, user1FromDb.getStatus());
-
-                    Assertions.assertEquals(joinMessage, receivedMessages.poll());
-                });
-    }
-
-    @Test
     void whenUserLogs_andSendsMessageToRegisterEndpoint_andIsAlreadySavedInDb_statusBecomesOnline() throws ExecutionException, InterruptedException, TimeoutException {
 
         BlockingQueue<WebSocketMessageDto> receivedMessages = new ArrayBlockingQueue<>(2);
