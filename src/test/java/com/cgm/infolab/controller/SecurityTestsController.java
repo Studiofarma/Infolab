@@ -61,10 +61,4 @@ public class SecurityTestsController {
     public String chatPost(){
         return "chatPost requires authentication";
     }
-
-    @RequestMapping("/h2-console/")
-    public String h2(){
-        return "chatPost requires authentication";
-    }
-
 }
