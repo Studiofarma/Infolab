@@ -72,21 +72,12 @@ public class ChatController {
 
         Username username = Username.of(principal.getName());
 
-        int rowsAffected = 0;
-        boolean hasUserBeenCreated = false;
-
-        try {
-            userService.saveUserInDb(username, UserStatusEnum.ONLINE);
-            hasUserBeenCreated = true;
-        } catch (DuplicateKeyException e) {
-            log.info("User username=\"%s\" already existing in database".formatted(joinMessage.getSender()));
-            rowsAffected = userService.updateUserStatus(username, UserStatusEnum.ONLINE);
-        }
+        int rowsAffected = userService.updateUserStatus(username, UserStatusEnum.ONLINE);
 
         // This is needed for security
         message.getJoin().setSender(Username.of(principal.getName()).value());
 
-        if (rowsAffected == 1 || hasUserBeenCreated) {
+        if (rowsAffected == 1) {
             return message;
         } else {
             return null;

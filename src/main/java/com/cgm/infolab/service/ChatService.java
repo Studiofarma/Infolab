@@ -55,7 +55,7 @@ public class ChatService {
                 ChatMessageEntity.of(sender, room, DateTimeHelper.nowLocalDateTime(), message.getContent());
 
         try {
-            messageEntity = chatMessageRepository.add(messageEntity);
+            messageEntity.setId(chatMessageRepository.add(messageEntity));
         } catch (DuplicateKeyException e) {
             log.info(String.format("ChatMessageEntity id=\"%s\" già esistente nel database", messageEntity.getContent()));
         }

@@ -26,8 +26,7 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -192,8 +191,7 @@ public class LastReadDateApiTests {
 
         mvc.perform(
                 post(url)
-                        .with(csrf().asHeader())
-                        .with(user("user1").password("password1"))
+                        .with(jwt().jwt(jwt -> jwt.subject("user1")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonArray)
         ).andExpect(status().isOk());

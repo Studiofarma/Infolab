@@ -26,7 +26,7 @@ public class UserRepository {
         this.rowMappers = rowMappers;
     }
 
-    public UserEntity add(UserEntity user) {
+    public long add(UserEntity user) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(dataSource)
                 .withSchemaName("infolab")
                 .withTableName("users")
@@ -37,7 +37,7 @@ public class UserRepository {
         parameters.put("description", user.getDescription());
         parameters.put("status", user.getStatus().toString());
         parameters.put("theme", user.getTheme().toString());
-        return UserEntity.of((long)simpleJdbcInsert.executeAndReturnKey(parameters), user.getName(), user.getDescription());
+        return (long)simpleJdbcInsert.executeAndReturnKey(parameters);
     }
 
     public Optional<UserEntity> getByUsername(Username username) {
