@@ -20,6 +20,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+// IMPORTANT NOTE: There is not any test for h2-console endpoint because it would be misleading since it would pass even if
+//  the h2-console was not accessible. For some reason the test activated the expected security filter, while the
+//  actual h2 requests do not.
+
 @WebMvcTest(controllers = {SecurityTestsController.class})
 @Import({SecurityConfiguration.class, CsrfController.class, TestSecurityConfiguration.class})
 @ActiveProfiles(ProfilesConstants.TEST)
@@ -104,20 +108,6 @@ public class SecurityTests {
         client
             .perform(post("/chat/test"))
             .andExpect(status().isForbidden());
-    }
-
-    @Test
-    void getToH2WithoutUserShouldBeOk() throws Exception {
-        client
-            .perform(get("/h2-console/"))
-            .andExpect(status().isOk());
-    }
-
-    @Test
-    void postingToH2WithoutUserShouldBeOk() throws Exception {
-        client
-            .perform(post("/h2-console/"))
-            .andExpect(status().isOk());
     }
 
     @Test

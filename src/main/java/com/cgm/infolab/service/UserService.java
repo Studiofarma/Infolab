@@ -7,7 +7,6 @@ import com.cgm.infolab.db.model.enumeration.ThemeEnum;
 import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.db.repository.AvatarRepository;
 import com.cgm.infolab.db.repository.UserRepository;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,10 +27,6 @@ public class UserService {
         return userRepository.getUsersByUsernames(usernames);
     }
 
-    public UserEntity saveUserInDb(Username username, UserStatusEnum status) throws DuplicateKeyException {
-        return userRepository.add(UserEntity.of(username, username.value(), status));
-    }
-
     public int updateUserStatus(Username username, UserStatusEnum status) {
         return userRepository.updateUserStatus(username, status);
     }
@@ -50,5 +45,9 @@ public class UserService {
 
     public Optional<AvatarEntity> getAvatarByIdForUser(long avatarId) {
         return avatarRepository.getAvatarById(avatarId);
+    }
+
+    public void saveUserInDb(Username username, String description) {
+        userRepository.add(UserEntity.of(username, description));
     }
 }

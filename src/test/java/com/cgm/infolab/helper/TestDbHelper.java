@@ -67,7 +67,7 @@ public class TestDbHelper {
 
     public UserEntity[] addUsers(UserEntity... users) {
         for (int i = 0; i < users.length; i++) {
-            users[i] = userRepository.add(users[i]);
+            users[i].setId(userRepository.add(users[i]));
         }
 
         return users;
