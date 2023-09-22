@@ -2,6 +2,7 @@ import { css, html } from "lit";
 import { BaseComponent } from "../../components/base-component";
 
 import { ThemeColorService } from "../../services/theme-color-service";
+import { LoginService } from "../../services/login-service";
 
 import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 
@@ -12,6 +13,14 @@ export class Splash extends BaseComponent {
 
   constructor() {
     super();
+  }
+
+  async connectedCallback() {
+    super.connectedCallback();
+
+    if (await isJwtAvailable(0)) {
+      this.loginConfirmWithJwt();
+    }
   }
 
   static styles = css`
@@ -53,6 +62,42 @@ export class Splash extends BaseComponent {
         <il-horizontal-progress-bar></il-horizontal-progress-bar>
       </div>
     `;
+  }
+
+  async isJwtAvailable(counter) {
+    try {
+      if (MY_JWT) {
+        return MY_JWT;
+      }
+    } catch (e) {
+      await new Promise((r) => setTimeout(r, 100));
+
+      if (counter < 100) {
+        counter++;
+        return await this.addJwtToQueryString(counter);
+      } else {
+        return false;
+      }
+    }
+  }
+
+  loginConfirmWithJwt() {
+    LoginService.getLogin().then((response) => {
+      this.csrfToken = response.data.token;
+      this.storeCsrfToken();
+      this.loginConfirmEvent();
+    });
+  }
+
+  storeCsrfToken() {
+    StorageService.setItemByKeySession(
+      StorageService.Keys.csrfToken,
+      this.csrfToken
+    );
+  }
+
+  loginConfirmEvent() {
+    this.dispatchEvent(new CustomEvent("il:login-confirmed"));
   }
 }
 

@@ -714,17 +714,6 @@ export class Chat extends BaseComponent {
     );
   }
 
-  async addJwtToQueryString() {
-    try {
-      if (MY_JWT) {
-        return `access_token=${MY_JWT}`;
-      }
-    } catch (e) {
-      await new Promise((r) => setTimeout(r, 100));
-      return await this.addJwtToQueryString();
-    }
-  }
-
   async createSocket() {
     let basicAuth = window.btoa(
       this.loggedUser?.name +
@@ -736,7 +725,7 @@ export class Chat extends BaseComponent {
     if (CommandsService.isDevOrTest()) {
       queryString += `basic=${basicAuth.toString()}`;
     } else {
-      queryString += await this.addJwtToQueryString(queryString);
+      queryString += `access_token=${MY_JWT}`;
     }
 
     const socket = new SockJS(queryString);

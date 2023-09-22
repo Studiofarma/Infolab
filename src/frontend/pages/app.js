@@ -16,7 +16,7 @@ export class App extends LitElement {
 
   render() {
     return html`
-      <!-- ${when(
+      ${when(
         !this.isLoggedIn,
         () =>
           when(
@@ -24,15 +24,17 @@ export class App extends LitElement {
             () => html`
               <il-login @il:login-confirmed="${this.loginConfirm}"></il-login>
             `,
-            () => html``
+            () =>
+              html`<il-splash
+                @il:login-confirmed="${this.loginConfirm}"
+              ></il-splash>`
           ),
         () => html` <il-chat></il-chat> `
-      )} -->
-      <il-splash></il-splash>
+      )}
     `;
   }
 
-  loginConfirm(e) {
+  loginConfirm() {
     this.isLoggedIn = true;
   }
 }
