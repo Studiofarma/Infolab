@@ -2,6 +2,7 @@ import { LitElement, html } from "lit";
 import { when } from "lit/directives/when.js";
 import "./login/login.js";
 import "./chat/chat.js";
+import { CommandsService } from "../services/commands-service.js";
 export class App extends LitElement {
   static properties = {
     isLoggedIn: { Boolean },
@@ -16,9 +17,14 @@ export class App extends LitElement {
     return html`
       ${when(
         !this.isLoggedIn,
-        () => html`
-          <il-login @il:login-confirmed="${this.loginConfirm}"></il-login>
-        `,
+        () =>
+          when(
+            CommandsService.isDevOrTest(),
+            () => html`
+              <il-login @il:login-confirmed="${this.loginConfirm}"></il-login>
+            `,
+            () => html`<il-splash></il-splash>`
+          ),
         () => html` <il-chat></il-chat> `
       )}
     `;
