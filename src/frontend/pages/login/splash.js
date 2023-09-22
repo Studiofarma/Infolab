@@ -3,6 +3,7 @@ import { BaseComponent } from "../../components/base-component";
 
 import { ThemeColorService } from "../../services/theme-color-service";
 import { LoginService } from "../../services/login-service";
+import { StorageService } from "../../services/storage-service";
 
 import { ThemeCSSVariables } from "../../enums/theme-css-variables";
 
@@ -18,8 +19,11 @@ export class Splash extends BaseComponent {
   async connectedCallback() {
     super.connectedCallback();
 
-    if (await isJwtAvailable(0)) {
+    if (await this.isJwtAvailable(0)) {
       this.loginConfirmWithJwt();
+    } else {
+      // TODO: implement login fail logic
+      console.log("LOGIN FAILED");
     }
   }
 
@@ -72,9 +76,9 @@ export class Splash extends BaseComponent {
     } catch (e) {
       await new Promise((r) => setTimeout(r, 100));
 
-      if (counter < 100) {
+      if (counter < 200) {
         counter++;
-        return await this.addJwtToQueryString(counter);
+        return await this.isJwtAvailable(counter);
       } else {
         return false;
       }
