@@ -93,7 +93,7 @@ export class Chat extends BaseComponent {
     super.connectedCallback();
     this.loggedUser = await UsersService.getLoggedUser();
 
-    this.createSocket();
+    await this.createSocket();
     this.canFetchLoggedUser = true;
 
     if (await ThemeColorService.initService()) {
@@ -717,16 +717,29 @@ export class Chat extends BaseComponent {
     );
   }
 
-  createSocket() {
+  async addJwtToQueryString() {
+    try {
+      if (MY_JWT) {
+        return `access_token=${MY_JWT}`;
+      }
+    } catch (e) {
+      await new Promise((r) => setTimeout(r, 100));
+      return await this.addJwtToQueryString();
+    }
+  }
+
+  async createSocket() {
     let basicAuth = window.btoa(
       this.loggedUser?.name +
         ":" +
         StorageService.getItemByKey(StorageService.Keys.password)
     );
 
-    let queryString = "chat?basic=";
+    let queryString = "chat?";
     if (CommandsService.isDevOrTest()) {
-      queryString += basicAuth.toString();
+      queryString += `basic=${basicAuth.toString()}`;
+    } else {
+      queryString += await this.addJwtToQueryString(queryString);
     }
 
     const socket = new SockJS(queryString);
@@ -812,8 +825,21 @@ export class Chat extends BaseComponent {
       );
 
     if (Notification.permission === "granted") {
+      let notificationContent;
+
+      if (conversation.roomType === "GROUP") {
+        let user =
+          await this.conversationListRef.value?.getUserByUsernameOrFetch(
+            message.sender
+          );
+
+        notificationContent = `${user.description}: ${message.content}`;
+      } else {
+        notificationContent = message.content;
+      }
+
       let notification = new Notification(conversation.description, {
-        body: message.content,
+        body: notificationContent,
       });
 
       notification.onclick = async () => {
@@ -824,10 +850,23 @@ export class Chat extends BaseComponent {
         window.focus("/");
       };
     } else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then(function (permission) {
+      Notification.requestPermission().then(async function (permission) {
         if (permission === "granted") {
+          let notificationContent;
+
+          if (conversation.roomType === "GROUP") {
+            let user =
+              await this.conversationListRef.value?.getUserByUsernameOrFetch(
+                message.sender
+              );
+
+            notificationContent = `${user.description}: ${message.content}`;
+          } else {
+            notificationContent = message.content;
+          }
+
           let notification = new Notification(conversation.description, {
-            body: message.content,
+            body: notificationContent,
           });
 
           notification.onclick = async () => {
