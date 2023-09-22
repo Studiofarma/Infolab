@@ -749,7 +749,7 @@ export class Chat extends BaseComponent {
     this.stompClient.connect(
       headers,
       () => this.onConnect(),
-      () => this.onError()
+      async () => await this.onError()
     );
   }
 
@@ -1068,8 +1068,9 @@ export class Chat extends BaseComponent {
     this.buildMessageAndSend(event.detail.message, "CHAT");
   }
 
-  onError(error) {
+  async onError(error) {
     console.log(error);
+    await this.createSocket();
   }
 
   setActiveChat(event) {
