@@ -822,8 +822,21 @@ export class Chat extends BaseComponent {
       );
 
     if (Notification.permission === "granted") {
+      let notificationContent;
+
+      if (conversation.roomType === "GROUP") {
+        let user =
+          await this.conversationListRef.value?.getUserByUsernameOrFetch(
+            message.sender
+          );
+
+        notificationContent = `${user.description}: ${message.content}`;
+      } else {
+        notificationContent = message.content;
+      }
+
       let notification = new Notification(conversation.description, {
-        body: message.content,
+        body: notificationContent,
       });
 
       notification.onclick = async () => {
@@ -834,10 +847,23 @@ export class Chat extends BaseComponent {
         window.focus("/");
       };
     } else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then(function (permission) {
+      Notification.requestPermission().then(async function (permission) {
         if (permission === "granted") {
+          let notificationContent;
+
+          if (conversation.roomType === "GROUP") {
+            let user =
+              await this.conversationListRef.value?.getUserByUsernameOrFetch(
+                message.sender
+              );
+
+            notificationContent = `${user.description}: ${message.content}`;
+          } else {
+            notificationContent = message.content;
+          }
+
           let notification = new Notification(conversation.description, {
-            body: message.content,
+            body: notificationContent,
           });
 
           notification.onclick = async () => {
