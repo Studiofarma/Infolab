@@ -1068,8 +1068,7 @@ export class Chat extends BaseComponent {
     this.buildMessageAndSend(event.detail.message, "CHAT");
   }
 
-  async onError(error) {
-    console.log(error);
+  async onError() {
     await this.createSocket();
   }
 
