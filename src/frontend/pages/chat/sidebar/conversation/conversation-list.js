@@ -248,6 +248,19 @@ class ConversationList extends BaseComponent {
     let conversation = this.conversationOpenBeforeQuit;
 
     if (this.isStartup && !this.isForwardList && conversation) {
+      let allConversations = [
+        ...this.conversationList,
+        ...this.newConversationList,
+      ];
+
+      let index = allConversations.findIndex(
+        (conv) => conv.roomName === conversation.roomName
+      );
+
+      if (index >= 0) {
+        conversation = allConversations[index];
+      }
+
       this.changeRoom(new CustomEvent("il:first-updated"), conversation);
       this.isStartup = false;
     }
@@ -291,6 +304,19 @@ class ConversationList extends BaseComponent {
     let conversation = this.conversationOpenBeforeQuit;
 
     if (this.isStartup && !this.isForwardList && conversation) {
+      let allConversations = [
+        ...this.conversationList,
+        ...this.newConversationList,
+      ];
+
+      let index = allConversations.findIndex(
+        (conv) => conv.roomName === conversation.roomName
+      );
+
+      if (index >= 0) {
+        conversation = allConversations[index];
+      }
+
       this.changeRoom(new CustomEvent("il:first-updated"), conversation);
       this.isStartup = false;
     }
