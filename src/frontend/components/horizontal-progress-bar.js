@@ -29,7 +29,7 @@ export class HorizontalProgressBar extends BaseComponent {
 
     .progress-bar {
       height: 5px;
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: ${ThemeCSSVariables.horizontalProgressBarBackground};
       width: 100%;
       overflow: hidden;
     }
@@ -38,7 +38,7 @@ export class HorizontalProgressBar extends BaseComponent {
       all: revert;
       width: 100%;
       height: 100%;
-      background-color: white;
+      background-color: ${ThemeCSSVariables.horizontalProgressBarProgress};
       opacity: revert;
       animation: indeterminateAnimation 1s infinite linear;
       transform-origin: 0% 50%;

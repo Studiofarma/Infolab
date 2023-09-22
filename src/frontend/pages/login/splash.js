@@ -17,6 +17,7 @@ export class Splash extends BaseComponent {
   static styles = css`
     * {
       ${ThemeColorService.getThemeVariables()};
+      color: ${ThemeCSSVariables.splashText};
     }
 
     #background {
@@ -25,26 +26,22 @@ export class Splash extends BaseComponent {
       left: 0;
       width: 100%;
       height: 100%;
-      background-color: ${ThemeCSSVariables.loginBg};
+      background-color: ${ThemeCSSVariables.splashBg};
       z-index: 1;
     }
 
     #container {
       position: relative;
-      width: 530px;
-      max-width: 100%;
-      min-height: 400px;
       padding: 1.5rem 2rem;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       border-radius: 10px;
-      background-color: ${ThemeCSSVariables.loginBg};
+      background-color: ${ThemeCSSVariables.splashBg};
       z-index: 2;
       overflow: hidden;
-      color: #ffffff;
-      margin-top: -15%;
+      margin-top: -20%;
     }
   `;
 
