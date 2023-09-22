@@ -99,6 +99,15 @@ class ConversationList extends BaseComponent {
       changedProperties.has("newConversationList")
     ) {
       await this.getAllNeededUsers();
+
+      let allConversations = [
+        ...this.conversationList,
+        ...this.newConversationList,
+      ];
+
+      for (let i = 0; i < allConversations.length; i++) {
+        await this.checkUserDescriptionIntegrity(allConversations[i]);
+      }
     }
   }
 
@@ -532,7 +541,7 @@ class ConversationList extends BaseComponent {
           this.hasMore = false;
         }
 
-        rooms.forEach((room) => {
+        rooms.forEach(async (room) => {
           if (room.roomOrUser === "ROOM") {
             this.conversationList = [...this.conversationList, room];
           } else if (room.roomOrUser === "USER_AS_ROOM") {
@@ -562,7 +571,7 @@ class ConversationList extends BaseComponent {
           this.hasMore = false;
         }
 
-        rooms.forEach((room) => {
+        rooms.forEach(async (room) => {
           if (room.roomOrUser === "ROOM") {
             this.conversationList = [...this.conversationList, room];
           } else if (room.roomOrUser === "USER_AS_ROOM") {
@@ -574,6 +583,28 @@ class ConversationList extends BaseComponent {
       } catch (error) {
         console.error(error);
       }
+    }
+  }
+
+  async checkUserDescriptionIntegrity(conversation) {
+    let conversationUser = this.getOtherUserInRoom(conversation);
+
+    if (
+      conversation.roomType === "USER2USER" &&
+      conversation.otherParticipants[0]?.description !==
+        conversationUser?.description
+    ) {
+      UsersService.deleteUserFromSessionStorage(conversationUser);
+
+      this.usersList = this.usersList.filter(
+        (user) => user.name !== conversationUser.name
+      );
+
+      conversationUser = await this.getUserByUsernameOrFetch(
+        conversationUser.name
+      );
+
+      this.usersList = [...this.usersList, conversationUser];
     }
   }
 
@@ -896,8 +927,7 @@ class ConversationList extends BaseComponent {
 
     let userIndex = this.usersList.findIndex((user) => user.name == username);
 
-    if (userIndex < 0)
-      return (await UsersService.getUsersByUsernames([username]))[0];
+    if (userIndex < 0) return (await UsersService.getUsers([username]))[0];
 
     return this.usersList[userIndex];
   }

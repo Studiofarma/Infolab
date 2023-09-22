@@ -29,7 +29,7 @@ export class UsersService {
       });
 
       if (usernamesToFetch.length !== 0) {
-        users = await this.getUsersByUsernames(usernamesToFetch);
+        users = await this.#getUsersByUsernames(usernamesToFetch);
       }
 
       let allUsers = [...sessionUsers, ...users];
@@ -38,7 +38,7 @@ export class UsersService {
 
       users = [...alreadyPresentUsers, ...users];
     } else {
-      users = await this.getUsersByUsernames(usernames);
+      users = await this.#getUsersByUsernames(usernames);
 
       StorageService.setItemByKeySession(StorageService.Keys.users, users);
     }
@@ -98,7 +98,7 @@ export class UsersService {
   /**
    * @param {Array} usernames an array of usernames as string values
    */
-  static async getUsersByUsernames(usernames) {
+  static async #getUsersByUsernames(usernames) {
     if (usernames.length === 0)
       throw Error("Empty array provided as parameter.");
 
@@ -183,5 +183,13 @@ export class UsersService {
 
   static deleteLoggedUserFromSessionStorage() {
     StorageService.deleteItemByKeyFromSession(StorageService.Keys.loggedUser);
+  }
+
+  static deleteUserFromSessionStorage(userToDelete) {
+    let users = StorageService.getItemByKey(StorageService.Keys.users);
+
+    users = users.filter((user) => user.name !== userToDelete.name);
+
+    StorageService.setItemByKeySession(StorageService.Keys.users, users);
   }
 }
