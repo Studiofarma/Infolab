@@ -39,11 +39,7 @@ jobs:
         mvn clean
         mvn -B test --file pom.xml
     - name: Run Frontend Tests
-      uses: cypress-io/github-action@v6
-      with:
-        start: ../../start-in-memory.sh
-        working-directory: ./src/frontend
-        project: ./src/frontend
+      run: ./start-frontend-tests.sh
 
   publish:
     runs-on: ubuntu-latest
