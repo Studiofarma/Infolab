@@ -3,7 +3,7 @@
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=dev,inmemory &> /dev/null &
 
 endpoint="http://localhost:8081"
-max_wait_time=20
+max_wait_time=30
 
   start_time=$(date +%s)
   while true; do
@@ -17,7 +17,7 @@ max_wait_time=20
     current_time=$(date +%s)
     elapsed_time=$((current_time - start_time))
     if [ $elapsed_time -ge $max_wait_time ]; then
-      echo "Could not connect to backend"
+      raise error "Could not connect to backend"
       break
     fi
     sleep 0.5
