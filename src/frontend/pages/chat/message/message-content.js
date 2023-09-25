@@ -216,6 +216,7 @@ export class MessageContent extends BaseComponent {
                 ConversationDto.roomTypeEnum.group,
               () =>
                 html` <p
+                  data-cy="receiver-name"
                   class="receiver-name"
                   style="color: ${ThemeColorService.getColorForUser(
                     this.user?.id,
@@ -231,7 +232,7 @@ export class MessageContent extends BaseComponent {
             ${when(
               !this.message.hasBeenDeleted(),
               () => html`
-                <p class="message">
+                <p data-cy="message" class="message">
                   ${HtmlParserService.parseFromString(this.message.content)}
                 </p>
               `,
@@ -253,12 +254,12 @@ export class MessageContent extends BaseComponent {
               ${when(
                 this.message.hasBeenDeleted(),
                 () =>
-                  html`<p class="deleted">
+                  html`<p data-cy="deleted" class="deleted">
                     Questo messaggio è stato eliminato
                   </p>`,
                 () => html``
               )}
-              <p class="message-timestamp">
+              <p data-cy="message-timestamp" class="message-timestamp">
                 ${new Date(this.message.timestamp).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",

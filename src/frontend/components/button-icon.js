@@ -50,7 +50,11 @@ export class ButtonIcon extends BaseComponent {
   render() {
     return html`
       <div class="container">
-        <div class="icon-button" .style="color: ${unsafeCSS(this.color)}">
+        <div
+          data-cy="icon-button"
+          class="icon-button"
+          .style="color: ${unsafeCSS(this.color)}"
+        >
           <il-icon name="${this.content}"></il-icon>
         </div>
         ${when(

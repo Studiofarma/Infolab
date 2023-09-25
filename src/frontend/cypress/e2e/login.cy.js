@@ -1,3 +1,5 @@
+import { Paths } from "../support/paths-enum";
+
 describe("Login spec", () => {
   it("login fail", () => {
     cy.login({ user: "a", password: "a" });
@@ -11,7 +13,7 @@ describe("Login spec", () => {
   it("login works", () => {
     cy.login({ user: "user1", password: "password1" });
 
-    cy.litElementExist("il-app,il-chat");
+    cy.litElementExist(Paths.chatPath);
 
     cy.window()
       .its("sessionStorage")
