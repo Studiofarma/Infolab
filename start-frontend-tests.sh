@@ -11,7 +11,7 @@ max_wait_time=40
     response_code=$(curl -s -o /dev/null -w "%{http_code}" $endpoint)
     if [ "$response_code" -eq 200 ]; then
       echo "Connected to backend at ${endpoint}"
-      (cd "./src/frontend" && npm run cypress:run)
+      (cd "./src/frontend" && npm run cypress:norec)
       break
     fi
     current_time=$(date +%s)
