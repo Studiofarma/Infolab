@@ -1,19 +1,12 @@
-const messagePath = "il-app, il-chat, il-messages-list, il-message";
-const iconButtonPath =
-  "il-app,il-chat, il-messages-list, il-message, il-message-menu-popover, il-button-icon";
+import { Paths } from "./paths-enum";
 
-const conversationListPath = "il-app,il-chat,il-conversation-list";
-const conversation = "il-conversation";
-const activeConversation = "il-conversation.active";
-const sidebarInputPath = `${conversationListPath},il-input-search, il-input-with-icon`;
-const chatPath = "il-app,il-chat";
-const inputControlsPath = `${chatPath},il-input-controls`;
-const editorPath = `${inputControlsPath},il-editor`;
+const loginPath = "il-app,il-login";
 
 const chatName = '[data-cy="chat-name"]';
-const editor = "#editor";
 const conversationList = "il-conversation-list";
-const chat = "il-chat";
+const editor = "#editor";
+const conversation = "il-conversation";
+const activeConversation = "il-conversation.active";
 
 Cypress.Commands.add("getLitElement", (elementPath) => {
   let elementNames = elementPath.includes(",")
@@ -57,15 +50,15 @@ Cypress.Commands.add("login", (user) => {
       const baseUrl = "http://localhost:8081";
       cy.visit(baseUrl, { failOnStatusCode: false });
 
-      cy.getLitElement("il-app,il-login,il-input-field#username")
+      cy.getLitElement(`${loginPath},il-input-field#username`)
         .find("input")
         .type(user.user, { force: true });
 
-      cy.getLitElement("il-app,il-login,il-input-password#password")
+      cy.getLitElement(`${loginPath},il-input-password#password`)
         .find("input")
         .type(user.password, { force: true });
 
-      cy.getLitElement("il-app,il-login,il-button-text").find("button").click();
+      cy.getLitElement(`${loginPath},il-button-text`).find("button").click();
     },
     {
       validate: () => {},
@@ -74,7 +67,7 @@ Cypress.Commands.add("login", (user) => {
 });
 
 Cypress.Commands.add("getEditor", () => {
-  return cy.getLitElement(editorPath).find(editor);
+  return cy.getLitElement(Paths.editorPath).find(editor);
 });
 
 Cypress.Commands.add(
@@ -88,22 +81,20 @@ Cypress.Commands.add(
 
 Cypress.Commands.add("sendTestMessages", (number) => {
   for (let i = 0; i < number; i++)
-    cy.getLitElement("il-app, il-chat, il-input-controls, il-editor")
+    cy.getLitElement(Paths.editorPath)
       .find("#editor")
       .type(`test${i + 1}{enter}`);
 });
 
 Cypress.Commands.add("openChat", (name) => {
-  cy.getLitElement("il-app, il-chat, il-conversation-list, il-conversation")
+  cy.getLitElement(Paths.conversationInConversationListPath)
     .find(".chat-name")
     .each((element, index) => {
       cy.wrap(element)
         .invoke("text")
         .then((txt) => {
           if (txt.trim() === name) {
-            cy.getLitElement(
-              "il-app, il-chat, il-conversation-list, il-conversation"
-            )
+            cy.getLitElement(Paths.conversationInConversationListPath)
               .find(".chat-name")
               .eq(index)
               .click({ force: true });
@@ -115,11 +106,14 @@ Cypress.Commands.add("openChat", (name) => {
 // Commands for conversation selection
 
 Cypress.Commands.add("getConversationByIndex", (index) => {
-  return cy.getLitElement(conversationListPath).find(conversation).eq(index);
+  return cy
+    .getLitElement(Paths.conversationListPath)
+    .find(conversation)
+    .eq(index);
 });
 
 Cypress.Commands.add("getOpenedConversation", () => {
-  return cy.getLitElement(conversationListPath).find(activeConversation);
+  return cy.getLitElement(Paths.conversationListPath).find(activeConversation);
 });
 
 Cypress.Commands.add("getConversationName", (index) => {
@@ -136,7 +130,7 @@ Cypress.Commands.add("openChatByClick", (index) => {
 Cypress.Commands.add("openChatWithArrows", (arrowsNumber) => {
   const inputText = Cypress._.repeat("{downArrow}", arrowsNumber);
 
-  cy.getLitElement(sidebarInputPath)
+  cy.getLitElement(Paths.sidebarInputSearchPath)
     .find("input")
     .type(inputText + "{enter}", {
       force: true,
@@ -151,14 +145,14 @@ Cypress.Commands.add("checkOpenedConversationName", (text) => {
 // ------------------------------------
 
 Cypress.Commands.add("hoverOnTheLast", () => {
-  cy.getLitElement(messagePath)
+  cy.getLitElement(Paths.messagePath)
     .last()
     .find(".message-body")
     .trigger("mouseover", { force: true });
 });
 
 Cypress.Commands.add("clickOnTheLastOptionsMenu", () => {
-  cy.getLitElement(iconButtonPath)
+  cy.getLitElement(Paths.popoverIconButtonPath)
     .last()
     .find(".icon-button")
     .click({ force: true });
@@ -176,9 +170,7 @@ Cypress.Commands.add("clickOptionButton", (option) => {
 
 Cypress.Commands.add("getOptionButton", (option) => {
   return cy
-    .getLitElement(
-      "il-app, il-chat, il-messages-list, il-message, il-message-menu-popover, il-message-options"
-    )
+    .getLitElement(Paths.messageOptions)
     .last()
     .find("il-message-button-option")
     .shadow()
@@ -187,5 +179,7 @@ Cypress.Commands.add("getOptionButton", (option) => {
 });
 
 Cypress.Commands.add("clickScrollToBottomButton", () => {
-  cy.getLitElement(chatPath).find("il-button-icon").click({ force: true });
+  cy.getLitElement(Paths.chatPath)
+    .find("il-button-icon")
+    .click({ force: true });
 });

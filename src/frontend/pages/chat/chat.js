@@ -317,7 +317,10 @@ export class Chat extends BaseComponent {
                       <br />
                       <p>Confermare l'eliminazione del messaggio?</p>
                       <br />
-                      <div class="deletion-confirmation-buttons">
+                      <div
+                        data-cy="deletion-confirmation-buttons"
+                        class="deletion-confirmation-buttons"
+                      >
                         <il-button-text
                           text="Annulla"
                           @click=${() =>
