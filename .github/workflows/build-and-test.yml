@@ -42,9 +42,7 @@ jobs:
       uses: cypress-io/github-action@v6
       with:
         start: mvn spring-boot:run -Dspring-boot.run.profiles=dev,inmemory
-      run: |
-        cd "./src/frontend"
-        npm run cypress:run
+        project: ./src/frontend
 
   publish:
     runs-on: ubuntu-latest
