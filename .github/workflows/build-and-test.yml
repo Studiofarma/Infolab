@@ -41,7 +41,7 @@ jobs:
     - name: Run Frontend Tests
       uses: cypress-io/github-action@v6
       with:
-        start: mvn spring-boot:run --spring.profiles.active=dev,inmemory
+        start: ./start-in-memory
         working-directory: ./src/frontend
         project: ./src/frontend
 
