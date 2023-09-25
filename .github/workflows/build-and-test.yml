@@ -41,7 +41,7 @@ jobs:
     - name: Run Frontend Tests
       uses: cypress-io/github-action@v6
       with:
-        start: ./start-in-memory
+        start: ../../start-in-memory
         working-directory: ./src/frontend
         project: ./src/frontend
 
