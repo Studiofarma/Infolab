@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev,inmemory &
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev,inmemory &> /dev/null &
 
 endpoint="http://localhost:8081"
 max_wait_time=40
