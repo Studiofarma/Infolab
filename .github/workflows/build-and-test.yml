@@ -39,8 +39,9 @@ jobs:
         mvn clean
         mvn -B test --file pom.xml
     - name: Run Frontend Tests
-      shell: bash
-      run: ./start-frontend-tests.sh
+      run: |
+        cd "./src/frontend"
+        npm run cypress:run
 
   publish:
     runs-on: ubuntu-latest
