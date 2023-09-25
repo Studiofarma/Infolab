@@ -38,6 +38,9 @@ jobs:
       run: |
         mvn clean
         mvn -B test --file pom.xml
+    - name: Run Frontend Tests
+      shell: bash
+      run: ./start-frontend-tests.sh
 
   publish:
     runs-on: ubuntu-latest
