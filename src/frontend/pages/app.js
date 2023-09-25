@@ -23,25 +23,35 @@ export class App extends LitElement {
     return html`
       ${when(
         !this.isLoggedIn,
-        () =>
-          when(
-            CommandsService.isDevOrTest(),
-            () => html`
-              <il-login @il:login-confirmed=${this.loginConfirm}></il-login>
-            `,
-            () =>
-              when(
-                !this.isLoginFailed,
-                () => html`
-                  <il-splash
-                    @il:login-confirmed="${this.loginConfirm}"
-                    @il:login-failed=${this.loginFail}
-                  ></il-splash>
-                `,
-                () => html`<il-login-error></il-login-error>`
-              )
-          ),
+        () => this.renderBasicOrJwtLogin(),
         () => html` <il-chat></il-chat> `
+      )}
+    `;
+  }
+
+  renderSplashOrError() {
+    return html`
+      ${when(
+        !this.isLoginFailed,
+        () => html`
+          <il-splash
+            @il:login-confirmed="${this.loginConfirm}"
+            @il:login-failed=${this.loginFail}
+          ></il-splash>
+        `,
+        () => html`<il-login-error></il-login-error>`
+      )}
+    `;
+  }
+
+  renderBasicOrJwtLogin() {
+    return html`
+      ${when(
+        CommandsService.isDevOrTest(),
+        () => html`
+          <il-login @il:login-confirmed=${this.loginConfirm}></il-login>
+        `,
+        () => this.renderSplashOrError()
       )}
     `;
   }
