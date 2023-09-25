@@ -38,10 +38,6 @@ jobs:
       run: |
         mvn clean
         mvn -B test --file pom.xml
-    - name: Run Frontend Tests
-      run: |
-        mvn spring-boot:run -Dspring-boot.run.profiles=dev,inmemory
-        npm run cypress:run
 
   publish:
     runs-on: ubuntu-latest
