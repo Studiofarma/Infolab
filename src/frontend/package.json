@@ -10,7 +10,8 @@
     "server": "json-server --watch assets/test/db.json",
     "dev": "npm-run-all --parallel watch server",
     "cypress:run": "cypress run --headless --browser chrome",
-    "cypress:open": "cypress open"
+    "cypress:open": "cypress open",
+    "cypress:norec": "cypress run --headless --browser chrome --config video=false,screenshotOnRunFailure=false"
   },
   "keywords": [],
   "author": "",
