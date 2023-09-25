@@ -109,6 +109,7 @@ class Conversation extends BaseComponent {
 
     return html`
       <div
+        data-cy="chat-box"
         class="chat-box"
         @click=${() => {
           this.isSelected = !this.isSelected;

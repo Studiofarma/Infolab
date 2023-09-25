@@ -156,7 +156,7 @@ export class Avatar extends BaseComponent {
         ${when(
           this.isSelected,
           () =>
-            html`<div class="icon-button">
+            html`<div data-cy="icon-button" class="icon-button">
               <il-icon name=${IconNames.checkCircle}></il-icon>
             </div>`,
           () =>
@@ -168,6 +168,7 @@ export class Avatar extends BaseComponent {
                     "ONLINE",
                     () =>
                       html`<il-icon
+                        data-cy="icon-button"
                         class="icon-button online"
                         name=${IconNames.circle}
                       ></il-icon>`,
@@ -176,6 +177,7 @@ export class Avatar extends BaseComponent {
                     "OFFLINE",
                     () =>
                       html`<il-icon
+                        data-cy="icon-button"
                         class="icon-button offline"
                         name=${IconNames.circle}
                       ></il-icon>`,

@@ -1,18 +1,12 @@
-const messagesListPath = "il-app, il-chat, il-messages-list";
-const messagePath = `${messagesListPath}, il-message`;
-const messageContentPath = `${messagePath}, il-message-content`;
-const messageMenuPopoverPath =
-  "il-app, il-chat, il-messages-list, il-message, il-message-menu-popover";
+import { Paths } from "../support/paths-enum";
 
-// Il primo è per le conversazioni della sidebar, il secondo per quelli della forward-list
-const sidebarConversationPath =
-  "il-app,il-chat, il-conversation-list, il-conversation";
-const conversationInForwardListPath =
-  "il-app,il-chat, #forwardList, il-conversation";
+const messageContentPath = `${Paths.messagePath}, il-message-content`;
+const conversationInForwardListPath = `${Paths.chatPath}, #forwardList, il-conversation`;
+const buttonTextPath = `${Paths.conversationListPath}, il-button-text`;
 
-const buttonTextPath = "il-app,il-chat, il-conversation-list, il-button-text";
-const sidebarConversationList = "il-app,il-chat, il-conversation-list";
-const chatName = '[data-cy="chat-name"]';
+const iconButtonComponent = '[data-cy="icon-button"]';
+const chatNameComponent = '[data-cy="chat-name"]';
+const messageComponent = '[data-cy="message"]';
 
 beforeEach(() => {
   // login
@@ -27,10 +21,10 @@ beforeEach(() => {
 
 describe("messages spec", () => {
   it("asserting that the messages container exists ", () => {
-    cy.litElementExist(messagesListPath);
+    cy.litElementExist(Paths.messagesListPath);
     // sending some test messages in case they aren't present by default
     cy.sendTestMessages(2);
-    cy.litElementExist(messagePath);
+    cy.litElementExist(Paths.messagePath);
   });
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
@@ -44,7 +38,7 @@ describe("messages spec", () => {
       .and("not.to.be.empty");
     cy.getLitElement(messageContentPath)
       .first()
-      .find(".message-timestamp")
+      .find('[data-cy="message-timestamp"]')
       .should("exist")
       .and("not.to.be.empty");
   });
@@ -54,22 +48,24 @@ describe("messages spec", () => {
     cy.clickScrollToBottomButton();
     cy.getLitElement(messageContentPath)
       .find("main")
-      .filter(":has(.receiver-name)")
+      .filter(':has([data-cy="receiver-name"])')
       .first()
       .then((element) => {
-        cy.wrap(element).find(".receiver-name").should("not.to.be.empty");
+        cy.wrap(element)
+          .find('[data-cy="receiver-name"]')
+          .should("not.to.be.empty");
       });
   });
   // // //-----------------------------------------------------
   // // //-----------------------------------------------------
   it("asserting that the options menu icon will display when you hover on a message", () => {
     cy.clickScrollToBottomButton();
-    cy.getLitElement(messagePath)
+    cy.getLitElement(Paths.messagePath)
       .first()
-      .find(".message-body")
+      .find('[data-cy="message-body"]')
       .trigger("mouseover", { force: true });
-    cy.getLitElement(`${messageMenuPopoverPath}, il-button-icon`)
-      .find(".icon-button")
+    cy.getLitElement(Paths.popoverIconButtonPath)
+      .find(iconButtonComponent)
       .should("be.visible");
   });
   // // //-----------------------------------------------------
@@ -80,7 +76,7 @@ describe("messages spec", () => {
 
     cy.clickOnTheLastOptionsMenu();
 
-    cy.getLitElement(`${messageMenuPopoverPath}, il-message-options`)
+    cy.getLitElement(Paths.messageOptions)
       .find("div")
       .should("be.visible")
       .and("not.to.be.empty");
@@ -111,20 +107,20 @@ describe("messages spec", () => {
     // getting the text of the forwarded message
     cy.getLitElement(messageContentPath)
       .last()
-      .find(".message")
+      .find(messageComponent)
       .invoke("text")
       .then((txt) => {
         cy.getLitElement(conversationInForwardListPath)
           .first()
-          .find(chatName)
+          .find(chatNameComponent)
           .click({ force: true });
         //check if  the check icon is visible
         cy.getLitElement(conversationInForwardListPath)
           .first()
-          .find(".chat-box")
+          .find('[data-cy="chat-box"]')
           .find("il-avatar")
           .shadow()
-          .find(".icon-button")
+          .find(iconButtonComponent)
           .should("be.visible");
         // check if the 'Inoltra' button is visible
         cy.getLitElement(buttonTextPath).find("button").should("be.visible");
@@ -132,7 +128,7 @@ describe("messages spec", () => {
         cy.getLitElement(buttonTextPath).find("button").click({ force: true });
         cy.getLitElement(messageContentPath)
           .last()
-          .last(".message")
+          .last(messageComponent)
           .should("include.text", txt);
       });
   });
@@ -146,12 +142,12 @@ describe("messages spec", () => {
     // getting the text of the forwarded message
     cy.getLitElement(messageContentPath)
       .last()
-      .find(".message")
+      .find(messageComponent)
       .invoke("text")
       .then((txt) => {
         for (let i = 0; i < 2; i++) {
           cy.getLitElement(conversationInForwardListPath)
-            .find(".chat-name")
+            .find(chatNameComponent)
             .eq(i)
             .click({ force: true });
         }
@@ -159,15 +155,15 @@ describe("messages spec", () => {
         cy.getLitElement(buttonTextPath).find("button").click({ force: true });
         // checking if message has been forwarded
         for (let i = 0; i < 2; i++) {
-          cy.getLitElement(sidebarConversationPath)
-            .find(".chat-name")
+          cy.getLitElement(Paths.conversationInConversationListPath)
+            .find(chatNameComponent)
             .eq(i)
             .invoke("text")
             .then((conversationName) => {
               cy.openChat(conversationName);
               cy.getLitElement(messageContentPath)
                 .last()
-                .find(".message")
+                .find(messageComponent)
                 .invoke("text")
                 .then((text) => {
                   cy.wrap({ value: text.trim() })
@@ -195,10 +191,10 @@ describe("messages spec", () => {
     cy.clickOnTheLastOptionsMenu();
     cy.clickOptionButton("Scrivi in privato");
     // asserting that user2 has been moved to user1's chat
-    cy.getLitElement(sidebarConversationList)
+    cy.getLitElement(Paths.conversationListPath)
       .find("il-conversation.active")
       .shadow()
-      .find(".chat-name")
+      .find(chatNameComponent)
       .invoke("text")
       .then((text) => {
         cy.wrap({ value: text.trim() })
@@ -216,7 +212,7 @@ describe("messages spec", () => {
 
     //confirming the elimination of the message
     cy.getLitElement("il-app, il-chat")
-      .find(".deletion-confirmation-buttons il-button-text")
+      .find('[data-cy="deletion-confirmation-buttons"] il-button-text')
       .last()
       .shadow()
       .find("button")
@@ -226,7 +222,7 @@ describe("messages spec", () => {
 
     cy.getLitElement(messageContentPath)
       .last()
-      .find(".deleted")
+      .find('[data-cy="deleted"]')
       .should("exist")
       .and("include.text", "Questo messaggio è stato eliminato");
   });
