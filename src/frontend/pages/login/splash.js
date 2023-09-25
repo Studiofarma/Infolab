@@ -22,8 +22,7 @@ export class Splash extends BaseComponent {
     if (await this.isJwtAvailable(0)) {
       this.loginConfirmWithJwt();
     } else {
-      // TODO: implement login fail logic
-      console.log("LOGIN FAILED");
+      this.dispatchEvent(new CustomEvent("il:login-failed"));
     }
   }
 
@@ -76,7 +75,7 @@ export class Splash extends BaseComponent {
     } catch (e) {
       await new Promise((r) => setTimeout(r, 100));
 
-      if (counter < 200) {
+      if (counter < 50) {
         counter++;
         return await this.isJwtAvailable(counter);
       } else {
