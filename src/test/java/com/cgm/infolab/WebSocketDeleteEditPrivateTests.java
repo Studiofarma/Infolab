@@ -8,6 +8,7 @@ import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.helper.TestStompHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
+import com.cgm.infolab.templates.WebSocketTest;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,32 +35,16 @@ import static com.cgm.infolab.model.WebSocketMessageTypeEnum.DELETE;
 import static com.cgm.infolab.model.WebSocketMessageTypeEnum.EDIT;
 import static org.awaitility.Awaitility.await;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WebSocketDeleteEditPrivateTests {
-    @LocalServerPort
-    public Integer port;
-    @Autowired
-    public TestDbHelper testDbHelper;
-    @Autowired
-    public TestStompHelper testStompHelper;
-
-    WebSocketStompClient websocket;
-
+public class WebSocketDeleteEditPrivateTests extends WebSocketTest {
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
-    UserEntity user1 = UserEntity.of(Username.of("user1"));
     RoomEntity bananaUser1 = RoomEntity.of(RoomName.of("banana-user1"), VisibilityEnum.PRIVATE, RoomTypeEnum.USER2USER);
 
-    // This is here because the @Import annotation does not work
-    @TestConfiguration
-    public static class SecurityConfiguration extends TestSecurityConfiguration {}
-
+    @Override
     @BeforeAll
-    public void setupAll(){
-        testDbHelper.clearDbExceptForGeneral();
+    protected void setUp(){
+        super.setUp();
 
-        websocket = testStompHelper.initWebsocket();
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(user1, userBanana);
 

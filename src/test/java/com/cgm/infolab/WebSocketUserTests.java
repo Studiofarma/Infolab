@@ -1,60 +1,41 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.configuration.TestSecurityConfiguration;
+import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.db.repository.RowMappers;
-import com.cgm.infolab.helper.TestDbHelper;
-import com.cgm.infolab.helper.TestStompHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
-import org.junit.jupiter.api.*;
+import com.cgm.infolab.templates.WebSocketTest;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
 import java.util.concurrent.*;
 
 import static org.awaitility.Awaitility.await;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WebsocketUserTest {
-    @LocalServerPort
-    public Integer port;
-    @Autowired
-    public TestDbHelper testDbHelper;
-    @Autowired
-    public TestStompHelper testStompHelper;
+public class WebSocketUserTests extends WebSocketTest {
+
     @Autowired
     public JdbcTemplate jdbcTemplate;
     @Autowired
     public RowMappers rowMappers;
 
-    WebSocketStompClient websocket;
-
-    UserEntity user1 = UserEntity.of(Username.of("user1"));
-
-    // This is here because the @Import annotation does not work
-    @TestConfiguration
-    public static class SecurityConfiguration extends TestSecurityConfiguration {}
-
+    @Override
     @BeforeAll
-    public void setupAll() {
-        testDbHelper.clearDbExceptForGeneral();
+    protected void setUp() {
+        super.setUp();
 
-        websocket = testStompHelper.initWebsocket();
+        testDbHelper.addRooms(RoomEntity.general());
     }
 
     @AfterEach

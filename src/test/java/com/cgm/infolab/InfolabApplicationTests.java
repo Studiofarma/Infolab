@@ -1,16 +1,14 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.configuration.TestSecurityConfiguration;
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.RoomName;
-import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.helper.TestStompHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
+import com.cgm.infolab.templates.WebSocketTest;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,34 +32,18 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class InfolabApplicationTests {
-    @LocalServerPort
-    public Integer port;
+class InfolabApplicationTests extends WebSocketTest {
     @Autowired
     public ChatMessageRepository chatMessageRepository;
 
-    @Autowired
-    public TestDbHelper testDbHelper;
-    @Autowired
-    private TestStompHelper testStompHelper;
-
-    WebSocketStompClient websocket;
-
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
-    UserEntity user1 = UserEntity.of(Username.of("user1"));
 
-    // This is here because the @Import annotation does not work
-    @TestConfiguration
-    public static class SecurityConfiguration extends TestSecurityConfiguration {}
-
+    @Override
     @BeforeAll
-    public void setupAll(){
-        testDbHelper.clearDbExceptForGeneral();
+    protected void setUp(){
+        super.setUp();
 
-        websocket = testStompHelper.initWebsocket();
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(user1, userBanana);
 
