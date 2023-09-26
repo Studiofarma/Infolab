@@ -4,7 +4,7 @@ import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.helper.EncryptionHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
-import com.cgm.infolab.templates.MockMvcApiTest;
+import com.cgm.infolab.templates.MockMvcApiTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -29,7 +29,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class MessageDeletionApiTests extends MockMvcApiTest {
+public class MessageDeletionApiTests extends MockMvcApiTestTemplate {
     @Autowired
     public JdbcTemplate jdbcTemplate;
     @Autowired

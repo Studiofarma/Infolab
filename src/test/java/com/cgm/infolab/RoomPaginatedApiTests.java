@@ -6,32 +6,23 @@ import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.RoomTypeEnum;
 import com.cgm.infolab.db.model.enumeration.VisibilityEnum;
-import com.cgm.infolab.helper.TestApiHelper;
-import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.BasicJsonDto;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.PaginationLinksDto;
-import com.cgm.infolab.model.RoomDto;
-import com.cgm.infolab.service.ChatService;
-import com.cgm.infolab.templates.BasicApiTest;
+import com.cgm.infolab.templates.BasicApiTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class RoomPaginatedApiTests extends BasicApiTest {
+public class RoomPaginatedApiTests extends BasicApiTestTemplate {
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0"), "user0 desc"),

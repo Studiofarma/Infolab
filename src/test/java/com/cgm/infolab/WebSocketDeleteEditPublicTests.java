@@ -6,7 +6,7 @@ import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
-import com.cgm.infolab.templates.WebSocketTest;
+import com.cgm.infolab.templates.WebSocketTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,7 +26,7 @@ import static com.cgm.infolab.model.WebSocketMessageTypeEnum.DELETE;
 import static com.cgm.infolab.model.WebSocketMessageTypeEnum.EDIT;
 import static org.awaitility.Awaitility.await;
 
-public class WebSocketDeleteEditPublicTests extends WebSocketTest {
+public class WebSocketDeleteEditPublicTests extends WebSocketTestTemplate {
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
     RoomEntity general = RoomEntity.general();
 

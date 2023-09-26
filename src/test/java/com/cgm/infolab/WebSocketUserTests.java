@@ -7,7 +7,7 @@ import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.db.repository.RowMappers;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
-import com.cgm.infolab.templates.WebSocketTest;
+import com.cgm.infolab.templates.WebSocketTestTemplate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,7 +23,7 @@ import java.util.concurrent.*;
 
 import static org.awaitility.Awaitility.await;
 
-public class WebSocketUserTests extends WebSocketTest {
+public class WebSocketUserTests extends WebSocketTestTemplate {
 
     @Autowired
     public JdbcTemplate jdbcTemplate;

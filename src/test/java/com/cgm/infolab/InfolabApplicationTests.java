@@ -1,28 +1,19 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.configuration.TestSecurityConfiguration;
 import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
-import com.cgm.infolab.helper.TestDbHelper;
-import com.cgm.infolab.helper.TestStompHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
-import com.cgm.infolab.templates.WebSocketTest;
+import com.cgm.infolab.templates.WebSocketTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -32,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
-class InfolabApplicationTests extends WebSocketTest {
+class InfolabApplicationTests extends WebSocketTestTemplate {
     @Autowired
     public ChatMessageRepository chatMessageRepository;
 

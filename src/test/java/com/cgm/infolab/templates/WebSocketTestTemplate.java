@@ -21,7 +21,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WebSocketTest {
+public class WebSocketTestTemplate {
 
     @LocalServerPort
     protected Integer port;

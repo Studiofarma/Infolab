@@ -3,7 +3,7 @@ package com.cgm.infolab;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.RowMappers;
-import com.cgm.infolab.templates.MockMvcApiTest;
+import com.cgm.infolab.templates.MockMvcApiTestTemplate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,8 +18,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class CommandsApiTests extends MockMvcApiTest {
-
+public class CommandsApiTests extends MockMvcApiTestTemplate {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired

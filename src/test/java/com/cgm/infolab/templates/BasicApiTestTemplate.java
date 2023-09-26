@@ -10,10 +10,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+/**
+ * When using this class override the setup method and add @BeforeAll annotation
+ */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public abstract class BasicApiTest {
+public abstract class BasicApiTestTemplate {
     @Autowired
     protected TestDbHelper testDbHelper;
     @Autowired
