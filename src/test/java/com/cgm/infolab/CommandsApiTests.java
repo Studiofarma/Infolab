@@ -24,9 +24,8 @@ public class CommandsApiTests extends MockMvcApiTestTemplate {
     @Autowired
     private RowMappers rowMappers;
 
-    @Override
     @BeforeEach
-    protected void setUpAll() {
+    protected void setUp() {
         testDbHelper.clearDbExceptForGeneral();
     }
 

@@ -31,10 +31,9 @@ public class AvatarRepositoryTests extends RepositoryTestTemplate {
     private byte[] testBlob = "Test blob data".getBytes();
     private byte[] testBlob2 = "Test blob number 2 data".getBytes();
 
-    @Override
     @BeforeEach
-    protected void setUpAll() {
-        super.setUpAll();
+    void setUp() {
+        testDbHelper.clearDb();
 
         testDbHelper.addRooms(RoomEntity.general());
 
