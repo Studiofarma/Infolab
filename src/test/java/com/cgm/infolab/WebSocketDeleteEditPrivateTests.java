@@ -9,6 +9,7 @@ import com.cgm.infolab.templates.WebSocketTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -29,10 +30,9 @@ public class WebSocketDeleteEditPrivateTests extends WebSocketTestTemplate {
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
     RoomEntity bananaUser1 = RoomEntity.of(RoomName.of("banana-user1"), VisibilityEnum.PRIVATE, RoomTypeEnum.USER2USER);
 
-    @Override
-    @BeforeAll
-    protected void setUpAll(){
-        super.setUpAll();
+    @BeforeEach
+    void setUp(){
+        testDbHelper.clearDb();
 
         testDbHelper.addRooms(RoomEntity.general());
 
@@ -52,36 +52,10 @@ public class WebSocketDeleteEditPrivateTests extends WebSocketTestTemplate {
 
         testDbHelper.insertCustomMessage(
                 2,
-                user1.getName().value(),
-                bananaUser1.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "2 Message in banana-user1");
-
-        testDbHelper.insertCustomMessage(
-                3,
                 userBanana.getName().value(),
                 bananaUser1.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "3 Message in banana-user1");
-
-        testDbHelper.insertCustomMessage(
-                4,
-                userBanana.getName().value(),
-                bananaUser1.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "4 Message in banana-user1");
-        testDbHelper.insertCustomMessage(
-                5,
-                user1.getName().value(),
-                bananaUser1.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "5 Message in banana-user1");
-        testDbHelper.insertCustomMessage(
-                6,
-                user1.getName().value(),
-                bananaUser1.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "6 Message in banana-user1");
     }
 
     @Test
@@ -187,7 +161,7 @@ public class WebSocketDeleteEditPrivateTests extends WebSocketTestTemplate {
             }
         });
 
-        long messageId = 3;
+        long messageId = 2;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()
@@ -232,7 +206,7 @@ public class WebSocketDeleteEditPrivateTests extends WebSocketTestTemplate {
             }
         });
 
-        long messageId = 5;
+        long messageId = 1;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()
@@ -287,7 +261,7 @@ public class WebSocketDeleteEditPrivateTests extends WebSocketTestTemplate {
             }
         });
 
-        long messageId = 2;
+        long messageId = 1;
         WebSocketMessageDto webSocketEditedMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageId, "New content."));
         client.send("/app/chat.edit." + userBanana.getName().value(), webSocketEditedMessage);
 
@@ -325,7 +299,7 @@ public class WebSocketDeleteEditPrivateTests extends WebSocketTestTemplate {
             }
         });
 
-        long messageId = 4;
+        long messageId = 2;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()
@@ -370,7 +344,7 @@ public class WebSocketDeleteEditPrivateTests extends WebSocketTestTemplate {
             }
         });
 
-        long messageId = 4;
+        long messageId = 2;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()

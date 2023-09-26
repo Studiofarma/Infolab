@@ -7,6 +7,7 @@ import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.helper.TestStompHelper;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,8 +41,6 @@ public class WebSocketTestTemplate {
 
     @BeforeAll
     protected void setUpAll() {
-        testDbHelper.clearDb();
-
         websocket = testStompHelper.initWebsocket();
     }
 }

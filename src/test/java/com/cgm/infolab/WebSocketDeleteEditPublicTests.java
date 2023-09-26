@@ -9,7 +9,7 @@ import com.cgm.infolab.model.WebSocketMessageDto;
 import com.cgm.infolab.templates.WebSocketTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -30,10 +30,9 @@ public class WebSocketDeleteEditPublicTests extends WebSocketTestTemplate {
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
     RoomEntity general = RoomEntity.general();
 
-    @Override
-    @BeforeAll
-    public void setUpAll(){
-        super.setUpAll();
+    @BeforeEach
+    protected void setUp(){
+        testDbHelper.clearDb();
 
         testDbHelper.addRooms(RoomEntity.general());
 
@@ -53,37 +52,10 @@ public class WebSocketDeleteEditPublicTests extends WebSocketTestTemplate {
 
         testDbHelper.insertCustomMessage(
                 2,
-                user1.getName().value(),
-                general.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "2 Message in general");
-
-        testDbHelper.insertCustomMessage(
-                3,
                 userBanana.getName().value(),
                 general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "3 Message in general");
-
-        testDbHelper.insertCustomMessage(
-                4,
-                userBanana.getName().value(),
-                general.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "4 Message in general");
-        testDbHelper.insertCustomMessage(
-                5,
-                user1.getName().value(),
-                general.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "5 Message in general");
-        testDbHelper.insertCustomMessage(
-                6,
-                user1.getName().value(),
-                general.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "6 Message in general");
-
     }
 
     @Test
@@ -152,7 +124,7 @@ public class WebSocketDeleteEditPublicTests extends WebSocketTestTemplate {
             }
         });
 
-        long messageId = 3;
+        long messageId = 2;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()
@@ -200,7 +172,7 @@ public class WebSocketDeleteEditPublicTests extends WebSocketTestTemplate {
             }
         });
 
-        long messageId = 5;
+        long messageId = 1;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()
@@ -286,7 +258,7 @@ public class WebSocketDeleteEditPublicTests extends WebSocketTestTemplate {
             }
         });
 
-        long messageId = 2;
+        long messageId = 1;
         WebSocketMessageDto webSocketEditedMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageId, "New content : )"));
         client.send("/app/chat.edit", webSocketEditedMessage);
 
@@ -333,7 +305,7 @@ public class WebSocketDeleteEditPublicTests extends WebSocketTestTemplate {
             }
         });
 
-        long messageId = 4;
+        long messageId = 2;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()
@@ -381,7 +353,7 @@ public class WebSocketDeleteEditPublicTests extends WebSocketTestTemplate {
             }
         });
 
-        long messageId = 6;
+        long messageId = 1;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()

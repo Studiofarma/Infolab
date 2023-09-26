@@ -9,6 +9,7 @@ import com.cgm.infolab.templates.WebSocketTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -29,10 +30,9 @@ class InfolabApplicationTests extends WebSocketTestTemplate {
 
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
 
-    @Override
-    @BeforeAll
-    protected void setUpAll(){
-        super.setUpAll();
+    @BeforeEach
+    protected void setUp(){
+        testDbHelper.clearDb();
 
         testDbHelper.addRooms(RoomEntity.general());
 

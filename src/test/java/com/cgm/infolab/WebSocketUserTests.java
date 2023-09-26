@@ -8,10 +8,7 @@ import com.cgm.infolab.db.repository.RowMappers;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
 import com.cgm.infolab.templates.WebSocketTestTemplate;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -30,17 +27,11 @@ public class WebSocketUserTests extends WebSocketTestTemplate {
     @Autowired
     public RowMappers rowMappers;
 
-    @Override
-    @BeforeAll
-    protected void setUpAll() {
-        super.setUpAll();
+    @BeforeEach
+    void setUp() {
+        testDbHelper.clearDb();
 
         testDbHelper.addRooms(RoomEntity.general());
-    }
-
-    @AfterEach
-    void tearDown() {
-        testDbHelper.clearDbExceptForGeneral();
     }
 
     @Test
