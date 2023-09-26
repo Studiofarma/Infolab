@@ -47,8 +47,8 @@ public class RoomSearchPaginatedApiTests extends BasicApiTestTemplate {
 
     @Override
     @BeforeAll
-    protected void setUp() {
-        super.setUp();
+    protected void setUpAll() {
+        super.setUpAll();
 
         testDbHelper.addUsers(users);
 

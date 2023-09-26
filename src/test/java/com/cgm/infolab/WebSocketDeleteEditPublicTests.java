@@ -32,8 +32,8 @@ public class WebSocketDeleteEditPublicTests extends WebSocketTestTemplate {
 
     @Override
     @BeforeAll
-    public void setUp(){
-        super.setUp();
+    public void setUpAll(){
+        super.setUpAll();
 
         testDbHelper.addRooms(RoomEntity.general());
 

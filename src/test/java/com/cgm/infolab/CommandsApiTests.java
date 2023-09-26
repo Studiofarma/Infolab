@@ -26,7 +26,7 @@ public class CommandsApiTests extends MockMvcApiTestTemplate {
 
     @Override
     @BeforeEach
-    protected void setUp() {
+    protected void setUpAll() {
         testDbHelper.clearDbExceptForGeneral();
     }
 

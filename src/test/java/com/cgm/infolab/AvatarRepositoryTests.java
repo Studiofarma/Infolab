@@ -33,8 +33,8 @@ public class AvatarRepositoryTests extends RepositoryTestTemplate {
 
     @Override
     @BeforeEach
-    protected void setUp() {
-        super.setUp();
+    protected void setUpAll() {
+        super.setUpAll();
 
         testDbHelper.addRooms(RoomEntity.general());
 

@@ -22,7 +22,7 @@ public class RepositoryTestTemplate {
     protected JdbcTemplate jdbcTemplate;
 
     @BeforeAll
-    protected void setUp() {
+    protected void setUpAll() {
         testDbHelper.clearDb();
     }
 }

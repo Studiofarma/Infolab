@@ -25,7 +25,7 @@ public abstract class BasicApiTestTemplate {
     protected TestRestTemplate testRestTemplate;
 
     @BeforeAll
-    protected void setUp() {
+    protected void setUpAll() {
         testDbHelper.clearDb();
     }
 }

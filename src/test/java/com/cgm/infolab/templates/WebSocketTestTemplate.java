@@ -39,7 +39,7 @@ public class WebSocketTestTemplate {
     public static class SecurityConfiguration extends TestSecurityConfiguration {}
 
     @BeforeAll
-    protected void setUp() {
+    protected void setUpAll() {
         testDbHelper.clearDb();
 
         websocket = testStompHelper.initWebsocket();

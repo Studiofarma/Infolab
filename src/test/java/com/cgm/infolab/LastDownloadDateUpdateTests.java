@@ -44,8 +44,8 @@ public class LastDownloadDateUpdateTests extends RepositoryWithMessagesTestTempl
 
     @Override
     @BeforeAll
-    protected void setUp() {
-        super.setUp();
+    protected void setUpAll() {
+        super.setUpAll();
 
         testDbHelper.addRooms(RoomEntity.general());
 
