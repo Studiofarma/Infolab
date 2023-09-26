@@ -5,42 +5,32 @@ import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.helper.EncryptionHelper;
-import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.IdDto;
 import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.templates.MockMvcApiTestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@AutoConfigureMockMvc
-public class LastReadDateApiTests {
-    @Autowired
-    TestDbHelper testDbHelper;
+public class LastReadDateApiTests extends MockMvcApiTestTemplate {
     @Autowired
     JdbcTemplate jdbcTemplate;
-    @Autowired
-    MockMvc mvc;
     @Autowired
     ChatService chatService;
     @Autowired
@@ -60,9 +50,12 @@ public class LastReadDateApiTests {
                     ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())};
     public RoomEntity general = RoomEntity.general();
 
+    @Override
     @BeforeAll
-    void setUp() {
-        testDbHelper.clearDbExceptForGeneral();
+    protected void setUpAll() {
+        super.setUpAll();
+
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(users);
 

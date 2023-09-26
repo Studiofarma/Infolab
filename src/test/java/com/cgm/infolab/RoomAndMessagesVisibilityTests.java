@@ -10,6 +10,7 @@ import com.cgm.infolab.db.repository.RoomRepository;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.templates.RepositoryWithMessagesTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,18 +24,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RoomAndMessagesVisibilityTests {
+public class RoomAndMessagesVisibilityTests extends RepositoryWithMessagesTestTemplate {
     @Autowired
     public ChatMessageRepository chatMessageRepository;
     @Autowired
     public RoomRepository roomRepository;
-    @Autowired
-    public ChatService chatService;
-    @Autowired
-    public TestDbHelper testDbHelper;
 
     public UserEntity[] users =
         {UserEntity.of(Username.of("user0")),
@@ -60,9 +54,12 @@ public class RoomAndMessagesVisibilityTests {
                 ChatMessageDto.of("7 Visible only to user0 and user3", users[0].getName().value())
             };
 
+    @Override
     @BeforeAll
-    void setUpAll() {
-        testDbHelper.clearDbExceptForRooms();
+    protected void setUpAll() {
+        super.setUpAll();
+
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(users);
 
