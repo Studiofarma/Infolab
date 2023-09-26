@@ -38,11 +38,11 @@ public class LastReadDateApiTests {
     @Autowired
     TestDbHelper testDbHelper;
     @Autowired
-    ChatService chatService;
-    @Autowired
     JdbcTemplate jdbcTemplate;
     @Autowired
     MockMvc mvc;
+    @Autowired
+    ChatService chatService;
     @Autowired
     EncryptionHelper encryptionHelper;
 

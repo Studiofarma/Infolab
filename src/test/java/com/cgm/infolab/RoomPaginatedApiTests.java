@@ -13,6 +13,7 @@ import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.PaginationLinksDto;
 import com.cgm.infolab.model.RoomDto;
 import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.templates.BasicApiTest;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -30,16 +31,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RoomPaginatedApiTests {
-    @Autowired
-    TestRestTemplate testRestTemplate;
-    @Autowired
-    TestApiHelper testApiHelper;
-    @Autowired
-    TestDbHelper testDbHelper;
+public class RoomPaginatedApiTests extends BasicApiTest {
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0"), "user0 desc"),
@@ -65,9 +57,10 @@ public class RoomPaginatedApiTests {
     public static final LocalDateTime STARTING_TIME = LocalDateTime.of(2023, 6, 1, 1, 1, 1, 1000000);
 
 
+    @Override
     @BeforeAll
-    void setUp() {
-        testDbHelper.clearDb();
+    protected void setUp() {
+        super.setUp();
 
         testDbHelper.addUsers(users);
 
