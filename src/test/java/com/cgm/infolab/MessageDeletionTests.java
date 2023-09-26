@@ -1,21 +1,14 @@
 package com.cgm.infolab;
 
 import com.cgm.infolab.db.model.*;
-import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.ChatMessageRepository;
-import com.cgm.infolab.helper.EncryptionHelper;
-import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
-import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.templates.RepositoryWithMessagesTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -30,20 +23,9 @@ import java.util.List;
 
 import static com.cgm.infolab.db.model.enumeration.MessageStatusEnum.DELETED;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class MessageDeletionTests {
-    @Autowired
-    public TestDbHelper testDbHelper;
-    @Autowired
-    public ChatService chatService;
+public class MessageDeletionTests extends RepositoryWithMessagesTestTemplate {
     @Autowired
     public ChatMessageRepository chatMessageRepository;
-    @Autowired
-    public JdbcTemplate jdbcTemplate;
-    @Autowired
-    public EncryptionHelper encryptionHelper;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -59,9 +41,12 @@ public class MessageDeletionTests {
                     ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())};
     public RoomEntity general = RoomEntity.general();
 
+    @Override
     @BeforeAll
-    void setUp() {
-        testDbHelper.clearDbExceptForGeneral();
+    protected void setUp() {
+        super.setUp();
+
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(users);
 

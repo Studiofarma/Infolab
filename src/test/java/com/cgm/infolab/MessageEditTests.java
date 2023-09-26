@@ -32,13 +32,13 @@ public class MessageEditTests {
     @Autowired
     public TestDbHelper testDbHelper;
     @Autowired
-    public ChatService chatService;
-    @Autowired
-    public ChatMessageRepository chatMessageRepository;
-    @Autowired
     public JdbcTemplate jdbcTemplate;
     @Autowired
+    public ChatService chatService;
+    @Autowired
     public EncryptionHelper encryptionHelper;
+    @Autowired
+    public ChatMessageRepository chatMessageRepository;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),

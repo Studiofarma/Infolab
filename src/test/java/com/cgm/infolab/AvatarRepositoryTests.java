@@ -1,45 +1,42 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.ID;
 import com.cgm.infolab.db.model.AvatarEntity;
+import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.AvatarRepository;
 import com.cgm.infolab.db.repository.UserRepository;
-import com.cgm.infolab.helper.TestDbHelper;
-import org.junit.jupiter.api.*;
+import com.cgm.infolab.templates.RepositoryTestTemplate;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
-import javax.sql.rowset.serial.SerialBlob;
-import java.io.IOException;
-import java.sql.Blob;
-import java.sql.SQLException;
 import java.util.Optional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles({ProfilesConstants.TEST})
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AvatarRepositoryTests {
+public class AvatarRepositoryTests extends RepositoryTestTemplate {
     @Autowired
     private AvatarRepository avatarRepository;
     @Autowired
     private UserRepository userRepository;
-    @Autowired
-    private TestDbHelper testDbHelper;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
 
     private final UserEntity user1 = UserEntity.of(Username.of("user1"), "user1 desc");
     private final UserEntity userBanana = UserEntity.of(Username.of("banana"), "user banana desc");
     private byte[] testBlob = "Test blob data".getBytes();
     private byte[] testBlob2 = "Test blob number 2 data".getBytes();
 
+    @Override
     @BeforeEach
-    void setUp() {
-        testDbHelper.clearDbExceptForGeneral();
+    protected void setUp() {
+        super.setUp();
+
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(user1, userBanana);
     }
