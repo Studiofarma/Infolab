@@ -2,6 +2,7 @@ import { css } from "lit";
 
 export const ThemeCSSVariables = {
   text: css`var(--text)`,
+  splashText: css`var(--splashText)`,
   actionText: css`var(--actionText)`,
   scrollbar: css`var(--scrollbar)`,
   buttonBg: css`var(--buttonBg)`,
@@ -13,6 +14,8 @@ export const ThemeCSSVariables = {
 
   loginFieldBg: css`var(--loginFieldBg)`,
   loginBg: css`var(--loginBg)`,
+
+  splashBg: css`var(--splashBg)`,
 
   chatBackground: css`var(--chatBackground)`,
 
@@ -90,4 +93,7 @@ export const ThemeCSSVariables = {
 
   circularProgressBarProgress: css`var(--circularProgressBarProgress)`,
   circularProgressBarBackground: css`var(--circularProgressBarBackground)`,
+
+  horizontalProgressBarProgress: css`var(--horizontalProgressBarProgress)`,
+  horizontalProgressBarBackground: css`var(--horizontalProgressBarBackground)`,
 };

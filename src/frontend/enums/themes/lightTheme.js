@@ -1,5 +1,6 @@
 export const lightTheme = {
   text: "#333",
+  splashText: "#fff",
   actionText: "#206cf7",
   scrollbar: "#206cf7",
   buttonBg: "#B7B9BD",
@@ -11,6 +12,8 @@ export const lightTheme = {
 
   loginFieldBg: "#e4e8ee",
   loginBg: "#083c72",
+
+  splashBg: "#083c72",
 
   chatBackground: "#eaecef",
 
@@ -87,4 +90,7 @@ export const lightTheme = {
 
   circularProgressBarProgress: "#206cf7",
   circularProgressBarBackground: "#eaecef",
+
+  horizontalProgressBarProgress: "#fff",
+  horizontalProgressBarBackground: "#ffffff33",
 };
