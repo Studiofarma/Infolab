@@ -62,6 +62,8 @@ class Conversation extends BaseComponent {
 
     .last-message {
       color: ${ThemeCSSVariables.conversationLastMessageText};
+      width: 184px;
+      height: 25px;
     }
 
     .last-message-timestamp {
@@ -93,10 +95,17 @@ class Conversation extends BaseComponent {
 
     .chat-name {
       color: ${ThemeCSSVariables.conversationChatName};
+      width: 184px;
     }
 
     il-button-icon {
       padding-top: 10px;
+    }
+
+    .truncate {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   `;
 
@@ -129,10 +138,10 @@ class Conversation extends BaseComponent {
           .isSelected=${this.isSelected && this.isSelectable}
         ></il-avatar>
         <div class="name-box">
-          <p class="chat-name" data-cy="chat-name">
+          <p class="chat-name truncate" data-cy="chat-name">
             ${this.conversation?.description}
           </p>
-          <p class="last-message">${this.formatLastMessageText()}</p>
+          <p class="last-message truncate">${this.formatLastMessageText()}</p>
         </div>
         <div class="date-box">
           <p
@@ -239,31 +248,11 @@ class Conversation extends BaseComponent {
       text = "Nuova conversazione";
     }
 
-    return HtmlParserService.parseFromString(this.fixLastMessageLength(text));
-  }
+    let textHtml = HtmlParserService.parseFromString(text);
 
-  fixLastMessageLength(message) {
-    const messageLines = message
-      .split("<br>")
-      .join("\n")
-      .split("<ul>")
-      .join("\n")
-      .split("<ol>")
-      .join("\n")
-      .split("\n");
+    textHtml.classList.add("truncate");
 
-    if (messageLines.length > 1) {
-      message = messageLines[0].replaceAll("&nbsp;", "") + "...";
-    }
-
-    let maxLength = 20;
-
-    if (message.length > maxLength) {
-      message = message.replaceAll("&nbsp;", "").substring(0, maxLength);
-      message += "...";
-    }
-
-    return message;
+    return textHtml;
   }
 
   getUnreadIconName(unread) {
