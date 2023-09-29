@@ -40,6 +40,7 @@ export class InputControls extends BaseComponent {
     this.editorRef = createRef();
     this.emojiPickerRef = createRef();
     this.snackbarRef = createRef();
+    this.insertionBarRef = createRef();
   }
 
   static styles = css`
@@ -112,6 +113,7 @@ export class InputControls extends BaseComponent {
               .isFormattingMode=${this.isEditorInFormattingMode}
             ></il-editor>
             <il-insertion-bar
+              ${ref(this.insertionBarRef)}
               @il:message-sent=${this.sendMessage}
               @il:emoji-picker-clicked=${this.handleEmojiPickerClick}
               @il:edit-confirmed=${this.confirmEdit}
@@ -266,6 +268,10 @@ export class InputControls extends BaseComponent {
     this.indexBeingEdited = undefined;
     this.clearMessage();
     this.focusEditorAndMoveCaretToEnd();
+  }
+
+  cancelEditFromTop() {
+    this.insertionBarRef.value?.cancelEdit();
   }
 
   handleFormatText(e) {

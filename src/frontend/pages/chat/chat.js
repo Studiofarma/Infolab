@@ -492,6 +492,8 @@ export class Chat extends BaseComponent {
       );
     }
 
+    this.inputControlsRef.value?.cancelEditFromTop();
+
     this.setDeletionConfirmationDialogRefIsOpened(false);
   }
 
