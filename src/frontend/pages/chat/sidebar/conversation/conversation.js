@@ -252,13 +252,22 @@ class Conversation extends BaseComponent {
 
     textHtml.classList.add("truncate");
 
-    // TODO: check if there is nothing after br then delete that br.
-
     if (textHtml.getElementsByTagName("br").length !== 0) {
-      console.log(textHtml.innerHTML);
-      textHtml.innerHTML =
-        textHtml.innerHTML.substring(0, textHtml.innerHTML.indexOf("<br>")) +
-        "...";
+      let brIndex = textHtml.innerHTML.indexOf("<br>");
+
+      let textAfterFirstBr = textHtml.innerHTML.substring(
+        brIndex,
+        textHtml.innerHTML.length
+      );
+      console.log(textAfterFirstBr);
+
+      if (textAfterFirstBr.length === 4) {
+        textHtml.innerHTML.replace("<br>", "");
+      } else {
+        textHtml.innerHTML =
+          textHtml.innerHTML.substring(0, textHtml.innerHTML.indexOf("<br>")) +
+          "...";
+      }
     }
 
     return textHtml;
