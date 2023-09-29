@@ -8,6 +8,7 @@ import com.cgm.infolab.templates.MockMvcApiTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -43,10 +44,9 @@ public class MessageEditApiTests extends MockMvcApiTestTemplate {
                     ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())};
     public RoomEntity general = RoomEntity.general();
 
-    @Override
-    @BeforeAll
-    protected void setUpAll() {
-        super.setUpAll();
+    @BeforeEach
+    protected void setUp() {
+        testDbHelper.clearDb();
 
         testDbHelper.addRooms(RoomEntity.general());
 

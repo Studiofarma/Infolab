@@ -12,7 +12,7 @@ import com.cgm.infolab.templates.MockMvcApiTestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -50,10 +50,9 @@ public class LastReadDateApiTests extends MockMvcApiTestTemplate {
                     ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())};
     public RoomEntity general = RoomEntity.general();
 
-    @Override
-    @BeforeAll
-    protected void setUpAll() {
-        super.setUpAll();
+    @BeforeEach
+    protected void setUp() {
+        testDbHelper.clearDb();
 
         testDbHelper.addRooms(RoomEntity.general());
 
@@ -67,17 +66,12 @@ public class LastReadDateApiTests extends MockMvcApiTestTemplate {
         );
 
         testDbHelper.addPrivateRoomsAndSubscribeUsers(pairs);
-
-        chatService.saveMessageInDb(messageDtos[0], users[0].getName(), general.getName(), null);
-        chatService.saveMessageInDb(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"), users[0].getName());
-        chatService.saveMessageInDb(messageDtos[2], users[2].getName(), RoomName.of("user1-user2"), users[2].getName());
-        chatService.saveMessageInDb(messageDtos[3], users[0].getName(), general.getName(), users[0].getName());
-        chatService.saveMessageInDb(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"), users[1].getName());
-        chatService.saveMessageInDb(messageDtos[5], users[1].getName(), RoomName.of("user1-user2"), users[1].getName());
     }
 
     @Test
     void whenUpdatingDownloadDate_forMessage1_itIsAfterSendDateAndBeforeNow() throws Exception {
+        chatService.saveMessageInDb(messageDtos[0], users[0].getName(), general.getName(), null);
+
         IdDto message1Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = ?",
                 this::messageIdMapper, encryptionHelper.encryptWithAes("1 Hello general from user0"));
 
@@ -97,6 +91,10 @@ public class LastReadDateApiTests extends MockMvcApiTestTemplate {
 
     @Test
     void whenUpdatingDownloadDate_forMessage2_itIsAfterSendDateAndBeforeNow_message5DoesNotHaveIt() throws Exception {
+        chatService.saveMessageInDb(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"), users[0].getName());
+        Thread.sleep(50);
+        chatService.saveMessageInDb(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"), users[1].getName());
+
         IdDto message2Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = ?",
                 this::messageIdMapper, encryptionHelper.encryptWithAes("2 Visible only to user0 and user1"));
 
@@ -126,6 +124,9 @@ public class LastReadDateApiTests extends MockMvcApiTestTemplate {
 
     @Test
     void whenUpdatingDownloadDates_forMessages3And6_theyAreAfterSendDateAndBeforeNow() throws Exception {
+        chatService.saveMessageInDb(messageDtos[2], users[2].getName(), RoomName.of("user1-user2"), users[2].getName());
+        chatService.saveMessageInDb(messageDtos[5], users[1].getName(), RoomName.of("user1-user2"), users[1].getName());
+
         List<IdDto> ids = jdbcTemplate
                 .query("SELECT * FROM infolab.chatmessages WHERE content = ? OR content = ?",
                         this::messageIdMapper,
@@ -160,6 +161,8 @@ public class LastReadDateApiTests extends MockMvcApiTestTemplate {
 
     @Test
     void whenTryingToSetMultipleReadDates_forSameMessageAndUser_errorIsThrown() throws Exception {
+        chatService.saveMessageInDb(messageDtos[3], users[0].getName(), general.getName(), users[0].getName());
+
         List<IdDto> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = ?",
                 this::messageIdMapper, encryptionHelper.encryptWithAes("4 Hello general from user2"));
 

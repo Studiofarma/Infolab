@@ -7,7 +7,7 @@ import com.cgm.infolab.service.ChatService;
 import com.cgm.infolab.templates.MockMvcApiTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -51,10 +51,9 @@ public class MessageDeletionApiTests extends MockMvcApiTestTemplate {
                     ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())};
     public RoomEntity general = RoomEntity.general();
 
-    @Override
-    @BeforeAll
-    protected void setUpAll() {
-        super.setUpAll();
+    @BeforeEach
+    protected void setUp() {
+        testDbHelper.clearDb();
 
         testDbHelper.addRooms(RoomEntity.general());
 
@@ -75,40 +74,6 @@ public class MessageDeletionApiTests extends MockMvcApiTestTemplate {
         chatService.saveMessageInDb(messageDtos[3], users[0].getName(), RoomName.of("user0-user2"), users[0].getName());
         chatService.saveMessageInDb(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"), users[1].getName());
         chatService.saveMessageInDb(messageDtos[5], users[1].getName(), RoomName.of("user1-user2"), users[1].getName());
-    }
-
-    @Test
-    void whenOneMessageIsDeleted_inPrivateRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
-        List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
-
-        long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
-                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("2 Visible only to user0 and user1"));
-
-        apiDeleteForUser1("/api/messages/user0-user1/%d".formatted(message2Id));
-
-        List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
-
-        Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
-
-        ChatMessageEntity deletedMessageBefore = messagesBefore.stream().filter(message -> message.getId() == message2Id).toList().get(0);
-        ChatMessageEntity deletedMessageAfter = messagesAfter.stream().filter(message -> message.getId() == message2Id).toList().get(0);
-
-        Assertions.assertEquals(DELETED, deletedMessageAfter.getStatus());
-        Assertions.assertEquals("", deletedMessageAfter.getContent());
-
-        ChatMessageEntity dbDeletedMessageContentAndId = testDbHelper
-                .getAllMessages(this::mapToChatMessageEntity)
-                .stream()
-                .filter(message -> message.getId() == message2Id)
-                .toList()
-                .get(0);
-
-        Assertions.assertEquals(deletedMessageBefore.getContent(), dbDeletedMessageContentAndId.getContent());
-
-        messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message2Id).toList();
-        messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message2Id).toList();
-
-        Assertions.assertEquals(messagesBefore, messagesAfter);
     }
 
     @Test
@@ -141,6 +106,40 @@ public class MessageDeletionApiTests extends MockMvcApiTestTemplate {
 
         messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message1Id).toList();
         messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message1Id).toList();
+
+        Assertions.assertEquals(messagesBefore, messagesAfter);
+    }
+
+    @Test
+    void whenOneMessageIsDeleted_inPrivateRoom_entityIsEmpty_dbContentIsTheSameAsBefore_itsStatusIsDELETED_otherMessagesDidNotChange() throws Exception {
+        List<ChatMessageEntity> messagesBefore = testDbHelper.getAllMessages();
+
+        long message2Id = jdbcTemplate.queryForObject("select * from infolab.chatmessages where content = ?",
+                (rs, rowNum) -> rs.getLong("id"), encryptionHelper.encryptWithAes("2 Visible only to user0 and user1"));
+
+        apiDeleteForUser1("/api/messages/user0-user1/%d".formatted(message2Id));
+
+        List<ChatMessageEntity> messagesAfter = testDbHelper.getAllMessages();
+
+        Assertions.assertEquals(messagesBefore.size(), messagesAfter.size());
+
+        ChatMessageEntity deletedMessageBefore = messagesBefore.stream().filter(message -> message.getId() == message2Id).toList().get(0);
+        ChatMessageEntity deletedMessageAfter = messagesAfter.stream().filter(message -> message.getId() == message2Id).toList().get(0);
+
+        Assertions.assertEquals(DELETED, deletedMessageAfter.getStatus());
+        Assertions.assertEquals("", deletedMessageAfter.getContent());
+
+        ChatMessageEntity dbDeletedMessageContentAndId = testDbHelper
+                .getAllMessages(this::mapToChatMessageEntity)
+                .stream()
+                .filter(message -> message.getId() == message2Id)
+                .toList()
+                .get(0);
+
+        Assertions.assertEquals(deletedMessageBefore.getContent(), dbDeletedMessageContentAndId.getContent());
+
+        messagesBefore = messagesBefore.stream().filter(message -> message.getId() != message2Id).toList();
+        messagesAfter = messagesAfter.stream().filter(message -> message.getId() != message2Id).toList();
 
         Assertions.assertEquals(messagesBefore, messagesAfter);
     }
