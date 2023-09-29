@@ -15,6 +15,7 @@ import "../../components/input-password";
 
 import { BaseComponent } from "../../components/base-component";
 import { StorageService } from "../../services/storage-service";
+import { CommandsService } from "../../services/commands-service";
 
 export class Login extends BaseComponent {
   static properties = {
@@ -34,7 +35,7 @@ export class Login extends BaseComponent {
     this.isPasswordFieldEmpty = false;
     this.csrfToken = "";
 
-    if (this.isDevOrTest()) {
+    if (CommandsService.isDevOrTest()) {
       this.username = StorageService.getItemByKey(StorageService.Keys.username);
       this.password = StorageService.getItemByKey(StorageService.Keys.password);
       if (this.username && this.password) this.loginConfirm();
@@ -280,10 +281,6 @@ export class Login extends BaseComponent {
       this.storeCurrentData();
       this.loginConfirmEvent();
     });
-  }
-
-  isDevOrTest() {
-    return process.env.PROFILE === "dev" || process.env.PROFILE === "test";
   }
 }
 

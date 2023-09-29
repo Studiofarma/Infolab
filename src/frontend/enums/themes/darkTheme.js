@@ -1,6 +1,7 @@
 // Da definire
 export const darkTheme = {
   text: "#fff",
+  splashText: "#fff",
   actionText: "#fff",
   scrollbar: "#fff",
   buttonBg: "#101010",
@@ -12,6 +13,8 @@ export const darkTheme = {
 
   loginFieldBg: "#3D3F41",
   loginBg: "#1D1E20",
+
+  splashBg: "#1D1E20",
 
   chatBackground: "#3D3F41",
 
@@ -88,4 +91,7 @@ export const darkTheme = {
 
   circularProgressBarProgress: "#fff",
   circularProgressBarBackground: "#3D3F41",
+
+  horizontalProgressBarProgress: "#fff",
+  horizontalProgressBarBackground: "#ffffff33",
 };
