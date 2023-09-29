@@ -9,13 +9,13 @@ import "./insertion-bar";
 import "./editor/editor";
 import "../../../components/button-icon";
 import "../../../components/input-field";
+import "../../../components/snackbar";
 import "./emoji-picker";
 
 const emojiPickerBottomOffset = 90;
 const enterKey = "Enter";
 
 import { BaseComponent } from "../../../components/base-component";
-import { CookieService } from "../../../services/cookie-service";
 import { StorageService } from "../../../services/storage-service";
 
 export class InputControls extends BaseComponent {
@@ -39,6 +39,7 @@ export class InputControls extends BaseComponent {
     // Refs
     this.editorRef = createRef();
     this.emojiPickerRef = createRef();
+    this.snackbarRef = createRef();
   }
 
   static styles = css`
@@ -131,6 +132,8 @@ export class InputControls extends BaseComponent {
           ></il-emoji-picker>
         </div>
       </div>
+
+      <il-snackbar ${ref(this.snackbarRef)}></il-snackbar>
     `;
   }
 
@@ -230,21 +233,31 @@ export class InputControls extends BaseComponent {
   }
 
   confirmEdit(event) {
-    this.messageBeingEdited.content = this.editorRef.value?.getText();
+    let text = this.editorRef.value?.getText();
+    let isOnlyBr = text.includes("<br>") && text.length == 4;
+    if (this.editorRef.value?.getText() && !isOnlyBr) {
+      this.messageBeingEdited.content = this.editorRef.value?.getText();
 
-    this.dispatchEvent(
-      new CustomEvent(event.type, {
-        detail: {
-          message: this.messageBeingEdited,
-          index: this.indexBeingEdited,
-        },
-      })
-    );
-    this.isEditing = false;
-    this.messageBeingEdited = {};
-    this.indexBeingEdited = undefined;
-    this.clearMessage();
-    this.focusEditorAndMoveCaretToEnd();
+      this.dispatchEvent(
+        new CustomEvent(event.type, {
+          detail: {
+            message: this.messageBeingEdited,
+            index: this.indexBeingEdited,
+          },
+        })
+      );
+      this.isEditing = false;
+      this.messageBeingEdited = {};
+      this.indexBeingEdited = undefined;
+      this.clearMessage();
+      this.focusEditorAndMoveCaretToEnd();
+    } else {
+      this.snackbarRef.value.openSnackbar(
+        `NON È POSSIBILE LASCIARE VUOTO IL MESSAGGIO`,
+        "error",
+        3000
+      );
+    }
   }
 
   handleEditCanceled() {
