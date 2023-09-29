@@ -66,6 +66,13 @@ class Conversation extends BaseComponent {
       height: 25px;
     }
 
+    .last-message-sender {
+      color: #083c72;
+      width: 184px;
+      font-size: 11px;
+      margin-top: -3px;
+    }
+
     .last-message-timestamp {
       color: ${ThemeCSSVariables.conversationTimestapText};
     }
@@ -142,6 +149,9 @@ class Conversation extends BaseComponent {
             ${this.conversation?.description}
           </p>
           <p class="last-message truncate">${this.formatLastMessageText()}</p>
+          <p class="last-message-sender truncate">
+            ${this.chooseUserneameToShow()}
+          </p>
         </div>
         <div class="date-box">
           <p
@@ -223,27 +233,13 @@ class Conversation extends BaseComponent {
     let text = "";
     const lastMessage = this.conversation.lastMessage;
     let content = lastMessage.content;
-    const sender = lastMessage.sender;
-    const description = this.conversation.description;
-    const loggedUsername = this.loggedUser?.name;
-    const userDescription = this.lastMessageUser?.description;
 
     if (lastMessage.status === MessageStatuses.deleted) {
       content = GenericConstants.deletedMessageContent;
     }
 
     if (content) {
-      if (description !== "Generale") {
-        text =
-          sender.name === loggedUsername
-            ? `Tu: ${content}`
-            : `${userDescription}: ${content}`;
-      } else {
-        text =
-          sender.name === loggedUsername
-            ? `Tu: ${content}`
-            : `${userDescription}: ${content}`;
-      }
+      text = content;
     } else {
       text = "Nuova conversazione";
     }
@@ -271,6 +267,26 @@ class Conversation extends BaseComponent {
     }
 
     return textHtml;
+  }
+
+  chooseUserneameToShow() {
+    let text = "";
+    const lastMessage = this.conversation.lastMessage;
+    let content = lastMessage.content;
+    const sender = lastMessage.sender;
+    const description = this.conversation.description;
+    const loggedUsername = this.loggedUser?.name;
+    const userDescription = this.lastMessageUser?.description;
+
+    if (lastMessage.status === MessageStatuses.deleted) {
+      content = GenericConstants.deletedMessageContent;
+    }
+
+    if (content) {
+      text = sender.name === loggedUsername ? `Tu` : `${userDescription}`;
+    }
+
+    return text;
   }
 
   getUnreadIconName(unread) {
