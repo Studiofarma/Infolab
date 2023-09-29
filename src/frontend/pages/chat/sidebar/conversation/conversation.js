@@ -62,6 +62,15 @@ class Conversation extends BaseComponent {
 
     .last-message {
       color: ${ThemeCSSVariables.conversationLastMessageText};
+      width: 184px;
+      height: 25px;
+    }
+
+    .last-message-sender {
+      color: #083c72;
+      width: 184px;
+      font-size: 11px;
+      margin-top: -3px;
     }
 
     .last-message-timestamp {
@@ -93,10 +102,17 @@ class Conversation extends BaseComponent {
 
     .chat-name {
       color: ${ThemeCSSVariables.conversationChatName};
+      width: 184px;
     }
 
     il-button-icon {
       padding-top: 10px;
+    }
+
+    .truncate {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   `;
 
@@ -129,10 +145,13 @@ class Conversation extends BaseComponent {
           .isSelected=${this.isSelected && this.isSelectable}
         ></il-avatar>
         <div class="name-box">
-          <p class="chat-name" data-cy="chat-name">
+          <p class="chat-name truncate" data-cy="chat-name">
             ${this.conversation?.description}
           </p>
-          <p class="last-message">${this.formatLastMessageText()}</p>
+          <p class="last-message truncate">${this.formatLastMessageText()}</p>
+          <p class="last-message-sender truncate">
+            ${this.chooseUserneameToShow()}
+          </p>
         </div>
         <div class="date-box">
           <p
@@ -214,6 +233,46 @@ class Conversation extends BaseComponent {
     let text = "";
     const lastMessage = this.conversation.lastMessage;
     let content = lastMessage.content;
+
+    if (lastMessage.status === MessageStatuses.deleted) {
+      content = GenericConstants.deletedMessageContent;
+    }
+
+    if (content) {
+      text = content;
+    } else {
+      text = "Nuova conversazione";
+    }
+
+    let textHtml = HtmlParserService.parseFromString(text);
+
+    textHtml.classList.add("truncate");
+
+    if (textHtml.getElementsByTagName("br").length !== 0) {
+      let brIndex = textHtml.innerHTML.indexOf("<br>");
+
+      let textAfterFirstBr = textHtml.innerHTML.substring(
+        brIndex,
+        textHtml.innerHTML.length
+      );
+      console.log(textAfterFirstBr);
+
+      if (textAfterFirstBr.length === 4) {
+        textHtml.innerHTML.replace("<br>", "");
+      } else {
+        textHtml.innerHTML =
+          textHtml.innerHTML.substring(0, textHtml.innerHTML.indexOf("<br>")) +
+          "...";
+      }
+    }
+
+    return textHtml;
+  }
+
+  chooseUserneameToShow() {
+    let text = "";
+    const lastMessage = this.conversation.lastMessage;
+    let content = lastMessage.content;
     const sender = lastMessage.sender;
     const description = this.conversation.description;
     const loggedUsername = this.loggedUser?.name;
@@ -224,46 +283,10 @@ class Conversation extends BaseComponent {
     }
 
     if (content) {
-      if (description !== "Generale") {
-        text =
-          sender.name === loggedUsername
-            ? `Tu: ${content}`
-            : `${userDescription}: ${content}`;
-      } else {
-        text =
-          sender.name === loggedUsername
-            ? `Tu: ${content}`
-            : `${userDescription}: ${content}`;
-      }
-    } else {
-      text = "Nuova conversazione";
+      text = sender.name === loggedUsername ? `Tu` : `${userDescription}`;
     }
 
-    return HtmlParserService.parseFromString(this.fixLastMessageLength(text));
-  }
-
-  fixLastMessageLength(message) {
-    const messageLines = message
-      .split("<br>")
-      .join("\n")
-      .split("<ul>")
-      .join("\n")
-      .split("<ol>")
-      .join("\n")
-      .split("\n");
-
-    if (messageLines.length > 1) {
-      message = messageLines[0].replaceAll("&nbsp;", "") + "...";
-    }
-
-    let maxLength = 20;
-
-    if (message.length > maxLength) {
-      message = message.replaceAll("&nbsp;", "").substring(0, maxLength);
-      message += "...";
-    }
-
-    return message;
+    return text;
   }
 
   getUnreadIconName(unread) {
