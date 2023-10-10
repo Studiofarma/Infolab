@@ -1,36 +1,27 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.RoomName;
+import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.repository.RoomRepository;
-import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
+import com.cgm.infolab.templates.RepositoryTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LastDownloadedDatesForRoomsTests {
+public class LastDownloadedDatesForRoomsTests extends RepositoryTestTemplate {
 
     @Autowired
-    public TestDbHelper testDbHelper;
-    @Autowired
     public RoomRepository roomRepository;
-    @Autowired
-    public JdbcTemplate jdbcTemplate;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0")),
@@ -39,7 +30,6 @@ public class LastDownloadedDatesForRoomsTests {
                     UserEntity.of(Username.of("user3"))};
 
     public RoomEntity general = RoomEntity.general();
-    public RoomName user1user2RoomName = RoomName.of(users[0].getName(), users[1].getName());
 
     public static final LocalDateTime STARTING_TIME = LocalDateTime.of(2023, 6, 1, 1, 1, 1);
 
@@ -58,9 +48,12 @@ public class LastDownloadedDatesForRoomsTests {
             ChatMessageDto.of("5 Visible only to user0 and user1", users[0].getName().value()),
             };
 
+    @Override
     @BeforeAll
-    void setUpAll() {
-        testDbHelper.clearDbExceptForGeneral();
+    protected void setUpAll() {
+        super.setUpAll();
+
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(users);
 

@@ -1,28 +1,19 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.configuration.TestSecurityConfiguration;
 import com.cgm.infolab.db.model.ChatMessageEntity;
 import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
-import com.cgm.infolab.helper.TestDbHelper;
-import com.cgm.infolab.helper.TestStompHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.WebSocketMessageDto;
+import com.cgm.infolab.templates.WebSocketTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
@@ -35,33 +26,15 @@ import static com.cgm.infolab.model.WebSocketMessageTypeEnum.DELETE;
 import static com.cgm.infolab.model.WebSocketMessageTypeEnum.EDIT;
 import static org.awaitility.Awaitility.await;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WebSocketDeleteEditPublicTests {
-    @LocalServerPort
-    public Integer port;
-    @Autowired
-    public TestDbHelper testDbHelper;
-    @Autowired
-    public TestStompHelper testStompHelper;
-
-    WebSocketStompClient websocket;
-
+public class WebSocketDeleteEditPublicTests extends WebSocketTestTemplate {
     UserEntity userBanana = UserEntity.of(Username.of("banana"));
-    UserEntity user1 = UserEntity.of(Username.of("user1"));
-
     RoomEntity general = RoomEntity.general();
 
-    // This is here because the @Import annotation does not work
-    @TestConfiguration
-    public static class SecurityConfiguration extends TestSecurityConfiguration {}
+    @BeforeEach
+    protected void setUp(){
+        testDbHelper.clearDb();
 
-    @BeforeAll
-    public void setupAll(){
-        testDbHelper.clearDbExceptForGeneral();
-
-        websocket = testStompHelper.initWebsocket();
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(user1, userBanana);
 
@@ -79,37 +52,10 @@ public class WebSocketDeleteEditPublicTests {
 
         testDbHelper.insertCustomMessage(
                 2,
-                user1.getName().value(),
-                general.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "2 Message in general");
-
-        testDbHelper.insertCustomMessage(
-                3,
                 userBanana.getName().value(),
                 general.getName().value(),
                 LocalDateTime.of(2023, 1, 1, 1, 1, 1),
                 "3 Message in general");
-
-        testDbHelper.insertCustomMessage(
-                4,
-                userBanana.getName().value(),
-                general.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "4 Message in general");
-        testDbHelper.insertCustomMessage(
-                5,
-                user1.getName().value(),
-                general.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "5 Message in general");
-        testDbHelper.insertCustomMessage(
-                6,
-                user1.getName().value(),
-                general.getName().value(),
-                LocalDateTime.of(2023, 1, 1, 1, 1, 1),
-                "6 Message in general");
-
     }
 
     @Test
@@ -178,7 +124,7 @@ public class WebSocketDeleteEditPublicTests {
             }
         });
 
-        long messageId = 3;
+        long messageId = 2;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()
@@ -226,7 +172,7 @@ public class WebSocketDeleteEditPublicTests {
             }
         });
 
-        long messageId = 5;
+        long messageId = 1;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()
@@ -312,7 +258,7 @@ public class WebSocketDeleteEditPublicTests {
             }
         });
 
-        long messageId = 2;
+        long messageId = 1;
         WebSocketMessageDto webSocketEditedMessage = WebSocketMessageDto.ofEdit(ChatMessageDto.of(messageId, "New content : )"));
         client.send("/app/chat.edit", webSocketEditedMessage);
 
@@ -359,7 +305,7 @@ public class WebSocketDeleteEditPublicTests {
             }
         });
 
-        long messageId = 4;
+        long messageId = 2;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()
@@ -407,7 +353,7 @@ public class WebSocketDeleteEditPublicTests {
             }
         });
 
-        long messageId = 6;
+        long messageId = 1;
         ChatMessageEntity messageEntityBefore = testDbHelper
                 .getAllMessages()
                 .stream()

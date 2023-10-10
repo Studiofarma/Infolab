@@ -1,36 +1,25 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.model.*;
+import com.cgm.infolab.db.model.RoomEntity;
+import com.cgm.infolab.db.model.RoomName;
+import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.repository.DownloadDateRepository;
-import com.cgm.infolab.helper.EncryptionHelper;
-import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
-import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.templates.RepositoryWithMessagesTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.sql.Timestamp;
 import java.util.List;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class LastDownloadDateUpdateTests {
-    @Autowired
-    public ChatService chatService;
-    @Autowired
-    public JdbcTemplate jdbcTemplate;
+public class LastDownloadDateUpdateTests extends RepositoryWithMessagesTestTemplate {
     @Autowired
     public DownloadDateRepository downloadDateRepository;
-    @Autowired
-    public TestDbHelper testDbHelper;
-    @Autowired
-    public EncryptionHelper encryptionHelper;
 
     public RoomEntity general = RoomEntity.general();
 
@@ -53,9 +42,12 @@ public class LastDownloadDateUpdateTests {
 
     public String query = "select * from infolab.download_dates d left join infolab.chatmessages m on m.id = d.message_id where d.username = ? and m.content = ?";
 
+    @Override
     @BeforeAll
-    void setUp() {
-        testDbHelper.clearDbExceptForGeneral();
+    protected void setUpAll() {
+        super.setUpAll();
+
+        testDbHelper.addRooms(RoomEntity.general());
 
         users = testDbHelper.addUsers(users);
 

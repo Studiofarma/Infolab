@@ -1,5 +1,6 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.ThemeEnum;
@@ -7,27 +8,20 @@ import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.helper.TestApiHelper;
 import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.UserDto;
-import org.h2.index.LinkedIndex;
+import com.cgm.infolab.templates.BasicApiTestTemplate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 
-import java.net.http.HttpResponse;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UserApiTests {
+public class UserApiTests extends BasicApiTestTemplate {
     @Autowired
     TestDbHelper testDbHelper;
     @Autowired
@@ -45,9 +39,12 @@ public class UserApiTests {
                     UserEntity.of(6, Username.of("user6"), "user6 desc"),
             };
 
+    @Override
     @BeforeAll
-    void beforeAll() {
-        testDbHelper.clearDbExceptForGeneral();
+    protected void setUpAll() {
+        super.setUpAll();
+
+        testDbHelper.addRooms(RoomEntity.general());
 
         Arrays.stream(users)
                 .toList()

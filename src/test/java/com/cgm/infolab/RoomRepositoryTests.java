@@ -5,35 +5,21 @@ import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.CursorEnum;
 import com.cgm.infolab.db.repository.DownloadDateRepository;
 import com.cgm.infolab.db.repository.RoomRepository;
-import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
-import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.templates.RepositoryWithMessagesTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Comparator;
 import java.util.List;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class RoomRepositoryTests {
-
-    @Autowired
-    public RoomRepository roomRepository;
+public class RoomRepositoryTests extends RepositoryWithMessagesTestTemplate {
     @Autowired
     public DownloadDateRepository downloadDateRepository;
     @Autowired
-    public ChatService chatService;
-    @Autowired
-    public JdbcTemplate jdbcTemplate;
-    @Autowired
-    public TestDbHelper testDbHelper;
+    public RoomRepository roomRepository;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0"), "user0 desc"),
@@ -60,9 +46,12 @@ public class RoomRepositoryTests {
 
             };
 
+    @Override
     @BeforeAll
-    void setUpAll() {
-        testDbHelper.clearDbExceptForGeneral();
+    protected void setUpAll() {
+        super.setUpAll();
+
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(users);
 

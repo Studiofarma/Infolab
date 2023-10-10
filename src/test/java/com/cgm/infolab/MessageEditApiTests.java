@@ -1,49 +1,32 @@
 package com.cgm.infolab;
 
-import com.cgm.infolab.db.model.ChatMessageEntity;
-import com.cgm.infolab.db.model.RoomEntity;
-import com.cgm.infolab.db.model.RoomName;
-import com.cgm.infolab.db.model.UserEntity;
-import com.cgm.infolab.db.model.Username;
+import com.cgm.infolab.db.model.*;
 import com.cgm.infolab.helper.EncryptionHelper;
-import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.templates.MockMvcApiTestTemplate;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
 import static com.cgm.infolab.db.model.enumeration.MessageStatusEnum.EDITED;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@AutoConfigureMockMvc
-public class MessageEditApiTests {
-    @Autowired
-    public TestDbHelper testDbHelper;
-    @Autowired
-    public ChatService chatService;
+public class MessageEditApiTests extends MockMvcApiTestTemplate {
     @Autowired
     public JdbcTemplate jdbcTemplate;
     @Autowired
-    public MockMvc mvc;
+    public ChatService chatService;
     @Autowired
     public EncryptionHelper encryptionHelper;
 
@@ -61,9 +44,11 @@ public class MessageEditApiTests {
                     ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())};
     public RoomEntity general = RoomEntity.general();
 
-    @BeforeAll
-    void setUp() {
-        testDbHelper.clearDbExceptForGeneral();
+    @BeforeEach
+    protected void setUp() {
+        testDbHelper.clearDb();
+
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(users);
 

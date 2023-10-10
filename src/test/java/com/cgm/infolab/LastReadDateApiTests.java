@@ -5,44 +5,34 @@ import com.cgm.infolab.db.model.RoomName;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.helper.EncryptionHelper;
-import com.cgm.infolab.helper.TestDbHelper;
 import com.cgm.infolab.model.ChatMessageDto;
 import com.cgm.infolab.model.IdDto;
 import com.cgm.infolab.service.ChatService;
+import com.cgm.infolab.templates.MockMvcApiTestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@AutoConfigureMockMvc
-public class LastReadDateApiTests {
-    @Autowired
-    TestDbHelper testDbHelper;
-    @Autowired
-    ChatService chatService;
+public class LastReadDateApiTests extends MockMvcApiTestTemplate {
     @Autowired
     JdbcTemplate jdbcTemplate;
     @Autowired
-    MockMvc mvc;
+    ChatService chatService;
     @Autowired
     EncryptionHelper encryptionHelper;
 
@@ -60,9 +50,11 @@ public class LastReadDateApiTests {
                     ChatMessageDto.of("6 Visible only to user1 and user2", users[2].getName().value())};
     public RoomEntity general = RoomEntity.general();
 
-    @BeforeAll
-    void setUp() {
-        testDbHelper.clearDbExceptForGeneral();
+    @BeforeEach
+    protected void setUp() {
+        testDbHelper.clearDb();
+
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(users);
 
@@ -74,17 +66,12 @@ public class LastReadDateApiTests {
         );
 
         testDbHelper.addPrivateRoomsAndSubscribeUsers(pairs);
-
-        chatService.saveMessageInDb(messageDtos[0], users[0].getName(), general.getName(), null);
-        chatService.saveMessageInDb(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"), users[0].getName());
-        chatService.saveMessageInDb(messageDtos[2], users[2].getName(), RoomName.of("user1-user2"), users[2].getName());
-        chatService.saveMessageInDb(messageDtos[3], users[0].getName(), general.getName(), users[0].getName());
-        chatService.saveMessageInDb(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"), users[1].getName());
-        chatService.saveMessageInDb(messageDtos[5], users[1].getName(), RoomName.of("user1-user2"), users[1].getName());
     }
 
     @Test
     void whenUpdatingDownloadDate_forMessage1_itIsAfterSendDateAndBeforeNow() throws Exception {
+        chatService.saveMessageInDb(messageDtos[0], users[0].getName(), general.getName(), null);
+
         IdDto message1Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = ?",
                 this::messageIdMapper, encryptionHelper.encryptWithAes("1 Hello general from user0"));
 
@@ -104,6 +91,10 @@ public class LastReadDateApiTests {
 
     @Test
     void whenUpdatingDownloadDate_forMessage2_itIsAfterSendDateAndBeforeNow_message5DoesNotHaveIt() throws Exception {
+        chatService.saveMessageInDb(messageDtos[1], users[0].getName(), RoomName.of("user0-user1"), users[0].getName());
+        Thread.sleep(50);
+        chatService.saveMessageInDb(messageDtos[4], users[1].getName(), RoomName.of("user0-user1"), users[1].getName());
+
         IdDto message2Id = jdbcTemplate.queryForObject("SELECT * FROM infolab.chatmessages WHERE content = ?",
                 this::messageIdMapper, encryptionHelper.encryptWithAes("2 Visible only to user0 and user1"));
 
@@ -133,6 +124,9 @@ public class LastReadDateApiTests {
 
     @Test
     void whenUpdatingDownloadDates_forMessages3And6_theyAreAfterSendDateAndBeforeNow() throws Exception {
+        chatService.saveMessageInDb(messageDtos[2], users[2].getName(), RoomName.of("user1-user2"), users[2].getName());
+        chatService.saveMessageInDb(messageDtos[5], users[1].getName(), RoomName.of("user1-user2"), users[1].getName());
+
         List<IdDto> ids = jdbcTemplate
                 .query("SELECT * FROM infolab.chatmessages WHERE content = ? OR content = ?",
                         this::messageIdMapper,
@@ -167,6 +161,8 @@ public class LastReadDateApiTests {
 
     @Test
     void whenTryingToSetMultipleReadDates_forSameMessageAndUser_errorIsThrown() throws Exception {
+        chatService.saveMessageInDb(messageDtos[3], users[0].getName(), general.getName(), users[0].getName());
+
         List<IdDto> ids = jdbcTemplate.query("SELECT * FROM infolab.chatmessages WHERE content = ?",
                 this::messageIdMapper, encryptionHelper.encryptWithAes("4 Hello general from user2"));
 

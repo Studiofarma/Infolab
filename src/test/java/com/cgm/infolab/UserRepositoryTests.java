@@ -1,28 +1,21 @@
 package com.cgm.infolab;
 
+import com.cgm.infolab.db.model.RoomEntity;
 import com.cgm.infolab.db.model.UserEntity;
 import com.cgm.infolab.db.model.Username;
 import com.cgm.infolab.db.model.enumeration.ThemeEnum;
 import com.cgm.infolab.db.model.enumeration.UserStatusEnum;
 import com.cgm.infolab.db.repository.UserRepository;
-import com.cgm.infolab.helper.TestDbHelper;
+import com.cgm.infolab.templates.RepositoryTestTemplate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles({ProfilesConstants.TEST})
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class UserRepositoryTests {
+public class UserRepositoryTests extends RepositoryTestTemplate {
 
     @Autowired
     public UserRepository userRepository;
-    @Autowired
-    public TestDbHelper testDbHelper;
 
     public UserEntity[] users =
             {UserEntity.of(Username.of("user0"), "user0 desc"),
@@ -32,9 +25,12 @@ public class UserRepositoryTests {
                     UserEntity.of(Username.of("user4"), "user4 desc"),
             };
 
+    @Override
     @BeforeAll
-    void setupAll() {
-        testDbHelper.clearDbExceptForGeneral();
+    protected void setUpAll() {
+        super.setUpAll();
+
+        testDbHelper.addRooms(RoomEntity.general());
 
         testDbHelper.addUsers(users);
     }
