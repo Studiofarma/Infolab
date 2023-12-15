@@ -1,6 +1,10 @@
 import { Paths } from "../support/paths-enum";
 
 describe("Login spec", () => {
+  it("fail test", () => {
+    throw new Error("test fails here");
+  })
+
   it("login fail", () => {
     cy.login({ user: "a", password: "a" });
 
